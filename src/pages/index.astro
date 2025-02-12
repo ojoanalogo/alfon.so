@@ -6,12 +6,24 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { sortMDByDate } from "../utils";
 import { Picture } from "astro:assets";
-import profile from "../assets/me.png";
+import me from "../assets/me-1.jpg";
 
 const MAX_POSTS = 10;
 const allPosts = await getCollection("blog");
 const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
-const languages = ["js", "ts", "python", "sql", "dart", "go"];
+const languages = ["js", "ts", "python", "sql", "go", "gpt", "next.js", "cloud"];
+
+// add language display names for better accessibility
+const languageNames = {
+  "js": "JavaScript",
+  "ts": "TypeScript",
+  "python": "Python",
+  "sql": "SQL",
+  "go": "Go",
+  "gpt": "GPT",
+  "next.js": "Next.js",
+  "cloud": "Cloud"
+};
 
 const projects: Array<{
   title: string;
@@ -21,14 +33,20 @@ const projects: Array<{
 }> = [
   {
     title: "SofIA",
-    description: "Finanzas personales a un hola de distancia",
+    description: "Registra tus gastos con un solo mensaje de WhatsApp.",
     link: "https://sofinanzas.mx",
     icon: "💸",
   },
   {
+    title: "Hilitos",
+    description: "Marketplaces para pequeños emprendedores, como Etsy.",
+    link: "https://hilitos.app",
+    icon: "🧵",
+  },
+  {
     title: "Wawa",
     description:
-      "Framework para construir flujos conversacionales en WhatsApp [Próximamente]",
+      "Framework para construir flujos conversacionales en WhatsApp. [Próximamente]",
     icon: "💬",
     link: "",
   },
@@ -36,138 +54,160 @@ const projects: Array<{
 ---
 
 <BaseLayout navbarActiveItemID="home">
-  <section
-    aria-label="Descripción general del sitio y del autor"
-    class="text-sm"
-  >
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-      <div class="avatar grow-0">
-        <div
-          class="w-40 h-40 rounded-full hover:scale-105 drop-shadow-md hover:drop-shadow-2xl transition"
-        >
-          <Picture
-            widths={[400]}
-            src={profile}
-            alt="Foto del autor del sitio"
-          />
+  <main>
+    <section
+      aria-labelledby="about-heading"
+      class="text-sm"
+    >
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div class="avatar grow-0">
+          <div class="w-[16rem] md:w-[16rem] h-[20rem] md:h-[20rem] overflow-hidden drop-shadow-xl shadow-md bg-white p-3 pb-12 border border-gray-300 flex-shrink-0 hover:rotate-[-4deg] hover:scale-105 duration-300 hover:drop-shadow-2xl">
+            <Picture 
+              widths={[1600, 1024, 640]}
+              src={me}
+              alt="Alfonso Reyes sonriendo a la cámara en un retrato casual"
+              loading="lazy"
+              class="h-full w-full object-cover object-top pointer-events-none select-none"
+            />
+            <p class="text-sm text-gray-600 mt-1" aria-label="Código de saludo rotativo">
+              👋 <span id="helloWorld">print('¡Hola mundo!')</span>
+            </p>
+          </div>
+        </div>
+        <div class="grow w-full md:ml-10 mt-5 md:mt-0">
+          <h1
+            id="about-heading"
+            class="mt-2 text-4xl md:text-5xl font-medium text-zinc-950 drop-shadow-md"
+          >
+            Alfonso <span class="text-cyan-800 font-bold">Reyes</span>
+          </h1>
+          <div class="w-full md:w-11/12 lg:w-11/12 text-justify">
+            <p class="text-sm text-gray-600 mt-1">
+              Ingeniero <span class="font-black">backend</span> y <span
+                class="font-black">fotógrafo</span
+              > apasionado por la tecnología, basado en México 🌮🇲🇽
+            </p>
+            <p class="mt-4">
+              Trabajo como ingeniero backend en <a
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-bold text-cyan-800 hover:underline"
+                href="https://monopolio.com.mx">monopolio.com.mx</a
+              >. 
+            </p>
+
+            <p class="mt-2">
+              Mi pasatiempo favorito involucra una cámara 📸, puedes ver mi trabajo en <a
+                class="font-bold text-cyan-800 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://ojoanalogo.com">ojoanalogo.com</a
+              >.
+            </p>
+
+            <p class="mt-4">
+              Como proyecto personal, estoy desarrollando a <a
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-bold text-cyan-800 hover:underline"
+                href="https://sofinanzas.mx">SofIA</a
+              >, un asistente virtual impulsado por IA que ayuda a las personas a mejorar
+              su educación financiera y tomar decisiones más informadas sobre su dinero 💸.
+            </p>
+
+            <p class="mt-4">
+              📬 Si deseas ponerte en contacto, puedes hacerlo a través de <a
+                class="font-bold text-cyan-800 hover:underline"
+                href="mailto:hola@alfon.so"
+                aria-label="Enviar correo a hola@alfon.so">hola@alfon.so</a
+              >
+            </p>
+          </div>
         </div>
       </div>
-      <div class="grow w-full md:ml-10 mt-5 md:mt-0">
-        <p class="text-lg md:text-md font-bold">
-          👋 <span id="helloWorld">print('¡Hola mundo!')</span>
-        </p>
-        <h1
-          class="mt-2 text-4xl md:text-5xl font-medium text-zinc-950 drop-shadow-md"
-        >
-          Alfonso <span class="text-cyan-800 font-bold">Reyes</span>
-        </h1>
-        <div class="w-full md:w-11/12 lg:w-11/12 text-justify">
-          <p class="text-sm text-gray-600 mt-1">
-            Ingeniero <span class="font-black">backend</span> y <span
-              class="font-black">fotógrafo</span
-            > de México.
-          </p>
-          <p class="mt-4">
-            Trabajo en <a
-              target="_blank"
-              class="font-bold text-cyan-800"
-              href="https://monopolio.com.mx">monopolio.com.mx</a
-            > y en mis tiempos libres estoy construyendo a <a
-              target="_blank"
-              class="font-bold text-cyan-800"
-              href="https://sofinanzas.mx">SofIA</a
-            >, un bot de finanzas personales con asistencia de IA para
-            ayudar a las personas a que tomen mejores decisiones financieras y
-            mejoren su relación con el dinero.
-          </p>
-
-          <p class="mt-2">
-            Si quieres ver algo más interesante dale un vistazo a mi sitio de <a
-              class="font-bold text-cyan-800"
-              target="_blank"
-              href="https://ojoanalogo.com">fotografía</a
-            >.
-          </p>
-          <p class="mt-2">
-            📬 Sientete libre de contactarme por mi correo: <a
-              class="font-bold text-cyan-800"
-              href="mailto:hola@alfon.so">hola@alfon.so</a
-            >
-          </p>
-        </div>
+    </section>
+    <section aria-labelledby="tech-stack" class="my-8">
+      <h2 id="tech-stack" class="text-sm mb-4">Stack tecnológico:</h2>
+      <div class="flex flex-wrap gap-2">
+        {
+          languages.map((lang) => (
+            <span 
+              class="kbd kbd-sm rounded-md hover:shadow-xl hover:scale-110 duration-150 text-white"
+              role="img"
+              aria-label={`${languageNames[lang]}`}
+              title={languageNames[lang]}
+            >{`.${lang}`}</span>
+          ))
+        }
       </div>
-    </div>
-  </section>
-  <p class="my-4">
-    Aquí hablamos:
-    {
-      languages.map(
-        (
-          lang,
-          // add hover with animation
-        ) => (
-          <span class="kbd kbd-sm rounded-md hover:shadow-xl hover:scale-110 duration-150 mx-[0.3rem] text-white">{`.${lang}`}</span>
-        ),
-      )
-    }
-  </p>
-  <div
-    class="mt-4 flex flex-wrap items-center gap-x-4 sm:items-center fill-slate-400"
-  >
-    <p class="text-sm">Mis redes:</p>
-    <SocialMediaIcons />
-  </div>
-  <section aria-label="Lista de publicaciones recientes" class="mt-8">
-    <h2
-      class="title mb-6 text-sm font-bold underline underline-offset-8 decoration-cyan-700 decoration-2"
-    >
-      ✍️ Publicaciones recientes
-    </h2>
-    <ul class="space-y-4 sm:space-y-2">
-      {
-        allPostsByDate.map((post) => (
-          <li class="flex flex-col gap-x-2 sm:flex-row">
-            <PostPreview post={post} />
-          </li>
-        ))
-      }
-    </ul>
-  </section>
+    </section>
+    <section aria-labelledby="social-links" class="my-8">
+      <h2 id="social-links" class="text-sm mb-4">Encuéntrame en:</h2>
+      <div class="flex flex-wrap items-center gap-x-4 sm:items-center fill-slate-400">
+        <SocialMediaIcons />
+      </div>
+    </section>
+    <section aria-labelledby="recent-posts" class="mt-8">
+      <h2
+        id="recent-posts"
+        class="title mb-6 text-sm font-bold underline underline-offset-8 decoration-cyan-700 decoration-2"
+      >
+        ✍️ Publicaciones recientes
+      </h2>
+      <ul class="space-y-4 sm:space-y-2">
+        {
+          allPostsByDate.map((post) => (
+            <li class="flex flex-col gap-x-2 sm:flex-row">
+              <PostPreview post={post} />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
 
-  <section aria-label="Side projects" class="mt-4">
-    <h2
-      class="title mb-6 text-sm font-bold underline underline-offset-8 decoration-cyan-700 decoration-2"
-    >
-      🔧 Proyectos
-    </h2>
-    <div
-      class="grid sm:grid-cols-2 sm:auto-rows-fr auto-cols-fr gap-4 text-white"
-    >
-      {
-        projects.map((project) => (
-          <ProjectCard
-            description={project.description}
-            icon={project.icon}
-            title={project.title}
-            link={project.link}
-          />
-        ))
-      }
-    </div>
-  </section>
+    <section aria-labelledby="projects" class="mt-4">
+      <h2
+        id="projects"
+        class="title mb-6 text-sm font-bold underline underline-offset-8 decoration-cyan-700 decoration-2"
+      >
+        🔧 Proyectos
+      </h2>
+      <div
+        class="grid sm:grid-cols-2 sm:auto-rows-fr auto-cols-fr gap-4 text-white"
+        role="list"
+      >
+        {
+          projects.map((project) => (
+            <ProjectCard
+              description={project.description}
+              icon={project.icon}
+              title={project.title}
+              link={project.link}
+            />
+          ))
+        }
+      </div>
+    </section>
+  </main>
 
   <script>
     function getRandomPhrase() {
       const phrases = [
-        'console.log("¡Hola mundo!")',
-        'print("¡Hola mundo!")',
-        'System.out.println("¡Hola mundo!")',
-        'echo "¡Hola mundo!"',
-        'fmt.Println("¡Hola mundo!")',
+        { code: 'console.log("¡Hola mundo!")', lang: 'JavaScript' },
+        { code: 'print("¡Hola mundo!")', lang: 'Python' },
+        { code: 'System.out.println("¡Hola mundo!")', lang: 'Java' },
+        { code: 'echo "¡Hola mundo!"', lang: 'PHP' },
+        { code: 'fmt.Println("¡Hola mundo!")', lang: 'Go' },
       ];
       return phrases[Math.floor(Math.random() * phrases.length)];
     }
-    // modify span id helloWorld with message on page load
-    document.getElementById("helloWorld")!.innerHTML = getRandomPhrase();
+
+    const helloWorld = document.getElementById("helloWorld");
+    if (helloWorld) {
+      const phrase = getRandomPhrase();
+      helloWorld.innerHTML = phrase.code;
+      helloWorld.setAttribute('title', `Código en ${phrase.lang}`);
+    }
   </script>
 </BaseLayout>
+
