@@ -22,7 +22,7 @@ const languageNames = {
   "go": "Go",
   "gpt": "GPT",
   "next.js": "Next.js",
-  "cloud": "Cloud"
+  "cloud": "AWS/GCP"
 };
 
 const projects: Array<{
@@ -59,8 +59,8 @@ const projects: Array<{
       aria-labelledby="about-heading"
       class="text-sm"
     >
-      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-        <div class="avatar grow-0">
+      <div class="flex flex-col lg:flex-row justify-between items-center mb-6">
+        <div class="pb-4">
           <div class="w-[16rem] md:w-[16rem] h-[20rem] md:h-[20rem] overflow-hidden drop-shadow-xl shadow-md bg-white p-3 pb-12 border border-gray-300 flex-shrink-0 hover:rotate-[-4deg] hover:scale-105 duration-300 hover:drop-shadow-2xl">
             <Picture 
               widths={[1600, 1024, 640]}
@@ -126,7 +126,7 @@ const projects: Array<{
         </div>
       </div>
     </section>
-    <section aria-labelledby="tech-stack" class="my-8">
+    <section aria-labelledby="tech-stack" class="my-4">
       <h2 id="tech-stack" class="text-sm mb-4">Stack tecnológico:</h2>
       <div class="flex flex-wrap gap-2">
         {
@@ -141,13 +141,13 @@ const projects: Array<{
         }
       </div>
     </section>
-    <section aria-labelledby="social-links" class="my-8">
-      <h2 id="social-links" class="text-sm mb-4">Encuéntrame en:</h2>
+    <section aria-labelledby="social-links" class="my-4">
+      <h2 id="social-links" class="text-sm">Encuéntrame en:</h2>
       <div class="flex flex-wrap items-center gap-x-4 sm:items-center fill-slate-400">
         <SocialMediaIcons />
       </div>
     </section>
-    <section aria-labelledby="recent-posts" class="mt-8">
+    <section aria-labelledby="recent-posts">
       <h2
         id="recent-posts"
         class="title mb-6 text-sm font-bold underline underline-offset-8 decoration-cyan-700 decoration-2"
