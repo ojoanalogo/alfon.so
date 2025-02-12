@@ -1,6 +1,6 @@
 ---
 const { navbarActiveItemID } = Astro.props;
-const activeClasses = ["text-cyan-800"];
+const activeClasses = ["text-cyan-800", "underline", "font-bold"];
 
 const links: Array<{
   title: string;
@@ -30,7 +30,7 @@ const links: Array<{
 ];
 ---
 
-<header id="main-header" class="mb-6 md:mb-8">
+<header id="main-header" class="mb-2 px-6 mt-4">
   <nav
     id="navigation-menu"
     aria-label="Main menu"
@@ -72,7 +72,7 @@ const links: Array<{
     <a
       href="/"
       target="_self"
-      class="py-4 px-8 font-bold md:text-md whitespace-nowrap text-zinc-900 hover:text-cyan-700 duration-200"
+      class="p-4 font-bold md:text-md whitespace-nowrap text-zinc-900 hover:text-cyan-700 duration-200"
     >
       alfon.so
     </a>

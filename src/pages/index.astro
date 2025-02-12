@@ -6,21 +6,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import { sortMDByDate } from "../utils";
 import { Picture } from "astro:assets";
-import me from "../assets/me-1.jpg";
+import me from "../assets/me-2.jpg";
 
 const MAX_POSTS = 10;
 const allPosts = await getCollection("blog");
 const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
-const languages = ["js", "ts", "python", "sql", "go", "gpt", "next.js", "cloud"];
 
-// add language display names for better accessibility
-const languageNames = {
+const techStack = {
   "js": "JavaScript",
   "ts": "TypeScript",
   "python": "Python",
   "sql": "SQL",
   "go": "Go",
-  "gpt": "GPT",
+  "gpt": "LLMs, GPT-3/4, Claude, etc.",
   "next.js": "Next.js",
   "cloud": "AWS/GCP"
 };
@@ -54,13 +52,12 @@ const projects: Array<{
 ---
 
 <BaseLayout navbarActiveItemID="home">
-  <main>
     <section
       aria-labelledby="about-heading"
       class="text-sm"
     >
-      <div class="flex flex-col lg:flex-row justify-between items-center mb-6">
-        <div class="pb-4">
+      <div class="flex flex-col lg:flex-row justify-between items-center mb-6 lg:space-x-12">
+        <div class="pb-4 lg:pb-0">
           <div class="w-[16rem] md:w-[16rem] h-[20rem] md:h-[20rem] overflow-hidden drop-shadow-xl shadow-md bg-white p-3 pb-12 border border-gray-300 flex-shrink-0 hover:rotate-[-4deg] hover:scale-105 duration-300 hover:drop-shadow-2xl">
             <Picture 
               widths={[1600, 1024, 640]}
@@ -74,38 +71,38 @@ const projects: Array<{
             </p>
           </div>
         </div>
-        <div class="grow w-full md:ml-10 mt-5 md:mt-0">
+        <div class="w-full mt-8 md:mt-0">
           <h1
             id="about-heading"
-            class="mt-2 text-4xl md:text-5xl font-medium text-zinc-950 drop-shadow-md"
+            class="mt-2 text-4xl md:text-5xl font-medium text-zinc-950 drop-shadow-sm"
           >
             Alfonso <span class="text-cyan-800 font-bold">Reyes</span>
           </h1>
           <div class="w-full md:w-11/12 lg:w-11/12 text-justify">
-            <p class="text-sm text-gray-600 mt-1">
+            <p class="text-sm text-gray-500 mt-1 text-start">
               Ingeniero <span class="font-black">backend</span> y <span
                 class="font-black">fotógrafo</span
               > apasionado por la tecnología, basado en México 🌮🇲🇽
             </p>
-            <p class="mt-4">
+            <p class="mt-2">
               Trabajo como ingeniero backend en <a
                 target="_blank"
                 rel="noopener noreferrer"
-                class="font-bold text-cyan-800 hover:underline"
+                class="font-bold hover:underline"
                 href="https://monopolio.com.mx">monopolio.com.mx</a
               >. 
             </p>
 
             <p class="mt-2">
               Mi pasatiempo favorito involucra una cámara 📸, puedes ver mi trabajo en <a
-                class="font-bold text-cyan-800 hover:underline"
+                class="font-bold hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://ojoanalogo.com">ojoanalogo.com</a
               >.
             </p>
 
-            <p class="mt-4">
+            <p class="mt-2">
               Como proyecto personal, estoy desarrollando a <a
                 target="_blank"
                 rel="noopener noreferrer"
@@ -115,7 +112,7 @@ const projects: Array<{
               su educación financiera y tomar decisiones más informadas sobre su dinero 💸.
             </p>
 
-            <p class="mt-4">
+            <p class="mt-2">
               📬 Si deseas ponerte en contacto, puedes hacerlo a través de <a
                 class="font-bold text-cyan-800 hover:underline"
                 href="mailto:hola@alfon.so"
@@ -130,12 +127,12 @@ const projects: Array<{
       <h2 id="tech-stack" class="text-sm mb-4">Stack tecnológico:</h2>
       <div class="flex flex-wrap gap-2">
         {
-          languages.map((lang) => (
+          Object.keys(techStack).map((lang) => (
             <span 
-              class="kbd kbd-sm rounded-md hover:shadow-xl hover:scale-110 duration-150 text-white"
+              class="bg-zinc-950 p-1 px-2 text-xs rounded-md hover:shadow-xl hover:scale-110 duration-150 text-gray-300"
               role="img"
-              aria-label={`${languageNames[lang]}`}
-              title={languageNames[lang]}
+              aria-label={`${techStack[lang]}`}
+              title={`${techStack[lang]}`}
             >{`.${lang}`}</span>
           ))
         }
@@ -165,7 +162,7 @@ const projects: Array<{
       </ul>
     </section>
 
-    <section aria-labelledby="projects" class="mt-4">
+    <section aria-labelledby="projects" class="mt-2">
       <h2
         id="projects"
         class="title mb-6 text-sm font-bold underline underline-offset-8 decoration-cyan-700 decoration-2"
@@ -188,7 +185,6 @@ const projects: Array<{
         }
       </div>
     </section>
-  </main>
 
   <script>
     function getRandomPhrase() {
