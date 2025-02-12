@@ -12,7 +12,7 @@ const allPostsByDate = sortMDByDate(allPosts);
 <BaseLayout title="Blog" navbarActiveItemID="blog">
   <section aria-label="Publicaciones de mi sitio">
 
-    <h1 class="md:text-2xl text-xl font-black mb-6 text-zinc-950 drop-shadow-lg">
+    <h1 class="text-xl font-bold mb-6 drop-shadow-sm">
       📝 Publicaciones
     </h1>
 
@@ -20,7 +20,7 @@ const allPostsByDate = sortMDByDate(allPosts);
       allPostsByDate.length === 0 ? (
         <div class="text-center">
           <h1 class="text-9xl font-bold mb-4">🏜️</h1>
-          <h1 class="text-9xl font-bold mb-4 text-primary">404</h1>
+          <h1 class="text-9xl font-bold mb-4 text-cyan-800">404</h1>
           <h3 class="text-2xl">
             No hay publicaciones disponibles, regresa mañana
           </h3>
