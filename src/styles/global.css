@@ -1,31 +1,3 @@
-@tailwind base;
-
-@layer base {
-  h1 {
-    @apply text-2xl;
-  }
-
-  h2 {
-    @apply text-xl;
-  }
-
-  h3 {
-    @apply text-lg;
-  }
-
-  h4 {
-    @apply text-base;
-  }
-
-  h5 {
-    @apply text-sm;
-  }
-}
-
-@tailwind components;
-
-@tailwind utilities;
-
 noise {
   pointer-events: none;
   z-index: -1;
@@ -36,7 +8,7 @@ noise {
   height: 100%;
   background: repeat center center url('/noise.svg');
   background-size: auto;
-  background-size: 24%;
-  opacity: 0.65;
+  background-size: 32%;
+  opacity: 0.05;
   mix-blend-mode: luminosity;
 }

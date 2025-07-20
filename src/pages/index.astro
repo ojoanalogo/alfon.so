@@ -1,26 +1,27 @@
 ---
+import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
+import me from "../assets/me-2.jpg";
 import PostPreview from "../components/PostPreview.astro";
 import SocialMediaIcons from "../components/SocialMediaIcons.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import { sortMDByDate } from "../utils";
-import { Picture } from "astro:assets";
-import me from "../assets/me-2.jpg";
 
 const MAX_POSTS = 10;
 const allPosts = await getCollection("blog");
 const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
 
-const techStack = {
-  "js": "JavaScript",
-  "ts": "TypeScript",
-  "python": "Python",
-  "sql": "SQL",
-  "go": "Go",
-  "gpt": "LLMs, GPT-3/4, Claude, etc.",
+const techStack: Record<string, string> = {
+  js: "JavaScript",
+  ts: "TypeScript",
+  python: "Python",
+  sql: "SQL",
+  gpt: "LLMs, GPT-3/4, Claude, etc.",
   "next.js": "Next.js",
-  "cloud": "AWS/GCP"
+  aws: "AWS",
+  gcp: "GCP",
+  docker: "Docker",
+  tf: "Terraform",
 };
 
 const projects: Array<{
@@ -52,158 +53,271 @@ const projects: Array<{
 ---
 
 <BaseLayout navbarActiveItemID="home">
-    <section
-      aria-labelledby="about-heading"
-      class="text-sm"
-    >
-      <div class="flex flex-col lg:flex-row justify-between items-center mb-6 lg:space-x-12">
-        <div class="mb-2">
-          <div class="w-[16rem] md:w-[16rem] h-[20rem] md:h-[20rem] overflow-hidden drop-shadow-xl shadow-md bg-white p-3 pb-12 border border-gray-300 flex-shrink-0 hover:rotate-[-4deg] hover:scale-105 duration-300 hover:drop-shadow-2xl">
-            <Picture 
-              widths={[1600, 1024, 640]}
-              src={me}
-              alt="Alfonso Reyes sonriendo a la cámara en un retrato casual"
-              loading="lazy"
-              class="h-full w-full object-cover object-top pointer-events-none select-none"
-            />
-            <p class="text-sm mt-2 text-gray-500" aria-label="Código de saludo rotativo">
-              <span id="helloWorld">print('¡Hola mundo!')</span>
-            </p>
-          </div>
-        </div>
-        <div class="w-full mt-4 md:mt-0">
-          <h1
-            id="about-heading"
-            class="text-4xl md:text-5xl font-medium drop-shadow-sm text-zinc-950"
-          >
-            Alfonso <span class="text-cyan-700 font-bold">Reyes</span>
-          </h1>
-          <div class="w-full md:w-11/12 lg:w-11/12 text-justify">
-            <p class="text-gray-500 mt-1 text-start">
-              Ingeniero <span class="font-bold">backend</span> y <span
-                class="font-bold">fotógrafo</span
-              > apasionado por la tecnología, basado en México 🌮🇲🇽
-            </p>
-            <p class="mt-2">
-              Trabajo como ingeniero backend en <a
-                target="_blank"
-                rel="noopener noreferrer"
-                class="font-bold hover:underline"
-                href="https://monopolio.com.mx">monopolio.com.mx</a
-              >. 
-            </p>
-
-            <p class="mt-2">
-              Mi pasatiempo favorito involucra una cámara 📸, puedes ver mi trabajo en <a
-                class="font-bold hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://ojoanalogo.com">ojoanalogo.com</a
-              >.
-            </p>
-
-            <p class="mt-2">
-              Como proyecto personal, estoy desarrollando a <a
-                target="_blank"
-                rel="noopener noreferrer"
-                class="font-bold text-cyan-800 hover:underline"
-                href="https://sofinanzas.mx">SofIA</a
-              >, un asistente virtual impulsado por IA que ayuda a las personas a mejorar
-              su educación financiera y tomar decisiones más informadas sobre su dinero 💸.
-            </p>
-
-            <p class="mt-2">
-              📬 Si deseas ponerte en contacto, puedes hacerlo a través de <a
-                class="font-bold text-cyan-800 hover:underline"
-                href="mailto:hola@alfon.so"
-                aria-label="Enviar correo a hola@alfon.so">hola@alfon.so</a
-              >
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-    <section aria-labelledby="tech-stack" class="my-4">
-      <h2 id="tech-stack" class="text-sm mb-4">Stack tecnológico:</h2>
-      <div class="flex flex-wrap gap-2">
-        {
-          Object.keys(techStack).map((lang) => (
-            <span 
-              class="bg-zinc-950 p-1 px-2 text-xs rounded-md hover:shadow-xl hover:scale-110 duration-150 text-gray-300"
-              role="img"
-              aria-label={`${techStack[lang]}`}
-              title={`${techStack[lang]}`}
-            >{`.${lang}`}</span>
-          ))
-        }
-      </div>
-    </section>
-    <section aria-labelledby="social-links" class="my-4">
-      <h2 id="social-links" class="text-sm">Encuéntrame en:</h2>
-      <div class="flex flex-wrap items-center gap-x-4 sm:items-center fill-slate-400">
-        <SocialMediaIcons />
-      </div>
-    </section>
-    <section aria-labelledby="recent-posts">
-      <h2
-        id="recent-posts"
-        class="title mb-6 text-sm font-bold underline underline-offset-8 decoration-cyan-700 decoration-2"
+  <main>
+    <section id="about" class="mt-6" aria-labelledby="about-heading">
+      <div
+        class="bg-black/30 border border-gray-600 rounded-lg font-mono text-sm p-6"
+        role="region"
       >
-        ✍️ Publicaciones recientes
+        <!-- Terminal header -->
+        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-600">
+          <div
+            class="flex gap-2"
+            role="img"
+          >
+            <div
+              class="w-3 h-3 rounded-full bg-red-500"
+            >
+            </div>
+            <div
+              class="w-3 h-3 rounded-full bg-yellow-500"
+            >
+            </div>
+            <div
+              class="w-3 h-3 rounded-full bg-green-500"
+            >
+            </div>
+          </div>
+          <span class="text-gray-400 text-xs ml-2">https://alfon.so</span>
+        </div>
+
+        <!-- Content -->
+        <div class="text-xs">
+          <div class="space-y-2">
+            <div class="flex items-center gap-4 mb-4">
+              <Image
+                src={me}
+                width={500}
+                height={500}
+                alt="Foto de perfil"
+                class="w-12 h-12 rounded-full"
+              />
+              <div class="flex flex-col">
+                <h1 class="text-primary text-xl" id="about-heading">
+                  Alfonso <span class="text-gray-200">Reyes</span>
+                </h1>
+                <p class="text-gray-400 text-xs">
+                  ingeniero backend / fotógrafo
+                </p>
+              </div>
+            </div>
+
+            <!-- Personal paragraph -->
+            <div class="bg-gray-500/10 rounded-lg p-3 mb-4">
+              <p class="text-gray-200 leading-relaxed">
+                bienvenido a mi pequeño rincón en internet, aquí encontrarás mis
+                pensamientos (pocos), mis proyectos y mi blog.
+              </p>
+            </div>
+
+            <div class="border-b border-gray-600 w-full mb-2"></div>
+
+            <div class="flex">
+              <span class="text-gray-400 w-36 shrink-0">Ubicación</span>
+              <span class="text-white">México 🌮🇲🇽</span>
+            </div>
+
+            <div class="flex">
+              <span class="text-gray-400 w-36 shrink-0">Trabajo</span>
+              <span class="text-white">
+                Ingeniero Backend @
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-cyan-600 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  href="https://monopolio.com.mx"
+                  aria-label="Visitar sitio web monopolio.com.mx"
+                  >monopolio.com.mx</a
+                >
+              </span>
+            </div>
+
+            <div class="flex">
+              <span class="text-gray-400 w-36 shrink-0">Hobby</span>
+              <span class="text-white">
+                Fotografía @
+                <a
+                  class="text-cyan-600 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://ojoanalogo.com"
+                  aria-label="Visitar portafolio de fotografía ojoanalogo.com"
+                  >ojoanalogo.com</a
+                >
+              </span>
+            </div>
+
+            <div class="flex items-center">
+              <span class="text-gray-400 w-36 shrink-0">Proyecto actual</span>
+              <span class="text-white">
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-cyan-600 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  href="https://sofinanzas.mx"
+                  aria-label="Visitar SofIA - Asistente de finanzas con IA">SofIA</a
+                >
+                - Un asistente de finanzas personales para todos 💸
+              </span>
+            </div>
+
+            <div class="flex">
+              <span class="text-gray-400 w-36 shrink-0">Intereses</span>
+              <span class="text-white"
+                >Programación, startups, ciencia ficción, películas, fotografía, viajes</span
+              >
+            </div>
+
+            <div class="flex">
+              <span class="text-gray-400 w-36 shrink-0">Contacto</span>
+              <span class="text-white">
+                <a
+                  class="text-cyan-600 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  href="mailto:hola@alfon.so"
+                  aria-label="Enviar email a hola@alfon.so">hola@alfon.so</a
+                >
+              </span>
+            </div>
+
+            <div class="flex items-center">
+              <span class="text-gray-400 w-36 shrink-0">Social</span>
+              <span class="text-white flex-1 min-w-0">
+                <SocialMediaIcons />
+              </span>
+            </div>
+
+            <div class="pt-2">
+              <div class="flex items-center">
+                <span class="text-gray-400 w-36 shrink-0">Tech</span>
+                <div
+                  class="flex flex-wrap gap-2"
+                  role="list"
+                  aria-label="Tech"
+                >
+                  {
+                    Object.keys(techStack).map((lang) => (
+                      <span
+                        class="text-gray-400 hover:text-cyan-600 transition-colors"
+                        title={techStack[lang]}
+                      >
+                        {lang}
+                      </span>
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-2 border-t border-gray-700 text-gray-500 text-xs">
+          <span class="text-gray-400">$</span> cat about.txt
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="projects-heading" class="mt-2">
+      <h2
+        id="projects-heading"
+        class="title mb-4 text-sm font-bold text-gray-500"
+      >
+        ~/proyectos $
       </h2>
-      <ul class="space-y-4 sm:space-y-2">
+      <div
+        class="bg-black/20 border border-gray-700 rounded font-mono text-sm text-gray-300 p-6"
+        role="region"
+        aria-label="Showcase de proyectos"
+      >
+        <div class="space-y-2" role="list">
+          {
+            projects.map((project, index) => (
+              <div
+                class="group hover:bg-gray-800/50 p-1 rounded transition-colors"
+                role="listitem"
+              >
+                {project.link ? (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900 rounded"
+                    aria-label={`Visitar ${project.title}: ${project.description}`}
+                  >
+                    <div class="flex items-start gap-2">
+                      <span
+                        class="text-gray-400 w-6 shrink-0"
+                        aria-hidden="true"
+                      >
+                        {String(index + 1).padStart(2, "0")}.
+                      </span>
+                      <span
+                        class="text-yellow-360 shrink-0"
+                        role="img"
+                        aria-label="Icono del proyecto"
+                      >
+                        {project.icon}
+                      </span>
+                      <div class="min-w-0 flex-1">
+                        <span class="text-white group-hover:text-cyan-300 font-semibold">
+                          {project.title}
+                        </span>
+                        <span class="text-gray-500 ml-2">
+                          → {project.description}
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ) : (
+                  <div
+                    class="flex items-start gap-2 opacity-60"
+                    aria-label={`${project.title}: ${project.description} (Próximamente)`}
+                  >
+                    <span class="text-gray-400 w-6 shrink-0" aria-hidden="true">
+                      {String(index + 1).padStart(2, "0")}.
+                    </span>
+                    <span
+                      class="text-yellow-360 shrink-0"
+                      role="img"
+                      aria-label="Icono del proyecto"
+                    >
+                      {project.icon}
+                    </span>
+                    <div class="min-w-0 flex-1">
+                      <span class="text-white font-semibold">
+                        {project.title}
+                      </span>
+                      <span class="text-gray-500 ml-2">
+                        → {project.description}
+                      </span>
+                      <span class="text-gray-600 ml-2">[próximamente]</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          }
+        </div>
+        <div class="mt-3 pt-2 border-t border-gray-700 text-gray-500 text-xs">
+          <span class="text-gray-400">$</span> ls -la proyectos/ | total {
+            projects.length
+          }
+        </div>
+      </div>
+    </section>
+
+    <section id="recent-posts" aria-labelledby="blog-heading" class="mt-8">
+      <h2 id="blog-heading" class="text-sm mb-6 font-semibold text-gray-500">
+        ~/blog $
+      </h2>
+      <ul class="space-y-6" role="list">
         {
           allPostsByDate.map((post) => (
-            <li class="flex flex-col gap-x-2 sm:flex-row">
+            <li class="flex flex-col gap-x-2 sm:flex-row" role="listitem">
               <PostPreview post={post} />
             </li>
           ))
         }
       </ul>
     </section>
-
-    <section aria-labelledby="projects" class="mt-2">
-      <h2
-        id="projects"
-        class="title mb-6 text-sm font-bold underline underline-offset-8 decoration-cyan-700 decoration-2"
-      >
-        🔧 Proyectos
-      </h2>
-      <div
-        class="grid sm:grid-cols-2 sm:auto-rows-fr auto-cols-fr gap-4 text-white"
-        role="list"
-      >
-        {
-          projects.map((project) => (
-            <ProjectCard
-              description={project.description}
-              icon={project.icon}
-              title={project.title}
-              link={project.link}
-            />
-          ))
-        }
-      </div>
-    </section>
-
-  <script>
-    function getRandomPhrase() {
-      const phrases = [
-        { code: 'console.log("¡Hola mundo!")', lang: 'JavaScript' },
-        { code: 'print("¡Hola mundo!")', lang: 'Python' },
-        { code: 'System.out.println("¡Hola mundo!")', lang: 'Java' },
-        { code: 'echo "¡Hola mundo!"', lang: 'PHP' },
-        { code: 'fmt.Println("¡Hola mundo!")', lang: 'Go' },
-      ];
-      return phrases[Math.floor(Math.random() * phrases.length)];
-    }
-
-    const helloWorld = document.getElementById("helloWorld");
-    if (helloWorld) {
-      const phrase = getRandomPhrase();
-      helloWorld.innerHTML = phrase.code;
-      helloWorld.setAttribute('title', `Código en ${phrase.lang}`);
-    }
-  </script>
+  </main>
 </BaseLayout>
-

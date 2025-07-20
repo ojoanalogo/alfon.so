@@ -12,21 +12,21 @@ const {
 } = Astro.props;
 ---
 
-<!DOCTYPE html>
-<html lang="es" class="bg-gray-100 text-neutral-700 selection:bg-cyan-700 selection:text-white">
+<!doctype html>
+<html
+  lang="es"
+  class="bg-background text-gray-400 selection:bg-cyan-700 selection:text-white"
+>
   <head>
     <BaseHead title={title} description={description} image={image} />
   </head>
-  <body
-    class="xl:w-[50rem] lg:w-4/6 md:w-4/5 w-full md:px-4 mx-auto font-sans"
-  >
+  <body class="xl:w-[55rem] lg:w-4/5 w-full md:px-4 mx-auto font-sans">
     <div>
       <Header navbarActiveItemID={navbarActiveItemID} />
-      <main id="main" class="p-6">
+      <main id="main" class="px-6 pb-12">
         <slot />
       </main>
     </div>
-    <noise>
-    </noise>
+    <noise> </noise>
   </body>
 </html>
