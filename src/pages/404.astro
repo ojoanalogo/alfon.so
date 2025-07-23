@@ -3,13 +3,113 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="404: Not Found">
-  <div class="text-center mt-32">
-    <h1 class="text-8xl font-bold mb-4">🤔</h1>
-    <h1 class="text-9xl font-bold mb-4 text-cyan-800">404</h1>
-    <h3 class="text-lg text-justify">
-      Al parecer hubo una confusión, la página que intentas acceder no existe al
-      menos en esta temporada.
-    </h3>
-    <a class="p-2 px-4 rounded-md bg-cyan-800 text-white mt-8" href="/">Inicio</a>
-  </div>
+  <main class="mt-6 flex justify-center">
+    <div class="w-full max-w-2xl">
+      <section aria-labelledby="error-heading">
+        <div class="font-mono text-sm p-6" role="region">
+          <!-- Content -->
+          <div class="text-xs">
+            <div class="space-y-3">
+              <!-- Error display -->
+              <div class="flex items-center gap-4 mb-6">
+                <p class="text-4xl">🤔</p>
+                <div class="flex flex-col">
+                  <h1 class="text-red-400 text-2xl font-bold">404</h1>
+                  <p class="text-gray-400 text-xs">Página no encontrada</p>
+                </div>
+              </div>
+
+              <!-- Error message -->
+              <div
+                class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4"
+              >
+                <div class="flex items-start gap-2">
+                  <span class="text-red-400 font-bold">ERROR:</span>
+                  <p class="text-gray-200 leading-relaxed">
+                    El recurso solicitado no se encontró en este servidor. La
+                    página que estás intentando acceder no existe o ha sido
+                    movida.
+                  </p>
+                </div>
+              </div>
+
+              <div class="border-b border-gray-600 w-full mb-3"></div>
+
+              <!-- Terminal-style error details -->
+              <div class="space-y-2">
+                <div class="flex">
+                  <span class="text-gray-400 w-24 shrink-0">Status</span>
+                  <span class="text-red-400 font-bold">404 No encontrado</span>
+                </div>
+
+                <div class="flex">
+                  <span class="text-gray-400 w-24 shrink-0">Solicitud</span>
+                  <span class="text-white break-all" id="current-path">
+                    Cargando...
+                  </span>
+                </div>
+
+                <div class="flex">
+                  <span class="text-gray-400 w-24 shrink-0">Servidor</span>
+                  <span class="text-white">terminus v1.0</span>
+                </div>
+
+                <div class="flex">
+                  <span class="text-gray-400 w-24 shrink-0">Fecha y hora</span>
+                  <span class="text-white" id="error-time"> Cargando... </span>
+                </div>
+              </div>
+
+              <div class="border-b border-gray-600 w-full my-3"></div>
+
+              <!-- Suggestions -->
+              <div class="space-y-2">
+                <p class="text-gray-400 text-xs mb-2">Acciones sugeridas:</p>
+                <div class="space-y-1 pl-4">
+                  <p class="text-gray-300">
+                    <span class="text-gray-500">01.</span> Revisa la URL por errores
+                    de ortografía
+                  </p>
+                  <p class="text-gray-300">
+                    <span class="text-gray-500">02.</span> Regresa a la
+                    <a
+                      href="/"
+                      class="text-cyan-400 hover:text-cyan-300 underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                    >
+                      página principal
+                    </a>
+                  </p>
+                  <p class="text-gray-300">
+                    <span class="text-gray-500">03.</span> Explora las
+                    <a
+                      href="/blog"
+                      class="text-cyan-400 hover:text-cyan-300 underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                    >
+                      publicaciones del blog
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // Display current path and timestamp
+    document.addEventListener("DOMContentLoaded", () => {
+      const pathElement = document.getElementById("current-path");
+      const timeElement = document.getElementById("error-time");
+
+      if (pathElement) {
+        pathElement.textContent = window.location.pathname;
+      }
+
+      if (timeElement) {
+        timeElement.textContent = new Date().toISOString();
+      }
+    });
+  </script>
 </BaseLayout>

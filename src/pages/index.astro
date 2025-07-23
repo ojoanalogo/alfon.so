@@ -1,7 +1,5 @@
 ---
-import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
-import me from "../assets/me-2.jpg";
 import PostPreview from "../components/PostPreview.astro";
 import SocialMediaIcons from "../components/SocialMediaIcons.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -66,20 +64,16 @@ const projects: Array<{
             <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
             <div class="w-3 h-3 rounded-full bg-green-500"></div>
           </div>
-          <span class="text-gray-400 text-xs ml-2">terminal - ssh guest@alfon.so</span>
+          <span class="text-gray-400 text-xs ml-2"
+            >terminal - ssh guest@alfon.so</span
+          >
         </div>
 
         <!-- Content -->
         <div class="text-xs">
           <div class="space-y-2">
             <div class="flex items-center gap-4 mb-4">
-              <Image
-                src={me}
-                width={500}
-                height={500}
-                alt="Foto de perfil"
-                class="w-12 h-12 rounded-full"
-              />
+              <p class="text-3xl">🌱</p>
               <div class="flex flex-col">
                 <h1 class="text-primary text-xl">
                   Alfonso <span class="text-gray-200">Reyes</span>
