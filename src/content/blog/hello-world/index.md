@@ -11,6 +11,4 @@ heroImage: bluemarble.jpg
 
 ### Por mis barbas
 
-
-
 Publicado desde el CMS interno

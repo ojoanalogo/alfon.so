@@ -280,17 +280,21 @@ const projects: Array<{
       </div>
     </section>
 
-    <section id="blog" class="mt-8">
-      <h2 class="text-sm mb-6 font-semibold text-gray-500">✍️ últimos posts</h2>
-      <ul class="space-y-6" role="list">
-        {
-          allPostsByDate.map((post) => (
-            <li class="flex flex-col gap-x-2 sm:flex-row" role="listitem">
-              <PostPreview post={post} />
-            </li>
-          ))
-        }
-      </ul>
-    </section>
+    {
+      allPosts.length > 0 && (
+        <section id="blog" class="mt-8">
+          <h2 class="text-sm mb-6 font-semibold text-gray-500">
+            ✍️ últimos posts
+          </h2>
+          <ul class="space-y-6" role="list">
+            {allPostsByDate.map((post) => (
+              <li class="flex flex-col gap-x-2 sm:flex-row" role="listitem">
+                <PostPreview post={post} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
   </main>
 </BaseLayout>
