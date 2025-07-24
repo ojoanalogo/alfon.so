@@ -35,10 +35,23 @@ const projects: Array<{
     icon: "💸",
   },
   {
+    title: "Terminus",
+    description:
+      "Una plantilla de Astro para sitios web personales, inspirada en una terminal de comandos.",
+    link: "https://github.com/ojoanalogo/terminus-astro-template",
+    icon: "💻",
+  },
+  {
     title: "Hilitos",
     description: "Marketplaces para pequeños emprendedores, como Etsy.",
     link: "https://hilitos.app",
     icon: "🧵",
+  },
+  {
+    title: "dotfiles",
+    description: "Dale un vistazo a la configuración de mi equipo personal.",
+    link: "https://github.com/ojoanalogo/dotfiles",
+    icon: "🔧",
   },
   {
     title: "Wawa",
@@ -215,7 +228,7 @@ const projects: Array<{
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="block focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900 rounded"
+                    class="block focus:outline-none focus:ring-2 focus:ring-cyan-800 focus:ring-offset-2 focus:ring-offset-gray-900 rounded"
                     aria-label={`Visitar ${project.title}: ${project.description}`}
                   >
                     <div class="flex items-start gap-2">
@@ -233,7 +246,7 @@ const projects: Array<{
                         {project.icon}
                       </span>
                       <div class="min-w-0 flex-1">
-                        <span class="text-white group-hover:text-cyan-300 font-semibold">
+                        <span class="text-white group-hover:text-cyan-500 font-semibold">
                           {project.title}
                         </span>
                         <span class="text-gray-500 ml-2">
