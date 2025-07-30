@@ -1,7 +1,7 @@
 ---
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
-import { ClientRouter } from 'astro:transitions';
+import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 
 export interface Props {
@@ -20,13 +20,13 @@ const isProd = import.meta.env.PROD;
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
 
-<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#15191e">
-<meta name="msapplication-TileColor" content="#603cba">
-<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#15191e" />
+<meta name="msapplication-TileColor" content="#603cba" />
+<meta name="theme-color" content="#ffffff" />
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
@@ -46,10 +46,11 @@ const isProd = import.meta.env.PROD;
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
+
 {
   // render only on production
   isProd && (
-    <script
+    <script is:inline
       async
       src="https://analytics.operations.molecula.digital/script.js"
       data-website-id="1b018a85-d69c-4ff9-a716-9bf7ae546331"
@@ -59,23 +60,23 @@ const isProd = import.meta.env.PROD;
 }
 
 <script>
-  function onKonamiCode(cb: { (): void; (): any; }) {
-  var input = '';
-  var key = '38384040373937396665';
-  document.addEventListener('keydown', function (e) {
-    input += ("" + e.keyCode);
-    if (input === key) {
-      return cb();
-    }
-    if (!key.indexOf(input)) return;
-    input = ("" + e.keyCode);
-  });
-}
+  function onKonamiCode(cb: { (): void; (): any }) {
+    var input = "";
+    var key = "38384040373937396665";
+    document.addEventListener("keydown", function (e) {
+      input += "" + e.keyCode;
+      if (input === key) {
+        return cb();
+      }
+      if (!key.indexOf(input)) return;
+      input = "" + e.keyCode;
+    });
+  }
 
-onKonamiCode(function () {
-  // REDIRECT TO HAPPY PATH
-  window.location.href = '/happy';
-})
+  onKonamiCode(function () {
+    // REDIRECT TO HAPPY PATH
+    window.location.href = "/happy";
+  });
 </script>
 
 <ClientRouter />
