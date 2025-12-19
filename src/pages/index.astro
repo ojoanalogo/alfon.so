@@ -67,7 +67,7 @@ const projects: Array<{
   <main>
     <section id="about" class="mt-6" aria-labelledby="about-heading">
       <div
-        class="bg-black/30 border border-gray-600 rounded-lg font-mono text-sm p-6"
+        class="bg-black/30 border border-gray-600/40 rounded-lg font-mono text-sm p-6"
         role="region"
       >
         <!-- Terminal header -->
@@ -109,17 +109,17 @@ const projects: Array<{
 
             <div class="flex">
               <span class="text-gray-400 w-36 shrink-0">ubicación</span>
-              <span class="text-white">méxico 🌮🇲🇽</span>
+              <span class="text-gray-400">méxico 🌮🇲🇽</span>
             </div>
 
             <div class="flex">
               <span class="text-gray-400 w-36 shrink-0">trabajo</span>
-              <span class="text-white">
+              <span class="text-gray-400">
                 ingeniero backend @
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-cyan-600 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  class="text-emerald-300 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
                   href="https://monopolio.com.mx"
                   aria-label="Visitar sitio web monopolio.com.mx"
                   >monopolio.com.mx</a
@@ -129,10 +129,10 @@ const projects: Array<{
 
             <div class="flex">
               <span class="text-gray-400 w-36 shrink-0">hobby</span>
-              <span class="text-white">
+              <span class="text-gray-400">
                 fotografía @
                 <a
-                  class="text-cyan-600 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  class="text-emerald-300 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
                   target="_blank"
                   rel="noopener noreferrer"
                   href="https://ojoanalogo.com"
@@ -144,11 +144,11 @@ const projects: Array<{
 
             <div class="flex items-center">
               <span class="text-gray-400 w-36 shrink-0">proyecto actual</span>
-              <span class="text-white">
+              <span class="text-gray-400">
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-cyan-600 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  class="text-emerald-300 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
                   href="https://sofinanzas.mx"
                   aria-label="Visitar SofIA - Asistente de finanzas con IA"
                   >sofia</a
@@ -159,7 +159,7 @@ const projects: Array<{
 
             <div class="flex">
               <span class="text-gray-400 w-36 shrink-0">intereses</span>
-              <span class="text-white"
+              <span class="text-gray-400"
                 >programación, startups, ciencia ficción, películas, fotografía,
                 viajes</span
               >
@@ -167,9 +167,9 @@ const projects: Array<{
 
             <div class="flex">
               <span class="text-gray-400 w-36 shrink-0">contacto</span>
-              <span class="text-white">
+              <span class="text-gray-400">
                 <a
-                  class="text-cyan-600 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  class="text-emerald-300 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-gray-900"
                   href="mailto:hola@alfon.so"
                   aria-label="Enviar email a hola@alfon.so">hola@alfon.so</a
                 >
@@ -178,7 +178,7 @@ const projects: Array<{
 
             <div class="flex items-center">
               <span class="text-gray-400 w-36 shrink-0">social</span>
-              <span class="text-white flex-1 min-w-0">
+              <span class="text-gray-400 flex-1 min-w-0">
                 <SocialMediaIcons />
               </span>
             </div>
@@ -190,7 +190,7 @@ const projects: Array<{
                   {
                     Object.keys(techStack).map((lang) => (
                       <span
-                        class="text-gray-400 hover:text-cyan-600 transition-colors"
+                        class="text-gray-400 hover:text-emerald-300 transition-colors"
                         title={techStack[lang]}
                       >
                         {lang}
@@ -211,7 +211,7 @@ const projects: Array<{
 
     <section id="projects" class="mt-2">
       <div
-        class="bg-black/20 border border-gray-700 rounded font-mono text-sm text-gray-300 p-6"
+        class="bg-black/20 border border-gray-600/40 rounded font-mono text-sm text-gray-300 p-6"
         role="region"
         aria-label="Showcase de proyectos"
       >
@@ -246,7 +246,7 @@ const projects: Array<{
                         {project.icon}
                       </span>
                       <div class="min-w-0 flex-1">
-                        <span class="text-white group-hover:text-cyan-500 font-semibold">
+                        <span class="text-gray-400 group-hover:text-cyan-500 font-semibold">
                           {project.title}
                         </span>
                         <span class="text-gray-500 ml-2">
@@ -271,7 +271,7 @@ const projects: Array<{
                       {project.icon}
                     </span>
                     <div class="min-w-0 flex-1">
-                      <span class="text-white font-semibold">
+                      <span class="text-gray-400 font-semibold">
                         {project.title}
                       </span>
                       <span class="text-gray-500 ml-2">
