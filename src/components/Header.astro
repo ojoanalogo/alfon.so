@@ -1,6 +1,6 @@
 ---
 const { navbarActiveItemID } = Astro.props;
-const activeClasses = ["text-white", "opacity-100"];
+const activeClasses = ["text-emerald-500", "opacity-100"];
 
 const links: Array<{
   title: string;
@@ -30,18 +30,18 @@ const links: Array<{
 ];
 ---
 
-<header id="main-header" class="mb-8 px-6 mt-6">
+<header id="main-header" class="px-2 md:px-6 pt-4 mb-4">
   <nav
     id="navigation-menu"
     aria-label="Main menu"
-    class="flex flex-col lg:flex-row justify-between items-start lg:items-center"
+    class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 max-w-[55rem] mx-auto"
   >
-    <span class="mb-4 lg:mb-0">
-      <a href="/" target="_self" class="text-white font-medium text-md">
+    <span>
+      <a href="/" target="_self" class="text-white font-medium text-lg hover:text-emerald-600 transition-colors duration-200">
         alfon.so
       </a>
     </span>
-    <span class="flex flex-wrap gap-6 text-sm">
+    <span class="flex flex-wrap gap-3 sm:gap-4 text-sm">
       {
         links.map((link) => {
           return (
@@ -49,7 +49,7 @@ const links: Array<{
               href={link.redirect ? link.redirect : link.url}
               target={link.redirect ? "_blank" : "_self"}
               id={link.id}
-              class="text-gray-400 opacity-70 hover:opacity-100 transition-opacity duration-200 border-zinc-800 rounded-md border px-2 py-1"
+              class="text-gray-300 hover:text-emerald-500 transition-all duration-200"
             >
               {link.title}
             </a>

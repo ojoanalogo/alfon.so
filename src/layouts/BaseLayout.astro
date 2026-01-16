@@ -15,12 +15,19 @@ const {
 <!doctype html>
 <html
   lang="es"
-  class="bg-background text-gray-400 selection:bg-emerald-900 selection:text-white"
+  class="bg-zinc-950 text-gray-400 selection:bg-emerald-900 selection:text-white"
 >
   <head>
     <BaseHead title={title} description={description} image={image} />
   </head>
-  <body class="xl:w-[55rem] lg:w-4/5 w-full md:px-4 mx-auto font-sans">
+  <body class="xl:w-[55rem] lg:w-4/5 w-full sm:px-2 md:px-4 mx-auto font-sans relative">
+    <!-- Gradient blobs background -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+
     <div>
       <Header navbarActiveItemID={navbarActiveItemID} />
       <main id="main" class="px-2 md:px-6 pb-12">
@@ -30,3 +37,76 @@ const {
     <noise> </noise>
   </body>
 </html>
+
+<script>
+  // Subtle parallax effect on blobs based on scroll
+  const blobs = document.querySelectorAll('.blob');
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        blobs.forEach((blob, index) => {
+          const speed = (index + 1) * 0.02;
+          const yOffset = scrollY * speed;
+          (blob as HTMLElement).style.transform = `translateY(${yOffset}px)`;
+        });
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+</script>
+
+<style>
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .blob-1 {
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+    top: -100px;
+    right: -100px;
+    animation-delay: 0s;
+  }
+
+  .blob-2 {
+    width: 350px;
+    height: 350px;
+    background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+    bottom: 20%;
+    left: -150px;
+    animation-delay: -7s;
+  }
+
+  .blob-3 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, #6ee7b7 0%, #34d399 50%, #10b981 100%);
+    bottom: -100px;
+    right: 20%;
+    animation-delay: -14s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    25% {
+      transform: translate(20px, -30px) scale(1.05);
+    }
+    50% {
+      transform: translate(-20px, 20px) scale(0.95);
+    }
+    75% {
+      transform: translate(30px, 10px) scale(1.02);
+    }
+  }
+</style>

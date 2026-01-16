@@ -67,7 +67,7 @@ const projects: Array<{
   <main>
     <section id="about" class="mt-6" aria-labelledby="about-heading">
       <div
-        class="bg-black/30 border border-gray-600/40 rounded-lg font-mono text-sm p-6"
+        class="bg-black/30 backdrop-blur-md border border-gray-600/40 rounded-lg font-mono text-sm p-4 sm:p-6 transition-all duration-300 hover:border-gray-500/60 hover:shadow-lg hover:shadow-black/20"
         role="region"
       >
         <!-- Terminal header -->
@@ -75,26 +75,23 @@ const projects: Array<{
           <div class="flex gap-2" role="img">
             <div class="w-3 h-3 rounded-full bg-red-500"></div>
             <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
           </div>
-          <span class="text-gray-400 text-xs ml-2"
+          <span class="text-gray-400 text-xs ml-2 hidden sm:inline"
             >terminal - ssh guest@alfon.so</span
           >
         </div>
 
         <!-- Content -->
         <div class="text-xs">
-          <div class="space-y-2">
-            <div class="flex items-center gap-4 mb-4">
-              <p class="text-3xl">🌱</p>
-              <div class="flex flex-col">
-                <h1 class="text-primary text-xl">
-                  alfonso <span class="text-gray-200">reyes</span>
-                </h1>
-                <p class="text-gray-400 text-xs">
-                  ingeniero backend / fotógrafo
-                </p>
-              </div>
+          <div class="space-y-4 sm:space-y-2">
+            <div class="flex flex-col gap-1 mb-4">
+              <h1 class="text-xl">
+                hola 👋 soy <span class="text-primary">alfonso</span>
+              </h1>
+              <p class="text-gray-400 text-xs">
+                ingeniero backend / fotógrafo
+              </p>
             </div>
 
             <!-- Personal paragraph -->
@@ -107,19 +104,19 @@ const projects: Array<{
 
             <div class="border-b border-gray-600 w-full mb-2"></div>
 
-            <div class="flex">
-              <span class="text-gray-400 w-36 shrink-0">ubicación</span>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-0">
+              <span class="text-gray-500 sm:w-36 shrink-0">ubicación</span>
               <span class="text-gray-400">méxico 🌮🇲🇽</span>
             </div>
 
-            <div class="flex">
-              <span class="text-gray-400 w-36 shrink-0">trabajo</span>
+            <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
+              <span class="text-gray-500 sm:w-36 shrink-0">trabajo</span>
               <span class="text-gray-400">
                 ingeniero backend @
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-emerald-300 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  class="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900"
                   href="https://monopolio.com.mx"
                   aria-label="Visitar sitio web monopolio.com.mx"
                   >monopolio.com.mx</a
@@ -127,12 +124,12 @@ const projects: Array<{
               </span>
             </div>
 
-            <div class="flex">
-              <span class="text-gray-400 w-36 shrink-0">hobby</span>
+            <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
+              <span class="text-gray-500 sm:w-36 shrink-0">hobby</span>
               <span class="text-gray-400">
                 fotografía @
                 <a
-                  class="text-emerald-300 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  class="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900"
                   target="_blank"
                   rel="noopener noreferrer"
                   href="https://ojoanalogo.com"
@@ -142,13 +139,13 @@ const projects: Array<{
               </span>
             </div>
 
-            <div class="flex items-center">
-              <span class="text-gray-400 w-36 shrink-0">proyecto actual</span>
+            <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
+              <span class="text-gray-500 sm:w-36 shrink-0">proyecto actual</span>
               <span class="text-gray-400">
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-emerald-300 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  class="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900"
                   href="https://sofinanzas.mx"
                   aria-label="Visitar SofIA - Asistente de finanzas con IA"
                   >sofia</a
@@ -157,40 +154,40 @@ const projects: Array<{
               </span>
             </div>
 
-            <div class="flex">
-              <span class="text-gray-400 w-36 shrink-0">intereses</span>
+            <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
+              <span class="text-gray-500 sm:w-36 shrink-0">intereses</span>
               <span class="text-gray-400"
                 >programación, startups, ciencia ficción, películas, fotografía,
                 viajes</span
               >
             </div>
 
-            <div class="flex">
-              <span class="text-gray-400 w-36 shrink-0">contacto</span>
+            <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
+              <span class="text-gray-500 sm:w-36 shrink-0">contacto</span>
               <span class="text-gray-400">
                 <a
-                  class="text-emerald-300 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  class="text-emerald-400 hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900"
                   href="mailto:hola@alfon.so"
                   aria-label="Enviar email a hola@alfon.so">hola@alfon.so</a
                 >
               </span>
             </div>
 
-            <div class="flex items-center">
-              <span class="text-gray-400 w-36 shrink-0">social</span>
+            <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
+              <span class="text-gray-500 sm:w-36 shrink-0">social</span>
               <span class="text-gray-400 flex-1 min-w-0">
                 <SocialMediaIcons />
               </span>
             </div>
 
             <div class="pt-2">
-              <div class="flex items-center">
-                <span class="text-gray-400 w-36 shrink-0">tech</span>
+              <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
+                <span class="text-gray-500 sm:w-36 shrink-0">tech</span>
                 <div class="flex flex-wrap gap-2" role="list" aria-label="Tech">
                   {
                     Object.keys(techStack).map((lang) => (
                       <span
-                        class="text-gray-400 hover:text-emerald-300 transition-colors"
+                        class="text-gray-400 hover:text-emerald-400 transition-colors"
                         title={techStack[lang]}
                       >
                         {lang}
@@ -211,7 +208,7 @@ const projects: Array<{
 
     <section id="projects" class="mt-2">
       <div
-        class="bg-black/20 border border-gray-600/40 rounded font-mono text-sm text-gray-300 p-6"
+        class="bg-black/20 backdrop-blur-md border border-gray-600/40 rounded-lg font-mono text-sm text-gray-300 p-4 sm:p-6 transition-all duration-300 hover:border-gray-500/60 hover:shadow-lg hover:shadow-black/20"
         role="region"
         aria-label="Showcase de proyectos"
       >
@@ -246,10 +243,10 @@ const projects: Array<{
                         {project.icon}
                       </span>
                       <div class="min-w-0 flex-1">
-                        <span class="text-gray-400 group-hover:text-emerald-500 font-semibold">
+                        <span class="text-gray-400 group-hover:text-emerald-500 font-semibold block sm:inline">
                           {project.title}
                         </span>
-                        <span class="text-gray-500 ml-2">
+                        <span class="text-gray-500 sm:ml-2 block sm:inline mt-1 sm:mt-0">
                           → {project.description}
                         </span>
                       </div>
@@ -271,13 +268,13 @@ const projects: Array<{
                       {project.icon}
                     </span>
                     <div class="min-w-0 flex-1">
-                      <span class="text-gray-400 font-semibold">
+                      <span class="text-gray-400 font-semibold block sm:inline">
                         {project.title}
                       </span>
-                      <span class="text-gray-500 ml-2">
+                      <span class="text-gray-500 sm:ml-2 block sm:inline mt-1 sm:mt-0">
                         → {project.description}
                       </span>
-                      <span class="text-gray-600 ml-2">[próximamente]</span>
+                      <span class="text-gray-600 sm:ml-2 block sm:inline">[próximamente]</span>
                     </div>
                   </div>
                 )}
