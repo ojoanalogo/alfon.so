@@ -1,6 +1,6 @@
 ---
 const { navbarActiveItemID } = Astro.props;
-const activeClasses = ["text-emerald-500", "opacity-100"];
+const activeClasses = ["text-teal-500", "opacity-100"];
 
 const links: Array<{
   title: string;
@@ -37,7 +37,7 @@ const links: Array<{
     class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 max-w-[55rem] mx-auto"
   >
     <span>
-      <a href="/" target="_self" class="text-white font-medium text-lg hover:text-emerald-600 transition-colors duration-200">
+      <a href="/" target="_self" class="text-white font-medium text-lg hover:text-teal-600 transition-colors duration-200">
         alfon.so
       </a>
     </span>
@@ -49,7 +49,7 @@ const links: Array<{
               href={link.redirect ? link.redirect : link.url}
               target={link.redirect ? "_blank" : "_self"}
               id={link.id}
-              class="text-gray-300 hover:text-emerald-500 transition-all duration-200"
+              class="text-gray-300 hover:text-teal-500 transition-all duration-200"
             >
               {link.title}
             </a>

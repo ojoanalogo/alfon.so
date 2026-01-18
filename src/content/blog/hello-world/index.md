@@ -3,7 +3,7 @@ publishDate: 2023-07-29
 title: Hola mundo
 description: Primer señal de vida
 published: false
-heroImage: bluemarble.jpg
+heroImage: tealmarble.jpg
 ---
 # Aquí habrá algo interesante
 
