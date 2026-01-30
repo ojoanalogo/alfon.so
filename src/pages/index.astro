@@ -14,9 +14,11 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
 const techStack: Record<string, string> = {
   js: "JavaScript",
   ts: "TypeScript",
+  "node.js": "Node",
+  "astro": "This site is built on astro",
   python: "Python",
   sql: "SQL",
-  gpt: "LLMs, GPT-3/4, Claude, etc.",
+  "claude-code": "Best tool ever",
   "next.js": "Next.js",
   aws: "AWS",
   gcp: "GCP",
@@ -69,7 +71,7 @@ const projects: Array<{
   <main>
     <section id="about" class="mt-6" aria-labelledby="about-heading">
       <div
-        class="bg-black/30 backdrop-blur-md border border-gray-600/40 rounded-lg font-mono text-sm p-4 sm:p-6 transition-all duration-300 hover:border-gray-500/60 hover:shadow-lg hover:shadow-black/20"
+        class="bg-black/10 backdrop-blur-lg border border-gray-600/40 rounded-lg font-mono text-sm p-4 sm:p-6 transition-all duration-300 hover:border-gray-400/30 hover:shadow-lg hover:shadow-black/20"
         role="region"
       >
         <!-- Terminal header -->
@@ -88,15 +90,15 @@ const projects: Array<{
         <div class="text-xs">
           <div class="space-y-4 sm:space-y-2">
             <div class="flex items-center gap-3 mb-4">
-              <Image
+<!--               <Image
                 src={me}
                 width={180}
                 alt="Avatar de Alfonso"
-                class="w-16 h-16 rounded-full hover:scale-105 transition-transform drop-shadow-xl border-2 border-cyan-700 shrink-0"
-              />
+                class="w-16 h-16 rounded-full hover:scale-105 transition-transform drop-shadow-xl shrink-0"
+              /> -->
               <div class="flex flex-col gap-1">
                 <h1 class="text-xl">
-                  hola 👋 soy <span class="text-primary font-medium">alfonso</span>
+                  👋 hola soy <span class="text-primary font-medium">alfonso reyes</span>
                 </h1>
                 <p class="text-gray-400 text-xs">
                   ingeniero backend / fotógrafo
@@ -192,8 +194,8 @@ const projects: Array<{
 
             <div class="pt-2">
               <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
-                <span class="text-gray-500 sm:w-36 shrink-0">tech</span>
-                <div class="flex flex-wrap gap-2" role="list" aria-label="Tech">
+                <span class="text-gray-500 sm:w-36 shrink-0">tech stack</span>
+                <div class="flex flex-wrap gap-2" role="list" aria-label="Tech stack">
                   {
                     Object.keys(techStack).map((lang) => (
                       <span
@@ -218,7 +220,7 @@ const projects: Array<{
 
     <section id="projects" class="mt-2">
       <div
-        class="bg-black/20 backdrop-blur-md border border-gray-600/40 rounded-lg font-mono text-sm text-gray-300 p-4 sm:p-6 transition-all duration-300 hover:border-gray-500/60 hover:shadow-lg hover:shadow-black/20"
+        class="bg-black/10 backdrop-blur-lg border border-gray-600/40 rounded-lg font-mono text-sm text-gray-300 p-4 sm:p-6 transition-all duration-300 hover:border-gray-400/30 hover:shadow-lg hover:shadow-black/20"
         role="region"
         aria-label="Showcase de proyectos"
       >
@@ -227,7 +229,7 @@ const projects: Array<{
           {
             projects.map((project, index) => (
               <div
-                class="group hover:bg-gray-800/50 p-1 rounded transition-colors"
+                class="group hover:bg-gray-900/40 p-1 rounded transition-colors"
                 role="listitem"
               >
                 {project.link ? (
@@ -302,17 +304,24 @@ const projects: Array<{
 
     {
       allPosts.length > 0 && (
-        <section id="blog" class="mt-8">
-          <h2 class="text-sm mb-6 font-semibold text-gray-500">
-            ✍️ últimos posts
-          </h2>
-          <ul class="space-y-6" role="list">
-            {allPostsByDate.map((post) => (
-              <li class="flex flex-col gap-x-2 sm:flex-row" role="listitem">
-                <PostPreview post={post} />
-              </li>
-            ))}
-          </ul>
+        <section id="blog" class="mt-2">
+          <div
+            class="bg-black/10 backdrop-blur-lg border border-gray-600/40 rounded-lg font-mono text-sm p-4 sm:p-6 transition-all duration-300 hover:border-gray-400/30 hover:shadow-lg hover:shadow-black/20"
+          >
+            <h2 class="text-sm mb-4 font-bold text-gray-500">
+              ✍️ últimos posts
+            </h2>
+            <ul class="space-y-4 sm:space-y-2" role="list">
+              {allPostsByDate.map((post) => (
+                <li class="flex flex-col gap-x-2 sm:flex-row" role="listitem">
+                  <PostPreview post={post} />
+                </li>
+              ))}
+            </ul>
+            <div class="mt-3 pt-2 border-t border-gray-700 text-gray-500 text-xs">
+              <span class="text-gray-400">$</span> tail -n {allPostsByDate.length} blog/
+            </div>
+          </div>
         </section>
       )
     }
