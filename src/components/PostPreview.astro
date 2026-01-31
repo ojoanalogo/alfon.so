@@ -18,7 +18,7 @@ const postDate = getFormattedDate(date);
 
 <div class="flex flex-row gap-2 items-center text-sm">
   <time datetime={datetime} class="min-w-[120px]">{postDate}</time>
-  <a class="hover:underline hover:text-teal-700" href={`/blog/${post.slug}/`}>
+  <a class="hover:underline hover:text-accent" href={`/blog/${post.slug}/`}>
     {post.data.title}
   </a>
 </div>

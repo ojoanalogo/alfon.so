@@ -37,11 +37,11 @@ const links: Array<{
     class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 max-w-[55rem] mx-auto"
   >
     <span>
-      <a href="/" target="_self" class="text-white font-medium text-lg hover:text-teal-600 transition-colors duration-200">
+      <a href="/" target="_self" class="text-primary font-medium text-lg hover:text-accent transition-colors duration-200">
         alfon.so
       </a>
     </span>
-    <span class="flex flex-wrap gap-3 sm:gap-4 text-sm">
+    <span class="flex flex-wrap items-center gap-3 sm:gap-4 text-sm">
       {
         links.map((link) => {
           return (
@@ -49,13 +49,50 @@ const links: Array<{
               href={link.redirect ? link.redirect : link.url}
               target={link.redirect ? "_blank" : "_self"}
               id={link.id}
-              class="text-gray-300 hover:text-teal-500 transition-all duration-200"
+              class="text-secondary hover:text-accent transition-all duration-200"
             >
               {link.title}
             </a>
           );
         })
       }
+      <button
+        id="theme-toggle"
+        type="button"
+        aria-label="Toggle dark mode"
+        class="p-1.5 rounded-md text-secondary hover:text-accent hover:bg-surface transition-all duration-200"
+      >
+        <svg
+          id="sun-icon"
+          class="w-4 h-4 hidden"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+          ></path>
+        </svg>
+        <svg
+          id="moon-icon"
+          class="w-4 h-4 hidden"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          ></path>
+        </svg>
+      </button>
     </span>
   </nav>
 </header>
@@ -70,5 +107,41 @@ const links: Array<{
 
   activeClasses.forEach((activeClass) => {
     activeItemElement.classList.add(activeClass);
+  });
+</script>
+
+<script>
+  function updateThemeIcons() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+
+    if (isDark) {
+      sunIcon?.classList.remove('hidden');
+      moonIcon?.classList.add('hidden');
+    } else {
+      sunIcon?.classList.add('hidden');
+      moonIcon?.classList.remove('hidden');
+    }
+  }
+
+  function toggleTheme() {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateThemeIcons();
+  }
+
+  document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+  updateThemeIcons();
+
+  document.addEventListener('astro:after-swap', () => {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+    updateThemeIcons();
   });
 </script>

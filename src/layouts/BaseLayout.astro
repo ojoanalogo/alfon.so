@@ -1,7 +1,6 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
-import MatrixBackground from "../components/MatrixBackground.astro";
 
 import { SITE_DESCRIPTION, SITE_TITLE } from "../config";
 
@@ -16,20 +15,21 @@ const {
 <!doctype html>
 <html
   lang="es"
-  class="bg-zinc-950 text-gray-400 selection:bg-teal-900 selection:text-white"
+  class="bg-background text-secondary selection:bg-teal-900 selection:text-white"
 >
   <head>
     <BaseHead title={title} description={description} image={image} />
+    <script is:inline>
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body class="xl:w-[55rem] lg:w-4/5 w-full sm:px-2 md:px-4 mx-auto font-sans relative">
-    <MatrixBackground
-      highlightColor="rgba(20, 184, 166, 0.25)"
-      boxSize={40}
-      movementSpeed={0.1}
-      edgeColor="rgba(63, 63, 70, 0.3)"
-      movementDirection="up-left"
-    />
-
+    <slot name="background" />
     <div>
       <Header navbarActiveItemID={navbarActiveItemID} />
       <main id="main" class="px-2 md:px-6 pb-12">
