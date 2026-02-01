@@ -1,8 +1,8 @@
 /* Theme CSS Custom Properties */
 :root {
   /* Light theme (default) */
-  --color-background: #f5f5f5;
-  --color-surface: #ffffff;
+  --color-background: #f7f4ef;
+  --color-surface: #fffdf8;
   --color-primary: #18181b;
   --color-secondary: #3f3f46;
   --color-accent: #0d9488;

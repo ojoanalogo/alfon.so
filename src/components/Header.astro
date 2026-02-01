@@ -1,6 +1,6 @@
 ---
 const { navbarActiveItemID } = Astro.props;
-const activeClasses = ["text-teal-500", "opacity-100"];
+const activeClasses = ["text-accent", "font-semibold"];
 
 const links: Array<{
   title: string;
@@ -31,70 +31,76 @@ const links: Array<{
 ---
 
 <header id="main-header" class="px-2 md:px-6 pt-4 mb-4">
-  <nav
-    id="navigation-menu"
-    aria-label="Main menu"
-    class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 max-w-[55rem] mx-auto"
-  >
-    <span>
-      <a href="/" target="_self" class="text-primary font-medium text-lg hover:text-accent transition-colors duration-200">
-        alfon.so
-      </a>
-    </span>
-    <span class="flex flex-wrap items-center gap-3 sm:gap-4 text-sm">
-      {
-        links.map((link) => {
-          return (
-            <a
-              href={link.redirect ? link.redirect : link.url}
-              target={link.redirect ? "_blank" : "_self"}
-              id={link.id}
-              class="text-secondary hover:text-accent transition-all duration-200"
-            >
-              {link.title}
-            </a>
-          );
-        })
-      }
-      <button
-        id="theme-toggle"
-        type="button"
-        aria-label="Toggle dark mode"
-        class="p-1.5 rounded-md text-secondary hover:text-accent hover:bg-surface transition-all duration-200"
+  <div class="max-w-[55rem] mx-auto">
+    <div class="bg-white/50 dark:bg-black/10 backdrop-blur-lg border border-gray-300/40 dark:border-gray-600/40 rounded-lg font-mono text-sm transition-all duration-300 hover:border-gray-400/50 dark:hover:border-gray-400/30">
+      <nav
+        id="navigation-menu"
+        aria-label="Main menu"
+        class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 px-4 py-3"
       >
-        <svg
-          id="sun-icon"
-          class="w-4 h-4 hidden"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-          ></path>
-        </svg>
-        <svg
-          id="moon-icon"
-          class="w-4 h-4 hidden"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          ></path>
-        </svg>
-      </button>
-    </span>
-  </nav>
+        <div class="flex items-center gap-2">
+          <span class="text-secondary">$</span>
+          <span class="text-muted">./</span>
+          <a href="/" target="_self" class="text-primary font-medium hover:text-accent transition-colors duration-200">
+            alfon.so
+          </a>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
+          {
+            links.map((link) => {
+              return (
+                <a
+                  href={link.redirect ? link.redirect : link.url}
+                  target={link.redirect ? "_blank" : "_self"}
+                  id={link.id}
+                  class="text-secondary hover:text-accent transition-all duration-200"
+                >
+                  {link.title}
+                </a>
+              );
+            })
+          }
+          <button
+            id="theme-toggle"
+            type="button"
+            aria-label="Toggle dark mode"
+            class="p-1 text-secondary hover:text-accent transition-all duration-200"
+          >
+            <svg
+              id="sun-icon"
+              class="w-4 h-4 hidden"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              ></path>
+            </svg>
+            <svg
+              id="moon-icon"
+              class="w-4 h-4 hidden"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </div>
 </header>
 
 <script
