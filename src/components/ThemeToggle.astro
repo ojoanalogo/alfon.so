@@ -1,4 +1,6 @@
 ---
+import "../styles/tooltip.css";
+
 interface Props {
   class?: string;
 }
@@ -9,7 +11,8 @@ const { class: className = "" } = Astro.props;
 <button
   type="button"
   aria-label="Toggle dark mode"
-  class:list={["theme-toggle p-1 text-secondary hover:text-accent transition-all duration-200", className]}
+  data-tooltip="Cambiar tema"
+  class:list={["theme-toggle tooltip p-1 text-secondary hover:text-accent transition-all duration-200", className]}
 >
   <svg
     class="sun-icon w-4 h-4 hidden"

@@ -6,7 +6,8 @@ html {
 :root {
   /* Light theme (default) */
   --color-background: #f7f4ef;
-  --color-surface: #ffrgb(9, 9, 8) --color-primary: #18181b;
+  --color-surface: #fffaf5;
+  --color-primary: #18181b;
   --color-secondary: #3f3f46;
   --color-accent: #d5601d;
   --color-muted: #71717a;

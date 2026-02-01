@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
+import "../styles/tooltip.css";
 
 const { navbarActiveItemID } = Astro.props;
 const activeClasses = ["text-accent", "font-semibold"];
@@ -10,31 +11,36 @@ const links: Array<{
   url?: string;
   new?: boolean;
   redirect?: string;
+  tooltip?: string;
 }> = [
   {
     title: "index.html",
     id: "home",
     url: "/",
+    tooltip: "Inicio",
   },
   {
     title: "blog.sql",
     id: "blog",
     url: "/blog",
+    tooltip: "Mis posts",
   },
   {
     title: "photos.jpg",
     redirect: "https://ojoanalogo.com",
+    tooltip: "Mi vida en fotos",
   },
   {
     title: "startup.sh",
     redirect: "https://molecula.digital",
+    tooltip: "Mi startup de productos digitales",
   },
 ];
 ---
 
-<header id="main-header" class="px-2 md:px-6 pt-4 mb-4">
+<header id="main-header" class="px-2 md:px-6 py-4">
   <div class="max-w-[55rem] mx-auto">
-    <div class="bg-white/50 dark:bg-black/10 backdrop-blur-lg border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-sm dark:hover:shadow-md dark:hover:shadow-black/20">
+    <div class="bg-white/70 dark:bg-black/10 backdrop-blur-lg border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-sm dark:hover:shadow-md dark:hover:shadow-black/20">
       <nav
         id="navigation-menu"
         aria-label="Main menu"
@@ -50,7 +56,7 @@ const links: Array<{
           </div>
           <ThemeToggle class="sm:hidden" />
         </div>
-        <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs overflow-visible">
           {
             links.map((link) => {
               return (
@@ -58,7 +64,11 @@ const links: Array<{
                   href={link.redirect ? link.redirect : link.url}
                   target={link.redirect ? "_blank" : "_self"}
                   id={link.id}
-                  class="text-secondary hover:text-accent transition-all duration-200"
+                  class:list={[
+                    "text-secondary hover:text-accent transition-all duration-200",
+                    link.tooltip && "tooltip",
+                  ]}
+                  data-tooltip={link.tooltip}
                 >
                   {link.title}
                 </a>
@@ -84,3 +94,4 @@ const links: Array<{
     activeItemElement.classList.add(activeClass);
   });
 </script>
+
