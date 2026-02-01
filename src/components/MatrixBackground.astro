@@ -32,7 +32,7 @@ const {
     if (!ctx) return;
 
     // Configuration from data attributes
-    const highlightColor = canvas.dataset.highlightColor || 'rgba(20, 184, 166, 0.3)';
+    const highlightColor = canvas.dataset.highlightColor;
     const boxSize = parseInt(canvas.dataset.boxSize || '50', 10);
     const movementDirection = canvas.dataset.movementDirection || 'none';
     const movementSpeed = parseFloat(canvas.dataset.movementSpeed || '0.5');

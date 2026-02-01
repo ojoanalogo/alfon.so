@@ -71,7 +71,7 @@ const projects: Array<{
 <BaseLayout navbarActiveItemID="home">
   <MatrixBackground
     slot="background"
-    highlightColor="rgba(20, 184, 166, 0.25)"
+    highlightColor="rgba(222, 133, 74, 0.2)"
     boxSize={40}
     movementSpeed={0.1}
     movementDirection="up-left"
@@ -105,7 +105,7 @@ const projects: Array<{
                 class="w-16 h-16 rounded-full hover:scale-105 transition-transform drop-shadow-xl shrink-0"
               /> -->
               <div class="flex flex-col gap-1">
-                <h1 class="text-xl">
+                <h1 class="text-2xl">
                   👋 hola soy <span class="text-primary font-medium">alfonso reyes</span>
                 </h1>
                 <p class="text-muted text-xs">
@@ -136,7 +136,7 @@ const projects: Array<{
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-accent hover:underline focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-background"
+                  class="text-accent hover:underline focus:outline-none"
                   href="https://monopolio.com.mx"
                   aria-label="Visitar sitio web monopolio.com.mx"
                   >monopolio.com.mx</a
@@ -149,7 +149,7 @@ const projects: Array<{
               <span class="text-secondary">
                 fotografía @
                 <a
-                  class="text-accent hover:underline focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-background"
+                  class="text-accent hover:underline focus:outline-none"
                   target="_blank"
                   rel="noopener noreferrer"
                   href="https://ojoanalogo.com"
@@ -165,7 +165,7 @@ const projects: Array<{
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-accent hover:underline focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-background"
+                  class="text-accent hover:underline focus:outline-none"
                   href="https://sofinanzas.mx"
                   aria-label="Visitar SofIA - Asistente de finanzas con IA"
                   >sofia</a
@@ -186,7 +186,7 @@ const projects: Array<{
               <span class="text-muted sm:w-36 shrink-0">contacto</span>
               <span class="text-secondary">
                 <a
-                  class="text-accent hover:underline focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-background"
+                  class="text-accent hover:underline focus:outline-none"
                   href="mailto:hola@alfon.so"
                   aria-label="Enviar email a hola@alfon.so">hola@alfon.so</a
                 >
@@ -245,7 +245,7 @@ const projects: Array<{
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="block focus:outline-none focus:ring-2 focus:ring-teal-800 focus:ring-offset-2 focus:ring-offset-background rounded"
+                    class="block focus:outline-none rounded"
                     aria-label={`Visitar ${project.title}: ${project.description}`}
                   >
                     <div class="flex items-start gap-2">

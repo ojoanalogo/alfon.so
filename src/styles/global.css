@@ -1,11 +1,14 @@
+html {
+  font-size: 16px;
+}
+
 /* Theme CSS Custom Properties */
 :root {
   /* Light theme (default) */
   --color-background: #f7f4ef;
-  --color-surface: #fffdfa;
-  --color-primary: #18181b;
+  --color-surface: #ffrgb(9, 9, 8) --color-primary: #18181b;
   --color-secondary: #3f3f46;
-  --color-accent: #0d9488;
+  --color-accent: #d5601d;
   --color-muted: #71717a;
 }
 
@@ -15,7 +18,7 @@
   --color-surface: #18181b;
   --color-primary: #f4f4f5;
   --color-secondary: #a1a1aa;
-  --color-accent: #14b8a6;
+  --color-accent: #de7b43;
   --color-muted: #71717a;
 }
 
