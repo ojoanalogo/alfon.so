@@ -19,7 +19,7 @@
   visibility: hidden;
   transition: opacity 0.2s, visibility 0.2s;
   pointer-events: none;
-  z-index: 50;
+  z-index: 9999;
 }
 
 .tooltip:hover::after {
