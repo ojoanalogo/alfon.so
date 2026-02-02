@@ -67,7 +67,7 @@ const projects: Array<{
   {
     title: "wawa",
     description:
-      "framework para construir flujos conversacionales en whatsapp. [próximamente]",
+      "framework para construir flujos conversacionales en whatsapp.",
     icon: "💬",
     link: "",
   },
@@ -121,20 +121,29 @@ const projects: Array<{
 
             <InfoRow label="trabajo">
               ingeniero backend @
-              <ExternalLink href="https://monopolio.com.mx" label="Visitar sitio web monopolio.com.mx">
+              <ExternalLink
+                href="https://monopolio.com.mx"
+                label="Visitar sitio web monopolio.com.mx"
+              >
                 monopolio.com.mx
               </ExternalLink>
             </InfoRow>
 
             <InfoRow label="hobby">
               fotografía @
-              <ExternalLink href="https://ojoanalogo.com" label="Visitar portafolio de fotografía ojoanalogo.com">
+              <ExternalLink
+                href="https://ojoanalogo.com"
+                label="Visitar portafolio de fotografía ojoanalogo.com"
+              >
                 ojoanalogo.com
               </ExternalLink>
             </InfoRow>
 
             <InfoRow label="proyecto actual">
-              <ExternalLink href="https://sofinanzas.mx" label="Visitar SofIA - Asistente de finanzas con IA">
+              <ExternalLink
+                href="https://sofinanzas.mx"
+                label="Visitar SofIA - Asistente de finanzas con IA"
+              >
                 sofia
               </ExternalLink>
               - asistente de finanzas personales para todos 💸
@@ -149,8 +158,8 @@ const projects: Array<{
               <a
                 class="text-accent hover:underline focus:outline-none"
                 href="mailto:hola@alfon.so"
-                aria-label="Enviar email a hola@alfon.so"
-              >hola@alfon.so</a>
+                aria-label="Enviar email a hola@alfon.so">hola@alfon.so</a
+              >
             </InfoRow>
 
             <InfoRow label="social">
@@ -205,7 +214,9 @@ const projects: Array<{
             ))
           }
         </div>
-        <TerminalPrompt command={`ls -la proyectos/ | total ${projects.length}`} />
+        <TerminalPrompt
+          command={`ls -la proyectos/ | total ${projects.length}`}
+        />
       </Card>
     </section>
 
@@ -215,7 +226,9 @@ const projects: Array<{
           <Card>
             <SectionHeading>✍️ últimos posts</SectionHeading>
             <PostList posts={allPostsByDate} />
-            <TerminalPrompt command={`tail -n ${allPostsByDate.length} blog/`} />
+            <TerminalPrompt
+              command={`tail -n ${allPostsByDate.length} blog/`}
+            />
           </Card>
         </section>
       )
