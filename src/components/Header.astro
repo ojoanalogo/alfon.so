@@ -39,8 +39,10 @@ const links: Array<{
 ---
 
 <header id="main-header" class="px-2 md:px-6 py-4 relative z-50">
-  <div class="max-w-[55rem] mx-auto">
-    <div class="bg-white/70 dark:bg-black/10 backdrop-blur-lg border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-sm dark:hover:shadow-md dark:hover:shadow-black/20">
+  <div class="mx-auto">
+    <div
+      class="bg-white/70 dark:bg-black/10 backdrop-blur-lg border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-sm dark:hover:shadow-md dark:hover:shadow-black/20"
+    >
       <nav
         id="navigation-menu"
         aria-label="Main menu"
@@ -50,13 +52,19 @@ const links: Array<{
           <div class="flex items-center gap-2">
             <span class="text-secondary">$</span>
             <span class="text-muted">./</span>
-            <a href="/" target="_self" class="text-primary font-medium hover:text-accent transition-colors duration-200">
+            <a
+              href="/"
+              target="_self"
+              class="text-primary font-medium hover:text-accent transition-colors duration-200"
+            >
               alfon.so
             </a>
           </div>
           <ThemeToggle class="sm:hidden" />
         </div>
-        <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs overflow-visible">
+        <div
+          class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs overflow-visible"
+        >
           {
             links.map((link) => {
               return (
@@ -94,4 +102,3 @@ const links: Array<{
     activeItemElement.classList.add(activeClass);
   });
 </script>
-
