@@ -2,14 +2,23 @@
 interface Props {
   highlightColor?: string;
   boxSize?: number;
-  movementDirection?: 'none' | 'up' | 'down' | 'left' | 'right' | 'up-left' | 'up-right' | 'down-left' | 'down-right';
+  movementDirection?:
+    | "none"
+    | "up"
+    | "down"
+    | "left"
+    | "right"
+    | "up-left"
+    | "up-right"
+    | "down-left"
+    | "down-right";
   movementSpeed?: number;
 }
 
 const {
-  highlightColor = 'rgba(20, 184, 166, 0.3)',
+  highlightColor = "rgba(20, 184, 166, 0.3)",
   boxSize = 50,
-  movementDirection = 'none',
+  movementDirection = "none",
   movementSpeed = 0.5,
 } = Astro.props;
 ---
@@ -20,29 +29,30 @@ const {
   data-highlight-color={highlightColor}
   data-box-size={boxSize}
   data-movement-direction={movementDirection}
-  data-movement-speed={movementSpeed}
-></canvas>
+  data-movement-speed={movementSpeed}></canvas>
 
 <script>
   function initMatrixBackground() {
-    const canvas = document.getElementById('matrix-bg') as HTMLCanvasElement;
+    const canvas = document.getElementById("matrix-bg") as HTMLCanvasElement;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Configuration from data attributes
     const highlightColor = canvas.dataset.highlightColor;
-    const boxSize = parseInt(canvas.dataset.boxSize || '50', 10);
-    const movementDirection = canvas.dataset.movementDirection || 'none';
-    const movementSpeed = parseFloat(canvas.dataset.movementSpeed || '0.5');
+    const boxSize = parseInt(canvas.dataset.boxSize || "50", 10);
+    const movementDirection = canvas.dataset.movementDirection || "none";
+    const movementSpeed = parseFloat(canvas.dataset.movementSpeed || "0.5");
 
     // Theme-aware edge colors
-    const darkEdgeColor = 'rgba(63, 63, 70, 0.3)';
-    const lightEdgeColor = 'rgba(200, 200, 200, 0.25)';
+    const darkEdgeColor = "rgba(63, 63, 70, 0.3)";
+    const lightEdgeColor = "rgba(200, 200, 200, 0.25)";
 
     function getEdgeColor() {
-      return document.documentElement.classList.contains('dark') ? darkEdgeColor : lightEdgeColor;
+      return document.documentElement.classList.contains("dark")
+        ? darkEdgeColor
+        : lightEdgeColor;
     }
 
     let mouseX = -1000;
@@ -68,7 +78,7 @@ const {
     function draw() {
       if (!isRunning) return;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
       const edgeColor = getEdgeColor();
 
@@ -90,24 +100,26 @@ const {
           // Check if this box is hovered
           const isHovered = col === hoveredBox.col && row === hoveredBox.row;
 
-          if (isHovered) {
+          if (isHovered && ctx) {
             ctx.fillStyle = highlightColor;
             ctx.fillRect(x, y, boxSize, boxSize);
           }
 
-          // Draw box edges
-          ctx.strokeStyle = edgeColor;
-          ctx.lineWidth = 1;
-          ctx.strokeRect(x + 0.5, y + 0.5, boxSize, boxSize);
+          if (ctx) {
+            // Draw box edges
+            ctx.strokeStyle = edgeColor;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x + 0.5, y + 0.5, boxSize, boxSize);
+          }
         }
       }
 
       // Update offset based on movement direction
-      if (movementDirection !== 'none') {
-        const moveUp = movementDirection.includes('up');
-        const moveDown = movementDirection.includes('down');
-        const moveLeft = movementDirection.includes('left');
-        const moveRight = movementDirection.includes('right');
+      if (movementDirection !== "none") {
+        const moveUp = movementDirection.includes("up");
+        const moveDown = movementDirection.includes("down");
+        const moveLeft = movementDirection.includes("left");
+        const moveRight = movementDirection.includes("right");
 
         if (moveUp) {
           offset.y -= movementSpeed;
@@ -143,23 +155,23 @@ const {
     function cleanup() {
       isRunning = false;
       cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
     }
 
     // Initialize
     resize();
-    window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
     draw();
 
     // Cleanup on page navigation
-    document.addEventListener('astro:before-swap', cleanup, { once: true });
+    document.addEventListener("astro:before-swap", cleanup, { once: true });
   }
 
   // Initialize on first load and after view transitions
   initMatrixBackground();
-  document.addEventListener('astro:after-swap', initMatrixBackground);
+  document.addEventListener("astro:after-swap", initMatrixBackground);
 </script>

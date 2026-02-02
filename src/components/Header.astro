@@ -1,41 +1,10 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
 import "../styles/tooltip.css";
+import { NAV_LINKS } from "../config";
 
 const { navbarActiveItemID } = Astro.props;
 const activeClasses = ["text-accent", "font-semibold"];
-
-const links: Array<{
-  title: string;
-  id?: string;
-  url?: string;
-  new?: boolean;
-  redirect?: string;
-  tooltip?: string;
-}> = [
-  {
-    title: "index.html",
-    id: "home",
-    url: "/",
-    tooltip: "Inicio",
-  },
-  {
-    title: "blog.sql",
-    id: "blog",
-    url: "/blog",
-    tooltip: "Mis posts",
-  },
-  {
-    title: "photos.jpg",
-    redirect: "https://ojoanalogo.com",
-    tooltip: "Mi vida en fotos",
-  },
-  {
-    title: "startup.sh",
-    redirect: "https://molecula.digital",
-    tooltip: "Mi startup de productos digitales",
-  },
-];
 ---
 
 <header id="main-header" class="px-2 md:px-6 py-4 relative z-50">
@@ -66,7 +35,7 @@ const links: Array<{
           class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs overflow-visible"
         >
           {
-            links.map((link) => {
+            NAV_LINKS.map((link) => {
               return (
                 <a
                   href={link.redirect ? link.redirect : link.url}
@@ -98,7 +67,9 @@ const links: Array<{
 >
   const activeItemElement = document.getElementById(navbarActiveItemID);
 
-  activeClasses.forEach((activeClass) => {
-    activeItemElement.classList.add(activeClass);
-  });
+  if (activeItemElement) {
+    activeClasses.forEach((activeClass) => {
+      activeItemElement.classList.add(activeClass);
+    });
+  }
 </script>
