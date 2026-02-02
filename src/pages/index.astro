@@ -6,8 +6,6 @@ import MatrixBackground from "../components/MatrixBackground.astro";
 import Card from "../components/Card.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { sortMDByDate } from "../utils";
-import me from "../assets/me.jpg";
-import { Image } from "astro:assets";
 
 const MAX_POSTS = 10;
 const allPosts = await getCollection("blog");
@@ -17,7 +15,7 @@ const techStack: Record<string, string> = {
   js: "JavaScript",
   ts: "TypeScript",
   "node.js": "Node",
-  "astro": "This site is built on astro",
+  astro: "This site is built on astro",
   python: "Python",
   sql: "SQL",
   "claude-code": "Best tool ever",
@@ -81,7 +79,9 @@ const projects: Array<{
     <section id="about" aria-labelledby="about-heading">
       <Card role="region">
         <!-- Terminal header -->
-        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-300 dark:border-gray-600">
+        <div
+          class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-300 dark:border-gray-600"
+        >
           <div class="flex gap-2" role="img">
             <div class="w-3 h-3 rounded-full bg-red-500"></div>
             <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -96,7 +96,7 @@ const projects: Array<{
         <div class="text-xs">
           <div class="space-y-4 sm:space-y-2">
             <div class="flex items-center gap-3 mb-4">
-<!--               <Image
+              <!--               <Image
                 src={me}
                 width={180}
                 alt="Avatar de Alfonso"
@@ -104,11 +104,11 @@ const projects: Array<{
               /> -->
               <div class="flex flex-col gap-1">
                 <h1 class="text-2xl">
-                  👋 hola soy <span class="text-primary font-medium">alfonso reyes</span>
+                  👋 hola soy <span class="text-primary font-medium"
+                    >alfonso reyes</span
+                  >
                 </h1>
-                <p class="text-muted text-xs">
-                  ingeniero backend / fotógrafo
-                </p>
+                <p class="text-muted text-xs">ingeniero backend / fotógrafo</p>
               </div>
             </div>
 
@@ -120,9 +120,14 @@ const projects: Array<{
               </p>
             </div>
 
-            <div class="border-b border-gray-300 dark:border-gray-600 w-full mb-2"></div>
+            <div
+              class="border-b border-gray-300 dark:border-gray-600 w-full mb-2"
+            >
+            </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-0">
+            <div
+              class="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-0"
+            >
               <span class="text-muted sm:w-36 shrink-0">ubicación</span>
               <span class="text-secondary">méxico 🌮🇲🇽</span>
             </div>
@@ -201,7 +206,11 @@ const projects: Array<{
             <div class="pt-2">
               <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
                 <span class="text-muted sm:w-36 shrink-0">tech stack</span>
-                <div class="flex flex-wrap gap-2" role="list" aria-label="Tech stack">
+                <div
+                  class="flex flex-wrap gap-2"
+                  role="list"
+                  aria-label="Tech stack"
+                >
                   {
                     Object.keys(techStack).map((lang) => (
                       <span
@@ -218,14 +227,20 @@ const projects: Array<{
           </div>
         </div>
 
-        <div class="mt-3 pt-2 border-t border-gray-300 dark:border-gray-700 text-muted text-xs">
+        <div
+          class="mt-3 pt-2 border-t border-gray-300 dark:border-gray-700 text-muted text-xs"
+        >
           <span class="text-secondary">$</span> cat about.txt
         </div>
       </Card>
     </section>
 
     <section id="projects" class="mt-2">
-      <Card class="text-secondary" role="region" aria-label="Showcase de proyectos">
+      <Card
+        class="text-secondary"
+        role="region"
+        aria-label="Showcase de proyectos"
+      >
         <h2 class="mb-4 text-sm font-bold text-muted">💻 mis proyectos</h2>
         <div class="space-y-2" role="list">
           {
@@ -243,10 +258,7 @@ const projects: Array<{
                     aria-label={`Visitar ${project.title}: ${project.description}`}
                   >
                     <div class="flex items-start gap-2">
-                      <span
-                        class="text-muted w-6 shrink-0"
-                        aria-hidden="true"
-                      >
+                      <span class="text-muted w-6 shrink-0" aria-hidden="true">
                         {String(index + 1).padStart(2, "0")}.
                       </span>
                       <span
@@ -288,7 +300,9 @@ const projects: Array<{
                       <span class="text-muted sm:ml-2 block sm:inline mt-1 sm:mt-0">
                         → {project.description}
                       </span>
-                      <span class="text-muted/70 sm:ml-2 block sm:inline">[próximamente]</span>
+                      <span class="text-muted/70 sm:ml-2 block sm:inline">
+                        [próximamente]
+                      </span>
                     </div>
                   </div>
                 )}
@@ -296,7 +310,9 @@ const projects: Array<{
             ))
           }
         </div>
-        <div class="mt-3 pt-2 border-t border-gray-300 dark:border-gray-700 text-muted text-xs">
+        <div
+          class="mt-3 pt-2 border-t border-gray-300 dark:border-gray-700 text-muted text-xs"
+        >
           <span class="text-secondary">$</span> ls -la proyectos/ | total {
             projects.length
           }
@@ -308,9 +324,7 @@ const projects: Array<{
       allPosts.length > 0 && (
         <section id="blog" class="mt-2">
           <Card>
-            <h2 class="text-sm mb-4 font-bold text-muted">
-              ✍️ últimos posts
-            </h2>
+            <h2 class="text-sm mb-4 font-bold text-muted">✍️ últimos posts</h2>
             <ul class="space-y-4 sm:space-y-2" role="list">
               {allPostsByDate.map((post) => (
                 <li class="flex flex-col gap-x-2 sm:flex-row" role="listitem">
@@ -319,7 +333,8 @@ const projects: Array<{
               ))}
             </ul>
             <div class="mt-3 pt-2 border-t border-gray-300 dark:border-gray-700 text-muted text-xs">
-              <span class="text-secondary">$</span> tail -n {allPostsByDate.length} blog/
+              <span class="text-secondary">$</span> tail -n{" "}
+              {allPostsByDate.length} blog/
             </div>
           </Card>
         </section>
