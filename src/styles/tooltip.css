@@ -26,3 +26,10 @@
   opacity: 1;
   visibility: visible;
 }
+
+/* Hide tooltips on mobile - hover doesn't work well on touch devices */
+@media (max-width: 639px) {
+  .tooltip::after {
+    display: none;
+  }
+}

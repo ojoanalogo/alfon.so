@@ -1,10 +1,11 @@
 ---
+import Card from "../components/ui/Card.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="404: Not Found">
   <main class="flex justify-center">
-    <div class="w-full max-w-2xl">
+    <Card class="w-full max-w-2xl px-2">
       <section aria-labelledby="error-heading">
         <div class="font-mono text-sm" role="region">
           <!-- Content -->
@@ -14,7 +15,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               <div class="flex items-center gap-4 mb-6">
                 <p class="text-4xl">🤔</p>
                 <div class="flex flex-col">
-                  <h1 class="text-red-500 dark:text-red-400 text-2xl font-bold">404</h1>
+                  <h1 class="text-red-500 dark:text-red-400 text-2xl font-bold">
+                    404
+                  </h1>
                   <p class="text-muted text-xs">Página no encontrada</p>
                 </div>
               </div>
@@ -24,7 +27,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
                 class="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-4"
               >
                 <div class="flex items-start gap-2">
-                  <span class="text-red-500 dark:text-red-400 font-bold">ERROR:</span>
+                  <span class="text-red-500 dark:text-red-400 font-bold"
+                    >ERROR:</span
+                  >
                   <p class="text-primary leading-relaxed">
                     El recurso solicitado no se encontró en este servidor. La
                     página que estás intentando acceder no existe o ha sido
@@ -33,13 +38,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
                 </div>
               </div>
 
-              <div class="border-b border-gray-300 dark:border-gray-600 w-full mb-3"></div>
+              <div
+                class="border-b border-gray-300 dark:border-gray-600 w-full mb-3"
+              >
+              </div>
 
               <!-- Terminal-style error details -->
               <div class="space-y-2">
                 <div class="flex">
                   <span class="text-muted w-24 shrink-0">Status</span>
-                  <span class="text-red-500 dark:text-red-400 font-bold">404 No encontrado</span>
+                  <span class="text-red-500 dark:text-red-400 font-bold"
+                    >404 No encontrado</span
+                  >
                 </div>
 
                 <div class="flex">
@@ -56,11 +66,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
                 <div class="flex">
                   <span class="text-muted w-24 shrink-0">Fecha y hora</span>
-                  <span class="text-primary" id="error-time"> Cargando... </span>
+                  <span class="text-primary" id="error-time">
+                    Cargando...
+                  </span>
                 </div>
               </div>
 
-              <div class="border-b border-gray-300 dark:border-gray-600 w-full my-3"></div>
+              <div
+                class="border-b border-gray-300 dark:border-gray-600 w-full my-3"
+              >
+              </div>
 
               <!-- Suggestions -->
               <div class="space-y-2">
@@ -94,7 +109,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           </div>
         </div>
       </section>
-    </div>
+    </Card>
   </main>
 
   <script>
