@@ -9,7 +9,7 @@ html {
   --color-surface: #fffaf5;
   --color-primary: #18181b;
   --color-secondary: #3f3f46;
-  --color-accent: #d5601d;
+  --color-accent: #8b6ed2;
   --color-muted: #71717a;
 }
 
@@ -19,21 +19,6 @@ html {
   --color-surface: #18181b;
   --color-primary: #f4f4f5;
   --color-secondary: #a1a1aa;
-  --color-accent: #de7b43;
+  --color-accent: #a88cee;
   --color-muted: #71717a;
-}
-
-noise {
-  pointer-events: none;
-  z-index: -1;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: repeat center center url("/noise.svg");
-  background-size: auto;
-  background-size: 32%;
-  opacity: 0.05;
-  mix-blend-mode: luminosity;
 }
