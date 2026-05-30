@@ -1,42 +1,36 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import readingTime from 'reading-time';
-import type { BlogSchema } from '../../content/config';
+import type { BlogSchema } from '../../content.config';
 import PostLayout from '../../layouts/PostLayout.astro';
-import { getBlogImage } from '../../utils';
 
 export async function getStaticPaths() {
-    const postEntries = await getCollection('blog');
-    return postEntries.map(entry => ( {
-        params: { slug: entry.slug }, props: { entry },
-    } ));
+  const postEntries = await getCollection('blog');
+  return postEntries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
 }
 
 interface Props {
-    entry: CollectionEntry<"blog">;
+  entry: CollectionEntry<'blog'>;
 }
 
 const { entry } = Astro.props;
-const post : BlogSchema = entry.data;
-const { Content } = await entry.render();
+const post: BlogSchema = entry.data;
+const { Content } = await render(entry);
 
 const stats = readingTime(entry.body || '');
-
-let heroImage;
-if (post.heroImage) {
-    heroImage = await getBlogImage(entry.slug, post?.heroImage);
-}
-
 ---
 
 <PostLayout
-    title={post.title}
-    description={post.description}
-    publishDate={post.publishDate}
-    updatedDate={post.updatedDate}
-    heroImage={heroImage?.default}
-    readingTime={stats.text}
-    tags={post.tags}
+  title={post.title}
+  description={post.description}
+  publishDate={post.publishDate}
+  updatedDate={post.updatedDate}
+  heroImage={post.heroImage}
+  readingTime={stats.text}
+  tags={post.tags}
 >
-    <Content/>
+  <Content />
 </PostLayout>

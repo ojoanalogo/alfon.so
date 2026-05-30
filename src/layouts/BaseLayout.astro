@@ -1,45 +1,49 @@
 ---
-import BaseHead from "../components/BaseHead.astro";
-import Header from "../components/Header.astro";
+import BaseHead from '../components/BaseHead.astro';
+import DraggableWindows from '../components/DraggableWindows.astro';
+import Header from '../components/Header.astro';
 
-import { SITE_DESCRIPTION, SITE_TITLE } from "../config";
+import { SITE_DESCRIPTION, SITE_TITLE } from '../config';
 
-const {
-  image,
-  title = SITE_TITLE,
-  description = SITE_DESCRIPTION,
-  navbarActiveItemID,
-} = Astro.props;
+const { image, title = SITE_TITLE, description = SITE_DESCRIPTION, desktop = false } = Astro.props;
 ---
 
 <!doctype html>
 <html
   lang="es"
-  class="bg-background text-secondary selection:bg-purple-900/60 selection:text-white"
+  class="bg-background text-secondary selection:bg-green-900/60 selection:text-white"
 >
   <head>
     <BaseHead title={title} description={description} image={image} />
     <script is:inline>
       (function () {
-        const theme = localStorage.getItem("theme");
+        const theme = localStorage.getItem('theme');
         if (
-          theme === "dark" ||
-          (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+          theme === 'dark' ||
+          (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
         ) {
-          document.documentElement.classList.add("dark");
+          document.documentElement.classList.add('dark');
         }
       })();
     </script>
   </head>
   <body
-    class="xl:w-[55rem] lg:w-4/5 w-full sm:px-2 md:px-4 mx-auto font-sans relative"
+    class:list={[
+      'relative mx-auto w-full font-sans',
+      !desktop && 'sm:px-2 md:px-4 lg:w-4/5 xl:w-[55rem]',
+      desktop && 'h-dvh overflow-hidden',
+    ]}
   >
     <slot name="background" />
-    <div>
-      <Header navbarActiveItemID={navbarActiveItemID} />
-      <main id="main" class="px-2 md:px-6 pb-12">
+    <div class="relative z-10">
+      {!desktop && <Header />}
+      <main
+        id="main"
+        class:list={[!desktop && 'px-2 pb-12 md:px-6', desktop && 'p-0']}
+      >
         <slot />
       </main>
     </div>
+    <DraggableWindows />
   </body>
 </html>

@@ -9,9 +9,10 @@ const { command, class: className } = Astro.props;
 
 <div
   class:list={[
-    "mt-3 pt-2 border-t border-gray-300 dark:border-gray-700 text-muted text-xs",
+    'mt-3 border-t border-gray-300 pt-2 text-xs text-muted dark:border-gray-700',
     className,
   ]}
 >
-  <span class="text-secondary">$</span> {command}
+  <span class="text-secondary">$</span>
+  {command}
 </div>

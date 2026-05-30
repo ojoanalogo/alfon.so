@@ -1,0 +1,15 @@
+<script>
+  import { initDraggableWindows } from '../utils/draggable-windows';
+
+  function boot() {
+    initDraggableWindows();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  document.addEventListener('astro:after-swap', boot);
+</script>

@@ -1,5 +1,5 @@
 ---
-import { SOCIAL_LINKS, type SocialPlatform } from "../config";
+import { SOCIAL_LINKS, type SocialPlatform } from '../config';
 
 const icons: Record<SocialPlatform, string> = {
   twitter: `<path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>`,
@@ -9,14 +9,14 @@ const icons: Record<SocialPlatform, string> = {
 };
 
 const viewBoxes: Record<SocialPlatform, string> = {
-  twitter: "0 0 16 16",
-  github: "0 0 16 16",
-  instagram: "0 0 1000 1000",
-  linkedin: "0 0 24 24",
+  twitter: '0 0 16 16',
+  github: '0 0 16 16',
+  instagram: '0 0 1000 1000',
+  linkedin: '0 0 24 24',
 };
 ---
 
-<ul class="flex flex-wrap items-center gap-x-2 gap-y-2 text-secondary fill-current">
+<ul class="flex flex-wrap items-center gap-x-2 gap-y-2 fill-current text-secondary">
   {
     SOCIAL_LINKS.map((link) => (
       <li>

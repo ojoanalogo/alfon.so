@@ -1,237 +1,52 @@
 ---
-import { getCollection } from "astro:content";
-import SocialMediaIcons from "../components/SocialMediaIcons.astro";
-import MatrixBackground from "../components/MatrixBackground.astro";
-import ProjectItem from "../components/ProjectItem.astro";
-import Card from "../components/ui/Card.astro";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import { sortMDByDate } from "../utils";
-import TerminalHeader from "../components/ui/TerminalHeader.astro";
-import TerminalPrompt from "../components/ui/TerminalPrompt.astro";
-import InfoRow from "../components/ui/InfoRow.astro";
-import ExternalLink from "../components/ui/ExternalLink.astro";
-import SectionHeading from "../components/ui/SectionHeading.astro";
-import Divider from "../components/ui/Divider.astro";
-import PostList from "../components/ui/PostList.astro";
+import { getCollection, render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import readingTime from 'reading-time';
+import { marked } from 'marked';
+import NoiseBackground from '../components/NoiseBackground.astro';
+import DesktopApp from '../components/desktop/react/DesktopApp';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sortMDByDate } from '../utils';
+import type { BlogPostSummary } from '../components/desktop/react/types';
 
 const MAX_POSTS = 10;
-const allPosts = await getCollection("blog");
-const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS);
+const entries = sortMDByDate(await getCollection('blog')).slice(0, MAX_POSTS);
 
-const techStack: Record<string, string> = {
-  js: "JavaScript",
-  ts: "TypeScript",
-  "node.js": "Node",
-  astro: "This site is built on astro",
-  python: "Python",
-  sql: "SQL",
-  "claude-code": "Best tool ever",
-  "next.js": "Next.js",
-  aws: "AWS",
-  gcp: "GCP",
-  docker: "Docker",
-  tf: "Terraform",
-};
+const posts: BlogPostSummary[] = await Promise.all(
+  entries.map(async (entry) => {
+    // Prefer Astro's own rendered HTML so the window matches the post page;
+    // fall back to rendering the raw markdown body if it isn't available.
+    await render(entry);
+    const rendered = (entry as unknown as { rendered?: { html?: string } }).rendered?.html;
+    const html = rendered ?? (await marked.parse(entry.body ?? ''));
 
-const projects: Array<{
-  title: string;
-  description: string;
-  link: string;
-  icon: string;
-}> = [
-  {
-    title: "sofia",
-    description: "registra tus gastos con un solo mensaje de WhatsApp.",
-    link: "https://sofinanzas.mx",
-    icon: "💸",
-  },
-  {
-    title: "terminus",
-    description:
-      "plantilla de Astro para sitios web personales, inspirada en una terminal de comandos.",
-    link: "https://github.com/ojoanalogo/terminus-astro-template",
-    icon: "💻",
-  },
-  {
-    title: "hilitos",
-    description: "marketplaces para pequeños emprendedores, como Etsy.",
-    link: "https://hilitos.app",
-    icon: "🧵",
-  },
-  {
-    title: "dotfiles",
-    description: "dale un vistazo a la configuración de mi equipo personal.",
-    link: "https://github.com/ojoanalogo/dotfiles",
-    icon: "🔧",
-  },
-  {
-    title: "wawa",
-    description:
-      "framework para construir flujos conversacionales en whatsapp.",
-    icon: "💬",
-    link: "",
-  },
-];
+    let heroImageSrc: string | undefined;
+    if (entry.data.heroImage) {
+      const image = await getImage({ src: entry.data.heroImage, width: 1200 });
+      heroImageSrc = image.src;
+    }
+
+    const stats = readingTime(entry.body ?? '');
+
+    return {
+      title: entry.data.title,
+      slug: entry.id,
+      publishDate: new Date(entry.data.publishDate).toISOString(),
+      description: entry.data.description,
+      readingTime: stats.text,
+      tags: entry.data.tags ?? [],
+      heroImageSrc,
+      heroImageAlt: entry.data.title,
+      html,
+    };
+  }),
+);
 ---
 
-<BaseLayout navbarActiveItemID="home">
-  <MatrixBackground
-    slot="background"
-    highlightColor="#a684ff20"
-    boxSize={40}
-    movementSpeed={0.1}
-    movementDirection="up-left"
-  />
-  <main>
-    <section id="about" aria-labelledby="about-heading">
-      <Card role="region">
-        <TerminalHeader title="terminal - ssh guest@alfon.so" />
+<BaseLayout desktop>
+  <NoiseBackground slot="background" />
 
-        <!-- Content -->
-        <div class="text-xs">
-          <div class="space-y-4 sm:space-y-2">
-            <div class="flex items-center gap-3 mb-4">
-              <!--               <Image
-                src={me}
-                width={180}
-                alt="Avatar de Alfonso"
-                class="w-16 h-16 rounded-full hover:scale-105 transition-transform drop-shadow-xl shrink-0"
-              /> -->
-              <div class="flex flex-col gap-1">
-                <h1 class="text-2xl">
-                  👋 hola soy <span class="text-primary font-medium"
-                    >alfonso reyes</span
-                  >
-                </h1>
-                <p class="text-muted text-xs">ingeniero backend / fotógrafo</p>
-              </div>
-            </div>
-
-            <!-- Personal paragraph -->
-            <div class="bg-gray-200/50 dark:bg-gray-500/10 rounded-lg p-3 mb-4">
-              <p class="text-primary leading-relaxed">
-                bienvenido a mi pequeño rincón en internet, aquí encontrarás mis
-                pensamientos (pocos), mis proyectos y mi blog.
-              </p>
-            </div>
-
-            <Divider class="mb-2" />
-
-            <InfoRow label="ubicación">méxico 🌮🇲🇽</InfoRow>
-
-            <InfoRow label="trabajo">
-              ingeniero backend @
-              <ExternalLink
-                href="https://monopolio.com.mx"
-                label="Visitar sitio web monopolio.com.mx"
-              >
-                monopolio.com.mx
-              </ExternalLink>
-            </InfoRow>
-
-            <InfoRow label="hobby">
-              fotografía @
-              <ExternalLink
-                href="https://ojoanalogo.com"
-                label="Visitar portafolio de fotografía ojoanalogo.com"
-              >
-                ojoanalogo.com
-              </ExternalLink>
-            </InfoRow>
-
-            <InfoRow label="proyecto actual">
-              <ExternalLink
-                href="https://sofinanzas.mx"
-                label="Visitar SofIA - Asistente de finanzas con IA"
-              >
-                sofia
-              </ExternalLink>
-              - asistente de finanzas personales para todos 💸
-            </InfoRow>
-
-            <InfoRow label="intereses">
-              programación, startups, ciencia ficción, películas, fotografía,
-              viajes
-            </InfoRow>
-
-            <InfoRow label="contacto">
-              <a
-                class="text-accent hover:underline focus:outline-none"
-                href="mailto:hola@alfon.so"
-                aria-label="Enviar email a hola@alfon.so">hola@alfon.so</a
-              >
-            </InfoRow>
-
-            <InfoRow label="social">
-              <SocialMediaIcons />
-            </InfoRow>
-
-            <div class="pt-2">
-              <div class="flex flex-col sm:flex-row gap-0.5 sm:gap-0">
-                <span class="text-muted sm:w-36 shrink-0">tech stack</span>
-                <div
-                  class="flex flex-wrap gap-2"
-                  role="list"
-                  aria-label="Tech stack"
-                >
-                  {
-                    Object.keys(techStack).map((lang) => (
-                      <span
-                        class="text-secondary hover:text-accent transition-colors"
-                        title={techStack[lang]}
-                      >
-                        {lang}
-                      </span>
-                    ))
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <TerminalPrompt command="cat about.txt" />
-      </Card>
-    </section>
-
-    <section id="projects" class="mt-2">
-      <Card
-        class="text-secondary"
-        role="region"
-        aria-label="Showcase de proyectos"
-      >
-        <SectionHeading>💻 mis proyectos</SectionHeading>
-        <div class="space-y-2" role="list">
-          {
-            projects.map((project, index) => (
-              <ProjectItem
-                title={project.title}
-                description={project.description}
-                link={project.link}
-                icon={project.icon}
-                index={index}
-              />
-            ))
-          }
-        </div>
-        <TerminalPrompt
-          command={`ls -la proyectos/ | total ${projects.length}`}
-        />
-      </Card>
-    </section>
-
-    {
-      allPosts.length > 0 && (
-        <section id="blog" class="mt-2">
-          <Card>
-            <SectionHeading>✍️ últimos posts</SectionHeading>
-            <PostList posts={allPostsByDate} />
-            <TerminalPrompt
-              command={`tail -n ${allPostsByDate.length} blog/`}
-            />
-          </Card>
-        </section>
-      )
-    }
-  </main>
+  <div class="desktop">
+    <DesktopApp client:load posts={posts} />
+  </div>
 </BaseLayout>

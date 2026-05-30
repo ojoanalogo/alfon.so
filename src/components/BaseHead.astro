@@ -1,8 +1,8 @@
 ---
 // Import the global.css file here so that it is included on
 // all pages through the use of the <BaseHead /> component.
-import { ClientRouter } from "astro:transitions";
-import "../styles/global.css";
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
 
 export interface Props {
   title: string;
@@ -11,11 +11,11 @@ export interface Props {
   article?: boolean;
 }
 
-const { title, description, image = "/share.jpg", article = false } = Astro.props;
+const { title, description, image = '/share.jpg', article = false } = Astro.props;
 
 const isProd = import.meta.env.PROD;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const siteName = "Alfonso - Ingeniero Backend";
+const siteName = 'Alfonso - Ingeniero Backend';
 ---
 
 <!-- Global Metadata -->
@@ -30,7 +30,10 @@ const siteName = "Alfonso - Ingeniero Backend";
 <meta http-equiv="content-language" content="es-MX" />
 
 <!-- Robots -->
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta
+  name="robots"
+  content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+/>
 
 <!-- Author -->
 <meta name="author" content="Alfonso" />
@@ -49,7 +52,7 @@ const siteName = "Alfonso - Ingeniero Backend";
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content={article ? "article" : "website"} />
+<meta property="og:type" content={article ? 'article' : 'website'} />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:site_name" content={siteName} />
 <meta property="og:title" content={title} />
@@ -67,7 +70,8 @@ const siteName = "Alfonso - Ingeniero Backend";
 {
   // render only on production
   isProd && (
-    <script is:inline
+    <script
+      is:inline
       async
       src="https://analytics.molecula.digital/script.js"
       data-website-id="1b018a85-d69c-4ff9-a716-9bf7ae546331"
@@ -77,22 +81,22 @@ const siteName = "Alfonso - Ingeniero Backend";
 }
 
 <script>
-  function onKonamiCode(cb: { (): void; (): any }) {
-    var input = "";
-    var key = "38384040373937396665";
-    document.addEventListener("keydown", function (e) {
-      input += "" + e.keyCode;
+  function onKonamiCode(cb: () => void) {
+    let input = '';
+    const key = '38384040373937396665';
+    document.addEventListener('keydown', (e) => {
+      input += String(e.keyCode);
       if (input === key) {
-        return cb();
+        cb();
+        return;
       }
       if (!key.indexOf(input)) return;
-      input = "" + e.keyCode;
+      input = String(e.keyCode);
     });
   }
 
-  onKonamiCode(function () {
-    // REDIRECT TO HAPPY PATH
-    window.location.href = "/happy";
+  onKonamiCode(() => {
+    window.location.href = '/happy';
   });
 </script>
 

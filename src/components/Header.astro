@@ -1,75 +1,23 @@
 ---
-import ThemeToggle from "./ThemeToggle.astro";
-import "../styles/tooltip.css";
-import { NAV_LINKS } from "../config";
-
-const { navbarActiveItemID } = Astro.props;
-const activeClasses = ["text-accent", "font-semibold"];
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
-<header id="main-header" class="px-2 md:px-6 py-4 relative z-50">
-  <div class="mx-auto">
+<header id="main-header" class="relative z-50 overflow-visible px-2 py-4 md:px-6">
+  <div class="mx-auto" data-draggable-window data-draggable-fixed style="z-index: 20;">
     <div
-      class="bg-white/70 dark:bg-black/10 backdrop-blur-lg border rounded-lg font-mono text-sm transition-all duration-300 border-gray-400/50 dark:border-gray-400/30 hover:shadow-sm dark:hover:shadow-md dark:hover:shadow-black/20"
+      class="overflow-hidden rounded-lg border border-gray-400/50 bg-white/70 font-mono text-sm backdrop-blur-lg transition-all duration-300 hover:shadow-sm dark:border-gray-400/30 dark:bg-black/10 dark:hover:shadow-md dark:hover:shadow-black/20"
     >
-      <nav
-        id="navigation-menu"
-        aria-label="Main menu"
-        class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 px-4 py-3"
-      >
-        <div class="flex items-center justify-between sm:justify-start gap-2">
-          <div class="flex items-center gap-2">
-            <span class="text-secondary">$</span>
-            <span class="text-muted">./</span>
-            <a
-              href="/"
-              target="_self"
-              class="text-primary font-medium hover:text-accent transition-colors duration-200"
-            >
-              alfon.so
-            </a>
-          </div>
-          <ThemeToggle class="sm:hidden" />
+      <div class="window-titlebar">
+        <div class="window-controls" role="group" aria-label="Controles de ventana">
+          <div class="window-control window-control--close" aria-hidden="true"></div>
+          <div class="window-control window-control--min" aria-hidden="true"></div>
+          <div class="window-control window-control--max" aria-hidden="true"></div>
         </div>
-        <div
-          class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs overflow-visible"
-        >
-          {
-            NAV_LINKS.map((link) => {
-              return (
-                <a
-                  href={link.redirect ? link.redirect : link.url}
-                  target={link.redirect ? "_blank" : "_self"}
-                  id={link.id}
-                  class:list={[
-                    "text-secondary hover:text-accent transition-all duration-200",
-                    link.tooltip && "tooltip",
-                  ]}
-                  data-tooltip={link.tooltip}
-                >
-                  {link.title}
-                </a>
-              );
-            })
-          }
-          <ThemeToggle class="hidden sm:block" />
+        <div class="window-titlebar__drag cursor-grab select-none" data-drag-handle>
+          <span class="window-titlebar__title">~/alfon.so</span>
         </div>
-      </nav>
+        <ThemeToggle />
+      </div>
     </div>
   </div>
 </header>
-
-<script
-  define:vars={{
-    navbarActiveItemID,
-    activeClasses,
-  }}
->
-  const activeItemElement = document.getElementById(navbarActiveItemID);
-
-  if (activeItemElement) {
-    activeClasses.forEach((activeClass) => {
-      activeItemElement.classList.add(activeClass);
-    });
-  }
-</script>

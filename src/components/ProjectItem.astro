@@ -8,11 +8,11 @@ interface Props {
 }
 
 const { title, description, link, icon, index } = Astro.props;
-const number = String(index + 1).padStart(2, "0");
+const number = String(index + 1).padStart(2, '0');
 ---
 
 <div
-  class="group hover:bg-gray-200/50 dark:hover:bg-gray-900/40 p-1 rounded transition-colors"
+  class="group asdasdaasdasd rounded p-1 transition-colors hover:bg-gray-200/50 dark:hover:bg-gray-900/40"
   role="listitem"
 >
   {
@@ -21,55 +21,36 @@ const number = String(index + 1).padStart(2, "0");
         href={link}
         target="_blank"
         rel="noopener noreferrer"
-        class="block focus:outline-none rounded"
+        class="block rounded focus:outline-none"
         aria-label={`Visitar ${title}: ${description}`}
       >
         <div class="flex items-start gap-2">
-          <span class="text-muted w-6 shrink-0" aria-hidden="true">
+          <span class="w-6 shrink-0 text-muted" aria-hidden="true">
             {number}.
           </span>
-          <span
-            class="text-yellow-360 shrink-0"
-            role="img"
-            aria-label="Icono del proyecto"
-          >
+          <span class="text-yellow-360 shrink-0" role="img" aria-label="Icono del proyecto">
             {icon}
           </span>
           <div class="min-w-0 flex-1">
-            <span class="text-secondary group-hover:text-accent font-semibold block sm:inline">
+            <span class="block font-semibold text-secondary group-hover:text-accent sm:inline">
               {title}
             </span>
-            <span class="text-muted sm:ml-2 block sm:inline mt-1 sm:mt-0">
-              → {description}
-            </span>
+            <span class="mt-1 block text-muted sm:mt-0 sm:ml-2 sm:inline">→ {description}</span>
           </div>
         </div>
       </a>
     ) : (
-      <div
-        class="flex items-start gap-2 opacity-60"
-        aria-label={`${title}: ${description}`}
-      >
-        <span class="text-muted w-6 shrink-0" aria-hidden="true">
+      <div class="flex items-start gap-2 opacity-60" aria-label={`${title}: ${description}`}>
+        <span class="w-6 shrink-0 text-muted" aria-hidden="true">
           {number}.
         </span>
-        <span
-          class="text-yellow-360 shrink-0"
-          role="img"
-          aria-label="Icono del proyecto"
-        >
+        <span class="text-yellow-360 shrink-0" role="img" aria-label="Icono del proyecto">
           {icon}
         </span>
         <div class="min-w-0 flex-1">
-          <span class="text-secondary font-semibold block sm:inline">
-            {title}
-          </span>
-          <span class="text-muted sm:ml-2 block sm:inline mt-1 sm:mt-0">
-            → {description}
-          </span>
-          <span class="text-muted/70 sm:ml-2 block sm:inline">
-            [próximamente]
-          </span>
+          <span class="block font-semibold text-secondary sm:inline">{title}</span>
+          <span class="mt-1 block text-muted sm:mt-0 sm:ml-2 sm:inline">→ {description}</span>
+          <span class="block text-muted/70 sm:ml-2 sm:inline">[próximamente]</span>
         </div>
       </div>
     )

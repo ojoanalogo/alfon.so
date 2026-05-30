@@ -1,0 +1,4 @@
+# Ignore generated/build output and lockfiles
+dist/
+.astro/
+pnpm-lock.yaml

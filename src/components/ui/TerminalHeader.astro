@@ -1,18 +1,51 @@
 ---
 interface Props {
   title?: string;
+  draggable?: boolean;
+  closable?: boolean;
+  windowId?: string;
 }
 
-const { title } = Astro.props;
+const { title, draggable = false, closable = false, windowId } = Astro.props;
 ---
 
-<div
-  class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-300 dark:border-gray-600"
->
-  <div class="flex gap-2" role="img" aria-label="Terminal window controls">
-    <div class="w-3 h-3 rounded-full bg-red-500"></div>
-    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+<div class="window-titlebar">
+  <div class="window-controls" role="group" aria-label="Controles de ventana">
+    {
+      closable && windowId ? (
+        <>
+          <button
+            type="button"
+            class="window-control window-control--close"
+            data-window-close={windowId}
+            aria-label="Cerrar ventana"
+          />
+          <button
+            type="button"
+            class="window-control window-control--min"
+            data-window-minimize={windowId}
+            aria-label="Minimizar ventana"
+          />
+          <button
+            type="button"
+            class="window-control window-control--max"
+            data-window-maximize={windowId}
+            aria-label="Maximizar ventana"
+          />
+        </>
+      ) : (
+        <>
+          <div class="window-control window-control--close" aria-hidden="true"></div>
+          <div class="window-control window-control--min" aria-hidden="true"></div>
+          <div class="window-control window-control--max" aria-hidden="true"></div>
+        </>
+      )
+    }
   </div>
-  {title && <span class="text-muted text-xs ml-2 hidden sm:inline">{title}</span>}
+  <div
+    class:list={['window-titlebar__drag', draggable && 'cursor-grab select-none']}
+    data-drag-handle={draggable ? true : undefined}
+  >
+    {title && <span class="window-titlebar__title">{title}</span>}
+  </div>
 </div>

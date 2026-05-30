@@ -1,0 +1,21 @@
+# Dependabot version updates (security updates are not delayed by cooldown).
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#cooldown
+
+version: 2
+
+updates:
+  # GitHub Actions — weekly checks, 7-day cooldown before opening version-update PRs
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+
+  # npm/pnpm (package.json + pnpm-lock.yaml at repo root)
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

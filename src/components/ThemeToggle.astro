@@ -1,21 +1,22 @@
 ---
-import "../styles/tooltip.css";
-
 interface Props {
   class?: string;
 }
 
-const { class: className = "" } = Astro.props;
+const { class: className = '' } = Astro.props;
 ---
 
 <button
   type="button"
   aria-label="Toggle dark mode"
   data-tooltip="Cambiar tema"
-  class:list={["theme-toggle tooltip p-1 text-secondary hover:text-accent transition-all duration-200", className]}
+  class:list={[
+    'theme-toggle tooltip p-1 text-secondary transition-all duration-200 hover:text-accent',
+    className,
+  ]}
 >
   <svg
-    class="sun-icon w-4 h-4 hidden"
+    class="sun-icon hidden h-4 w-4"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -29,7 +30,7 @@ const { class: className = "" } = Astro.props;
     ></path>
   </svg>
   <svg
-    class="moon-icon w-4 h-4 hidden"
+    class="moon-icon hidden h-4 w-4"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -50,7 +51,7 @@ const { class: className = "" } = Astro.props;
     const sunIcons = document.querySelectorAll('.sun-icon');
     const moonIcons = document.querySelectorAll('.moon-icon');
 
-    sunIcons.forEach(icon => {
+    sunIcons.forEach((icon) => {
       if (isDark) {
         icon.classList.remove('hidden');
       } else {
@@ -58,7 +59,7 @@ const { class: className = "" } = Astro.props;
       }
     });
 
-    moonIcons.forEach(icon => {
+    moonIcons.forEach((icon) => {
       if (isDark) {
         icon.classList.add('hidden');
       } else {
@@ -74,7 +75,7 @@ const { class: className = "" } = Astro.props;
   }
 
   function setupThemeToggles() {
-    document.querySelectorAll('.theme-toggle').forEach(button => {
+    document.querySelectorAll('.theme-toggle').forEach((button) => {
       button.addEventListener('click', toggleTheme);
     });
     updateThemeIcons();

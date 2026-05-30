@@ -5,6 +5,7 @@ description: Primer señal de vida
 published: false
 heroImage: bluemarble.jpg
 ---
+
 # Aquí habrá algo interesante
 
 ## Lo juro
