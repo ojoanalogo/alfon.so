@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { SOCIAL_LINKS, type SocialPlatform } from '../../../config';
+import { postDateFormatter, POST_DATE_MIN_WIDTH } from '../../../config/postFormatting';
 
 export function InfoRow({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -94,12 +95,6 @@ export function SocialMediaIcons() {
   );
 }
 
-const dateFormatter = new Intl.DateTimeFormat('es-MX', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-});
-
 export function PostListItem({
   title,
   slug,
@@ -115,8 +110,8 @@ export function PostListItem({
   return (
     <li className="flex flex-col gap-x-2 sm:flex-row">
       <div className="flex flex-row items-center gap-2 text-sm">
-        <time dateTime={date.toISOString()} className="min-w-[120px]">
-          {dateFormatter.format(date)}
+        <time dateTime={date.toISOString()} style={{ minWidth: `${POST_DATE_MIN_WIDTH}px` }}>
+          {postDateFormatter.format(date)}
         </time>
         <a
           className="hover:text-accent hover:underline"

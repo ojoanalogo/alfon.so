@@ -15,7 +15,7 @@ export default function WindowTitlebar({
 }: WindowTitlebarProps) {
   return (
     <div
-      className="window-titlebar__drag cursor-grab select-none"
+      className="window-titlebar__drag select-none"
       onPointerDown={onMoveStart}
       onDoubleClick={onDoubleClick}
     >

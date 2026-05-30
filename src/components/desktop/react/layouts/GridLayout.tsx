@@ -1,17 +1,42 @@
-import type { ReactNode } from 'react';
+import { useContext, createContext, useMemo, type ReactNode } from 'react';
+import type { ListItem } from './types';
+import {
+  ICON_SIZE_PX,
+  useGridSettings,
+  type GridIconSize,
+  type GridSpacing,
+} from '../context/GridSettingsContext';
 
-export interface GridLayoutItem {
-  id: string;
-  label: string;
-  iconSrc?: string;
-  /** Emoji or custom graphic when no iconSrc. */
-  graphic?: ReactNode;
-  title?: string;
-  disabled?: boolean;
+/**
+ * Per-app override of the global GridSettings. Drilled through ExplorerLayout
+ * so each app can pin its own icon size / spacing without touching user prefs.
+ */
+export interface GridOverrides {
+  iconSize?: GridIconSize;
+  spacing?: GridSpacing;
 }
 
+const GridOverridesContext = createContext<GridOverrides | null>(null);
+
+export function GridOverridesProvider({
+  overrides,
+  children,
+}: {
+  overrides?: GridOverrides;
+  children: ReactNode;
+}) {
+  const value = useMemo(() => overrides ?? null, [overrides]);
+  return <GridOverridesContext.Provider value={value}>{children}</GridOverridesContext.Provider>;
+}
+
+const SPACING_GAP_PX: Record<GridSpacing, number> = {
+  compact: 8,
+  normal: 16,
+  roomy: 24,
+};
+
 interface GridLayoutProps {
-  items: GridLayoutItem[];
+  items: ListItem[];
   onActivate: (id: string) => void;
   /** Optional section heading above the grid. */
   heading?: string;
@@ -21,9 +46,11 @@ interface GridLayoutProps {
 
 function GridCell({
   item,
+  iconPx,
   onActivate,
 }: {
-  item: GridLayoutItem;
+  item: ListItem;
+  iconPx: number;
   onActivate: (id: string) => void;
 }) {
   const { id, label, iconSrc, graphic, title, disabled } = item;
@@ -34,8 +61,8 @@ function GridCell({
         <img
           src={iconSrc}
           alt=""
-          width={32}
-          height={32}
+          width={iconPx}
+          height={iconPx}
           className="desktop-icon-grid__icon"
           loading="lazy"
           decoding="async"
@@ -79,12 +106,20 @@ export default function GridLayout({
   className,
   children,
 }: GridLayoutProps) {
+  const { settings } = useGridSettings();
+  const overrides = useContext(GridOverridesContext);
+
+  const iconSize = overrides?.iconSize ?? settings.iconSize;
+  const spacing = overrides?.spacing ?? settings.spacing;
+  const iconPx = ICON_SIZE_PX[iconSize];
+  const gap = SPACING_GAP_PX[spacing];
+
   return (
     <div className={['window-grid-layout', className].filter(Boolean).join(' ')}>
       {heading && <p className="window-grid-layout__heading">{heading}</p>}
-      <div className="desktop-icon-grid" role="list">
+      <div className="desktop-icon-grid" role="list" style={{ gap: `${gap}px` }}>
         {items.map((item) => (
-          <GridCell key={item.id} item={item} onActivate={onActivate} />
+          <GridCell key={item.id} item={item} iconPx={iconPx} onActivate={onActivate} />
         ))}
       </div>
       {children}

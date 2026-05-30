@@ -1,47 +1,17 @@
 ---
 import type { ImageMetadata } from 'astro';
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
-import readingTime from 'reading-time';
-import { marked } from 'marked';
 import DesktopApp from '../components/desktop/react/DesktopApp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { DESKTOP_ICON_URLS } from '../lib/desktopIcons';
+import { prepareBlogPost } from '../lib/blog';
 import { sortMDByDate } from '../utils';
 import type { BlogPostSummary, WallpaperOption } from '../components/desktop/react/types';
 
 const MAX_POSTS = 10;
 const entries = sortMDByDate(await getCollection('blog')).slice(0, MAX_POSTS);
-
-const posts: BlogPostSummary[] = await Promise.all(
-  entries.map(async (entry) => {
-    // Prefer Astro's own rendered HTML so the window matches the post page;
-    // fall back to rendering the raw markdown body if it isn't available.
-    await render(entry);
-    const rendered = (entry as unknown as { rendered?: { html?: string } }).rendered?.html;
-    const html = rendered ?? (await marked.parse(entry.body ?? ''));
-
-    let heroImageSrc: string | undefined;
-    if (entry.data.heroImage) {
-      const image = await getImage({ src: entry.data.heroImage, width: 1200 });
-      heroImageSrc = image.src;
-    }
-
-    const stats = readingTime(entry.body ?? '');
-
-    return {
-      title: entry.data.title,
-      slug: entry.id,
-      publishDate: new Date(entry.data.publishDate).toISOString(),
-      description: entry.data.description,
-      readingTime: stats.text,
-      tags: entry.data.tags ?? [],
-      heroImageSrc,
-      heroImageAlt: entry.data.title,
-      html,
-    };
-  }),
-);
+const posts: BlogPostSummary[] = await Promise.all(entries.map((entry) => prepareBlogPost(entry)));
 
 const wallpaperModules = import.meta.glob<{ default: ImageMetadata }>(
   '../assets/wallpapers/*.{jpg,jpeg,png,webp}',

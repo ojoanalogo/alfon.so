@@ -1,23 +1,15 @@
 ---
+import { postDateFormatter, POST_DATE_MIN_WIDTH } from '../config/postFormatting';
+
 const { post } = Astro.props;
-
-const dateFormat = new Intl.DateTimeFormat('es-MX', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-});
-
-function getFormattedDate(date: Date) {
-  return dateFormat.format(date);
-}
 
 const date = new Date(post.data.publishDate);
 const datetime = date.toISOString();
-const postDate = getFormattedDate(date);
+const postDate = postDateFormatter.format(date);
 ---
 
 <div class="flex flex-row items-center gap-2 text-sm">
-  <time datetime={datetime} class="min-w-[120px]">{postDate}</time>
+  <time datetime={datetime} style={`min-width:${POST_DATE_MIN_WIDTH}px`}>{postDate}</time>
   <a class="hover:text-accent hover:underline" href={`/blog/${post.id}/`}>
     {post.data.title}
   </a>

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { type DesktopIcon } from '../../../config';
 import ContextMenu, { type ContextMenuItem } from './ContextMenu';
-import { useWallpaper } from './context/WallpaperContext';
+import { useResolvedIconLabelTone } from './utils/useResolvedIconLabelTone';
 import { type DesktopIconsState, type IconPosition } from './useDesktopIcons';
 
 interface DesktopIconsProps {
@@ -65,7 +65,7 @@ export default function DesktopIcons({
     deleteIcons,
     restoreAll,
   } = state;
-  const { iconLabelTone } = useWallpaper();
+  const iconLabelTone = useResolvedIconLabelTone();
 
   const [marquee, setMarquee] = useState<MarqueeRect | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
@@ -286,7 +286,7 @@ export default function DesktopIcons({
               onContextMenu={(event) => handleIconContextMenu(event, icon)}
             >
               <span className="desktop-icon__graphic" aria-hidden="true">
-                <img src={icon.iconSrc} alt="" width={32} height={32} loading="lazy" decoding="async" />
+                <img src={icon.iconSrc} alt="" width={48} height={48} loading="lazy" decoding="async" />
               </span>
               <span className="desktop-icon__label">{icon.label}</span>
             </button>

@@ -1,0 +1,64 @@
+import type { WindowDef, WindowGeometry } from '../types';
+import { minWidthForDef, MIN_WIDTH, TASKBAR_HEIGHT } from '../useWindowManager';
+
+/** Matches `40rem` breakpoints used in global.css. */
+export const MOBILE_BREAKPOINT_PX = 640;
+
+const EDGE_MARGIN = 8;
+
+export function isMobileViewport(width?: number): boolean {
+  if (typeof window === 'undefined') return false;
+  return (width ?? window.innerWidth) < MOBILE_BREAKPOINT_PX;
+}
+
+export function effectiveMinWidth(def: WindowDef, viewportWidth: number): number {
+  const configured = minWidthForDef(def);
+  const available = Math.max(240, viewportWidth - EDGE_MARGIN * 2);
+  if (isMobileViewport(viewportWidth)) {
+    return Math.min(configured, available);
+  }
+  return Math.min(configured, Math.max(MIN_WIDTH, available));
+}
+
+export function mobileWindowGeometry(
+  viewportWidth: number,
+  viewportHeight: number,
+): WindowGeometry {
+  return {
+    x: EDGE_MARGIN,
+    y: EDGE_MARGIN,
+    width: viewportWidth - EDGE_MARGIN * 2,
+    height: viewportHeight - TASKBAR_HEIGHT - EDGE_MARGIN * 2,
+  };
+}
+
+export function clampInitialGeometryForViewport(
+  def: WindowDef,
+  viewportWidth: number,
+  viewportHeight: number,
+): WindowGeometry {
+  if (isMobileViewport(viewportWidth)) {
+    const mobile = mobileWindowGeometry(viewportWidth, viewportHeight);
+    return {
+      ...mobile,
+      height: def.defaultHeight ?? mobile.height,
+    };
+  }
+
+  const minW = effectiveMinWidth(def, viewportWidth);
+  const width = Math.max(minW, Math.min(def.defaultWidth, viewportWidth - EDGE_MARGIN * 2));
+
+  if (def.center) {
+    const heightEstimate = def.defaultHeight ?? 140;
+    const x = Math.max(EDGE_MARGIN, (viewportWidth - width) / 2);
+    const y = Math.max(
+      EDGE_MARGIN,
+      (viewportHeight - TASKBAR_HEIGHT - heightEstimate) / 2,
+    );
+    return { x, y, width, height: def.defaultHeight ?? null };
+  }
+
+  const maxX = Math.max(EDGE_MARGIN, viewportWidth - width - EDGE_MARGIN);
+  const x = Math.min(def.defaultX, maxX);
+  return { x, y: def.defaultY, width, height: null };
+}

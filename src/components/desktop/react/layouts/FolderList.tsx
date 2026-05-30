@@ -1,17 +1,9 @@
 import type { ReactNode } from 'react';
-
-export interface FolderEntry {
-  id: string;
-  name: string;
-  kind: string;
-  size?: string;
-  /** Emoji or short glyph for the row. */
-  icon: ReactNode;
-  disabled?: boolean;
-}
+import type { ListItem } from './types';
+import { fakeFileSize } from './fakeFileSize';
 
 interface FolderListProps {
-  entries: FolderEntry[];
+  items: ListItem[];
   onOpen?: (id: string) => void;
   className?: string;
   showHeader?: boolean;
@@ -28,42 +20,59 @@ function FolderListHeader() {
   );
 }
 
+function renderRowIcon(item: ListItem): ReactNode {
+  if (item.iconSrc) {
+    return (
+      <img
+        src={item.iconSrc}
+        alt=""
+        width={16}
+        height={16}
+        loading="lazy"
+        decoding="async"
+      />
+    );
+  }
+  return item.graphic ?? null;
+}
+
 function FolderListRow({
-  entry,
+  item,
   onOpen,
 }: {
-  entry: FolderEntry;
+  item: ListItem;
   onOpen?: (id: string) => void;
 }) {
+  const size = item.size ?? fakeFileSize(item.id, item.kind ?? '');
   const content = (
     <>
       <span className="folder-list__icon" aria-hidden="true">
-        {entry.icon}
+        {renderRowIcon(item)}
       </span>
-      <span className="folder-list__name">{entry.name}</span>
-      <span className="folder-list__kind">{entry.kind}</span>
-      <span className="folder-list__size">{entry.size ?? '—'}</span>
+      <span className="folder-list__name">{item.label}</span>
+      <span className="folder-list__kind">{item.kind ?? '—'}</span>
+      <span className="folder-list__size">{size ?? '—'}</span>
     </>
   );
 
-  if (entry.disabled || !onOpen) {
+  if (item.disabled || !onOpen) {
     return <div className="folder-list__row folder-list__row--disabled">{content}</div>;
   }
 
   return (
-    <button type="button" className="folder-list__row" onClick={() => onOpen(entry.id)}>
+    <button type="button" className="folder-list__row" onClick={() => onOpen(item.id)}>
       {content}
     </button>
   );
 }
 
-export default function FolderList({ entries, onOpen, className, showHeader }: FolderListProps) {
+export default function FolderList({ items, onOpen, className, showHeader }: FolderListProps) {
   return (
     <ul className={['folder-list', className].filter(Boolean).join(' ')} role="list">
       {showHeader && <FolderListHeader />}
-      {entries.map((entry) => (
-        <li key={entry.id}>
-          <FolderListRow entry={entry} onOpen={onOpen} />
+      {items.map((item) => (
+        <li key={item.id}>
+          <FolderListRow item={item} onOpen={onOpen} />
         </li>
       ))}
     </ul>

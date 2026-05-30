@@ -1,36 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { WindowDef, WindowGeometry, WindowState } from './types';
+import { clampInitialGeometryForViewport, effectiveMinWidth } from './utils/viewport';
 
 export const MIN_WIDTH = 400;
 export const MIN_HEIGHT = 140;
 export const TASKBAR_HEIGHT = 40;
-const EDGE_MARGIN = 16;
 
 export function minWidthForDef(def: WindowDef): number {
   return def.minWidth ?? MIN_WIDTH;
-}
-
-function clampInitialGeometry(
-  def: WindowDef,
-  viewportWidth: number,
-  viewportHeight: number,
-): WindowGeometry {
-  const minW = minWidthForDef(def);
-  const width = Math.max(minW, Math.min(def.defaultWidth, viewportWidth - EDGE_MARGIN * 2));
-
-  if (def.center) {
-    const heightEstimate = def.defaultHeight ?? MIN_HEIGHT;
-    const x = Math.max(EDGE_MARGIN, (viewportWidth - width) / 2);
-    const y = Math.max(
-      EDGE_MARGIN,
-      (viewportHeight - TASKBAR_HEIGHT - heightEstimate) / 2,
-    );
-    return { x, y, width, height: def.defaultHeight ?? null };
-  }
-
-  const maxX = Math.max(EDGE_MARGIN, viewportWidth - width - EDGE_MARGIN);
-  const x = Math.min(def.defaultX, maxX);
-  return { x, y: def.defaultY, width, height: null };
 }
 
 function createInitialState(
@@ -39,7 +16,7 @@ function createInitialState(
   viewportHeight: number,
 ): Record<string, WindowState> {
   const entries = defs.map((def) => {
-    const geometry = clampInitialGeometry(def, viewportWidth, viewportHeight);
+    const geometry = clampInitialGeometryForViewport(def, viewportWidth, viewportHeight);
     const state: WindowState = {
       id: def.id,
       ...geometry,
@@ -154,14 +131,18 @@ export function useWindowManager(
         const target = prev[id];
         if (!target) return prev;
         const def = defs.find((entry) => entry.id === id);
-        const minW = def ? minWidthForDef(def) : MIN_WIDTH;
+        const vw =
+          typeof window !== 'undefined' ? window.innerWidth : viewportWidth;
+        const minW = def
+          ? effectiveMinWidth(def, vw)
+          : Math.min(MIN_WIDTH, vw - 16);
         const next: Partial<WindowGeometry> = { ...geometry };
         if (next.width != null) next.width = Math.max(minW, next.width);
         if (next.height != null) next.height = Math.max(MIN_HEIGHT, next.height);
         return { ...prev, [id]: { ...target, ...next } };
       });
     },
-    [defs],
+    [defs, viewportWidth],
   );
 
   const unfocus = useCallback(() => {

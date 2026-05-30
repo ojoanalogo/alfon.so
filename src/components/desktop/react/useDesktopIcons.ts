@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { DesktopIcon } from '../../../config';
 
 export interface IconPosition {
@@ -9,21 +9,41 @@ export interface IconPosition {
 /** Default left-column layout, mirroring the original vertical icon stack. */
 const BASE_X = 16;
 const BASE_Y = 16;
-const ROW_PITCH = 84;
-const COL_PITCH = 96;
 /** Wrap to a new column after this many icons (keeps them inside short viewports). */
-const MAX_ROWS = 7;
-/** Approximate icon footprint, used for viewport clamping. */
-const ICON_WIDTH = 80;
-const ICON_HEIGHT = 72;
+const MAX_ROWS_DESKTOP = 7;
+const ROW_PITCH_DESKTOP = 84;
+const COL_PITCH_DESKTOP = 96;
+/** Approximate icon footprint on desktop, used for viewport clamping. */
+const ICON_WIDTH_DESKTOP = 80;
+const ICON_HEIGHT_DESKTOP = 72;
 const EDGE_MARGIN = 8;
 const TASKBAR_HEIGHT = 40;
+const MOBILE_BREAKPOINT = 640;
+
+function isMobileViewport(): boolean {
+  return typeof window !== 'undefined' && window.innerWidth < MOBILE_BREAKPOINT;
+}
+
+function iconGridForViewport(): { maxRows: number; rowPitch: number; colPitch: number } {
+  if (isMobileViewport()) {
+    return { maxRows: 4, rowPitch: 100, colPitch: 100 };
+  }
+  return { maxRows: MAX_ROWS_DESKTOP, rowPitch: ROW_PITCH_DESKTOP, colPitch: COL_PITCH_DESKTOP };
+}
+
+function iconFootprint(): { width: number; height: number } {
+  if (isMobileViewport()) {
+    return { width: 96, height: 104 };
+  }
+  return { width: ICON_WIDTH_DESKTOP, height: ICON_HEIGHT_DESKTOP };
+}
 
 function defaultPositions(icons: DesktopIcon[]): Record<string, IconPosition> {
+  const { maxRows, rowPitch, colPitch } = iconGridForViewport();
   const entries = icons.map((icon, index) => {
-    const col = Math.floor(index / MAX_ROWS);
-    const row = index % MAX_ROWS;
-    return [icon.id, { x: BASE_X + col * COL_PITCH, y: BASE_Y + row * ROW_PITCH }] as const;
+    const col = Math.floor(index / maxRows);
+    const row = index % maxRows;
+    return [icon.id, { x: BASE_X + col * colPitch, y: BASE_Y + row * rowPitch }] as const;
   });
   return Object.fromEntries(entries);
 }
@@ -31,10 +51,11 @@ function defaultPositions(icons: DesktopIcon[]): Record<string, IconPosition> {
 /** Keep an icon within the visible desktop area (only runs in the browser). */
 function clampPosition(pos: IconPosition): IconPosition {
   if (typeof window === 'undefined') return pos;
-  const maxX = Math.max(EDGE_MARGIN, window.innerWidth - ICON_WIDTH - EDGE_MARGIN);
+  const { width: iconWidth, height: iconHeight } = iconFootprint();
+  const maxX = Math.max(EDGE_MARGIN, window.innerWidth - iconWidth - EDGE_MARGIN);
   const maxY = Math.max(
     EDGE_MARGIN,
-    window.innerHeight - TASKBAR_HEIGHT - ICON_HEIGHT - EDGE_MARGIN,
+    window.innerHeight - TASKBAR_HEIGHT - iconHeight - EDGE_MARGIN,
   );
   return {
     x: Math.min(Math.max(pos.x, EDGE_MARGIN), maxX),
@@ -76,6 +97,23 @@ export function useDesktopIcons(icons: DesktopIcon[]): DesktopIconsState {
   const [deleted, setDeleted] = useState<Set<string>>(() => new Set());
   /** Emptied from the trash — gone until reload. */
   const [purged, setPurged] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    function relayout() {
+      setPositions((prev) => {
+        const visible = icons.filter((icon) => !deleted.has(icon.id) && !purged.has(icon.id));
+        const baseline = defaultPositions(visible);
+        const next: Record<string, IconPosition> = {};
+        for (const icon of visible) {
+          const current = prev[icon.id] ?? baseline[icon.id];
+          next[icon.id] = clampPosition(current ?? baseline[icon.id]);
+        }
+        return next;
+      });
+    }
+    window.addEventListener('resize', relayout);
+    return () => window.removeEventListener('resize', relayout);
+  }, [icons, deleted, purged]);
 
   const visibleIcons = useMemo(
     () => icons.filter((icon) => !deleted.has(icon.id) && !purged.has(icon.id)),

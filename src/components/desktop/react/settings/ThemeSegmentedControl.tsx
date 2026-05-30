@@ -1,3 +1,4 @@
+import { MoonIcon, SunIcon } from '../icons/ThemeIcons';
 import { useTheme } from '../useTheme';
 
 export default function ThemeSegmentedControl() {
@@ -12,7 +13,7 @@ export default function ThemeSegmentedControl() {
         onClick={() => setTheme('light')}
       >
         <span className="theme-segmented__icon" aria-hidden="true">
-          ☀
+          <SunIcon className="theme-segmented__svg" />
         </span>
         <span>Claro</span>
       </button>
@@ -23,7 +24,7 @@ export default function ThemeSegmentedControl() {
         onClick={() => setTheme('dark')}
       >
         <span className="theme-segmented__icon" aria-hidden="true">
-          ☾
+          <MoonIcon className="theme-segmented__svg" />
         </span>
         <span>Oscuro</span>
       </button>

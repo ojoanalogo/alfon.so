@@ -1,17 +1,12 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { CARD_BASE } from '../../styles/tokens';
 
 type Props = HTMLAttributes<'div'>;
 
 const { class: className = '', ...attrs } = Astro.props;
 ---
 
-<div
-  class:list={[
-    'rounded-lg border border-gray-400/50 bg-white/70 p-4 font-mono text-sm backdrop-blur-lg transition-all duration-300 hover:shadow-sm sm:p-6 dark:border-gray-400/30 dark:bg-black/10 dark:hover:shadow-md dark:hover:shadow-black/20',
-    className,
-  ]}
-  {...attrs}
->
+<div class:list={[CARD_BASE, 'p-4 sm:p-6', className]} {...attrs}>
   <slot />
 </div>

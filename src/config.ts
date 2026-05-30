@@ -56,60 +56,9 @@ export interface DesktopIcon extends DesktopIconDefinition {
   iconSrc: string;
 }
 
-export const DESKTOP_ICON_DEFS: DesktopIconDefinition[] = [
-  {
-    id: 'terminal',
-    label: 'terminal.sh',
-    kind: 'window',
-    windowId: 'terminal',
-    tooltip: 'Terminal',
-  },
-  {
-    id: 'about',
-    label: 'about.txt',
-    kind: 'window',
-    windowId: 'about',
-    defaultOpen: true,
-    tooltip: 'Mi info',
-  },
-  {
-    id: 'projects',
-    label: 'proyectos',
-    kind: 'window',
-    windowId: 'projects',
-    tooltip: 'Mis proyectos',
-  },
-  {
-    id: 'blog',
-    label: 'blog.sql',
-    kind: 'window',
-    windowId: 'blog',
-    tooltip: 'Mis posts',
-  },
-  {
-    id: 'settings',
-    label: 'ajustes',
-    kind: 'window',
-    windowId: 'settings',
-    tooltip: 'Ajustes del escritorio',
-  },
-  {
-    id: 'photos',
-    label: 'photos.jpg',
-    kind: 'link',
-    href: 'https://ojoanalogo.com',
-    external: true,
-    tooltip: 'Mi vida en fotos',
-  },
-  {
-    id: 'startup',
-    label: 'startup.sh',
-    kind: 'link',
-    href: 'https://molecula.digital',
-    external: true,
-    tooltip: 'Mi startup de productos digitales',
-  },
-];
+// DESKTOP_ICON_DEFS used to live here. The app registry now owns app icons
+// (src/components/desktop/react/apps/registry.ts) and DESKTOP_LINKS owns the
+// external link tiles (src/components/desktop/react/apps/desktopIcons.ts).
 
 export type SocialPlatform = 'twitter' | 'github' | 'instagram' | 'linkedin';
 

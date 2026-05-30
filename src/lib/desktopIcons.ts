@@ -11,9 +11,7 @@ import trash from '../assets/icons/desktop/trash.svg?url';
 import video from '../assets/icons/desktop/video.svg?url';
 import type { DesktopIconDefinition, DesktopIcon } from '../config';
 
-export type DesktopIconUrls = Record<string, string>;
-
-export const DESKTOP_ICON_URLS: DesktopIconUrls = {
+export const DESKTOP_ICON_URLS = {
   about,
   blog,
   classified,
@@ -25,10 +23,27 @@ export const DESKTOP_ICON_URLS: DesktopIconUrls = {
   'trash-full': trashFull,
   trash,
   video,
-};
+} as const;
+
+export type IconKey = keyof typeof DESKTOP_ICON_URLS;
+export type DesktopIconUrls = Record<string, string>;
+
+/** True for the bundled icon keys above — narrows arbitrary strings to IconKey. */
+export function isIconKey(key: string): key is IconKey {
+  return key in DESKTOP_ICON_URLS;
+}
 
 export function resolveIconUrl(urls: DesktopIconUrls, key: string): string {
-  return urls[key] ?? '';
+  const url = urls[key];
+  if (!url) {
+    if (import.meta.env.DEV) {
+      throw new Error(
+        `[desktopIcons] Unknown icon key "${key}". Add the SVG to src/assets/icons/desktop/ and register it in DESKTOP_ICON_URLS.`,
+      );
+    }
+    return '';
+  }
+  return url;
 }
 
 export function resolveDesktopIcons(

@@ -138,7 +138,9 @@
   }
 
   .window-titlebar__toolbar {
+    display: flex;
     flex-shrink: 0;
+    align-items: center;
     margin-left: auto;
   }
 
@@ -245,21 +247,26 @@
 
   .layout-switcher {
     display: inline-flex;
-    height: 1.125rem;
     align-items: center;
-    gap: 0.0625rem;
-    border: 1px solid rgb(113 113 122 / 0.35);
-    padding: 0 0.125rem;
+    gap: 0.1875rem;
+    padding: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
   }
 
   .layout-switcher__btn {
+    box-sizing: border-box;
     display: inline-flex;
-    height: 0.875rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    border: 1px solid transparent;
-    background: transparent;
-    padding: 0 0.25rem;
+    border: 1px solid rgb(113 113 122 / 0.45);
+    border-radius: 0.125rem;
+    background: rgb(255 255 255 / 0.5);
+    padding: 0;
     font-family: inherit;
     font-size: 0.6875rem;
     line-height: 1;
@@ -267,7 +274,13 @@
     cursor: pointer;
   }
 
+  html.dark .layout-switcher__btn {
+    border-color: rgb(113 113 122 / 0.5);
+    background: rgb(24 24 27 / 0.55);
+  }
+
   .layout-switcher__btn:hover {
+    border-color: rgb(113 113 122 / 0.65);
     color: var(--color-primary);
   }
 
@@ -875,7 +888,20 @@
   }
 
   .theme-segmented__icon {
-    font-size: 0.6875rem;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .theme-segmented__svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .theme-segmented__emoji {
+    font-size: 0.75rem;
     line-height: 1;
   }
 
@@ -1442,6 +1468,159 @@
 
   .desktop-taskbar__start.is-active .desktop-taskbar__start-mark {
     color: var(--color-primary);
+  }
+
+  /* --- Mobile / narrow viewports (desktop metaphor) ---------------------- */
+  @media (width < 40rem) {
+    .desktop {
+      height: 100dvh;
+    }
+
+    .desktop-window {
+      width: auto;
+      min-width: 0;
+      max-width: none;
+    }
+
+    .desktop-window[data-window-id='about'] {
+      min-width: 0;
+    }
+
+    /* Full-viewport “app” feel: inline geometry can lag behind resize. */
+    .desktop-window:not(.desktop-window--expanded):not([inert]) {
+      top: 8px !important;
+      right: 8px !important;
+      bottom: calc(2.5rem + 8px) !important;
+      left: 8px !important;
+      width: auto !important;
+      height: auto !important;
+    }
+
+    .desktop-window__resize {
+      display: none;
+    }
+
+    .window-controls {
+      gap: 0.5rem;
+      padding: 0 0.5rem;
+    }
+
+    .window-control {
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+
+    .desktop-taskbar {
+      gap: 0.375rem;
+      padding: 0 0.5rem;
+    }
+
+    .desktop-taskbar__left {
+      gap: 0.375rem;
+    }
+
+    .desktop-taskbar__start {
+      padding: 0.2rem 0.4rem;
+    }
+
+    .desktop-taskbar__start-label {
+      display: none;
+    }
+
+    .desktop-taskbar__start-mark {
+      font-size: 1.125rem;
+    }
+
+    .desktop-taskbar__windows {
+      gap: 0.25rem;
+    }
+
+    .desktop-taskbar__window {
+      max-width: 2.25rem;
+      padding: 0.25rem;
+    }
+
+    .desktop-taskbar__window-label {
+      display: none;
+    }
+
+    .desktop-taskbar__tray {
+      padding-left: 0.375rem;
+    }
+
+    .desktop-taskbar__clock {
+      padding: 0.125rem 0.25rem;
+    }
+
+    .desktop-taskbar__clock-date {
+      display: none;
+    }
+
+    .browser-titlebar__app {
+      display: none;
+    }
+
+    .browser-titlebar__reload {
+      height: 1.5rem;
+      min-width: 1.5rem;
+      padding: 0 0.375rem;
+    }
+
+    .browser-titlebar__address {
+      height: 1.5rem;
+    }
+
+    .desktop-icon {
+      width: 5.75rem;
+      max-width: 5.75rem;
+      gap: 0.5rem;
+      padding: 0.375rem 0.25rem;
+    }
+
+    .desktop-icon__label {
+      font-size: 0.6875rem;
+      line-height: 1.25;
+      max-width: 5.5rem;
+    }
+
+    .desktop-icon__graphic,
+    .desktop-icon__graphic img {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .start-menu {
+      width: min(18rem, calc(100vw - 0.75rem));
+      max-height: min(24rem, calc(100dvh - 4rem));
+    }
+
+    .start-menu__body {
+      max-height: min(18rem, calc(100dvh - 7rem));
+    }
+
+    .card-body {
+      padding: 0.75rem;
+    }
+
+    .card-body.card-body--explorer-list,
+    .card-body.card-body--settings {
+      padding: 0;
+    }
+
+    .folder-list__row {
+      grid-template-columns: 1.25rem minmax(0, 1fr);
+      gap: 0.375rem;
+    }
+
+    .folder-list__kind,
+    .folder-list__size,
+    .folder-list__header {
+      display: none;
+    }
+
+    .window-titlebar__title {
+      font-size: 0.625rem;
+    }
   }
 
   .start-menu {

@@ -6,11 +6,11 @@ import { MIN_WIDTH } from '../useWindowManager';
 import WindowControls from './WindowControls';
 import WindowTitlebar from './WindowTitlebar';
 import { useWindowGestures } from './useWindowGestures';
+import { BORDER_DEFAULT } from '../../../../styles/tokens';
 
 const RESIZE_DIRECTIONS: ResizeDirection[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
 
-const CARD_CLASS =
-  'desktop-window__card border border-gray-400/50 p-0 font-mono text-sm overflow-hidden dark:border-gray-400/30';
+const CARD_CLASS = `desktop-window__card border ${BORDER_DEFAULT} p-0 font-mono text-sm overflow-hidden`;
 
 export interface WindowProps {
   state: WindowState;

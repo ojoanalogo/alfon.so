@@ -1,58 +1,44 @@
 import type { ReactNode } from 'react';
 import { useExplorerView } from '../context/ExplorerViewContext';
-import GridLayout, { type GridLayoutItem } from './GridLayout';
-import FolderList, { type FolderEntry } from './FolderList';
-import { fakeFileSize } from './fakeFileSize';
+import { useGridSettings } from '../context/GridSettingsContext';
+import GridLayout, { GridOverridesProvider, type GridOverrides } from './GridLayout';
+import FolderList from './FolderList';
+import type { ListItem } from './types';
 
-export interface ExplorerItem {
-  id: string;
-  label: string;
-  kind: string;
-  icon?: ReactNode;
-  iconSrc?: string;
-  graphic?: ReactNode;
-  size?: string;
-  disabled?: boolean;
-  title?: string;
-}
+/**
+ * Back-compat alias — ExplorerItem was renamed to ListItem.
+ * Prefer importing ListItem directly from `./types` in new code.
+ */
+export type ExplorerItem = ListItem;
 
 interface ExplorerLayoutProps {
-  items: ExplorerItem[];
+  items: ListItem[];
   onActivate: (id: string) => void;
+  /** Per-app grid overrides (icon size, spacing). */
+  gridOverrides?: GridOverrides;
   children?: ReactNode;
 }
 
-export default function ExplorerLayout({ items, onActivate, children }: ExplorerLayoutProps) {
+function sortItems(items: ListItem[], sortBy: 'name' | 'kind'): ListItem[] {
+  if (sortBy === 'kind') {
+    return [...items].sort((a, b) =>
+      (a.kind ?? '').localeCompare(b.kind ?? '') || a.label.localeCompare(b.label),
+    );
+  }
+  // Default 'name': preserve insertion order for already-curated lists.
+  return items;
+}
+
+export default function ExplorerLayout({
+  items,
+  onActivate,
+  gridOverrides,
+  children,
+}: ExplorerLayoutProps) {
   const { mode } = useExplorerView();
+  const { settings } = useGridSettings();
 
-  const gridItems: GridLayoutItem[] = items.map((item) => ({
-    id: item.id,
-    label: item.label,
-    iconSrc: item.iconSrc,
-    graphic: item.graphic ?? item.icon,
-    title: item.title,
-    disabled: item.disabled,
-  }));
-
-  const folderEntries: FolderEntry[] = items.map((item) => ({
-    id: item.id,
-    name: item.label,
-    kind: item.kind,
-    size: item.size ?? fakeFileSize(item.id, item.kind),
-    icon: item.iconSrc ? (
-      <img
-        src={item.iconSrc}
-        alt=""
-        width={16}
-        height={16}
-        loading="lazy"
-        decoding="async"
-      />
-    ) : (
-      (item.graphic ?? item.icon)
-    ),
-    disabled: item.disabled,
-  }));
+  const sorted = sortItems(items, settings.sortBy);
 
   function handleActivate(id: string) {
     const item = items.find((entry) => entry.id === id);
@@ -63,9 +49,11 @@ export default function ExplorerLayout({ items, onActivate, children }: Explorer
   return (
     <div className="explorer-layout text-xs">
       {mode === 'grid' ? (
-        <GridLayout items={gridItems} onActivate={handleActivate} />
+        <GridOverridesProvider overrides={gridOverrides}>
+          <GridLayout items={sorted} onActivate={handleActivate} />
+        </GridOverridesProvider>
       ) : (
-        <FolderList entries={folderEntries} onOpen={handleActivate} showHeader />
+        <FolderList items={sorted} onOpen={handleActivate} showHeader />
       )}
       {children}
     </div>

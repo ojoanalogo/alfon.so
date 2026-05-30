@@ -1,4 +1,4 @@
-import { useWallpaper } from './context/WallpaperContext';
+import { useResolvedIconLabelTone } from './utils/useResolvedIconLabelTone';
 import { resolveIconUrl } from '../../../lib/desktopIcons';
 
 const TRASH_EMPTY_KEY = 'trash';
@@ -11,7 +11,7 @@ interface PapeleraProps {
 }
 
 export default function Papelera({ trashedCount, iconUrls, onOpen }: PapeleraProps) {
-  const { iconLabelTone } = useWallpaper();
+  const iconLabelTone = useResolvedIconLabelTone();
   const iconSrc =
     trashedCount > 0
       ? resolveIconUrl(iconUrls, TRASH_FULL_KEY)

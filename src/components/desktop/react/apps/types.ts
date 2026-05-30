@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { BlogPostSummary, WindowDef } from '../types';
+import type { BrowserHistories } from '../browser/useBrowserHistories';
 
 export interface TrashItem {
   id: string;
@@ -15,15 +16,18 @@ export interface TrashController {
   onEmpty: () => void;
 }
 
-/** Props passed to every window app renderer. */
+/**
+ * Props passed to every window app renderer. App authors should treat this as
+ * the read-only environment their app runs in — to mutate state, call the
+ * provided handlers (`onOpenPost`, `onOpenLink`, `browsers.navigate`, …).
+ */
 export interface WindowAppContext {
   posts: BlogPostSummary[];
-  browserUrl: string | null;
-  browserReloadKey: number;
   onOpenPost: (slug: string) => void;
+  /** Open a URL in the main browser window. */
   onOpenLink: (url: string) => void;
-  onBrowserReload: () => void;
-  onBrowserNavigate: (url: string) => void;
+  /** Per-browser-app navigation state. */
+  browsers: BrowserHistories;
   focusedWindowId: string | null;
   trash: TrashController;
   iconUrls: Record<string, string>;
@@ -48,26 +52,3 @@ export interface WindowAppEntry {
 }
 
 export type WindowAppRegistry = Record<string, WindowAppEntry>;
-
-/** Resolve chrome options — static object or dynamic function. */
-export function resolveWindowChrome(
-  entry: WindowAppEntry | undefined,
-  _def: WindowDef,
-  ctx: WindowAppContext,
-): WindowChromeOptions {
-  if (!entry?.chrome) return {};
-  const chrome = typeof entry.chrome === 'function' ? entry.chrome(ctx) : entry.chrome;
-  return {
-    ...chrome,
-    resolveTitle: chrome.resolveTitle ?? ((d) => d.title),
-  };
-}
-
-export function resolveWindowTitle(
-  entry: WindowAppEntry | undefined,
-  def: WindowDef,
-  ctx: WindowAppContext,
-): string {
-  const chrome = resolveWindowChrome(entry, def, ctx);
-  return chrome.resolveTitle?.(def, ctx) ?? def.title;
-}
