@@ -39,10 +39,11 @@ export const NAV_LINKS: NavLink[] = [
 
 export type DesktopIconKind = 'window' | 'link';
 
-export interface DesktopIcon {
+export interface DesktopIconDefinition {
   id: string;
   label: string;
-  iconSrc: string;
+  /** Asset filename stem in src/assets/icons/desktop. Defaults to id. */
+  iconKey?: string;
   kind: DesktopIconKind;
   windowId?: string;
   href?: string;
@@ -51,11 +52,14 @@ export interface DesktopIcon {
   tooltip?: string;
 }
 
-export const DESKTOP_ICONS: DesktopIcon[] = [
+export interface DesktopIcon extends DesktopIconDefinition {
+  iconSrc: string;
+}
+
+export const DESKTOP_ICON_DEFS: DesktopIconDefinition[] = [
   {
     id: 'terminal',
     label: 'terminal.sh',
-    iconSrc: '/icons/desktop/terminal.svg',
     kind: 'window',
     windowId: 'terminal',
     tooltip: 'Terminal',
@@ -63,7 +67,6 @@ export const DESKTOP_ICONS: DesktopIcon[] = [
   {
     id: 'about',
     label: 'about.txt',
-    iconSrc: '/icons/desktop/about.svg',
     kind: 'window',
     windowId: 'about',
     defaultOpen: true,
@@ -72,7 +75,6 @@ export const DESKTOP_ICONS: DesktopIcon[] = [
   {
     id: 'projects',
     label: 'proyectos',
-    iconSrc: '/icons/desktop/projects.svg',
     kind: 'window',
     windowId: 'projects',
     tooltip: 'Mis proyectos',
@@ -80,15 +82,20 @@ export const DESKTOP_ICONS: DesktopIcon[] = [
   {
     id: 'blog',
     label: 'blog.sql',
-    iconSrc: '/icons/desktop/blog.svg',
     kind: 'window',
     windowId: 'blog',
     tooltip: 'Mis posts',
   },
   {
+    id: 'settings',
+    label: 'ajustes',
+    kind: 'window',
+    windowId: 'settings',
+    tooltip: 'Ajustes del escritorio',
+  },
+  {
     id: 'photos',
     label: 'photos.jpg',
-    iconSrc: '/icons/desktop/photos.svg',
     kind: 'link',
     href: 'https://ojoanalogo.com',
     external: true,
@@ -97,7 +104,6 @@ export const DESKTOP_ICONS: DesktopIcon[] = [
   {
     id: 'startup',
     label: 'startup.sh',
-    iconSrc: '/icons/desktop/startup.svg',
     kind: 'link',
     href: 'https://molecula.digital',
     external: true,

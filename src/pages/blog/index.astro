@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import SiteNavLinks from '../../components/SiteNavLinks.astro';
 import Card from '../../components/ui/Card.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { sortMDByDate } from '../../utils';
+import TerminalPrompt from '../../components/ui/TerminalPrompt.astro';
 import SectionHeading from '../../components/ui/SectionHeading.astro';
 import PostList from '../../components/ui/PostList.astro';
 
@@ -11,12 +11,9 @@ const allPosts = await getCollection('blog');
 const allPostsByDate = sortMDByDate(allPosts);
 ---
 
-<BaseLayout title="Blog">
+<BaseLayout title="Blog" navbarActiveItemID="blog">
   <section aria-label="Publicaciones de mi sitio">
     <Card>
-      <nav aria-label="Sitio" class="mb-4 border-b border-gray-300 pb-3 dark:border-gray-600">
-        <SiteNavLinks activeItemID="blog" />
-      </nav>
       <SectionHeading as="h1">📝 Publicaciones</SectionHeading>
 
       {
@@ -32,6 +29,8 @@ const allPostsByDate = sortMDByDate(allPosts);
           <PostList posts={allPostsByDate} />
         )
       }
+
+      <TerminalPrompt command={`ls -la blog/ | total ${allPostsByDate.length}`} />
     </Card>
   </section>
 </BaseLayout>

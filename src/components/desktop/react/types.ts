@@ -28,6 +28,8 @@ export interface WindowDef {
   initialZ?: number;
   /** Initial height in px; omit for content-driven height. */
   defaultHeight?: number;
+  /** Place the window at the viewport center on first layout. */
+  center?: boolean;
 }
 
 export type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
@@ -43,4 +45,11 @@ export interface BlogPostSummary {
   heroImageAlt?: string;
   /** Pre-rendered HTML for the post body. */
   html: string;
+}
+
+export interface WallpaperOption {
+  id: string;
+  label: string;
+  src: string;
+  thumbSrc: string;
 }

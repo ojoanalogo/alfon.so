@@ -1,26 +1,27 @@
-import type { ReactNode } from 'react';
-import type { BlogPostSummary, WindowDef } from './types';
+import { useEffect, useState, type ReactNode } from 'react';
+import type { BlogPostSummary, WindowDef } from '../types';
+import { normalizeBrowserUrl } from '../browserUtils';
+import ExplorerLayout, { type ExplorerItem } from '../layouts/ExplorerLayout';
+import ListLayout from '../layouts/ListLayout';
+import Modal from '../ui/Modal';
+import SettingsContent from '../settings/SettingsContent';
 import {
   Divider,
   ExternalLink,
   InfoRow,
   PostListItem,
   SocialMediaIcons,
-} from './parts';
-import DesktopIconGrid from './DesktopIconGrid';
-import TerminalApp from './TerminalApp';
+} from '../parts';
+import TerminalApp from '../TerminalApp';
+import type { TrashController, WindowAppRegistry } from './types';
 
 export const POST_WINDOW_PREFIX = 'post:';
+export const BROWSER_WINDOW_ID = 'browser';
 
 export function postWindowId(slug: string) {
   return `${POST_WINDOW_PREFIX}${slug}`;
 }
 
-export function isPostWindowId(id: string) {
-  return id.startsWith(POST_WINDOW_PREFIX);
-}
-
-/** One closed-by-default window per post, cascaded across the desktop. */
 export function createPostWindowDefs(posts: BlogPostSummary[]): WindowDef[] {
   return posts.map((post, index) => ({
     id: postWindowId(post.slug),
@@ -45,11 +46,12 @@ export const WINDOW_DEFS: WindowDef[] = [
   {
     id: 'about',
     title: 'about.txt',
-    defaultX: 104,
-    defaultY: 24,
+    defaultX: 0,
+    defaultY: 0,
     defaultWidth: 576,
     minWidth: 520,
     defaultOpen: true,
+    center: true,
     initialZ: 11,
   },
   {
@@ -101,7 +103,16 @@ export const WINDOW_DEFS: WindowDef[] = [
     initialZ: 17,
   },
   {
-    id: 'browser',
+    id: 'settings',
+    title: 'ajustes',
+    defaultX: 240,
+    defaultY: 72,
+    defaultWidth: 580,
+    defaultHeight: 420,
+    initialZ: 18,
+  },
+  {
+    id: BROWSER_WINDOW_ID,
     title: 'web browser',
     defaultX: 180,
     defaultY: 80,
@@ -159,15 +170,32 @@ const PROJECTS = [
   },
 ];
 
-export const BROWSER_WINDOW_ID = 'browser';
-
 export function BrowserTitleContent({
   url,
   onReload,
+  onNavigate,
 }: {
   url: string | null;
   onReload: () => void;
+  onNavigate: (url: string) => void;
 }) {
+  const [draft, setDraft] = useState(url ?? '');
+
+  useEffect(() => {
+    setDraft(url ?? '');
+  }, [url]);
+
+  function submitAddress() {
+    const normalized = normalizeBrowserUrl(draft);
+    if (normalized) {
+      onNavigate(normalized);
+      return;
+    }
+    if (url) {
+      setDraft(url);
+    }
+  }
+
   return (
     <div className="browser-titlebar">
       <span className="browser-titlebar__app">web browser</span>
@@ -185,13 +213,30 @@ export function BrowserTitleContent({
       >
         ↻
       </button>
-      <div className="browser-titlebar__address">
+      <div
+        className="browser-titlebar__address"
+        onPointerDown={(event) => event.stopPropagation()}
+      >
         <span className="browser-titlebar__scheme" aria-hidden="true">
           🌐
         </span>
-        <span className="browser-titlebar__url" title={url ?? undefined}>
-          {url ?? 'about:blank'}
-        </span>
+        <input
+          type="text"
+          className="browser-titlebar__url-input"
+          value={draft}
+          placeholder="about:blank"
+          aria-label="Dirección web"
+          spellCheck={false}
+          autoCapitalize="off"
+          autoCorrect="off"
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              submitAddress();
+            }
+          }}
+        />
         {url && (
           <a
             className="browser-titlebar__external"
@@ -236,7 +281,7 @@ function AboutContent() {
         </div>
       </div>
 
-      <div className="mb-4 rounded-lg bg-gray-200/50 p-3 dark:bg-gray-500/10">
+      <div className="mb-4 rounded-lg bg-stone-300/70 p-3 dark:bg-gray-500/10">
         <p className="leading-relaxed text-primary">
           bienvenido a mi pequeño rincón en internet, aquí encontrarás mis pensamientos (pocos), mis
           proyectos y mi blog.
@@ -287,7 +332,7 @@ function AboutContent() {
 
       <InfoRow label="contacto">
         <a
-          className="text-accent hover:underline focus:outline-none"
+          className="text-primary hover:text-accent hover:underline focus:outline-none"
           href="mailto:hola@alfon.so"
           aria-label="Enviar email a hola@alfon.so"
         >
@@ -306,7 +351,7 @@ function AboutContent() {
             {Object.keys(TECH_STACK).map((lang) => (
               <span
                 key={lang}
-                className="text-secondary transition-colors hover:text-accent"
+                className="text-secondary transition-colors hover:text-primary"
                 title={TECH_STACK[lang]}
               >
                 {lang}
@@ -320,16 +365,17 @@ function AboutContent() {
 }
 
 function ProjectsContent({ onOpenLink }: { onOpenLink: (url: string) => void }) {
-  const items = PROJECTS.map((project) => ({
+  const items: ExplorerItem[] = PROJECTS.map((project) => ({
     id: project.title,
     label: project.title,
+    kind: 'Proyecto',
     graphic: project.icon,
     title: project.description,
     disabled: !project.link,
   }));
 
   return (
-    <DesktopIconGrid
+    <ExplorerLayout
       items={items}
       onActivate={(id) => {
         const project = PROJECTS.find((entry) => entry.title === id);
@@ -347,24 +393,22 @@ function BlogContent({
   onOpenPost: (slug: string) => void;
 }) {
   return (
-    <div>
-      <ul className="space-y-4 sm:space-y-2">
-        {posts.map((post) => (
-          <PostListItem
-            key={post.slug}
-            title={post.title}
-            slug={post.slug}
-            publishDate={post.publishDate}
-            onOpen={() => onOpenPost(post.slug)}
-          />
-        ))}
-      </ul>
-    </div>
+    <ListLayout>
+      {posts.map((post) => (
+        <PostListItem
+          key={post.slug}
+          title={post.title}
+          slug={post.slug}
+          publishDate={post.publishDate}
+          onOpen={() => onOpenPost(post.slug)}
+        />
+      ))}
+    </ListLayout>
   );
 }
 
 const PROSE_CLASS =
-  'prose prose-base max-w-none prose-zinc dark:prose-invert prose-headings:scroll-mt-20 prose-headings:font-bold prose-headings:text-primary prose-h1:text-2xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:text-xl prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-lg prose-p:leading-relaxed prose-p:text-secondary prose-a:text-accent prose-a:no-underline hover:prose-a:underline prose-blockquote:rounded-r prose-blockquote:border-l-accent prose-blockquote:bg-accent/5 prose-blockquote:px-4 prose-blockquote:py-1 prose-strong:font-semibold prose-strong:text-primary prose-code:rounded prose-code:bg-accent/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-accent prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-gray-300/50 prose-pre:bg-surface prose-pre:text-sm dark:prose-pre:border-gray-700/50 prose-li:text-secondary prose-li:marker:text-accent prose-img:rounded-lg prose-img:shadow-md';
+  'prose prose-base max-w-none prose-zinc dark:prose-invert prose-headings:scroll-mt-20 prose-headings:font-bold prose-headings:text-primary prose-h1:text-2xl prose-h2:mt-8 prose-h2:mb-3 prose-h2:text-xl prose-h3:mt-6 prose-h3:mb-2 prose-h3:text-lg prose-p:leading-relaxed prose-p:text-secondary prose-a:text-primary hover:prose-a:text-accent prose-a:no-underline hover:prose-a:underline prose-blockquote:rounded-r prose-blockquote:border-l-zinc-400/60 dark:prose-blockquote:border-l-zinc-500/60 prose-blockquote:bg-black/[0.04] dark:prose-blockquote:bg-white/[0.04] prose-blockquote:px-4 prose-blockquote:py-1 prose-strong:font-semibold prose-strong:text-primary prose-code:rounded prose-code:bg-black/[0.06] dark:prose-code:bg-white/[0.08] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-primary prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-gray-300/50 prose-pre:bg-surface prose-pre:text-sm dark:prose-pre:border-gray-700/50 prose-li:text-secondary prose-li:marker:text-muted prose-img:rounded-lg prose-img:shadow-md';
 
 const longDateFormatter = new Intl.DateTimeFormat('es-MX', {
   day: 'numeric',
@@ -402,7 +446,7 @@ function PostContent({ post }: { post: BlogPostSummary }) {
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded border border-gray-400/40 bg-accent/10 px-2 py-0.5 text-xs text-accent"
+                className="rounded border border-gray-400/40 bg-black/[0.05] px-2 py-0.5 text-xs text-secondary dark:bg-white/[0.08]"
               >
                 #{tag}
               </span>
@@ -417,7 +461,7 @@ function PostContent({ post }: { post: BlogPostSummary }) {
 
       <footer className="mt-8 border-t border-gray-300/50 pt-4 text-right dark:border-gray-700/50">
         <a
-          className="text-xs text-accent hover:underline"
+          className="text-xs text-primary hover:text-accent hover:underline"
           href={`/blog/${post.slug}/`}
           target="_blank"
           rel="noopener noreferrer"
@@ -505,7 +549,7 @@ function ClassifiedContent({ doc }: { doc: ClassifiedDoc }) {
       <ul className="space-y-1.5 text-secondary">
         {doc.bullets.map((bullet, index) => (
           <li key={index} className="flex gap-2">
-            <span className="text-accent">▸</span>
+            <span className="text-muted">▸</span>
             <span className="leading-relaxed">{bullet}</span>
           </li>
         ))}
@@ -542,128 +586,186 @@ function HappyContent() {
   );
 }
 
-export interface TrashItem {
+interface TrashJunkItem {
   id: string;
-  label: string;
-  iconSrc: string;
+  name: string;
+  kind: string;
+  icon: string;
+  windowId?: string;
+  iconKey?: string;
 }
 
-/** "Junk" files that always live inside the trash — the easter eggs. */
-export const TRASH_FILES: { windowId: string; label: string; iconSrc: string }[] = [
-  { windowId: 'area51', label: 'area51.pdf', iconSrc: '/icons/desktop/classified.svg' },
-  { windowId: 'ovnis', label: 'ovnis.pdf', iconSrc: '/icons/desktop/classified.svg' },
-  { windowId: 'happy', label: 'no_abrir.mp4', iconSrc: '/icons/desktop/video.svg' },
+/** Permanent papelera contents — folder-style junk drawer. */
+const TRASH_JUNK: TrashJunkItem[] = [
+  { id: 'area51', name: 'area51.pdf', kind: 'PDF', icon: '📄', windowId: 'area51', iconKey: 'classified' },
+  { id: 'ovnis', name: 'ovnis.pdf', kind: 'PDF', icon: '📄', windowId: 'ovnis', iconKey: 'classified' },
+  { id: 'happy', name: 'no_abrir.mp4', kind: 'Video', icon: '🎬', windowId: 'happy', iconKey: 'video' },
+  { id: 'cv', name: 'mi_cv_final_FINAL_v7.doc', kind: 'Documento', icon: '📄' },
+  { id: 'cv-copy', name: 'mi_cv_final_FINAL_v7 (copia).doc', kind: 'Documento', icon: '📄' },
+  { id: 'node_modules', name: 'node_modules', kind: 'Carpeta', icon: '📁' },
+  { id: 'ideas', name: 'ideas_de_negocio.txt', kind: 'Texto', icon: '📝' },
+  { id: 'screenshot', name: 'captura_muy_importante.png', kind: 'Imagen', icon: '🖼️' },
+  { id: 'zip', name: 'backup_backup.zip', kind: 'Carpeta comprimida', icon: '🗜️' },
+  { id: 'exe', name: 'totally_not_a_virus.exe', kind: 'Aplicación', icon: '⚙️' },
+  { id: 'todo', name: 'hacer_algo_productivo.md', kind: 'Markdown', icon: '📝' },
+  { id: 'readme', name: 'leer_esto.txt', kind: 'Texto', icon: '📄' },
 ];
 
-export interface TrashController {
-  /** Deleted desktop icons (restorable). */
-  items: TrashItem[];
-  /** Easter-egg files that always live in the trash (openable). */
-  files: { windowId: string; label: string; iconSrc: string }[];
-  onOpenFile: (windowId: string) => void;
-  onRestore: (id: string) => void;
-  onRestoreAll: () => void;
-  onEmpty: () => void;
+export function getTrashWindowMeta(iconUrls: Record<string, string>) {
+  return TRASH_JUNK.filter(
+    (entry): entry is TrashJunkItem & { windowId: string; iconKey: string } =>
+      Boolean(entry.windowId && entry.iconKey),
+  ).map((entry) => ({
+    windowId: entry.windowId,
+    label: entry.name,
+    iconSrc: iconUrls[entry.iconKey] ?? '',
+  }));
 }
 
-function TrashContent({ trash }: { trash: TrashController }) {
-  const { items, files, onOpenFile, onRestore, onRestoreAll, onEmpty } = trash;
+function TrashContent({
+  trash,
+  iconUrls,
+}: {
+  trash: TrashController;
+  iconUrls: Record<string, string>;
+}) {
+  const { items, onOpenFile, onRestore, onRestoreAll, onEmpty } = trash;
+  const [confirmEmpty, setConfirmEmpty] = useState(false);
 
-  const fileItems = files.map((file) => ({
-    id: file.windowId,
-    label: file.label,
-    iconSrc: file.iconSrc,
-    title: 'abrir',
+  const junkItems: ExplorerItem[] = TRASH_JUNK.map((entry) => ({
+    id: entry.id,
+    label: entry.name,
+    kind: entry.kind,
+    graphic: entry.icon,
+    iconSrc: entry.iconKey ? iconUrls[entry.iconKey] : undefined,
+    disabled: !entry.windowId,
   }));
 
-  const deletedItems = items.map((item) => ({
+  const deletedItems: ExplorerItem[] = items.map((item) => ({
     id: item.id,
     label: item.label,
+    kind: 'Icono eliminado',
     iconSrc: item.iconSrc,
-    title: 'clic para restaurar',
   }));
 
+  const explorerItems = [...junkItems, ...deletedItems];
+
+  function handleOpen(id: string) {
+    const junk = TRASH_JUNK.find((entry) => entry.id === id);
+    if (junk?.windowId) {
+      onOpenFile(junk.windowId);
+      return;
+    }
+    if (items.some((item) => item.id === id)) {
+      onRestore(id);
+    }
+  }
+
   return (
-    <div className="space-y-3 text-xs">
-      <DesktopIconGrid items={fileItems} onActivate={onOpenFile} />
+    <div className="explorer-panel text-xs">
+      <ExplorerLayout items={explorerItems} onActivate={handleOpen} />
 
       {items.length > 0 && (
-        <div className="space-y-2 border-t border-gray-300/50 pt-3 dark:border-gray-700/50">
-          <p className="text-[0.6rem] tracking-wide text-muted uppercase">
-            iconos eliminados · clic para restaurar
-          </p>
-          <DesktopIconGrid items={deletedItems} onActivate={onRestore} />
-
-          <div className="flex flex-wrap gap-2 pt-1">
-            <button
-              type="button"
-              className="border border-gray-400/40 bg-white/40 px-2 py-1 text-[0.65rem] text-secondary hover:border-accent hover:text-primary dark:bg-black/20"
-              onClick={onRestoreAll}
-            >
-              restaurar todo
-            </button>
-            <button
-              type="button"
-              className="border border-gray-400/40 bg-white/40 px-2 py-1 text-[0.65rem] text-red-600 hover:border-red-500 dark:bg-black/20 dark:text-red-400"
-              onClick={onEmpty}
-            >
-              vaciar papelera
-            </button>
-          </div>
+        <div className="explorer-actions flex flex-wrap gap-2">
+          <button type="button" className="window-action-btn" onClick={onRestoreAll}>
+            restaurar todo
+          </button>
+          <button
+            type="button"
+            className="window-action-btn window-action-btn--destructive"
+            onClick={() => setConfirmEmpty(true)}
+          >
+            vaciar papelera
+          </button>
         </div>
+      )}
+
+      {confirmEmpty && (
+        <Modal
+          title="Vaciar papelera"
+          confirmLabel="Vaciar"
+          destructive
+          onConfirm={onEmpty}
+          onClose={() => setConfirmEmpty(false)}
+        >
+          <p>
+            ¿Eliminar permanentemente {items.length} icono{items.length === 1 ? '' : 's'}? Esta acción
+            no se puede deshacer.
+          </p>
+        </Modal>
       )}
     </div>
   );
 }
 
-export function WindowContent({
-  id,
-  posts,
-  browserUrl,
-  browserReloadKey = 0,
-  onOpenPost,
-  onOpenLink,
-  trash,
-}: {
-  id: string;
-  posts: BlogPostSummary[];
-  browserUrl: string | null;
-  browserReloadKey?: number;
-  onOpenPost: (slug: string) => void;
-  onOpenLink: (url: string) => void;
-  trash: TrashController;
-}) {
-  if (id === BROWSER_WINDOW_ID) {
-    if (!browserUrl) {
-      return <p className="text-xs text-muted">escribe una URL o abre un enlace externo.</p>;
-    }
-    return <BrowserContent url={browserUrl} reloadKey={browserReloadKey} />;
-  }
-
-  if (id.startsWith(POST_WINDOW_PREFIX)) {
-    const slug = id.slice(POST_WINDOW_PREFIX.length);
-    const post = posts.find((entry) => entry.slug === slug);
-    return post ? <PostContent post={post} /> : null;
-  }
-
-  switch (id) {
-    case 'terminal':
-      return <TerminalApp posts={posts} />;
-    case 'about':
-      return <AboutContent />;
-    case 'projects':
-      return <ProjectsContent onOpenLink={onOpenLink} />;
-    case 'blog':
-      return <BlogContent posts={posts} onOpenPost={onOpenPost} />;
-    case 'area51':
-      return <ClassifiedContent doc={CLASSIFIED_DOCS.area51} />;
-    case 'ovnis':
-      return <ClassifiedContent doc={CLASSIFIED_DOCS.ovnis} />;
-    case 'happy':
-      return <HappyContent />;
-    case 'trash':
-      return <TrashContent trash={trash} />;
-    default:
-      return null;
-  }
+export function createWindowApps(): WindowAppRegistry {
+  return {
+    [BROWSER_WINDOW_ID]: {
+      render: ({ browserUrl, browserReloadKey }) => {
+        if (!browserUrl) {
+          return (
+            <p className="text-xs text-muted">
+              escribe una URL en la barra de arriba y presiona enter.
+            </p>
+          );
+        }
+        return <BrowserContent url={browserUrl} reloadKey={browserReloadKey} />;
+      },
+      chrome: (ctx) => ({
+        windowClassName: 'desktop-window--browser',
+        bodyClassName: 'browser-window__body',
+        resolveTitle: () => ctx.browserUrl ?? 'web browser',
+        titleContent: (
+          <BrowserTitleContent
+            url={ctx.browserUrl}
+            onReload={ctx.onBrowserReload}
+            onNavigate={ctx.onBrowserNavigate}
+          />
+        ),
+      }),
+    },
+    terminal: {
+      render: ({ posts, focusedWindowId }) => (
+        <TerminalApp posts={posts} focused={focusedWindowId === 'terminal'} />
+      ),
+      chrome: {
+        windowClassName: 'desktop-window--terminal',
+        bodyClassName: 'terminal-window__body',
+      },
+    },
+    about: {
+      render: () => <AboutContent />,
+    },
+    projects: {
+      explorer: true,
+      render: ({ onOpenLink }) => <ProjectsContent onOpenLink={onOpenLink} />,
+    },
+    blog: {
+      render: ({ posts, onOpenPost }) => <BlogContent posts={posts} onOpenPost={onOpenPost} />,
+    },
+    area51: {
+      render: () => <ClassifiedContent doc={CLASSIFIED_DOCS.area51} />,
+    },
+    ovnis: {
+      render: () => <ClassifiedContent doc={CLASSIFIED_DOCS.ovnis} />,
+    },
+    happy: {
+      render: () => <HappyContent />,
+    },
+    trash: {
+      explorer: true,
+      render: ({ trash, iconUrls }) => <TrashContent trash={trash} iconUrls={iconUrls} />,
+    },
+    settings: {
+      render: () => <SettingsContent />,
+      chrome: { bodyClassName: 'card-body--settings' },
+    },
+    'post:*': {
+      render: ({ posts }, id) => {
+        const slug = id.slice(POST_WINDOW_PREFIX.length);
+        const post = posts.find((entry) => entry.slug === slug);
+        return post ? <PostContent post={post} /> : null;
+      },
+    },
+  };
 }

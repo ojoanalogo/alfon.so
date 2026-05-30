@@ -25,7 +25,7 @@ export function ExternalLink({
     <a
       target="_blank"
       rel="noopener noreferrer"
-      className={['text-accent hover:underline focus:outline-none', className].filter(Boolean).join(' ')}
+      className={['text-primary hover:text-accent hover:underline focus:outline-none', className].filter(Boolean).join(' ')}
       href={href}
       aria-label={label}
     >
@@ -91,89 +91,6 @@ export function SocialMediaIcons() {
         );
       })}
     </ul>
-  );
-}
-
-export interface Project {
-  title: string;
-  description: string;
-  link: string;
-  icon: string;
-}
-
-export function ProjectItem({
-  project,
-  index,
-  onOpen,
-}: {
-  project: Project;
-  index: number;
-  onOpen?: () => void;
-}) {
-  const number = String(index + 1).padStart(2, '0');
-
-  if (project.link) {
-    return (
-      <div
-        className="group rounded p-1 transition-colors hover:bg-gray-200/50 dark:hover:bg-gray-900/40"
-        role="listitem"
-      >
-        <a
-          href={project.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block rounded focus:outline-none"
-          aria-label={`Visitar ${project.title}: ${project.description}`}
-          onClick={(event) => {
-            if (!onOpen || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) {
-              return;
-            }
-            event.preventDefault();
-            onOpen();
-          }}
-        >
-          <div className="flex items-start gap-2">
-            <span className="w-6 shrink-0 text-muted" aria-hidden="true">
-              {number}.
-            </span>
-            <span className="shrink-0" role="img" aria-label="Icono del proyecto">
-              {project.icon}
-            </span>
-            <div className="min-w-0 flex-1">
-              <span className="block font-semibold text-secondary group-hover:text-accent sm:inline">
-                {project.title}
-              </span>
-              <span className="mt-1 block text-muted sm:mt-0 sm:ml-2 sm:inline">
-                → {project.description}
-              </span>
-            </div>
-          </div>
-        </a>
-      </div>
-    );
-  }
-
-  return (
-    <div className="group rounded p-1" role="listitem">
-      <div
-        className="flex items-start gap-2 opacity-60"
-        aria-label={`${project.title}: ${project.description}`}
-      >
-        <span className="w-6 shrink-0 text-muted" aria-hidden="true">
-          {number}.
-        </span>
-        <span className="shrink-0" role="img" aria-label="Icono del proyecto">
-          {project.icon}
-        </span>
-        <div className="min-w-0 flex-1">
-          <span className="block font-semibold text-secondary sm:inline">{project.title}</span>
-          <span className="mt-1 block text-muted sm:mt-0 sm:ml-2 sm:inline">
-            → {project.description}
-          </span>
-          <span className="block text-muted/70 sm:ml-2 sm:inline">[próximamente]</span>
-        </div>
-      </div>
-    </div>
   );
 }
 

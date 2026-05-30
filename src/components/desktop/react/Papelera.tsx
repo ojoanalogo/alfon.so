@@ -1,16 +1,24 @@
-const TRASH_EMPTY_SRC = '/icons/desktop/trash.svg';
-const TRASH_FULL_SRC = '/icons/desktop/trash-full.svg';
+import { useWallpaper } from './context/WallpaperContext';
+import { resolveIconUrl } from '../../../lib/desktopIcons';
+
+const TRASH_EMPTY_KEY = 'trash';
+const TRASH_FULL_KEY = 'trash-full';
 
 interface PapeleraProps {
   trashedCount: number;
+  iconUrls: Record<string, string>;
   onOpen: () => void;
 }
 
-export default function Papelera({ trashedCount, onOpen }: PapeleraProps) {
-  const iconSrc = trashedCount > 0 ? TRASH_FULL_SRC : TRASH_EMPTY_SRC;
+export default function Papelera({ trashedCount, iconUrls, onOpen }: PapeleraProps) {
+  const { iconLabelTone } = useWallpaper();
+  const iconSrc =
+    trashedCount > 0
+      ? resolveIconUrl(iconUrls, TRASH_FULL_KEY)
+      : resolveIconUrl(iconUrls, TRASH_EMPTY_KEY);
 
   return (
-    <div className="papelera">
+    <div className={['papelera', `papelera--labels-${iconLabelTone}`].join(' ')}>
       <button type="button" className="papelera__trigger" onClick={onOpen} aria-label="Papelera">
         <span className="papelera__graphic" aria-hidden="true">
           <img

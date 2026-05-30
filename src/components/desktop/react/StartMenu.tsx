@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
-import { DESKTOP_ICONS, NAV_LINKS, SITE_TITLE, SOCIAL_LINKS, type NavLink } from '../../../config';
+import { NAV_LINKS, SITE_TITLE, SOCIAL_LINKS, type DesktopIcon, type NavLink } from '../../../config';
 
 export interface StartMenuProps {
   anchor: HTMLElement;
+  apps: DesktopIcon[];
   onClose: () => void;
   onOpenExternal: (url: string) => void;
   onOpenWindow: (id: string) => void;
@@ -22,6 +23,7 @@ function navigateLink(link: NavLink, onOpenExternal: (url: string) => void) {
 
 export default function StartMenu({
   anchor,
+  apps,
   onClose,
   onOpenExternal,
   onOpenWindow,
@@ -29,8 +31,6 @@ export default function StartMenu({
 }: StartMenuProps) {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const posRef = useRef({ left: 0, bottom: TASKBAR_HEIGHT });
-
-  const apps = DESKTOP_ICONS.filter((icon) => icon.kind === 'window' && icon.windowId);
 
   const reposition = useCallback(() => {
     const rect = anchor.getBoundingClientRect();
@@ -95,7 +95,7 @@ export default function StartMenu({
     >
       <header className="start-menu__header">
         <span className="start-menu__logo" aria-hidden="true">
-          ▣
+          🧐
         </span>
         <div className="start-menu__brand">
           <span className="start-menu__title">{SITE_TITLE}</span>

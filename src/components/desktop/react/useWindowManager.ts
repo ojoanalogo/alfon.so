@@ -10,17 +10,36 @@ export function minWidthForDef(def: WindowDef): number {
   return def.minWidth ?? MIN_WIDTH;
 }
 
-function clampInitialGeometry(def: WindowDef, viewportWidth: number): WindowGeometry {
+function clampInitialGeometry(
+  def: WindowDef,
+  viewportWidth: number,
+  viewportHeight: number,
+): WindowGeometry {
   const minW = minWidthForDef(def);
   const width = Math.max(minW, Math.min(def.defaultWidth, viewportWidth - EDGE_MARGIN * 2));
+
+  if (def.center) {
+    const heightEstimate = def.defaultHeight ?? MIN_HEIGHT;
+    const x = Math.max(EDGE_MARGIN, (viewportWidth - width) / 2);
+    const y = Math.max(
+      EDGE_MARGIN,
+      (viewportHeight - TASKBAR_HEIGHT - heightEstimate) / 2,
+    );
+    return { x, y, width, height: def.defaultHeight ?? null };
+  }
+
   const maxX = Math.max(EDGE_MARGIN, viewportWidth - width - EDGE_MARGIN);
   const x = Math.min(def.defaultX, maxX);
   return { x, y: def.defaultY, width, height: null };
 }
 
-function createInitialState(defs: WindowDef[], viewportWidth: number): Record<string, WindowState> {
+function createInitialState(
+  defs: WindowDef[],
+  viewportWidth: number,
+  viewportHeight: number,
+): Record<string, WindowState> {
   const entries = defs.map((def) => {
-    const geometry = clampInitialGeometry(def, viewportWidth);
+    const geometry = clampInitialGeometry(def, viewportWidth, viewportHeight);
     const state: WindowState = {
       id: def.id,
       ...geometry,
@@ -44,13 +63,18 @@ export interface WindowManager {
   minimize: (id: string) => void;
   toggleMaximize: (id: string) => void;
   focus: (id: string) => void;
+  unfocus: () => void;
   setGeometry: (id: string, geometry: Partial<WindowGeometry>) => void;
 }
 
-export function useWindowManager(defs: WindowDef[], viewportWidth: number): WindowManager {
+export function useWindowManager(
+  defs: WindowDef[],
+  viewportWidth: number,
+  viewportHeight: number,
+): WindowManager {
   const order = useMemo(() => defs.map((def) => def.id), [defs]);
   const [windows, setWindows] = useState<Record<string, WindowState>>(() =>
-    createInitialState(defs, viewportWidth),
+    createInitialState(defs, viewportWidth, viewportHeight),
   );
 
   const topZ = useRef(
@@ -140,5 +164,20 @@ export function useWindowManager(defs: WindowDef[], viewportWidth: number): Wind
     [defs],
   );
 
-  return { windows, order, focusedId, open, close, minimize, toggleMaximize, focus, setGeometry };
+  const unfocus = useCallback(() => {
+    setFocusedId(null);
+  }, []);
+
+  return {
+    windows,
+    order,
+    focusedId,
+    open,
+    close,
+    minimize,
+    toggleMaximize,
+    focus,
+    unfocus,
+    setGeometry,
+  };
 }

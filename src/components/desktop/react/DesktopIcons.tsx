@@ -1,12 +1,14 @@
 import { useRef, useState } from 'react';
 import { type DesktopIcon } from '../../../config';
 import ContextMenu, { type ContextMenuItem } from './ContextMenu';
+import { useWallpaper } from './context/WallpaperContext';
 import { type DesktopIconsState, type IconPosition } from './useDesktopIcons';
 
 interface DesktopIconsProps {
   state: DesktopIconsState;
   onOpenWindow: (windowId: string) => void;
   onOpenLink: (url: string) => void;
+  onDesktopClick?: () => void;
 }
 
 const DRAG_THRESHOLD = 4;
@@ -43,7 +45,12 @@ interface MenuState {
   items: ContextMenuItem[];
 }
 
-export default function DesktopIcons({ state, onOpenWindow, onOpenLink }: DesktopIconsProps) {
+export default function DesktopIcons({
+  state,
+  onOpenWindow,
+  onOpenLink,
+  onDesktopClick,
+}: DesktopIconsProps) {
   const {
     positions,
     selected,
@@ -58,6 +65,7 @@ export default function DesktopIcons({ state, onOpenWindow, onOpenLink }: Deskto
     deleteIcons,
     restoreAll,
   } = state;
+  const { iconLabelTone } = useWallpaper();
 
   const [marquee, setMarquee] = useState<MarqueeRect | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
@@ -211,7 +219,10 @@ export default function DesktopIcons({ state, onOpenWindow, onOpenLink }: Deskto
   function handleSurfacePointerUp(event: React.PointerEvent) {
     const drag = marqueeDrag.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
-    if (!drag.moved) clearSelection();
+    if (!drag.moved) {
+      clearSelection();
+      onDesktopClick?.();
+    }
     marqueeDrag.current = null;
     setMarquee(null);
   }
@@ -249,7 +260,10 @@ export default function DesktopIcons({ state, onOpenWindow, onOpenLink }: Deskto
         onContextMenu={handleSurfaceContextMenu}
       />
 
-      <div className="desktop-icons" aria-label="Iconos de escritorio">
+      <div
+        className={['desktop-icons', `desktop-icons--labels-${iconLabelTone}`].join(' ')}
+        aria-label="Iconos de escritorio"
+      >
         {visibleIcons.map((icon) => {
           const pos = positions[icon.id] ?? { x: 0, y: 0 };
           return (

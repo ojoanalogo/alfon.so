@@ -1,7 +1,10 @@
 import { useRef, useState } from 'react';
+import { SITE_TITLE } from '../../../config';
 import ContextMenu, { type ContextMenuItem } from './ContextMenu';
 import StartMenu from './StartMenu';
 import ThemeToggle from './ThemeToggle';
+import TaskbarClock from './ui/TaskbarClock';
+import type { DesktopIcon } from '../../../config';
 import type { WindowState } from './types';
 
 export interface WindowMeta {
@@ -15,6 +18,7 @@ interface TaskbarProps {
   order: string[];
   focusedId: string | null;
   meta: Record<string, WindowMeta>;
+  startMenuApps: DesktopIcon[];
   onSelect: (id: string) => void;
   onMinimize: (id: string) => void;
   onClose: (id: string) => void;
@@ -34,6 +38,7 @@ export default function Taskbar({
   order,
   focusedId,
   meta,
+  startMenuApps,
   onSelect,
   onMinimize,
   onClose,
@@ -68,58 +73,68 @@ export default function Taskbar({
 
   return (
     <footer className="desktop-taskbar" aria-label="Barra de tareas">
-      <button
-        ref={startRef}
-        type="button"
-        className={['desktop-taskbar__start', startOpen && 'is-active'].filter(Boolean).join(' ')}
-        aria-haspopup="menu"
-        aria-expanded={startOpen}
-        title="Menú de inicio"
-        onClick={toggleStartMenu}
-      >
-        <span aria-hidden="true">▣</span>
-        <span>alfon.so</span>
-      </button>
-      <div className="desktop-taskbar__windows" aria-label="Ventanas abiertas">
-        {openWindows.map((win) => {
-          const item = meta[win.id];
-          if (!item) return null;
-          const className = [
-            'desktop-taskbar__window',
-            focusedId === win.id && !win.minimized && 'is-focused',
-            win.minimized && 'is-minimized',
-          ]
-            .filter(Boolean)
-            .join(' ');
-          return (
-            <button
-              key={win.id}
-              type="button"
-              className={className}
-              data-taskbar-window={win.id}
-              title={item.tooltip ?? item.label}
-              onClick={() => onSelect(win.id)}
-              onContextMenu={(event) => openWindowMenu(event, win)}
-            >
-              <img
-                src={item.iconSrc}
-                alt=""
-                width={16}
-                height={16}
-                className="desktop-taskbar__window-icon"
-                loading="lazy"
-                decoding="async"
-              />
-              <span className="desktop-taskbar__window-label">{item.label}</span>
-            </button>
-          );
-        })}
+      <div className="desktop-taskbar__left">
+        <button
+          ref={startRef}
+          type="button"
+          className={['desktop-taskbar__start', startOpen && 'is-active'].filter(Boolean).join(' ')}
+          aria-haspopup="menu"
+          aria-expanded={startOpen}
+          title="Menú de inicio"
+          onClick={toggleStartMenu}
+        >
+          <span className="desktop-taskbar__start-mark" aria-hidden="true">
+            ▣
+          </span>
+          <span className="desktop-taskbar__start-label">{SITE_TITLE}</span>
+        </button>
+
+        <div className="desktop-taskbar__windows" aria-label="Ventanas abiertas">
+          {openWindows.map((win) => {
+            const item = meta[win.id];
+            if (!item) return null;
+            const className = [
+              'desktop-taskbar__window',
+              focusedId === win.id && !win.minimized && 'is-focused',
+              win.minimized && 'is-minimized',
+            ]
+              .filter(Boolean)
+              .join(' ');
+            return (
+              <button
+                key={win.id}
+                type="button"
+                className={className}
+                data-taskbar-window={win.id}
+                title={item.tooltip ?? item.label}
+                onClick={() => onSelect(win.id)}
+                onContextMenu={(event) => openWindowMenu(event, win)}
+              >
+                <img
+                  src={item.iconSrc}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="desktop-taskbar__window-icon"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span className="desktop-taskbar__window-label">{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <ThemeToggle />
+
+      <div className="desktop-taskbar__tray" aria-label="Bandeja del sistema">
+        <ThemeToggle className="desktop-taskbar__tray-item" />
+        <TaskbarClock />
+      </div>
 
       {startOpen && startRef.current && (
         <StartMenu
           anchor={startRef.current}
+          apps={startMenuApps}
           onClose={() => setStartOpen(false)}
           onOpenExternal={onOpenExternal}
           onOpenWindow={onOpenWindow}

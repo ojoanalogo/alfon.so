@@ -1,23 +1,65 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import { NAV_LINKS } from '../config';
+
+interface Props {
+  navbarActiveItemID?: string;
+}
+
+const { navbarActiveItemID } = Astro.props;
 ---
 
-<header id="main-header" class="relative z-50 overflow-visible px-2 py-4 md:px-6">
-  <div class="mx-auto" data-draggable-window data-draggable-fixed style="z-index: 20;">
+<header id="main-header" class="relative z-50 px-2 py-4 md:px-6">
+  <div class="mx-auto">
     <div
-      class="overflow-hidden rounded-lg border border-gray-400/50 bg-white/70 font-mono text-sm backdrop-blur-lg transition-all duration-300 hover:shadow-sm dark:border-gray-400/30 dark:bg-black/10 dark:hover:shadow-md dark:hover:shadow-black/20"
+      class="rounded-lg border border-gray-400/50 bg-white/70 font-mono text-sm backdrop-blur-lg transition-all duration-300 hover:shadow-sm dark:border-gray-400/30 dark:bg-black/10 dark:hover:shadow-md dark:hover:shadow-black/20"
     >
-      <div class="window-titlebar">
-        <div class="window-controls" role="group" aria-label="Controles de ventana">
-          <div class="window-control window-control--close" aria-hidden="true"></div>
-          <div class="window-control window-control--min" aria-hidden="true"></div>
-          <div class="window-control window-control--max" aria-hidden="true"></div>
+      <nav
+        id="navigation-menu"
+        aria-label="Main menu"
+        class="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+      >
+        <div class="flex items-center justify-between gap-2 sm:justify-start">
+          <div class="flex items-center gap-2">
+            <span class="text-secondary">$</span>
+            <span class="text-muted">./</span>
+            <a
+              href="/"
+              target="_self"
+              class="font-medium text-primary transition-colors duration-200 hover:text-accent hover:underline"
+            >
+              alfon.so
+            </a>
+          </div>
+          <ThemeToggle class="sm:hidden" />
         </div>
-        <div class="window-titlebar__drag cursor-grab select-none" data-drag-handle>
-          <span class="window-titlebar__title">~/alfon.so</span>
+        <div class="flex flex-wrap items-center gap-3 overflow-visible text-xs sm:gap-4">
+          {
+            NAV_LINKS.map((link) => {
+              const isActive = Boolean(link.id && link.id === navbarActiveItemID);
+              return (
+                <a
+                  href={link.redirect ? link.redirect : link.url}
+                  target={link.redirect ? '_blank' : '_self'}
+                  id={link.id}
+                  aria-current={isActive ? 'page' : undefined}
+                  class:list={[
+                    'rounded-sm px-1 py-0.5 transition-all duration-200',
+                    isActive
+                      ? 'bg-black/[0.08] font-semibold text-primary dark:bg-white/[0.1]'
+                      : 'text-secondary hover:text-accent',
+                    link.tooltip && 'tooltip',
+                  ]}
+                  data-tooltip={link.tooltip}
+                >
+                  {link.title}
+                </a>
+              );
+            })
+          }
+          <ThemeToggle class="hidden sm:block" />
         </div>
-        <ThemeToggle />
-      </div>
+      </nav>
     </div>
   </div>
 </header>

@@ -1,13 +1,14 @@
 ---
+import type { ImageMetadata } from 'astro';
 import { getCollection, render } from 'astro:content';
 import { getImage } from 'astro:assets';
 import readingTime from 'reading-time';
 import { marked } from 'marked';
-import NoiseBackground from '../components/NoiseBackground.astro';
 import DesktopApp from '../components/desktop/react/DesktopApp';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { DESKTOP_ICON_URLS } from '../lib/desktopIcons';
 import { sortMDByDate } from '../utils';
-import type { BlogPostSummary } from '../components/desktop/react/types';
+import type { BlogPostSummary, WallpaperOption } from '../components/desktop/react/types';
 
 const MAX_POSTS = 10;
 const entries = sortMDByDate(await getCollection('blog')).slice(0, MAX_POSTS);
@@ -41,12 +42,38 @@ const posts: BlogPostSummary[] = await Promise.all(
     };
   }),
 );
+
+const wallpaperModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/wallpapers/*.{jpg,jpeg,png,webp}',
+  { eager: true },
+);
+
+function formatWallpaperLabel(id: string) {
+  return `Imagen ${id}`;
+}
+
+const wallpapers: WallpaperOption[] = (
+  await Promise.all(
+    Object.entries(wallpaperModules).map(async ([path, mod]) => {
+      const fileName = path.split('/').pop() ?? path;
+      const id = fileName.replace(/\.[^.]+$/, '');
+      const srcAsset = mod.default;
+      const full = await getImage({ src: srcAsset, width: 1920, format: 'webp' });
+      const thumb = await getImage({ src: srcAsset, width: 280, format: 'webp' });
+
+      return {
+        id,
+        label: formatWallpaperLabel(id),
+        src: full.src,
+        thumbSrc: thumb.src,
+      };
+    }),
+  )
+).sort((left, right) => Number(left.id) - Number(right.id));
 ---
 
 <BaseLayout desktop>
-  <NoiseBackground slot="background" />
-
   <div class="desktop">
-    <DesktopApp client:load posts={posts} />
+    <DesktopApp client:load posts={posts} wallpapers={wallpapers} desktopIconUrls={DESKTOP_ICON_URLS} />
   </div>
 </BaseLayout>

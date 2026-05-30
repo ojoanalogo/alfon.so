@@ -1,4 +1,9 @@
-import { focusWindow } from './window-focus';
+let topZ = 10;
+
+function focusWindow(windowEl: HTMLElement) {
+  topZ += 1;
+  windowEl.style.zIndex = String(topZ);
+}
 
 function parsePx(value: string) {
   return Number.parseFloat(value) || 0;

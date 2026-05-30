@@ -13,13 +13,13 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write src",
-    "format:check": "prettier --check src"
+    "format:check": "prettier --check src",
+    "wallpapers:optimize": "node scripts/optimize-wallpapers.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "6.0.1",
     "@astrojs/react": "5.0.6",
     "@astrojs/sitemap": "3.7.3",
-    "@lucide/astro": "1.8.0",
     "astro": "6.4.2",
     "dayjs": "1.11.19",
     "framer-motion": "^12.40.0",

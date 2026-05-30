@@ -17,9 +17,6 @@ importers:
       '@astrojs/sitemap':
         specifier: 3.7.3
         version: 3.7.3
-      '@lucide/astro':
-        specifier: 1.8.0
-        version: 1.8.0(astro@6.4.2(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.57.1)(yaml@2.9.0))
       astro:
         specifier: 6.4.2
         version: 6.4.2(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.57.1)(yaml@2.9.0)
@@ -698,11 +695,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
-
-  '@lucide/astro@1.8.0':
-    resolution: {integrity: sha512-ZrzTu1L8b2XEA/hfCB0ZqTCQN3BXjvomuSaTHJzIBDFggOUTyzw55/klEo6tDFSl54d0KQTvcI1qJ7RgAVuCyg==}
-    peerDependencies:
-      astro: ^4 || ^5 || ^6
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -4112,10 +4104,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
-
-  '@lucide/astro@1.8.0(astro@6.4.2(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.57.1)(yaml@2.9.0))':
-    dependencies:
-      astro: 6.4.2(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.57.1)(yaml@2.9.0)
 
   '@mdx-js/mdx@3.1.1':
     dependencies:

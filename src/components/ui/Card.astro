@@ -1,18 +1,14 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-type Props = HTMLAttributes<'div'> & {
-  /** Title bar flush to top; body content uses .card-body padding */
-  windowed?: boolean;
-};
+type Props = HTMLAttributes<'div'>;
 
-const { class: className = '', windowed = false, ...attrs } = Astro.props;
+const { class: className = '', ...attrs } = Astro.props;
 ---
 
 <div
   class:list={[
-    'rounded-lg border border-gray-400/50 bg-white/70 font-mono text-sm backdrop-blur-lg transition-all duration-300 hover:shadow-sm dark:border-gray-400/30 dark:bg-black/10 dark:hover:shadow-md dark:hover:shadow-black/20',
-    windowed ? 'overflow-hidden p-0' : 'p-4 sm:p-6',
+    'rounded-lg border border-gray-400/50 bg-white/70 p-4 font-mono text-sm backdrop-blur-lg transition-all duration-300 hover:shadow-sm sm:p-6 dark:border-gray-400/30 dark:bg-black/10 dark:hover:shadow-md dark:hover:shadow-black/20',
     className,
   ]}
   {...attrs}
