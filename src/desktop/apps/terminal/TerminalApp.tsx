@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { BlogPostSummary } from './types';
+import type { BlogPostSummary } from '../../types';
 import {
   runTerminalCommand,
   TERMINAL_MOTD,
   TERMINAL_PROMPT,
   type TerminalBlock,
-} from './terminal/commands';
+} from './commands';
 
 interface TerminalAppProps {
   posts: BlogPostSummary[];

@@ -1,7 +1,8 @@
 import { SOCIAL_LINKS } from '@/config';
-import type { BlogPostSummary } from '../types';
-import { APPS } from '../apps/registry';
-import { PROJECTS, TRASH_JUNK } from '../apps/data';
+import type { BlogPostSummary } from '../../types';
+import { APPS } from '../registry';
+import { PROJECTS } from '../projects/data';
+import { TRASH_JUNK } from '../trash/junk';
 
 export const TERMINAL_PROMPT = 'guest@alfon.so:~$';
 

@@ -4,7 +4,7 @@ import { APPS, createPostApps } from './apps/registry';
 import { appIconSrc, resolveDesktopShellIcons } from './apps/desktopIcons';
 import { appToWindowDef } from './apps/appToWindowDef';
 import { BROWSER_APP_ID, TRASH_APP_ID, postWindowId } from './apps/postWindow';
-import { TRASH_JUNK } from './apps/data';
+import { TRASH_JUNK } from './apps/trash/junk';
 import { useBrowserHistories } from './wrappers/browser/useBrowserHistories';
 import { GridSettingsProvider } from './context/GridSettingsContext';
 import { WallpaperProvider } from './context/WallpaperContext';

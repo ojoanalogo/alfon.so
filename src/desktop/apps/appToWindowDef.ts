@@ -1,6 +1,6 @@
 import type { AppDefinition } from '@desktop/wrappers';
 import type { WindowDef } from '../types';
-import { cascadeOffset } from './cascadePositions';
+import { cascadeOffset } from './cascade';
 
 /** Anchors for apps that omit explicit geometry — cascade down-right by order. */
 const CASCADE_BASE = { baseX: 96, baseY: 48 };

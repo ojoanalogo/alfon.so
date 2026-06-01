@@ -1,9 +1,17 @@
+import type { ReactNode } from 'react';
 import { Redacted } from './ClassifiedContent';
-import type { ClassifiedDoc } from '../data';
+
+export interface ClassifiedDoc {
+  code: string;
+  heading: string;
+  file: string;
+  intro: ReactNode;
+  bullets: ReactNode[];
+}
 
 /**
  * JSX-rich classified docs. Lives in a .tsx so the `<Redacted />` blocks stay
- * statically authored; the plain-data side of trash junk lives in ../data.ts.
+ * statically authored; the plain-data side of trash junk lives in ../trash/junk.ts.
  */
 export const CLASSIFIED_DOCS = {
   area51: {

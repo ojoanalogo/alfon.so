@@ -1,5 +1,5 @@
 import { Divider, ExternalLink, InfoRow, SocialMediaIcons } from '../../parts';
-import { TECH_STACK } from '../data';
+import { TECH_STACK } from '../projects/data';
 
 export default function AboutContent() {
   return (

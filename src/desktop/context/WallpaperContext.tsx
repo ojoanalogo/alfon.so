@@ -11,7 +11,7 @@ import {
   DESKTOP_COLORS,
   resolveDesktopColorValue,
   type DesktopColorOption,
-} from '../settings/desktopColors';
+} from '../apps/settings/desktopColors';
 import { useTheme } from '../useTheme';
 import {
   iconLabelToneFromLuminance,

@@ -1,5 +1,5 @@
 import ThemeSegmentedControl from './ThemeSegmentedControl';
-import { useWallpaper } from '../context/WallpaperContext';
+import { useWallpaper } from '../../context/WallpaperContext';
 import { SETTINGS_GROUP, SettingsRow } from './ui';
 
 const SWATCH_INNER =

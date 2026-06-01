@@ -1,5 +1,5 @@
-import { MoonIcon, SunIcon } from '../icons/ThemeIcons';
-import { useTheme, type ThemeMode } from '../useTheme';
+import { MoonIcon, SunIcon } from '../../icons/ThemeIcons';
+import { useTheme, type ThemeMode } from '../../useTheme';
 import { SegmentedControl } from './ui';
 
 export default function ThemeSegmentedControl() {

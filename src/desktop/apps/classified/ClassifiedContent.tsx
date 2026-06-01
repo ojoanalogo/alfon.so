@@ -1,4 +1,4 @@
-import type { ClassifiedDoc } from '../data';
+import type { ClassifiedDoc } from './classifiedDocs';
 
 function Redacted({ width }: { width: string }) {
   return (
