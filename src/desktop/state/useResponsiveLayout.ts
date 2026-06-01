@@ -10,6 +10,7 @@ export function useResponsiveLayout(
 ): { openWindow: (id: string) => void; fitWindowToMobile: (id: string) => void } {
   const { setGeometry, setGeometries, relayoutToViewport } = wm;
   const [layoutEpoch, setLayoutEpoch] = useState(0);
+  const didPostMeasureCenter = useRef(false);
 
   // Read window state inside the relayout effect without making it a dependency:
   // otherwise a drag (which mutates wm.windows on every pointer move) re-fires
@@ -27,12 +28,26 @@ export function useResponsiveLayout(
     window.visualViewport?.addEventListener('resize', bumpLayout);
     // One more pass after the first paint when innerWidth/Height are reliable.
     const frame = requestAnimationFrame(bumpLayout);
+    void document.fonts?.ready.then(bumpLayout);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('resize', bumpLayout);
       window.visualViewport?.removeEventListener('resize', bumpLayout);
     };
   }, []);
+
+  // After the first paint, measure content-sized center windows so x/y match the DOM.
+  useLayoutEffect(() => {
+    if (didPostMeasureCenter.current || typeof window === 'undefined') return;
+    if (!defs.some((def) => def.center)) return;
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    if (vw <= 0 || vh <= 0 || isMobileViewport(vw)) return;
+
+    didPostMeasureCenter.current = true;
+    relayoutToViewport(vw, vh, true);
+  }, [defs, relayoutToViewport]);
 
   const fitWindowToMobile = useCallback(
     (id: string) => {
@@ -92,11 +107,14 @@ export function useResponsiveLayout(
     applyLayout();
     requestAnimationFrame(applyLayout);
     if (!mobile && defs.some((def) => def.center)) {
-      requestAnimationFrame(() => requestAnimationFrame(applyLayout));
+      requestAnimationFrame(() => {
+        applyLayout();
+        relayoutToViewport(vw, vh, true);
+      });
     }
 
     // rAF passes above still see pre-commit window state in windowsRef; after
-    // height:null lands, run layout again so centered windows get their y.
+    // height:null lands, run layout again so centered windows settle.
     if (deferredVerticalCenter) {
       setLayoutEpoch((epoch) => epoch + 1);
     }

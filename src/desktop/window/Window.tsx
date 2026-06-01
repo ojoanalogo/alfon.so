@@ -6,6 +6,7 @@ import { MIN_WIDTH } from '../state/useWindowManager';
 import WindowControls from './WindowControls';
 import WindowTitlebar from './WindowTitlebar';
 import { useWindowGestures } from './useWindowGestures';
+import { useWindowCenterLayout } from './useWindowCenterLayout';
 import { BORDER_DEFAULT } from '@/styles/tokens';
 
 const RESIZE_DIRECTIONS: ResizeDirection[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
@@ -27,6 +28,8 @@ export interface WindowProps {
   /** Replaces the default title text in the titlebar drag region. */
   titleContent?: ReactNode;
   windowClassName?: string;
+  /** When true, window is kept centered from its measured on-screen box. */
+  center?: boolean;
 }
 
 export default function Window({
@@ -43,9 +46,18 @@ export default function Window({
   bodyClassName,
   titleContent,
   windowClassName,
+  center = false,
 }: WindowProps) {
   const rootRef = useRef<HTMLElement | null>(null);
   const prefersReduced = useReducedMotion();
+
+  const { markUserPositioned } = useWindowCenterLayout({
+    rootRef,
+    enabled: center && state.open && !state.minimized && !state.maximized,
+    x: state.x,
+    y: state.y,
+    onGeometryChange,
+  });
 
   const { startMove, startResize } = useWindowGestures({
     state,
@@ -54,6 +66,11 @@ export default function Window({
     onFocus,
     onGeometryChange,
   });
+
+  function handleMoveStart(event: React.PointerEvent) {
+    markUserPositioned();
+    startMove(event);
+  }
 
   function measureGenieTarget(): { dx: number; dy: number } {
     const el = rootRef.current;
@@ -153,7 +170,7 @@ export default function Window({
           <WindowTitlebar
             title={title}
             titleContent={titleContent}
-            onMoveStart={startMove}
+            onMoveStart={handleMoveStart}
             onDoubleClick={onToggleMaximize}
           />
         </div>

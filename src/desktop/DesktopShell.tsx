@@ -105,6 +105,7 @@ export default function DesktopShell({ apps, defs, posts, desktopIconUrls, viewp
             state,
             focused: wm.focusedId === app.id,
             minWidth: minWidthForDef(def),
+            center: def.center,
             onFocus: () => wm.focus(app.id),
             onClose: () => wm.close(app.id),
             onMinimize: () => wm.minimize(app.id),

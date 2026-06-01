@@ -211,23 +211,44 @@ export function useWindowManager(
     (vw: number, vh: number, measureCenter = false) => {
       setWindows((prev) => {
         let merged = mergeWindowUiState(createInitialState(defs, vw, vh), prev);
-        if (!measureCenter) return merged;
-
         let changed = false;
+
         for (const def of defs) {
-          if (!def.center || def.defaultHeight != null) continue;
-          const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
-          const measuredHeight = el?.getBoundingClientRect().height;
-          if (!measuredHeight) continue;
+          if (!def.center) continue;
+
+          let measuredHeight: number | undefined;
+          if (measureCenter && def.defaultHeight == null) {
+            const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
+            const rawHeight = el?.getBoundingClientRect().height;
+            if (rawHeight) measuredHeight = rawHeight;
+          }
+
           const geo = resolveWindowGeometry(def, vw, vh, measuredHeight);
           const target = merged[def.id];
-          if (!target || target.y === geo.y) continue;
+          if (!target) continue;
+
+          const next = {
+            ...target,
+            x: geo.x,
+            y: geo.y,
+            width: geo.width,
+            height: def.defaultHeight ?? null,
+          };
+          if (
+            next.x === target.x &&
+            next.y === target.y &&
+            next.width === target.width &&
+            next.height === target.height
+          ) {
+            continue;
+          }
           if (!changed) {
             merged = { ...merged };
             changed = true;
           }
-          merged[def.id] = { ...target, y: geo.y, height: null };
+          merged[def.id] = next;
         }
+
         return merged;
       });
     },
