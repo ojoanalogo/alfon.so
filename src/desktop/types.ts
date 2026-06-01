@@ -50,6 +50,13 @@ export interface WindowDef extends AppGeometry {
 
 export type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
 
+/** Per-window taskbar presentation metadata (icon + labels). */
+export interface WindowMeta {
+  iconSrc: string;
+  label: string;
+  tooltip?: string;
+}
+
 export interface BlogPostSummary {
   title: string;
   slug: string;

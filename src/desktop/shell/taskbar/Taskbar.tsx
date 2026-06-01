@@ -6,13 +6,7 @@ import StartMenu from '../startmenu/StartMenu';
 import ThemeToggle from '../ThemeToggle';
 import TaskbarClock from './TaskbarClock';
 import type { DesktopIcon } from '@/config';
-import type { WindowState } from '../../types';
-
-export interface WindowMeta {
-  iconSrc: string;
-  label: string;
-  tooltip?: string;
-}
+import type { WindowMeta, WindowState } from '../../types';
 
 interface TaskbarProps {
   windows: Record<string, WindowState>;

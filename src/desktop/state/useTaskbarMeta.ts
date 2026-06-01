@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { TRASH_JUNK } from '../apps/trash/junk';
 import { appIconSrc } from '../apps/desktopIcons';
 import type { AppDefinition } from '@desktop/wrappers';
-import type { WindowMeta } from '../shell/taskbar/Taskbar';
+import type { WindowMeta } from '../types';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';
 
 export function useTaskbarMeta(
