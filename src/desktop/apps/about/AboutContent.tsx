@@ -14,8 +14,8 @@ export default function AboutContent() {
           🧑‍💻
         </div>
         <div className="flex flex-col gap-1">
-          <h1 id="about-heading" className="text-2xl">
-            👋 ¡hola! soy <span className="font-medium text-primary">alfonso reyes</span>
+          <h1 id="about-heading" className="text-lg">
+            👋 ¡hola! soy <span className="font-semibold text-primary">alfonso reyes</span>
           </h1>
           <p className="text-xs text-muted">ingeniero backend · fotógrafo</p>
         </div>

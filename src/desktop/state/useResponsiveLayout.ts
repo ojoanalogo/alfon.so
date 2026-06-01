@@ -1,18 +1,14 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { WindowManager } from './useWindowManager';
 import type { WindowDef, WindowGeometry } from '../types';
-import {
-  isMobileViewport,
-  mobileWindowGeometry,
-  resolveWindowGeometry,
-} from '../lib/viewport';
+import { isMobileViewport, mobileWindowGeometry } from '../lib/viewport';
 
 export function useResponsiveLayout(
   wm: WindowManager,
   defs: WindowDef[],
   viewport: { width: number; height: number },
 ): { openWindow: (id: string) => void; fitWindowToMobile: (id: string) => void } {
-  const { setGeometry } = wm;
+  const { setGeometry, setGeometries, relayoutToViewport } = wm;
   const [layoutEpoch, setLayoutEpoch] = useState(0);
 
   // Read window state inside the relayout effect without making it a dependency:
@@ -29,7 +25,10 @@ export function useResponsiveLayout(
     }
     window.addEventListener('resize', bumpLayout);
     window.visualViewport?.addEventListener('resize', bumpLayout);
+    // One more pass after the first paint when innerWidth/Height are reliable.
+    const frame = requestAnimationFrame(bumpLayout);
     return () => {
+      cancelAnimationFrame(frame);
       window.removeEventListener('resize', bumpLayout);
       window.visualViewport?.removeEventListener('resize', bumpLayout);
     };
@@ -57,40 +56,37 @@ export function useResponsiveLayout(
 
   // Clamp window geometry to the current viewport (desktop centering or mobile fit).
   useLayoutEffect(() => {
-    const vw = typeof window !== 'undefined' ? window.innerWidth : viewport.width;
-    const vh = typeof window !== 'undefined' ? window.innerHeight : viewport.height;
+    // innerWidth/Height can be 0 on the first layout pass (e.g. before the
+    // viewport is sized); falling back avoids applying mobile geometry at x:8.
+    const rawVw = typeof window !== 'undefined' ? window.innerWidth : viewport.width;
+    const rawVh = typeof window !== 'undefined' ? window.innerHeight : viewport.height;
+    const vw = rawVw > 0 ? rawVw : viewport.width;
+    const vh = rawVh > 0 ? rawVh : viewport.height;
     const mobile = isMobileViewport(vw);
 
+    let deferredVerticalCenter = false;
+
     function applyLayout() {
-      defs.forEach((def) => {
-        const win = windowsRef.current[def.id];
-        if (mobile) {
+      if (mobile) {
+        const updates: Record<string, Partial<WindowGeometry>> = {};
+        defs.forEach((def) => {
+          const win = windowsRef.current[def.id];
           if ((win?.open && !win.minimized) || def.defaultOpen) {
-            setGeometry(def.id, mobileWindowGeometry(vw, vh));
+            updates[def.id] = mobileWindowGeometry(vw, vh);
           }
-          return;
+        });
+        if (Object.keys(updates).length > 0) {
+          setGeometries(updates);
         }
+        return;
+      }
 
-        // Dropping a fixed inline height: DOM measure still reflects the old
-        // sized box this frame — defer vertical centering to the next pass.
-        const clearingSizedHeight = def.defaultHeight == null && win?.height != null;
+      const clearingSizedHeight = defs.some(
+        (def) => def.defaultHeight == null && windowsRef.current[def.id]?.height != null,
+      );
+      if (clearingSizedHeight) deferredVerticalCenter = true;
 
-        let measuredHeight: number | undefined;
-        if (def.center) {
-          const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
-          const rawHeight = el?.getBoundingClientRect().height;
-          if (!clearingSizedHeight && rawHeight) {
-            measuredHeight = rawHeight;
-          }
-        }
-
-        const geo = resolveWindowGeometry(def, vw, vh, measuredHeight);
-        // Non-center windows keep their initial y; only width/x are reclamped.
-        const patch: Partial<WindowGeometry> = { width: geo.width, x: geo.x };
-        if (def.center && !clearingSizedHeight) patch.y = geo.y;
-        if (clearingSizedHeight) patch.height = null;
-        setGeometry(def.id, patch);
-      });
+      relayoutToViewport(vw, vh, !clearingSizedHeight);
     }
 
     applyLayout();
@@ -98,7 +94,13 @@ export function useResponsiveLayout(
     if (!mobile && defs.some((def) => def.center)) {
       requestAnimationFrame(() => requestAnimationFrame(applyLayout));
     }
-  }, [defs, setGeometry, viewport.width, viewport.height, layoutEpoch]);
+
+    // rAF passes above still see pre-commit window state in windowsRef; after
+    // height:null lands, run layout again so centered windows get their y.
+    if (deferredVerticalCenter) {
+      setLayoutEpoch((epoch) => epoch + 1);
+    }
+  }, [defs, setGeometries, relayoutToViewport, viewport.width, viewport.height, layoutEpoch]);
 
   return { openWindow, fitWindowToMobile };
 }

@@ -9,6 +9,6 @@ export function useDesktopApps(posts: BlogPostSummary[]): { apps: AppDefinition[
     const filtered = APPS.filter((app) => app.availableWhen?.({ posts }) ?? true);
     return [...filtered, ...createPostApps(posts)];
   }, [posts]);
-  const defs = useMemo<WindowDef[]>(() => apps.map(appToWindowDef), [apps]);
+  const defs = useMemo<WindowDef[]>(() => apps.map((app, index) => appToWindowDef(app, index)), [apps]);
   return { apps, defs };
 }

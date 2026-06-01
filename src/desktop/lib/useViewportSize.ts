@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
 /** SSR-safe default; replaced on mount with real viewport dimensions. */
 const FALLBACK = { width: 390, height: 844 };
@@ -11,13 +11,20 @@ function readViewportSize() {
 export function useViewportSize() {
   const [size, setSize] = useState(readViewportSize);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     function update() {
-      setSize({ width: window.innerWidth, height: window.innerHeight });
+      const next = readViewportSize();
+      setSize((prev) =>
+        prev.width === next.width && prev.height === next.height ? prev : next,
+      );
     }
     update();
     window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    window.visualViewport?.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.visualViewport?.removeEventListener('resize', update);
+    };
   }, []);
 
   return size;
