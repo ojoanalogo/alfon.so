@@ -153,3 +153,6 @@ vite.config.ts.timestamp-*
 
 # Others
 .zed
+
+# Superpowers
+#superpowers/
