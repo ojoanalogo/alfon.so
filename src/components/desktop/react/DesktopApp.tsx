@@ -147,7 +147,7 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
       onRestoreAll: icons.restoreAll,
       onEmpty: icons.emptyTrash,
     }),
-    [icons.trashedIcons, icons.restoreIcons, icons.restoreAll, icons.emptyTrash, openWindow],
+    [icons, openWindow],
   );
 
   const handleOpenLink = useCallback(

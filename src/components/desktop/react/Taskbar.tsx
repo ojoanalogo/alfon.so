@@ -159,9 +159,9 @@ export default function Taskbar({
       </div>
 
       <AnimatePresence>
-        {startOpen && startRef.current && (
+        {startOpen && (
           <StartMenu
-            anchor={startRef.current}
+            anchorRef={startRef}
             apps={startMenuApps}
             onClose={() => setStartOpen(false)}
             onOpenExternal={onOpenExternal}

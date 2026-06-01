@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { NAV_LINKS, SITE_TITLE, SOCIAL_LINKS, type DesktopIcon, type NavLink } from '../../../config';
 
 export interface StartMenuProps {
-  anchor: HTMLElement;
+  anchorRef: RefObject<HTMLElement | null>;
   apps: DesktopIcon[];
   onClose: () => void;
   onOpenExternal: (url: string) => void;
@@ -31,7 +31,7 @@ function navigateLink(link: NavLink, onOpenExternal: (url: string) => void) {
 }
 
 export default function StartMenu({
-  anchor,
+  anchorRef,
   apps,
   onClose,
   onOpenExternal,
@@ -39,10 +39,13 @@ export default function StartMenu({
   onCloseAllWindows,
 }: StartMenuProps) {
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const posRef = useRef({ left: 0, bottom: TASKBAR_HEIGHT });
+  const [position, setPosition] = useState({ left: 0, bottom: TASKBAR_HEIGHT });
   const prefersReduced = useReducedMotion();
 
   const reposition = useCallback(() => {
+    const anchor = anchorRef.current;
+    if (!anchor) return;
+
     const rect = anchor.getBoundingClientRect();
     const menu = menuRef.current;
     let left = rect.left;
@@ -51,12 +54,8 @@ export default function StartMenu({
       const maxLeft = window.innerWidth - menuWidth - VIEWPORT_MARGIN;
       left = Math.max(VIEWPORT_MARGIN, Math.min(left, maxLeft));
     }
-    posRef.current = { left, bottom: window.innerHeight - rect.top + 4 };
-    if (menu) {
-      menu.style.left = `${left}px`;
-      menu.style.bottom = `${posRef.current.bottom}px`;
-    }
-  }, [anchor]);
+    setPosition({ left, bottom: window.innerHeight - rect.top + 4 });
+  }, [anchorRef]);
 
   useLayoutEffect(() => {
     reposition();
@@ -65,7 +64,7 @@ export default function StartMenu({
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
       const target = event.target as Node;
-      if (menuRef.current?.contains(target) || anchor.contains(target)) return;
+      if (menuRef.current?.contains(target) || anchorRef.current?.contains(target)) return;
       onClose();
     }
     function handleKeyDown(event: KeyboardEvent) {
@@ -82,7 +81,7 @@ export default function StartMenu({
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('resize', reposition);
     };
-  }, [anchor, onClose, reposition]);
+  }, [anchorRef, onClose, reposition]);
 
   useEffect(() => {
     const first = menuRef.current?.querySelector<HTMLButtonElement>('button:not([disabled])');
@@ -118,8 +117,8 @@ export default function StartMenu({
       role="menu"
       aria-label="Menú de inicio"
       style={{
-        left: `${posRef.current.left}px`,
-        bottom: `${posRef.current.bottom}px`,
+        left: `${position.left}px`,
+        bottom: `${position.bottom}px`,
         transformOrigin: 'bottom left',
       }}
       variants={variants}

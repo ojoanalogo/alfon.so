@@ -90,6 +90,37 @@ function persistBackgroundColorId(id: string) {
   }
 }
 
+function resolveStoredPreferences(wallpapers: WallpaperOption[]) {
+  const availableIds = new Set(wallpapers.map((wallpaper) => wallpaper.id));
+  const wallpaperPreference = readWallpaperPreference();
+
+  let nextWallpaperId: string | null;
+  if (wallpaperPreference === 'unset') {
+    nextWallpaperId = defaultWallpaperId(availableIds);
+  } else if (wallpaperPreference === 'color') {
+    nextWallpaperId = null;
+  } else {
+    nextWallpaperId = resolveWallpaperId(wallpaperPreference, availableIds);
+    if (nextWallpaperId !== wallpaperPreference && nextWallpaperId) {
+      persistWallpaperId(nextWallpaperId);
+    }
+    if (!nextWallpaperId) {
+      persistWallpaperId(null);
+    }
+  }
+
+  const storedColor = readStoredBackgroundColorId();
+  const nextColorId =
+    storedColor && DESKTOP_COLORS.some((color) => color.id === storedColor)
+      ? storedColor
+      : 'default';
+  if (storedColor && nextColorId === 'default' && storedColor !== 'default') {
+    persistBackgroundColorId('default');
+  }
+
+  return { wallpaperId: nextWallpaperId, backgroundColorId: nextColorId };
+}
+
 export function WallpaperProvider({
   wallpapers,
   children,
@@ -97,45 +128,22 @@ export function WallpaperProvider({
   wallpapers: WallpaperOption[];
   children: ReactNode;
 }) {
-  const [wallpaperId, setWallpaperId] = useState<string | null>(null);
-  const [backgroundColorId, setBackgroundColorId] = useState('default');
-  const [status, setStatus] = useState<WallpaperStatus>('ready');
-  const [hydrated, setHydrated] = useState(false);
+  const [wallpaperId, setWallpaperId] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return resolveStoredPreferences(wallpapers).wallpaperId;
+  });
+  const [backgroundColorId, setBackgroundColorId] = useState(() => {
+    if (typeof window === 'undefined') return 'default';
+    return resolveStoredPreferences(wallpapers).backgroundColorId;
+  });
+  const [loadedWallpaper, setLoadedWallpaper] = useState<{
+    id: string;
+    status: 'ready' | 'error';
+  } | null>(null);
   const [iconLabelTone, setIconLabelTone] = useState<IconLabelTone>('dark');
   const { theme } = useTheme();
 
-  useEffect(() => {
-    const availableIds = new Set(wallpapers.map((wallpaper) => wallpaper.id));
-    const wallpaperPreference = readWallpaperPreference();
-
-    let nextWallpaperId: string | null;
-    if (wallpaperPreference === 'unset') {
-      nextWallpaperId = defaultWallpaperId(availableIds);
-    } else if (wallpaperPreference === 'color') {
-      nextWallpaperId = null;
-    } else {
-      nextWallpaperId = resolveWallpaperId(wallpaperPreference, availableIds);
-      if (nextWallpaperId !== wallpaperPreference && nextWallpaperId) {
-        persistWallpaperId(nextWallpaperId);
-      }
-      if (!nextWallpaperId) {
-        persistWallpaperId(null);
-      }
-    }
-
-    const storedColor = readStoredBackgroundColorId();
-    const nextColorId =
-      storedColor && DESKTOP_COLORS.some((color) => color.id === storedColor)
-        ? storedColor
-        : 'default';
-    if (storedColor && nextColorId === 'default' && storedColor !== 'default') {
-      persistBackgroundColorId('default');
-    }
-
-    setWallpaperId(nextWallpaperId);
-    setBackgroundColorId(nextColorId);
-    setHydrated(true);
-  }, [wallpapers]);
+  const hydrated = typeof window !== 'undefined';
 
   const activeWallpaper = useMemo(() => {
     if (!wallpaperId) return null;
@@ -147,20 +155,36 @@ export function WallpaperProvider({
     [backgroundColorId],
   );
 
+  const status = useMemo((): WallpaperStatus => {
+    if (!hydrated) return 'loading';
+    if (!activeWallpaper) return 'ready';
+    if (loadedWallpaper?.id !== activeWallpaper.id) return 'loading';
+    return loadedWallpaper.status;
+  }, [hydrated, activeWallpaper, loadedWallpaper]);
+
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !activeWallpaper) return;
+    if (loadedWallpaper?.id === activeWallpaper.id) return;
 
-    if (!activeWallpaper) {
-      setStatus('ready');
-      return;
-    }
-
-    setStatus('loading');
+    let cancelled = false;
+    const wallpaperIdToLoad = activeWallpaper.id;
     const image = new Image();
-    image.onload = () => setStatus('ready');
-    image.onerror = () => setStatus('error');
+    image.onload = () => {
+      if (!cancelled) {
+        setLoadedWallpaper({ id: wallpaperIdToLoad, status: 'ready' });
+      }
+    };
+    image.onerror = () => {
+      if (!cancelled) {
+        setLoadedWallpaper({ id: wallpaperIdToLoad, status: 'error' });
+      }
+    };
     image.src = activeWallpaper.src;
-  }, [activeWallpaper, hydrated]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeWallpaper, hydrated, loadedWallpaper?.id]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -195,7 +219,7 @@ export function WallpaperProvider({
       setWallpaperId(id);
       persistWallpaperId(id);
       if (!id) {
-        setStatus('ready');
+        setLoadedWallpaper(null);
       }
     },
     [wallpapers],
@@ -207,7 +231,7 @@ export function WallpaperProvider({
     persistBackgroundColorId(id);
     setWallpaperId(null);
     persistWallpaperId(null);
-    setStatus('ready');
+    setLoadedWallpaper(null);
   }, []);
 
   const bootContentReady = hydrated && !(wallpaperId !== null && status === 'loading');

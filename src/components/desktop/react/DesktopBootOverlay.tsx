@@ -10,7 +10,13 @@ type BootPhase = 'loading' | 'exiting' | 'done';
 export default function DesktopBootOverlay() {
   const { bootContentReady } = useWallpaper();
   const [phase, setPhase] = useState<BootPhase>('loading');
-  const startedAtRef = useRef(Date.now());
+  const startedAtRef = useRef(0);
+
+  useEffect(() => {
+    if (startedAtRef.current === 0) {
+      startedAtRef.current = Date.now();
+    }
+  }, []);
 
   useEffect(() => {
     if (!bootContentReady || phase !== 'loading') return;
