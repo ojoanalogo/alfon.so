@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { WindowManager } from './useWindowManager';
-import type { WindowDef } from '../types';
+import type { WindowDef, WindowGeometry } from '../types';
 import {
   isMobileViewport,
   mobileWindowGeometry,
@@ -19,7 +19,7 @@ export function useResponsiveLayout(
   // otherwise a drag (which mutates wm.windows on every pointer move) re-fires
   // the effect, which clamps x/y back to defaults and fights the drag.
   const windowsRef = useRef(wm.windows);
-  useEffect(() => {
+  useLayoutEffect(() => {
     windowsRef.current = wm.windows;
   });
 
@@ -56,7 +56,7 @@ export function useResponsiveLayout(
   );
 
   // Clamp window geometry to the current viewport (desktop centering or mobile fit).
-  useEffect(() => {
+  useLayoutEffect(() => {
     const vw = typeof window !== 'undefined' ? window.innerWidth : viewport.width;
     const vh = typeof window !== 'undefined' ? window.innerHeight : viewport.height;
     const mobile = isMobileViewport(vw);
@@ -71,14 +71,25 @@ export function useResponsiveLayout(
           return;
         }
 
+        // Dropping a fixed inline height: DOM measure still reflects the old
+        // sized box this frame — defer vertical centering to the next pass.
+        const clearingSizedHeight = def.defaultHeight == null && win?.height != null;
+
         let measuredHeight: number | undefined;
         if (def.center) {
           const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
-          measuredHeight = el?.getBoundingClientRect().height;
+          const rawHeight = el?.getBoundingClientRect().height;
+          if (!clearingSizedHeight && rawHeight) {
+            measuredHeight = rawHeight;
+          }
         }
+
         const geo = resolveWindowGeometry(def, vw, vh, measuredHeight);
         // Non-center windows keep their initial y; only width/x are reclamped.
-        setGeometry(def.id, def.center ? { width: geo.width, x: geo.x, y: geo.y } : { width: geo.width, x: geo.x });
+        const patch: Partial<WindowGeometry> = { width: geo.width, x: geo.x };
+        if (def.center && !clearingSizedHeight) patch.y = geo.y;
+        if (clearingSizedHeight) patch.height = null;
+        setGeometry(def.id, patch);
       });
     }
 

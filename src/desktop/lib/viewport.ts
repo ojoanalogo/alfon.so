@@ -48,7 +48,8 @@ export function resolveWindowGeometry(
     const mobile = mobileWindowGeometry(viewportWidth, viewportHeight);
     return {
       ...mobile,
-      height: def.defaultHeight ?? mobile.height,
+      // Content-sized windows rely on mobile CSS (inset + height:auto), not inline height.
+      height: def.defaultHeight ?? null,
     };
   }
 
