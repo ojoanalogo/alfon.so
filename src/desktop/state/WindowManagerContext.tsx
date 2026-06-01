@@ -1,5 +1,5 @@
 import { createContext, useContext, type ReactNode } from 'react';
-import { useWindowManager, type WindowManager } from '../useWindowManager';
+import { useWindowManager, type WindowManager } from './useWindowManager';
 import type { WindowDef } from '../types';
 
 const WindowManagerContext = createContext<WindowManager | null>(null);

@@ -12,13 +12,13 @@ import {
   resolveDesktopColorValue,
   type DesktopColorOption,
 } from '../apps/settings/desktopColors';
-import { useTheme } from '../useTheme';
+import { useTheme } from './ThemeContext';
 import {
   iconLabelToneFromLuminance,
   resolveSurfaceLuminance,
   sampleWallpaperLuminance,
   type IconLabelTone,
-} from '../utils/iconLabelTone';
+} from '../lib/iconLabelTone';
 import type { WallpaperOption } from '../types';
 import {
   defaultWallpaperId,

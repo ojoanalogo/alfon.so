@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useExplorerView } from './ExplorerViewContext';
-import { useGridSettings } from '../../context/GridSettingsContext';
+import { useGridSettings } from '@desktop/state/GridSettingsContext';
 import GridLayout from './GridLayout';
 import FolderList from './FolderList';
 import type { ListItem } from './types';

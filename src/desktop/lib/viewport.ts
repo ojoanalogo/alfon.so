@@ -1,5 +1,5 @@
 import type { WindowDef, WindowGeometry } from '../types';
-import { minWidthForDef, MIN_WIDTH, MIN_HEIGHT, TASKBAR_HEIGHT } from '../useWindowManager';
+import { minWidthForDef, MIN_WIDTH, MIN_HEIGHT, TASKBAR_HEIGHT } from '../state/useWindowManager';
 
 /** Matches `40rem` breakpoints used in global.css. */
 export const MOBILE_BREAKPOINT_PX = 640;

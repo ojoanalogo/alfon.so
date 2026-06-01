@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import Window from '../window';
-import type { IconKey } from '@/lib/desktopIcons';
+import type { IconKey } from '@desktop/lib/desktopIcons';
 import type { AppGeometry } from '../types';
 import {
   resolveAppTitle,

@@ -1,5 +1,5 @@
-import { useWallpaper } from '../context/WallpaperContext';
-import { useGridSettings } from '../context/GridSettingsContext';
+import { useWallpaper } from '../state/WallpaperContext';
+import { useGridSettings } from '../state/GridSettingsContext';
 import type { IconLabelTone } from './iconLabelTone';
 
 /**

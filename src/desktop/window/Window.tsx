@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
-import { MIN_WIDTH } from '../useWindowManager';
+import { MIN_WIDTH } from '../state/useWindowManager';
 import WindowControls from './WindowControls';
 import WindowTitlebar from './WindowTitlebar';
 import { useWindowGestures } from './useWindowGestures';

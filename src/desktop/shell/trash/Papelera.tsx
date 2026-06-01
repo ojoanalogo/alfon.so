@@ -1,5 +1,5 @@
-import { useResolvedIconLabelTone } from './utils/useResolvedIconLabelTone';
-import { resolveIconUrl } from '@/lib/desktopIcons';
+import { useResolvedIconLabelTone } from '../../lib/useResolvedIconLabelTone';
+import { resolveIconUrl } from '@desktop/lib/desktopIcons';
 
 const TRASH_EMPTY_KEY = 'trash';
 const TRASH_FULL_KEY = 'trash-full';

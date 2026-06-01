@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import type { WindowDef, WindowGeometry, WindowState } from './types';
-import { resolveWindowGeometry, effectiveMinWidth } from './utils/viewport';
+import type { WindowDef, WindowGeometry, WindowState } from '../types';
+import { resolveWindowGeometry, effectiveMinWidth } from '../lib/viewport';
 
 export const MIN_WIDTH = 400;
 export const MIN_HEIGHT = 140;

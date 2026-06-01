@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { MoonIcon, SunIcon } from './icons/ThemeIcons';
-import { useTheme } from './useTheme';
+import { useTheme } from '../state/ThemeContext';
 
 export default function ThemeToggle({ className }: { className?: string }) {
   const { isDark, toggleTheme } = useTheme();

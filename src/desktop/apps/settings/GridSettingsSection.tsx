@@ -3,8 +3,8 @@ import {
   type GridIconSize,
   type GridSpacing,
   type GridSortBy,
-} from '../../context/GridSettingsContext';
-import { MoonIcon, SunIcon } from '../../icons/ThemeIcons';
+} from '@desktop/state/GridSettingsContext';
+import { MoonIcon, SunIcon } from '@desktop/shell/icons/ThemeIcons';
 import { WINDOW_ACTION_BTN } from '@/styles/tokens';
 import { SegmentedControl, SettingsRow, SETTINGS_GROUP } from './ui';
 

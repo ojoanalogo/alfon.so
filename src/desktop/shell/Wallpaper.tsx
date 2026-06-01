@@ -1,4 +1,4 @@
-import { useWallpaper } from './context/WallpaperContext';
+import { useWallpaper } from '../state/WallpaperContext';
 
 export default function DesktopWallpaper() {
   const { activeWallpaper, status, desktopBackgroundColor } = useWallpaper();

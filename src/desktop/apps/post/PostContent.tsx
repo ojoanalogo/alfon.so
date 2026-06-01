@@ -1,4 +1,4 @@
-import { Divider } from '../../parts';
+import { Divider } from '@desktop/ui/parts';
 import { PROSE_CLASS_BASE } from '@/styles/proseConfig';
 import { postLongDateFormatter } from '@/config/postFormatting';
 import type { BlogPostSummary } from '../../types';

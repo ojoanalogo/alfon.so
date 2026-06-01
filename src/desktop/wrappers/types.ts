@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { IconKey } from '@/lib/desktopIcons';
+import type { IconKey } from '@desktop/lib/desktopIcons';
 import type {
   AppGeometry,
   BlogPostSummary,

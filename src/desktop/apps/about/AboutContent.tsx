@@ -1,4 +1,4 @@
-import { Divider, ExternalLink, InfoRow, SocialMediaIcons } from '../../parts';
+import { Divider, ExternalLink, InfoRow, SocialMediaIcons } from '@desktop/ui/parts';
 import { TECH_STACK } from '../projects/data';
 
 export default function AboutContent() {
