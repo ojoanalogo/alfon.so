@@ -125,18 +125,32 @@ interface AppDefinition {
   desktopIcon?: DesktopIconConfig | false;
   taskbarTooltip?: string;
   availableWhen?: (ctx: Pick<AppContext, 'posts'>) => boolean;
-  // the content — the app supplies these; the framework wraps them in <Window>
-  body: (ctx: AppContext) => ReactNode;
-  titleContent?: (ctx: AppContext) => ReactNode;   // optional titlebar chrome (browser)
-  windowClassName?: string;
-  bodyClassName?: string;
+  // self-contained: each definition carries its own render. The window-manager
+  // wiring (state/focus/callbacks/minWidth) arrives as `win`.
+  render: (ctx: AppContext, win: WindowChromeProps) => ReactNode;
 }
 ```
 
-There is **no central `renderApp` switch and no `AppLayout` union.** A single
-generic code path (inside `defineApp` / `DesktopShell`) wraps any app's `body`
-(+ optional `titleContent`) in the shared `<Window>` primitive. Adding an app
-type never edits that code path.
+The load-bearing contract is `render`. The common case never writes it by
+hand — `defineApp` takes `body` (+ optional `titleContent`) and **generates**
+the standard render that wraps them in the shared `<Window>` primitive:
+
+```ts
+defineApp({
+  id, title, icon, geometry,
+  body: (ctx) => ReactNode,            // window content
+  titleContent?: (ctx) => ReactNode,   // optional titlebar chrome (browser)
+  windowClassName?, bodyClassName?,
+})
+// → render = (ctx, win) => <Window {...win}
+//      titleContent={titleContent?.(ctx)} ...>{body(ctx)}</Window>
+```
+
+There is **no central `renderApp` switch and no `AppLayout` union.** The single
+`<Window>`-wrapping code path lives inside `defineApp`. Specializations that
+need to wrap the window itself (explorer mounts an `ExplorerViewProvider` above
+`<Window>` so the titlebar switcher and body share `mode`) supply their own
+`render` — which keeps wrappers open without reintroducing a switch.
 
 `AppContext` — the read-only runtime environment passed to `render` (unchanged
 in spirit from today's `WindowAppContext`):
