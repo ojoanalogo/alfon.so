@@ -7,9 +7,12 @@ const BOOT_EXIT_MS = 120;
 
 type BootPhase = 'loading' | 'exiting' | 'done';
 
+/** Survives provider remounts so resize does not replay the boot screen. */
+let bootFinished = false;
+
 export default function DesktopBootOverlay() {
   const { bootContentReady } = useWallpaper();
-  const [phase, setPhase] = useState<BootPhase>('loading');
+  const [phase, setPhase] = useState<BootPhase>(() => (bootFinished ? 'done' : 'loading'));
   const startedAtRef = useRef(0);
 
   useEffect(() => {
@@ -31,6 +34,10 @@ export default function DesktopBootOverlay() {
 
     const timer = window.setTimeout(() => setPhase('done'), BOOT_EXIT_MS);
     return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase === 'done') bootFinished = true;
   }, [phase]);
 
   if (phase === 'done') return null;

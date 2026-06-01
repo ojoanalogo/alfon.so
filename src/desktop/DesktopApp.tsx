@@ -19,7 +19,6 @@ export default function DesktopApp({ posts, wallpapers, desktopIconUrls }: Deskt
   const { apps, defs } = useDesktopApps(posts);
   return (
     <WindowManagerProvider
-      key={`${viewport.width}x${viewport.height}`}
       defs={defs}
       viewportWidth={viewport.width}
       viewportHeight={viewport.height}
