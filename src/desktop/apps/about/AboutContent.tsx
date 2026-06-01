@@ -15,9 +15,9 @@ export default function AboutContent() {
         </div>
         <div className="flex flex-col gap-1">
           <h1 id="about-heading" className="text-2xl">
-            👋 hola soy <span className="font-medium text-primary">alfonso reyes</span>
+            👋 ¡hola! soy <span className="font-medium text-primary">alfonso reyes</span>
           </h1>
-          <p className="text-xs text-muted">ingeniero backend / fotógrafo</p>
+          <p className="text-xs text-muted">ingeniero backend · fotógrafo</p>
         </div>
       </div>
 
@@ -30,7 +30,7 @@ export default function AboutContent() {
 
       <Divider className="mb-2" />
 
-      <InfoRow label="ubicación">méxico 🌮🇲🇽</InfoRow>
+      <InfoRow label="ubicación">méxico 🇲🇽</InfoRow>
 
       <InfoRow label="trabajo">
         ingeniero backend @{' '}
@@ -67,7 +67,7 @@ export default function AboutContent() {
       </InfoRow>
 
       <InfoRow label="intereses">
-        programación, startups, ciencia ficción, películas, fotografía, viajes
+        programación · startups · ciencia ficción · películas · fotografía
       </InfoRow>
 
       <InfoRow label="contacto">
