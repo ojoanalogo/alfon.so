@@ -4,12 +4,13 @@ import { NAV_LINKS } from '../../config';
 
 interface Props {
   navbarActiveItemID?: string;
+  class?: string;
 }
 
-const { navbarActiveItemID } = Astro.props;
+const { navbarActiveItemID, class: className } = Astro.props;
 ---
 
-<header id="main-header" class="relative z-50 px-2 py-4 md:px-6">
+<header id="main-header" class:list={['relative z-50 px-2 py-4 md:px-6', className]}>
   <div class="mx-auto">
     <div
       class="rounded-lg border border-gray-400/50 bg-white/70 font-mono text-sm backdrop-blur-lg transition-all duration-300 hover:shadow-sm dark:border-gray-400/30 dark:bg-black/10 dark:hover:shadow-md dark:hover:shadow-black/20"

@@ -37,15 +37,34 @@ const {
     class:list={[
       'relative mx-auto w-full bg-background font-sans',
       !desktop && 'sm:px-2 md:px-4 lg:w-4/5 xl:w-[55rem]',
-      desktop && 'h-dvh overflow-hidden',
+      desktop && 'sm:h-dvh sm:overflow-hidden',
+      desktop && 'max-sm:px-2 max-sm:md:px-4 max-sm:lg:w-4/5 max-sm:xl:w-[55rem]',
     ]}
   >
-    {!desktop && <NoiseBackground />}
+    {
+      desktop ? (
+        <div class="sm:hidden">
+          <NoiseBackground />
+        </div>
+      ) : (
+        <NoiseBackground />
+      )
+    }
     <div class="relative z-10">
-      {!desktop && <Header navbarActiveItemID={navbarActiveItemID} />}
+      {
+        desktop ? (
+          <Header class="sm:hidden" navbarActiveItemID={navbarActiveItemID} />
+        ) : (
+          <Header navbarActiveItemID={navbarActiveItemID} />
+        )
+      }
       <main
         id="main"
-        class:list={[!desktop && 'px-2 pb-12 md:px-6', desktop && 'p-0']}
+        class:list={[
+          !desktop && 'px-2 pb-12 md:px-6',
+          desktop && 'p-0 sm:p-0',
+          desktop && 'max-sm:px-2 max-sm:pb-12 max-sm:md:px-6',
+        ]}
       >
         <slot />
       </main>
