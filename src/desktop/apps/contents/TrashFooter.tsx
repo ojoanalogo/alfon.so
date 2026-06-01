@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Modal from '../../ui/Modal';
 import { WINDOW_ACTION_BTN, WINDOW_ACTION_BTN_DESTRUCTIVE } from '@/styles/tokens';
-import type { TrashController } from '../types';
+import type { TrashController } from '@desktop/wrappers';
 
 interface TrashFooterProps {
   trash: TrashController;

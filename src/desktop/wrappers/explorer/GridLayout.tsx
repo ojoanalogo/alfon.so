@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 import type { ListItem } from './types';
-import { ICON_SIZE_PX, useGridSettings, type GridSpacing } from '../context/GridSettingsContext';
+import { ICON_SIZE_PX, useGridSettings, type GridSpacing } from '../../context/GridSettingsContext';
 import ListItemIcon from './ListItemIcon';
 
 const SPACING_GAP_PX: Record<GridSpacing, number> = {

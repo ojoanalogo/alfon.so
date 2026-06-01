@@ -1,1 +1,1 @@
-export { default } from './Window';
+export { default, type WindowProps } from './Window';

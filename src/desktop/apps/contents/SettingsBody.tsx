@@ -1,4 +1,4 @@
-import type { SettingsSection } from '../defineApp';
+import type { SettingsSection } from '@desktop/wrappers';
 
 interface SettingsBodyProps {
   sections: SettingsSection[];

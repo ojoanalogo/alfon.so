@@ -1,25 +1,19 @@
 /**
  * The app registry.
  *
- * Adding a new app: append one `defineApp / defineBrowserApp / defineExplorerApp /
- * defineSettingsApp / defineTerminalApp / defineCustomApp` call to APPS. The
- * runtime derives window defs, desktop icons, taskbar metadata, and the start
+ * Adding a new app: append one `defineApp / browserApp / explorerApp` call to APPS.
+ * The runtime derives window defs, desktop icons, taskbar metadata, and the start
  * menu from this list — there is no second place to update.
- *
- * To make an app that's a "sub-class of browser" (e.g. a fixed-URL site
- * launcher), use `defineBrowserApp({ id, title, initialUrl })`.
  */
 
 import { createElement } from 'react';
 import {
-  defineBrowserApp,
-  defineCustomApp,
-  defineExplorerApp,
-  defineSettingsApp,
-  defineTerminalApp,
+  browserApp,
+  defineApp,
+  explorerApp,
   type AppDefinition,
   type SettingsSection,
-} from './defineApp';
+} from '@desktop/wrappers';
 import { cascadeOffset } from './cascadePositions';
 import { appIconSrc } from './desktopIcons';
 import AboutContent from './contents/AboutContent';
@@ -27,31 +21,35 @@ import ClassifiedContent from './contents/ClassifiedContent';
 import { CLASSIFIED_DOCS } from './contents/classifiedDocs';
 import HappyContent from './contents/HappyContent';
 import PostContent from './contents/PostContent';
+import SettingsBody from './contents/SettingsBody';
+import TerminalApp from '../TerminalApp';
 import TrashFooter from './contents/TrashFooter';
 import AppearanceSection from '../settings/AppearanceSection';
 import GridSettingsSection from '../settings/GridSettingsSection';
 import { PROJECTS, TRASH_JUNK } from './data';
 import { BROWSER_APP_ID, postSlugFromWindowId, postWindowId } from './postWindow';
-import type { ListItem } from '../layouts/types';
+import type { ListItem } from '../wrappers/explorer/types';
 import type { BlogPostSummary } from '../types';
 
 // ---------------------------------------------------------------------------
 // Static apps
 // ---------------------------------------------------------------------------
 
-const terminalApp = defineTerminalApp({
+const terminalApp = defineApp({
   id: 'terminal',
   title: 'terminal — guest@alfon.so',
+  iconKey: 'terminal',
   geometry: { defaultX: 88, defaultY: 36, defaultWidth: 560, defaultHeight: 380, initialZ: 10 },
   desktopIcon: { label: 'terminal.sh', tooltip: 'Terminal' },
   taskbarTooltip: 'Terminal',
+  bodyClassName: 'terminal-window__body',
+  body: (ctx) => createElement(TerminalApp, { posts: ctx.posts, focused: true }),
 });
 
-const aboutApp = defineCustomApp({
+const aboutApp = defineApp({
   id: 'about',
   title: 'about.txt',
   iconKey: 'about',
-  component: AboutContent,
   geometry: {
     defaultX: 0,
     defaultY: 0,
@@ -63,9 +61,10 @@ const aboutApp = defineCustomApp({
   },
   desktopIcon: { label: 'about.txt', tooltip: 'Mi info' },
   taskbarTooltip: 'about.txt',
+  body: () => createElement(AboutContent),
 });
 
-const projectsApp = defineExplorerApp({
+const projectsApp = explorerApp({
   id: 'projects',
   title: 'proyectos',
   iconKey: 'projects',
@@ -87,7 +86,7 @@ const projectsApp = defineExplorerApp({
   taskbarTooltip: 'Proyectos',
 });
 
-const blogApp = defineExplorerApp({
+const blogApp = explorerApp({
   id: 'blog',
   title: '✍️ últimos posts',
   iconKey: 'blog',
@@ -107,36 +106,34 @@ const blogApp = defineExplorerApp({
   taskbarTooltip: 'Blog',
 });
 
-const area51App = defineCustomApp({
+const area51App = defineApp({
   id: 'area51',
   title: 'area51.pdf — CLASIFICADO',
   iconKey: 'classified',
-  component: ClassifiedContent,
-  props: () => ({ doc: CLASSIFIED_DOCS.area51 }),
   geometry: { defaultX: 220, defaultY: 120, defaultWidth: 560, initialZ: 14 },
   desktopIcon: false,
+  body: () => createElement(ClassifiedContent, { doc: CLASSIFIED_DOCS.area51 }),
 });
 
-const ovnisApp = defineCustomApp({
+const ovnisApp = defineApp({
   id: 'ovnis',
   title: 'ovnis.pdf — SOLO LECTURA',
   iconKey: 'classified',
-  component: ClassifiedContent,
-  props: () => ({ doc: CLASSIFIED_DOCS.ovnis }),
   geometry: { defaultX: 250, defaultY: 150, defaultWidth: 560, initialZ: 15 },
   desktopIcon: false,
+  body: () => createElement(ClassifiedContent, { doc: CLASSIFIED_DOCS.ovnis }),
 });
 
-const happyApp = defineCustomApp({
+const happyApp = defineApp({
   id: 'happy',
   title: 'no_abrir.mp4',
   iconKey: 'video',
-  component: HappyContent,
   geometry: { defaultX: 280, defaultY: 84, defaultWidth: 600, initialZ: 16 },
   desktopIcon: false,
+  body: () => createElement(HappyContent),
 });
 
-const trashApp = defineExplorerApp({
+const trashApp = explorerApp({
   id: 'trash',
   title: '🗑 Papelera',
   iconKey: 'trash',
@@ -181,10 +178,10 @@ const SETTINGS_SECTIONS: SettingsSection[] = [
   { id: 'escritorio', title: 'Escritorio', render: () => createElement(GridSettingsSection) },
 ];
 
-const settingsApp = defineSettingsApp({
+const settingsApp = defineApp({
   id: 'settings',
   title: 'ajustes',
-  sections: SETTINGS_SECTIONS,
+  iconKey: 'settings',
   geometry: {
     defaultX: 240,
     defaultY: 72,
@@ -194,9 +191,11 @@ const settingsApp = defineSettingsApp({
   },
   desktopIcon: { label: 'ajustes', tooltip: 'Ajustes del escritorio' },
   taskbarTooltip: 'Ajustes',
+  bodyClassName: 'card-body--settings',
+  body: () => createElement(SettingsBody, { sections: SETTINGS_SECTIONS }),
 });
 
-const browserApp = defineBrowserApp({
+const browserMainApp = browserApp({
   id: BROWSER_APP_ID,
   title: 'web browser',
   iconKey: 'startup',
@@ -206,7 +205,7 @@ const browserApp = defineBrowserApp({
 });
 
 // "Sub-app extending browser" examples: site launchers with only the URL bar.
-const photosApp = defineBrowserApp({
+const photosApp = browserApp({
   id: 'photos',
   title: 'photos.jpg',
   iconKey: 'photos',
@@ -217,7 +216,7 @@ const photosApp = defineBrowserApp({
   taskbarTooltip: 'Mi vida en fotos',
 });
 
-const startupApp = defineBrowserApp({
+const startupApp = browserApp({
   id: 'startup',
   title: 'startup.sh',
   iconKey: 'startup',
@@ -245,7 +244,7 @@ export const APPS = [
   ovnisApp,
   happyApp,
   trashApp,
-  browserApp,
+  browserMainApp,
 ] as const satisfies readonly AppDefinition[];
 
 export type AppId = (typeof APPS)[number]['id'];
@@ -266,12 +265,10 @@ export function findApp(id: string): AppDefinition | undefined {
 export function createPostApps(posts: BlogPostSummary[]): AppDefinition[] {
   return posts.map((post, index) => {
     const offset = cascadeOffset(index, { baseX: 180, baseY: 108, pitch: 28 });
-    return defineCustomApp({
+    return defineApp({
       id: postWindowId(post.slug),
       title: `${post.slug}.md`,
       iconKey: 'blog',
-      component: PostContent,
-      props: () => ({ post }),
       geometry: {
         defaultX: offset.x,
         defaultY: offset.y,
@@ -280,6 +277,7 @@ export function createPostApps(posts: BlogPostSummary[]): AppDefinition[] {
       },
       desktopIcon: false,
       taskbarTooltip: post.title,
+      body: () => createElement(PostContent, { post }),
     });
   });
 }

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { normalizeBrowserUrl } from '../browserUtils';
+import { normalizeBrowserUrl } from '../../browserUtils';
 
 export interface BrowserAppState {
   url: string | null;

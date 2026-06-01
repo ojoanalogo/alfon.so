@@ -2,22 +2,22 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import type { DesktopIconUrls } from '@/lib/desktopIcons';
 import { APPS, createPostApps } from './apps/registry';
 import { appIconSrc, resolveDesktopShellIcons } from './apps/desktopIcons';
-import { appToWindowDef, renderApp } from './apps/renderApp';
+import { appToWindowDef } from './apps/appToWindowDef';
 import { BROWSER_APP_ID, TRASH_APP_ID, postWindowId } from './apps/postWindow';
 import { TRASH_JUNK } from './apps/data';
-import { useBrowserHistories } from './browser/useBrowserHistories';
+import { useBrowserHistories } from './wrappers/browser/useBrowserHistories';
 import { GridSettingsProvider } from './context/GridSettingsContext';
 import { WallpaperProvider } from './context/WallpaperContext';
 import { WindowManagerProvider, useWindowManagerContext } from './context/WindowManagerContext';
-import type { AppDefinition } from './apps/defineApp';
-import type { WindowAppContext, TrashController } from './apps/types';
-import type { BlogPostSummary, WallpaperOption, WindowDef } from './types';
+import type { AppDefinition, AppContext, TrashController } from '@desktop/wrappers';
+import type { BlogPostSummary, WallpaperOption, WindowDef, WindowGeometry } from './types';
 import DesktopWallpaper from './DesktopWallpaper';
 import DesktopBootOverlay from './DesktopBootOverlay';
 import Papelera from './Papelera';
 import DesktopIcons from './DesktopIcons';
 import Taskbar, { type WindowMeta } from './Taskbar';
 import { useDesktopIcons } from './useDesktopIcons';
+import { minWidthForDef } from './useWindowManager';
 import { useViewportSize } from './utils/useViewportSize';
 import {
   isMobileViewport,
@@ -118,8 +118,8 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
   // Hydrate per-app initial URLs once per app definition.
   useEffect(() => {
     for (const app of apps) {
-      if (app.layout.kind === 'browser' && app.layout.initialUrl) {
-        browsers.hydrateInitial(app.id, app.layout.initialUrl);
+      if (app.initialBrowserUrl) {
+        browsers.hydrateInitial(app.id, app.initialBrowserUrl);
       }
     }
   }, [apps, browsers]);
@@ -160,7 +160,7 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
     [browsers, openWindow, setGeometry],
   );
 
-  const appContext = useMemo<WindowAppContext>(
+  const appContext = useMemo<AppContext>(
     () => ({
       posts,
       onOpenPost: (slug: string) => openWindow(postWindowId(slug)),
@@ -257,18 +257,17 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
           const state = wm.windows[app.id];
           const def = defs.find((d) => d.id === app.id);
           if (!state || !def) return null;
-          return (
-            <Fragment key={app.id}>
-              {renderApp({
-                app,
-                def,
-                state,
-                focused: wm.focusedId === app.id,
-                ctx: appContext,
-                callbacks: wm,
-              })}
-            </Fragment>
-          );
+          const win = {
+            state,
+            focused: wm.focusedId === app.id,
+            minWidth: minWidthForDef(def),
+            onFocus: () => wm.focus(app.id),
+            onClose: () => wm.close(app.id),
+            onMinimize: () => wm.minimize(app.id),
+            onToggleMaximize: () => wm.toggleMaximize(app.id),
+            onGeometryChange: (geometry: Partial<WindowGeometry>) => wm.setGeometry(app.id, geometry),
+          };
+          return <Fragment key={app.id}>{app.render(appContext, win)}</Fragment>;
         })}
       </div>
 

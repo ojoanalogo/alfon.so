@@ -1,7 +1,7 @@
 import type { DesktopIconDefinition } from '@/config';
 import type { DesktopIconUrls } from '@/lib/desktopIcons';
 import { resolveDesktopIcons, resolveIconUrl } from '@/lib/desktopIcons';
-import { appLabel, type AppDefinition } from './defineApp';
+import { appLabel, type AppDefinition } from '@desktop/wrappers';
 
 /** Resolve an app's icon URL, preferring a co-located `iconUrl` over `iconKey`. */
 export function appIconSrc(app: AppDefinition, urls: DesktopIconUrls): string {

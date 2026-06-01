@@ -1,4 +1,4 @@
-import { useExplorerView } from '../context/ExplorerViewContext';
+import { useExplorerView } from './ExplorerViewContext';
 import LayoutSwitcher from './LayoutSwitcher';
 
 interface ExplorerTitleContentProps {

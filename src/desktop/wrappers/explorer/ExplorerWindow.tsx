@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import { ExplorerViewProvider, useExplorerView } from '../context/ExplorerViewContext';
-import type { ExplorerViewMode } from '../layouts/types';
-import ExplorerTitleContent from '../layouts/ExplorerTitleContent';
-import Window, { type WindowProps } from './Window';
+import { ExplorerViewProvider, useExplorerView } from './ExplorerViewContext';
+import type { ExplorerViewMode } from './types';
+import ExplorerTitleContent from './ExplorerTitleContent';
+import Window, { type WindowProps } from '../../window';
 
 type ExplorerWindowProps = Omit<WindowProps, 'titleContent' | 'children'> & {
   defaultMode?: ExplorerViewMode;
