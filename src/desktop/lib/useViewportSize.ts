@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 /** SSR-safe default; replaced on mount with real viewport dimensions. */
 const FALLBACK = { width: 390, height: 844 };
