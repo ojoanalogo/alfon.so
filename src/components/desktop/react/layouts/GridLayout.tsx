@@ -1,39 +1,16 @@
-import { useContext, createContext, useMemo, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import type { ListItem } from './types';
-import {
-  ICON_SIZE_PX,
-  useGridSettings,
-  type GridIconSize,
-  type GridSpacing,
-} from '../context/GridSettingsContext';
-
-/**
- * Per-app override of the global GridSettings. Drilled through ExplorerLayout
- * so each app can pin its own icon size / spacing without touching user prefs.
- */
-export interface GridOverrides {
-  iconSize?: GridIconSize;
-  spacing?: GridSpacing;
-}
-
-const GridOverridesContext = createContext<GridOverrides | null>(null);
-
-export function GridOverridesProvider({
-  overrides,
-  children,
-}: {
-  overrides?: GridOverrides;
-  children: ReactNode;
-}) {
-  const value = useMemo(() => overrides ?? null, [overrides]);
-  return <GridOverridesContext.Provider value={value}>{children}</GridOverridesContext.Provider>;
-}
+import { ICON_SIZE_PX, useGridSettings, type GridSpacing } from '../context/GridSettingsContext';
+import ListItemIcon from './ListItemIcon';
 
 const SPACING_GAP_PX: Record<GridSpacing, number> = {
   compact: 8,
   normal: 16,
   roomy: 24,
 };
+
+const GRID_CELL =
+  'flex flex-col items-center gap-1 rounded-[0.25rem] border border-transparent p-2 text-center font-[inherit] text-[color:inherit]';
 
 interface GridLayoutProps {
   items: ListItem[];
@@ -53,35 +30,27 @@ function GridCell({
   iconPx: number;
   onActivate: (id: string) => void;
 }) {
-  const { id, label, iconSrc, graphic, title, disabled } = item;
+  const { id, label, title, disabled } = item;
 
   const graphicNode = (
-    <span className="desktop-icon-grid__graphic" aria-hidden="true">
-      {iconSrc ? (
-        <img
-          src={iconSrc}
-          alt=""
-          width={iconPx}
-          height={iconPx}
-          className="desktop-icon-grid__icon"
-          loading="lazy"
-          decoding="async"
-        />
-      ) : (
-        graphic
-      )}
+    <span
+      className="flex h-8 w-8 items-center justify-center text-[1.5rem] leading-none"
+      aria-hidden="true"
+    >
+      <ListItemIcon item={item} size={iconPx} imgClassName="h-8 w-8 [image-rendering:pixelated]" />
     </span>
   );
+  const label_ = <span className="w-full overflow-hidden text-[0.6rem] leading-[1.25] whitespace-nowrap text-ellipsis text-secondary">{label}</span>;
 
   if (disabled) {
     return (
       <div
-        className="desktop-icon-grid__cell desktop-icon-grid__cell--disabled"
+        className={`${GRID_CELL} cursor-default opacity-55`}
         title={title ?? label}
         aria-label={label}
       >
         {graphicNode}
-        <span className="desktop-icon-grid__label">{label}</span>
+        {label_}
       </div>
     );
   }
@@ -89,12 +58,12 @@ function GridCell({
   return (
     <button
       type="button"
-      className="desktop-icon-grid__cell"
+      className={`${GRID_CELL} cursor-pointer hover:border-[rgb(156_163_175/0.4)] hover:bg-[rgb(229_231_235/0.4)] dark:hover:bg-[rgb(107_114_128/0.1)]`}
       onClick={() => onActivate(id)}
       title={title ?? label}
     >
       {graphicNode}
-      <span className="desktop-icon-grid__label">{label}</span>
+      {label_}
     </button>
   );
 }
@@ -107,17 +76,19 @@ export default function GridLayout({
   children,
 }: GridLayoutProps) {
   const { settings } = useGridSettings();
-  const overrides = useContext(GridOverridesContext);
-
-  const iconSize = overrides?.iconSize ?? settings.iconSize;
-  const spacing = overrides?.spacing ?? settings.spacing;
-  const iconPx = ICON_SIZE_PX[iconSize];
-  const gap = SPACING_GAP_PX[spacing];
+  const iconPx = ICON_SIZE_PX[settings.iconSize];
+  const gap = SPACING_GAP_PX[settings.spacing];
 
   return (
-    <div className={['window-grid-layout', className].filter(Boolean).join(' ')}>
-      {heading && <p className="window-grid-layout__heading">{heading}</p>}
-      <div className="desktop-icon-grid" role="list" style={{ gap: `${gap}px` }}>
+    <div className={className}>
+      {heading && (
+        <p className="mb-2 text-[0.6rem] tracking-[0.05em] uppercase text-muted">{heading}</p>
+      )}
+      <div
+        className="grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))]"
+        role="list"
+        style={{ gap: `${gap}px` }}
+      >
         {items.map((item) => (
           <GridCell key={item.id} item={item} iconPx={iconPx} onActivate={onActivate} />
         ))}

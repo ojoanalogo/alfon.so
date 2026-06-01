@@ -2,6 +2,7 @@
 
 export const POST_WINDOW_PREFIX = 'post:';
 export const BROWSER_APP_ID = 'browser';
+export const TRASH_APP_ID = 'trash';
 
 export function postWindowId(slug: string): string {
   return `${POST_WINDOW_PREFIX}${slug}`;

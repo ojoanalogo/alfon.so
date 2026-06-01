@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
 import type { ListItem } from './types';
 import { fakeFileSize } from './fakeFileSize';
+import ListItemIcon from './ListItemIcon';
 
 interface FolderListProps {
   items: ListItem[];
@@ -11,29 +11,16 @@ interface FolderListProps {
 
 function FolderListHeader() {
   return (
-    <li className="folder-list__header" aria-hidden="true">
+    <li
+      className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto_auto] gap-2 border-b border-[color:var(--color-hairline)] bg-[rgb(229_231_235/0.35)] px-2 py-1 text-[0.5625rem] font-semibold tracking-[0.04em] uppercase text-muted dark:bg-[rgb(24_24_27/0.55)] max-sm:hidden"
+      aria-hidden="true"
+    >
       <span />
       <span>Nombre</span>
       <span>Tipo</span>
       <span>Tamaño</span>
     </li>
   );
-}
-
-function renderRowIcon(item: ListItem): ReactNode {
-  if (item.iconSrc) {
-    return (
-      <img
-        src={item.iconSrc}
-        alt=""
-        width={16}
-        height={16}
-        loading="lazy"
-        decoding="async"
-      />
-    );
-  }
-  return item.graphic ?? null;
 }
 
 function FolderListRow({
@@ -43,15 +30,15 @@ function FolderListRow({
   item: ListItem;
   onOpen?: (id: string) => void;
 }) {
-  const size = item.size ?? fakeFileSize(item.id, item.kind ?? '');
+  const size = item.isFolder ? '—' : (item.size ?? fakeFileSize(item.id));
   const content = (
     <>
-      <span className="folder-list__icon" aria-hidden="true">
-        {renderRowIcon(item)}
+      <span className="flex items-center justify-center leading-none" aria-hidden="true">
+        <ListItemIcon item={item} size={16} imgClassName="h-4 w-4 [image-rendering:pixelated]" />
       </span>
-      <span className="folder-list__name">{item.label}</span>
-      <span className="folder-list__kind">{item.kind ?? '—'}</span>
-      <span className="folder-list__size">{size ?? '—'}</span>
+      <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-primary">{item.label}</span>
+      <span className="text-muted whitespace-nowrap max-sm:hidden">{item.kind ?? '—'}</span>
+      <span className="min-w-[3.5rem] text-right text-muted tabular-nums whitespace-nowrap max-sm:hidden">{size ?? '—'}</span>
     </>
   );
 
@@ -68,7 +55,15 @@ function FolderListRow({
 
 export default function FolderList({ items, onOpen, className, showHeader }: FolderListProps) {
   return (
-    <ul className={['folder-list', className].filter(Boolean).join(' ')} role="list">
+    <ul
+      className={[
+        'folder-list m-0 list-none p-0 text-[0.6875rem]',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      role="list"
+    >
       {showHeader && <FolderListHeader />}
       {items.map((item) => (
         <li key={item.id}>

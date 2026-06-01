@@ -1,5 +1,4 @@
-import type { ReactNode } from 'react';
-import type { BlogPostSummary, WindowDef } from '../types';
+import type { BlogPostSummary } from '../types';
 import type { BrowserHistories } from '../browser/useBrowserHistories';
 
 export interface TrashItem {
@@ -28,27 +27,6 @@ export interface WindowAppContext {
   onOpenLink: (url: string) => void;
   /** Per-browser-app navigation state. */
   browsers: BrowserHistories;
-  focusedWindowId: string | null;
   trash: TrashController;
   iconUrls: Record<string, string>;
 }
-
-/** Per-window chrome customization beyond the default titlebar. */
-export interface WindowChromeOptions {
-  titleContent?: ReactNode;
-  bodyClassName?: string;
-  windowClassName?: string;
-  /** Dynamic title override (e.g. browser URL). */
-  resolveTitle?: (def: WindowDef, ctx: WindowAppContext) => string;
-}
-
-export type WindowAppRenderer = (ctx: WindowAppContext, windowId: string) => ReactNode;
-
-export interface WindowAppEntry {
-  render: WindowAppRenderer;
-  /** Folder-style windows with a grid/list switcher in the title bar. */
-  explorer?: boolean;
-  chrome?: WindowChromeOptions | ((ctx: WindowAppContext) => WindowChromeOptions);
-}
-
-export type WindowAppRegistry = Record<string, WindowAppEntry>;

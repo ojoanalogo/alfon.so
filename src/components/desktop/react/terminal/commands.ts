@@ -1,5 +1,7 @@
 import { SOCIAL_LINKS } from '../../../../config';
 import type { BlogPostSummary } from '../types';
+import { APPS } from '../apps/registry';
+import { PROJECTS, TRASH_JUNK } from '../apps/data';
 
 export const TERMINAL_PROMPT = 'guest@alfon.so:~$';
 
@@ -24,13 +26,9 @@ const CAT_FILES: Record<string, string[]> = {
     'echo "molecula.digital — productos digitales"',
     '# abre https://molecula.digital',
   ],
-  proyectos: [
-    'drwxr-xr-x  sofia/       registra gastos por WhatsApp',
-    'drwxr-xr-x  terminus/   plantilla Astro terminal',
-    'drwxr-xr-x  hilitos/    marketplaces tipo Etsy',
-    'drwxr-xr-x  dotfiles/   config de mi equipo',
-    'drwxr-xr-x  wawa/       flujos conversacionales WA',
-  ],
+  proyectos: PROJECTS.map(
+    (project) => `drwxr-xr-x  ${`${project.title}/`.padEnd(12)}${project.description}`,
+  ),
   'area51.pdf': [
     '*** TOP SECRET — area51.pdf ***',
     '',
@@ -113,14 +111,32 @@ function socialLines(): string[] {
   return SOCIAL_LINKS.map((link) => `${link.platform.padEnd(10)} ${link.url}`);
 }
 
+function chunkRows(items: string[], perRow: number): string[] {
+  const rows: string[] = [];
+  for (let i = 0; i < items.length; i += perRow) {
+    rows.push('  ' + items.slice(i, i + perRow).join('   '));
+  }
+  return rows;
+}
+
+/** Desktop filenames derived from the registry, so `ls` can't go stale. */
+function desktopFileNames(): string[] {
+  return APPS.filter((app) => app.desktopIcon !== false).map((app) => {
+    const cfg = typeof app.desktopIcon === 'object' && app.desktopIcon ? app.desktopIcon : {};
+    return cfg.label ?? (typeof app.title === 'string' ? app.title : app.id);
+  });
+}
+
 function lsLines(): string[] {
   return [
     'Escritorio:',
-    '  about.txt    blog.sql    photos.jpg',
-    '  proyectos    startup.sh  terminal.sh',
+    ...chunkRows(desktopFileNames(), 3),
     '',
     'Papelera:',
-    '  area51.pdf   ovnis.pdf   no_abrir.mp4',
+    ...chunkRows(
+      TRASH_JUNK.map((entry) => entry.name),
+      3,
+    ),
   ];
 }
 

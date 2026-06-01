@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react';
 
+/** Grid (icon) vs list (detail) rendering for explorer-style windows. */
+export type ExplorerViewMode = 'grid' | 'list';
+
 /**
  * Canonical record consumed by every list-style layout in the desktop shell
  * (GridLayout, FolderList, ExplorerLayout). Adding a new layout? Take ListItem[]
@@ -23,5 +26,7 @@ export interface ListItem {
   graphic?: ReactNode;
   /** Pre-formatted file size for the list view. */
   size?: string;
+  /** Folders show "—" for size instead of a synthetic file size. */
+  isFolder?: boolean;
   disabled?: boolean;
 }

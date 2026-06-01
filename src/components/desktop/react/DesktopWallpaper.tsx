@@ -5,13 +5,13 @@ export default function DesktopWallpaper() {
 
   return (
     <div
-      className="desktop-wallpaper"
+      className="absolute inset-0 z-0 overflow-hidden bg-background"
       aria-hidden="true"
       style={{ backgroundColor: desktopBackgroundColor }}
     >
       {activeWallpaper && status === 'ready' && (
         <img
-          className="desktop-wallpaper__image"
+          className="h-full w-full object-cover object-center"
           src={activeWallpaper.src}
           alt=""
           decoding="async"

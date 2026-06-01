@@ -43,7 +43,7 @@ const wallpapers: WallpaperOption[] = (
 ---
 
 <BaseLayout desktop>
-  <div class="desktop">
+  <div class="relative h-[calc(100dvh-2.5rem)] w-full overflow-hidden max-sm:h-[100dvh]">
     <DesktopApp client:load posts={posts} wallpapers={wallpapers} desktopIconUrls={DESKTOP_ICON_URLS} />
   </div>
 </BaseLayout>

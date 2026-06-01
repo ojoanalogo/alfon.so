@@ -95,7 +95,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
   return (
     <div
       ref={menuRef}
-      className="desktop-context-menu"
+      className="fixed z-[1000] min-w-[9rem] border border-[color:var(--color-hairline-strong)] bg-[rgb(255_255_255/0.96)] p-1 font-[ui-monospace,monospace] text-[0.6875rem] text-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.8),2px_3px_0_rgb(0_0_0/0.12)] backdrop-blur-[8px] dark:bg-[rgb(24_24_27/0.96)] dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.06),2px_3px_0_rgb(0_0_0/0.35)]"
       role="menu"
       aria-label="Menú contextual"
       style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
@@ -103,14 +103,14 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
       onContextMenu={(event) => event.preventDefault()}
     >
       {items.map((item, index) => (
-        <div key={item.label} className="desktop-context-menu__row">
+        <div key={item.label}>
           {item.separatorBefore && index > 0 && (
-            <span className="desktop-context-menu__separator" aria-hidden="true" />
+            <span className="my-1 block h-px bg-[rgb(113_113_122/0.3)]" aria-hidden="true" />
           )}
           <button
             type="button"
             role="menuitem"
-            className="desktop-context-menu__item"
+            className="block w-full cursor-pointer border border-transparent bg-transparent px-[0.6rem] py-[0.3rem] text-left font-[inherit] text-[length:inherit] text-secondary enabled:hover:border-[color:var(--color-highlight-border)] enabled:hover:bg-[var(--color-highlight-bg)] enabled:hover:text-primary enabled:hover:outline-none focus-visible:border-[color:var(--color-highlight-border)] focus-visible:bg-[var(--color-highlight-bg)] focus-visible:text-primary focus-visible:outline-none disabled:cursor-default disabled:text-muted disabled:opacity-60"
             disabled={item.disabled}
             onClick={() => {
               item.onSelect();

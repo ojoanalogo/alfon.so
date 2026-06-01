@@ -1,10 +1,10 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { resolveIconUrl, type DesktopIconUrls } from '../../../lib/desktopIcons';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { DesktopIconUrls } from '../../../lib/desktopIcons';
 import { APPS, createPostApps } from './apps/registry';
-import { resolveDesktopShellIcons } from './apps/desktopIcons';
+import { appIconSrc, resolveDesktopShellIcons } from './apps/desktopIcons';
 import { appToWindowDef, renderApp } from './apps/renderApp';
-import { BROWSER_APP_ID, postWindowId } from './apps/postWindow';
-import { getTrashWindowMeta } from './apps/data';
+import { BROWSER_APP_ID, TRASH_APP_ID, postWindowId } from './apps/postWindow';
+import { TRASH_JUNK } from './apps/data';
 import { useBrowserHistories } from './browser/useBrowserHistories';
 import { GridSettingsProvider } from './context/GridSettingsContext';
 import { WallpaperProvider } from './context/WallpaperContext';
@@ -18,15 +18,12 @@ import Papelera from './Papelera';
 import DesktopIcons from './DesktopIcons';
 import Taskbar, { type WindowMeta } from './Taskbar';
 import { useDesktopIcons } from './useDesktopIcons';
-import { MIN_HEIGHT, TASKBAR_HEIGHT } from './useWindowManager';
 import { useViewportSize } from './utils/useViewportSize';
 import {
-  effectiveMinWidth,
   isMobileViewport,
   mobileWindowGeometry,
+  resolveWindowGeometry,
 } from './utils/viewport';
-
-const EDGE_MARGIN = 16;
 
 interface DesktopAppProps {
   posts: BlogPostSummary[];
@@ -37,8 +34,7 @@ interface DesktopAppProps {
 export default function DesktopApp({ posts, wallpapers, desktopIconUrls }: DesktopAppProps) {
   const viewport = useViewportSize();
   const apps = useMemo<AppDefinition[]>(() => {
-    // Hide the blog app if there are no posts.
-    const filtered = posts.length > 0 ? [...APPS] : APPS.filter((app) => app.id !== 'blog');
+    const filtered = APPS.filter((app) => app.availableWhen?.({ posts }) ?? true);
     return [...filtered, ...createPostApps(posts)];
   }, [posts]);
 
@@ -78,6 +74,14 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
   const { setGeometry, unfocus } = wm;
   const browsers = useBrowserHistories();
   const [layoutEpoch, setLayoutEpoch] = useState(0);
+
+  // Read window state inside the relayout effect without making it a dependency:
+  // otherwise a drag (which mutates wm.windows on every pointer move) re-fires
+  // the effect, which clamps x/y back to defaults and fights the drag.
+  const windowsRef = useRef(wm.windows);
+  useEffect(() => {
+    windowsRef.current = wm.windows;
+  });
 
   useEffect(() => {
     function bumpLayout() {
@@ -125,7 +129,7 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
     [apps, desktopIconUrls],
   );
   const startMenuApps = useMemo(
-    () => desktopIcons.filter((icon) => icon.kind === 'window' && icon.windowId),
+    () => desktopIcons.filter((icon) => Boolean(icon.windowId)),
     [desktopIcons],
   );
 
@@ -162,29 +166,25 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
       onOpenPost: (slug: string) => openWindow(postWindowId(slug)),
       onOpenLink: handleOpenLink,
       browsers,
-      focusedWindowId: wm.focusedId,
       trash,
       iconUrls: desktopIconUrls,
     }),
-    [posts, openWindow, handleOpenLink, browsers, wm.focusedId, trash, desktopIconUrls],
+    [posts, openWindow, handleOpenLink, browsers, trash, desktopIconUrls],
   );
 
   const meta = useMemo<Record<string, WindowMeta>>(() => {
+    // Trash-junk apps (area51/ovnis/happy) show their bare filename in the
+    // taskbar rather than the flavored window title.
+    const trashNames = new Map(
+      TRASH_JUNK.flatMap((entry) => (entry.appId ? [[entry.appId, entry.name] as const] : [])),
+    );
     const base: Record<string, WindowMeta> = {};
     for (const app of apps) {
-      const label = typeof app.title === 'string' ? app.title : app.id;
+      const label = trashNames.get(app.id) ?? (typeof app.title === 'string' ? app.title : app.id);
       base[app.id] = {
-        iconSrc: resolveIconUrl(desktopIconUrls, app.iconKey),
+        iconSrc: appIconSrc(app, desktopIconUrls),
         label,
         tooltip: app.taskbarTooltip ?? label,
-      };
-    }
-    // Trash junk PDFs become real windows on activate — give them taskbar meta too.
-    for (const file of getTrashWindowMeta(desktopIconUrls)) {
-      base[file.windowId] = {
-        iconSrc: file.iconSrc,
-        label: file.label,
-        tooltip: file.label,
       };
     }
     return base;
@@ -198,31 +198,22 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
 
     function applyLayout() {
       defs.forEach((def) => {
-        const win = wm.windows[def.id];
+        const win = windowsRef.current[def.id];
         if (mobile) {
-          if (win?.open && !win.minimized) {
-            setGeometry(def.id, mobileWindowGeometry(vw, vh));
-          } else if (def.defaultOpen) {
+          if ((win?.open && !win.minimized) || def.defaultOpen) {
             setGeometry(def.id, mobileWindowGeometry(vw, vh));
           }
           return;
         }
 
-        const minW = effectiveMinWidth(def, vw);
-        const width = Math.max(minW, Math.min(def.defaultWidth, vw - EDGE_MARGIN * 2));
-
+        let measuredHeight: number | undefined;
         if (def.center) {
           const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
-          const measuredHeight =
-            el?.getBoundingClientRect().height ?? def.defaultHeight ?? MIN_HEIGHT;
-          const x = Math.max(EDGE_MARGIN, (vw - width) / 2);
-          const y = Math.max(EDGE_MARGIN, (vh - TASKBAR_HEIGHT - measuredHeight) / 2);
-          setGeometry(def.id, { width, x, y });
-          return;
+          measuredHeight = el?.getBoundingClientRect().height;
         }
-
-        const maxX = Math.max(EDGE_MARGIN, vw - width - EDGE_MARGIN);
-        setGeometry(def.id, { width, x: Math.min(def.defaultX, maxX) });
+        const geo = resolveWindowGeometry(def, vw, vh, measuredHeight);
+        // Non-center windows keep their initial y; only width/x are reclamped.
+        setGeometry(def.id, def.center ? { width: geo.width, x: geo.x, y: geo.y } : { width: geo.width, x: geo.x });
       });
     }
 
@@ -231,7 +222,7 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
     if (!mobile && defs.some((def) => def.center)) {
       requestAnimationFrame(() => requestAnimationFrame(applyLayout));
     }
-  }, [defs, setGeometry, wm.windows, viewport.width, viewport.height, layoutEpoch]);
+  }, [defs, setGeometry, viewport.width, viewport.height, layoutEpoch]);
 
   function handleTaskbarSelect(id: string) {
     const win = wm.windows[id];
@@ -258,11 +249,10 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
       <DesktopIcons
         state={icons}
         onOpenWindow={openWindow}
-        onOpenLink={handleOpenLink}
         onDesktopClick={unfocus}
       />
 
-      <div className="desktop-windows">
+      <div className="pointer-events-none relative min-h-[calc(100dvh-5rem)]">
         {apps.map((app) => {
           const state = wm.windows[app.id];
           const def = defs.find((d) => d.id === app.id);
@@ -299,7 +289,7 @@ function DesktopAppContent({ apps, defs, posts, desktopIconUrls, viewport }: Des
       <Papelera
         trashedCount={icons.trashedCount}
         iconUrls={desktopIconUrls}
-        onOpen={() => openWindow('trash')}
+        onOpen={() => openWindow(TRASH_APP_ID)}
       />
     </>
   );

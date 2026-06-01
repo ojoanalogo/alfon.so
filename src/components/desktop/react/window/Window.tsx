@@ -114,6 +114,7 @@ export default function Window({
         left: `${state.x}px`,
         top: `${state.y}px`,
         width: `${state.width}px`,
+        minWidth: `${minWidth}px`,
         height: state.height != null ? `${state.height}px` : undefined,
         zIndex: state.zIndex,
         transformOrigin: 'bottom center',
@@ -143,7 +144,7 @@ export default function Window({
       onPointerDown={() => onFocus()}
     >
       <div className={CARD_CLASS}>
-        <div className="window-titlebar">
+        <div className="window-titlebar flex h-[1.875rem] max-h-[1.875rem] min-h-[1.875rem] items-center overflow-hidden rounded-t-[inherit] border-b border-[color:var(--color-hairline-strong)] shadow-[inset_0_-1px_0_rgb(255_255_255/0.45)] dark:border-b-[rgb(113_113_122/0.55)] dark:shadow-[inset_0_-1px_0_rgb(255_255_255/0.06)]">
           <WindowControls
             onClose={onClose}
             onMinimize={onMinimize}
@@ -161,7 +162,7 @@ export default function Window({
           {children}
           {!focused && interactive && (
             <div
-              className="desktop-window__focus-capture"
+              className="absolute inset-0 z-[2] cursor-default"
               aria-hidden="true"
               onPointerDown={(event) => {
                 event.preventDefault();

@@ -1,16 +1,12 @@
 import type { DesktopIconDefinition } from '../../../../config';
 import type { DesktopIconUrls } from '../../../../lib/desktopIcons';
-import { resolveDesktopIcons } from '../../../../lib/desktopIcons';
+import { resolveDesktopIcons, resolveIconUrl } from '../../../../lib/desktopIcons';
 import { appLabel, type AppDefinition } from './defineApp';
 
-/**
- * External link icons rendered alongside the app icons. Add a new "leaves the
- * site" tile by appending here. Not full apps — they just `window.location.assign()`.
- *
- * To open a URL inside a desktop window instead, use `defineBrowserApp` in the
- * registry (with `hideTitle: true` for a chrome-only site launcher).
- */
-export const DESKTOP_LINKS: DesktopIconDefinition[] = [];
+/** Resolve an app's icon URL, preferring a co-located `iconUrl` over `iconKey`. */
+export function appIconSrc(app: AppDefinition, urls: DesktopIconUrls): string {
+  return app.iconUrl ?? (app.iconKey ? resolveIconUrl(urls, app.iconKey) : '');
+}
 
 /** Derive desktop icon definitions from the app registry. */
 export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIconDefinition[] {
@@ -22,7 +18,7 @@ export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIc
         id: app.id,
         label: cfg.label ?? appLabel(app),
         iconKey: app.iconKey,
-        kind: 'window' as const,
+        iconUrl: app.iconUrl,
         windowId: app.id,
         defaultOpen: app.geometry.defaultOpen,
         tooltip: cfg.tooltip ?? (typeof app.title === 'string' ? app.title : app.id),
@@ -30,11 +26,10 @@ export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIc
     });
 }
 
-/** Full ordered list of icon definitions: apps first, then external links. */
+/** Ordered, URL-resolved desktop icon list derived from the app registry. */
 export function resolveDesktopShellIcons(
   apps: readonly AppDefinition[],
   iconUrls: DesktopIconUrls,
 ) {
-  const definitions = [...appsToIconDefinitions(apps), ...DESKTOP_LINKS];
-  return resolveDesktopIcons(definitions, iconUrls);
+  return resolveDesktopIcons(appsToIconDefinitions(apps), iconUrls);
 }

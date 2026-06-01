@@ -5,7 +5,7 @@ import type { ClassifiedDoc } from '../data';
  * JSX-rich classified docs. Lives in a .tsx so the `<Redacted />` blocks stay
  * statically authored; the plain-data side of trash junk lives in ../data.ts.
  */
-export const CLASSIFIED_DOCS: Record<string, ClassifiedDoc> = {
+export const CLASSIFIED_DOCS = {
   area51: {
     code: 'A-51 / Δ',
     heading: 'INFORME DE INCIDENTE — SECTOR 7',
@@ -53,4 +53,4 @@ export const CLASSIFIED_DOCS: Record<string, ClassifiedDoc> = {
       </>,
     ],
   },
-};
+} satisfies Record<string, ClassifiedDoc>;

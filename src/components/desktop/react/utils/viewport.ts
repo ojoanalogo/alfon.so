@@ -1,5 +1,5 @@
 import type { WindowDef, WindowGeometry } from '../types';
-import { minWidthForDef, MIN_WIDTH, TASKBAR_HEIGHT } from '../useWindowManager';
+import { minWidthForDef, MIN_WIDTH, MIN_HEIGHT, TASKBAR_HEIGHT } from '../useWindowManager';
 
 /** Matches `40rem` breakpoints used in global.css. */
 export const MOBILE_BREAKPOINT_PX = 640;
@@ -32,10 +32,17 @@ export function mobileWindowGeometry(
   };
 }
 
-export function clampInitialGeometryForViewport(
+/**
+ * Single source of truth for desktop window placement: mobile fit, min-width
+ * clamp, width cap, and centering. Used both for the initial state (no measured
+ * height) and for the post-render relayout pass (which passes the DOM-measured
+ * height so centered, content-sized windows settle on their true center).
+ */
+export function resolveWindowGeometry(
   def: WindowDef,
   viewportWidth: number,
   viewportHeight: number,
+  measuredHeight?: number,
 ): WindowGeometry {
   if (isMobileViewport(viewportWidth)) {
     const mobile = mobileWindowGeometry(viewportWidth, viewportHeight);
@@ -49,12 +56,9 @@ export function clampInitialGeometryForViewport(
   const width = Math.max(minW, Math.min(def.defaultWidth, viewportWidth - EDGE_MARGIN * 2));
 
   if (def.center) {
-    const heightEstimate = def.defaultHeight ?? 140;
+    const height = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
     const x = Math.max(EDGE_MARGIN, (viewportWidth - width) / 2);
-    const y = Math.max(
-      EDGE_MARGIN,
-      (viewportHeight - TASKBAR_HEIGHT - heightEstimate) / 2,
-    );
+    const y = Math.max(EDGE_MARGIN, (viewportHeight - TASKBAR_HEIGHT - height) / 2);
     return { x, y, width, height: def.defaultHeight ?? null };
   }
 

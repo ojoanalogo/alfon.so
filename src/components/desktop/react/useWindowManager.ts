@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { WindowDef, WindowGeometry, WindowState } from './types';
-import { clampInitialGeometryForViewport, effectiveMinWidth } from './utils/viewport';
+import { resolveWindowGeometry, effectiveMinWidth } from './utils/viewport';
 
 export const MIN_WIDTH = 400;
 export const MIN_HEIGHT = 140;
@@ -16,7 +16,7 @@ function createInitialState(
   viewportHeight: number,
 ): Record<string, WindowState> {
   const entries = defs.map((def) => {
-    const geometry = clampInitialGeometryForViewport(def, viewportWidth, viewportHeight);
+    const geometry = resolveWindowGeometry(def, viewportWidth, viewportHeight);
     const state: WindowState = {
       id: def.id,
       ...geometry,
@@ -139,6 +139,12 @@ export function useWindowManager(
         const next: Partial<WindowGeometry> = { ...geometry };
         if (next.width != null) next.width = Math.max(minW, next.width);
         if (next.height != null) next.height = Math.max(MIN_HEIGHT, next.height);
+        // Bail out if nothing actually changed so the `windows` reference is
+        // preserved — this breaks the applyLayout effect's self-retrigger loop.
+        const changed = (Object.keys(next) as (keyof WindowGeometry)[]).some(
+          (key) => next[key] !== target[key],
+        );
+        if (!changed) return prev;
         return { ...prev, [id]: { ...target, ...next } };
       });
     },

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { useExplorerView } from '../context/ExplorerViewContext';
 import { useGridSettings } from '../context/GridSettingsContext';
-import GridLayout, { GridOverridesProvider, type GridOverrides } from './GridLayout';
+import GridLayout from './GridLayout';
 import FolderList from './FolderList';
 import type { ListItem } from './types';
 
@@ -14,8 +14,6 @@ export type ExplorerItem = ListItem;
 interface ExplorerLayoutProps {
   items: ListItem[];
   onActivate: (id: string) => void;
-  /** Per-app grid overrides (icon size, spacing). */
-  gridOverrides?: GridOverrides;
   children?: ReactNode;
 }
 
@@ -32,7 +30,6 @@ function sortItems(items: ListItem[], sortBy: 'name' | 'kind'): ListItem[] {
 export default function ExplorerLayout({
   items,
   onActivate,
-  gridOverrides,
   children,
 }: ExplorerLayoutProps) {
   const { mode } = useExplorerView();
@@ -49,9 +46,7 @@ export default function ExplorerLayout({
   return (
     <div className="explorer-layout text-xs">
       {mode === 'grid' ? (
-        <GridOverridesProvider overrides={gridOverrides}>
-          <GridLayout items={sorted} onActivate={handleActivate} />
-        </GridOverridesProvider>
+        <GridLayout items={sorted} onActivate={handleActivate} />
       ) : (
         <FolderList items={sorted} onOpen={handleActivate} showHeader />
       )}

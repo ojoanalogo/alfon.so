@@ -14,22 +14,38 @@ export interface WindowState extends WindowGeometry {
   zIndex: number;
 }
 
-export interface WindowDef {
-  id: string;
-  title: string;
-  /** Default geometry, in CSS pixels, before viewport clamping. */
-  defaultX: number;
-  defaultY: number;
+/**
+ * Default window geometry an app declares, in CSS pixels, before viewport
+ * clamping. Shared by `AppDefinition.geometry` and `WindowDef` so a new field
+ * (e.g. `maxWidth`) propagates to both without a hand-maintained mapping.
+ */
+export interface AppGeometry {
+  /** Left offset; omit to auto-cascade from the app's registry order. */
+  defaultX?: number;
+  /** Top offset; omit to auto-cascade from the app's registry order. */
+  defaultY?: number;
   defaultWidth: number;
-  /** Minimum width when resizing; defaults to global MIN_WIDTH. */
-  minWidth?: number;
-  defaultOpen?: boolean;
-  /** Stacking order applied to windows that start open. */
-  initialZ?: number;
   /** Initial height in px; omit for content-driven height. */
   defaultHeight?: number;
+  /** Minimum width when resizing; defaults to global MIN_WIDTH. */
+  minWidth?: number;
+  /** Stacking order; omit to derive from the app's registry order. */
+  initialZ?: number;
   /** Place the window at the viewport center on first layout. */
   center?: boolean;
+  defaultOpen?: boolean;
+}
+
+/**
+ * Resolved window definition. `appToWindowDef` fills the cascade/stacking
+ * defaults, so the geometry fields the runtime reads are always concrete.
+ */
+export interface WindowDef extends AppGeometry {
+  id: string;
+  title: string;
+  defaultX: number;
+  defaultY: number;
+  initialZ: number;
 }
 
 export type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';

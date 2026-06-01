@@ -37,17 +37,15 @@ export const NAV_LINKS: NavLink[] = [
   },
 ];
 
-export type DesktopIconKind = 'window' | 'link';
-
 export interface DesktopIconDefinition {
   id: string;
   label: string;
   /** Asset filename stem in src/assets/icons/desktop. Defaults to id. */
   iconKey?: string;
-  kind: DesktopIconKind;
-  windowId?: string;
-  href?: string;
-  external?: boolean;
+  /** Direct icon URL; overrides iconKey lookup when set. */
+  iconUrl?: string;
+  /** Window opened on double-click. */
+  windowId: string;
   defaultOpen?: boolean;
   tooltip?: string;
 }
@@ -57,8 +55,7 @@ export interface DesktopIcon extends DesktopIconDefinition {
 }
 
 // DESKTOP_ICON_DEFS used to live here. The app registry now owns app icons
-// (src/components/desktop/react/apps/registry.ts) and DESKTOP_LINKS owns the
-// external link tiles (src/components/desktop/react/apps/desktopIcons.ts).
+// (src/components/desktop/react/apps/registry.ts).
 
 export type SocialPlatform = 'twitter' | 'github' | 'instagram' | 'linkedin';
 

@@ -11,6 +11,7 @@ import SettingsBody from './contents/SettingsBody';
 import TerminalApp from '../TerminalApp';
 import { minWidthForDef } from '../useWindowManager';
 import { resolveAppTitle } from './defineApp';
+import { cascadeOffset } from './cascadePositions';
 
 /** Window manager callbacks renderApp needs (passed by DesktopApp). */
 export interface WindowCallbacks {
@@ -92,7 +93,7 @@ export function renderApp({ app, def, state, focused, ctx, callbacks }: RenderAp
     case 'terminal':
       return (
         <Window {...baseProps}>
-          <TerminalApp posts={ctx.posts} focused={ctx.focusedWindowId === app.id} />
+          <TerminalApp posts={ctx.posts} focused={focused} />
         </Window>
       );
 
@@ -102,21 +103,34 @@ export function renderApp({ app, def, state, focused, ctx, callbacks }: RenderAp
           <SettingsBody sections={app.layout.sections} />
         </Window>
       );
+
+    default: {
+      // Exhaustiveness guard: a new AppLayout kind that forgets a case here
+      // becomes a compile error instead of silently rendering a blank window.
+      const _exhaustive: never = app.layout;
+      throw new Error(`renderApp: unhandled layout kind "${(_exhaustive as { kind: string }).kind}"`);
+    }
   }
 }
 
-/** Convert an AppDefinition's geometry to a WindowDef the window manager understands. */
-export function appToWindowDef(app: AppDefinition): WindowDef {
+/** Anchors for apps that omit explicit geometry — cascade down-right by order. */
+const CASCADE_BASE = { baseX: 96, baseY: 48 };
+const BASE_Z = 10;
+
+/**
+ * Convert an AppDefinition's geometry to a WindowDef the window manager
+ * understands. Apps that omit `defaultX/Y` cascade from their registry order,
+ * and `initialZ` defaults to `BASE_Z + index`, so the common case is zero-config.
+ */
+export function appToWindowDef(app: AppDefinition, index = 0): WindowDef {
+  const geometry = app.geometry;
+  const cascaded = cascadeOffset(index, CASCADE_BASE);
   return {
     id: app.id,
     title: typeof app.title === 'string' ? app.title : app.id,
-    defaultX: app.geometry.defaultX,
-    defaultY: app.geometry.defaultY,
-    defaultWidth: app.geometry.defaultWidth,
-    defaultHeight: app.geometry.defaultHeight,
-    minWidth: app.geometry.minWidth,
-    initialZ: app.geometry.initialZ,
-    center: app.geometry.center,
-    defaultOpen: app.geometry.defaultOpen,
+    ...geometry,
+    defaultX: geometry.defaultX ?? cascaded.x,
+    defaultY: geometry.defaultY ?? cascaded.y,
+    initialZ: geometry.initialZ ?? BASE_Z + index,
   };
 }

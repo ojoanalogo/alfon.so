@@ -21,6 +21,7 @@ import {
   type SettingsSection,
 } from './defineApp';
 import { cascadeOffset } from './cascadePositions';
+import { appIconSrc } from './desktopIcons';
 import AboutContent from './contents/AboutContent';
 import ClassifiedContent from './contents/ClassifiedContent';
 import { CLASSIFIED_DOCS } from './contents/classifiedDocs';
@@ -31,7 +32,8 @@ import AppearanceSection from '../settings/AppearanceSection';
 import GridSettingsSection from '../settings/GridSettingsSection';
 import { PROJECTS, TRASH_JUNK } from './data';
 import { BROWSER_APP_ID, postSlugFromWindowId, postWindowId } from './postWindow';
-import type { ListItem, BlogPostSummary } from '../../../../types/desktop';
+import type { ListItem } from '../layouts/types';
+import type { BlogPostSummary } from '../types';
 
 // ---------------------------------------------------------------------------
 // Static apps
@@ -49,7 +51,7 @@ const aboutApp = defineCustomApp({
   id: 'about',
   title: 'about.txt',
   iconKey: 'about',
-  render: () => createElement(AboutContent),
+  component: AboutContent,
   geometry: {
     defaultX: 0,
     defaultY: 0,
@@ -99,6 +101,7 @@ const blogApp = defineExplorerApp({
       title: post.description ?? post.title,
     })),
   onActivate: (id, ctx) => ctx.onOpenPost(id),
+  availableWhen: (ctx) => ctx.posts.length > 0,
   geometry: { defaultX: 160, defaultY: 96, defaultWidth: 576, initialZ: 13 },
   desktopIcon: { label: 'blog.sql', tooltip: 'Mis posts' },
   taskbarTooltip: 'Blog',
@@ -108,30 +111,29 @@ const area51App = defineCustomApp({
   id: 'area51',
   title: 'area51.pdf — CLASIFICADO',
   iconKey: 'classified',
-  render: () => createElement(ClassifiedContent, { doc: CLASSIFIED_DOCS.area51! }),
+  component: ClassifiedContent,
+  props: () => ({ doc: CLASSIFIED_DOCS.area51 }),
   geometry: { defaultX: 220, defaultY: 120, defaultWidth: 560, initialZ: 14 },
   desktopIcon: false,
-  startMenu: false,
 });
 
 const ovnisApp = defineCustomApp({
   id: 'ovnis',
   title: 'ovnis.pdf — SOLO LECTURA',
   iconKey: 'classified',
-  render: () => createElement(ClassifiedContent, { doc: CLASSIFIED_DOCS.ovnis! }),
+  component: ClassifiedContent,
+  props: () => ({ doc: CLASSIFIED_DOCS.ovnis }),
   geometry: { defaultX: 250, defaultY: 150, defaultWidth: 560, initialZ: 15 },
   desktopIcon: false,
-  startMenu: false,
 });
 
 const happyApp = defineCustomApp({
   id: 'happy',
   title: 'no_abrir.mp4',
   iconKey: 'video',
-  render: () => createElement(HappyContent),
+  component: HappyContent,
   geometry: { defaultX: 280, defaultY: 84, defaultWidth: 600, initialZ: 16 },
   desktopIcon: false,
-  startMenu: false,
 });
 
 const trashApp = defineExplorerApp({
@@ -139,14 +141,18 @@ const trashApp = defineExplorerApp({
   title: '🗑 Papelera',
   iconKey: 'trash',
   items: (ctx) => {
-    const junk = TRASH_JUNK.map<ListItem>((entry) => ({
-      id: entry.id,
-      label: entry.name,
-      kind: entry.kind,
-      graphic: entry.icon,
-      iconSrc: entry.iconKey ? ctx.iconUrls[entry.iconKey] : undefined,
-      disabled: !entry.windowId,
-    }));
+    const junk = TRASH_JUNK.map<ListItem>((entry) => {
+      const app = entry.appId ? findApp(entry.appId) : undefined;
+      return {
+        id: entry.id,
+        label: entry.name,
+        kind: entry.kind,
+        graphic: entry.icon,
+        iconSrc: app ? appIconSrc(app, ctx.iconUrls) : undefined,
+        isFolder: entry.isFolder,
+        disabled: !entry.appId,
+      };
+    });
     const deleted = ctx.trash.items.map<ListItem>((item) => ({
       id: item.id,
       label: item.label,
@@ -157,8 +163,8 @@ const trashApp = defineExplorerApp({
   },
   onActivate: (id, ctx) => {
     const junk = TRASH_JUNK.find((entry) => entry.id === id);
-    if (junk?.windowId) {
-      ctx.trash.onOpenFile(junk.windowId);
+    if (junk?.appId) {
+      ctx.trash.onOpenFile(junk.appId);
       return;
     }
     if (ctx.trash.items.some((item) => item.id === id)) {
@@ -168,7 +174,6 @@ const trashApp = defineExplorerApp({
   footer: (ctx) => createElement(TrashFooter, { trash: ctx.trash }),
   geometry: { defaultX: 320, defaultY: 140, defaultWidth: 420, initialZ: 17 },
   desktopIcon: false,
-  startMenu: false,
 });
 
 const SETTINGS_SECTIONS: SettingsSection[] = [
@@ -209,7 +214,6 @@ const photosApp = defineBrowserApp({
   hideTitle: true,
   geometry: { defaultX: 200, defaultY: 96, defaultWidth: 880, initialZ: 31 },
   desktopIcon: { label: 'photos.jpg', tooltip: 'Mi vida en fotos' },
-  startMenu: { show: true },
   taskbarTooltip: 'Mi vida en fotos',
 });
 
@@ -221,7 +225,6 @@ const startupApp = defineBrowserApp({
   hideTitle: true,
   geometry: { defaultX: 220, defaultY: 112, defaultWidth: 880, initialZ: 32 },
   desktopIcon: { label: 'startup.sh', tooltip: 'Mi startup de productos digitales' },
-  startMenu: { show: true },
   taskbarTooltip: 'Molécula Digital',
 });
 
@@ -267,7 +270,8 @@ export function createPostApps(posts: BlogPostSummary[]): AppDefinition[] {
       id: postWindowId(post.slug),
       title: `${post.slug}.md`,
       iconKey: 'blog',
-      render: () => createElement(PostContent, { post }),
+      component: PostContent,
+      props: () => ({ post }),
       geometry: {
         defaultX: offset.x,
         defaultY: offset.y,
@@ -275,7 +279,6 @@ export function createPostApps(posts: BlogPostSummary[]): AppDefinition[] {
         initialZ: 20 + index,
       },
       desktopIcon: false,
-      startMenu: false,
       taskbarTooltip: post.title,
     });
   });

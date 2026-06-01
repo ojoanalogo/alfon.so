@@ -5,6 +5,14 @@ export default function AboutContent() {
   return (
     <div className="space-y-4 text-xs sm:space-y-2">
       <div className="mb-4 flex items-center gap-3">
+        {/* Profile photo placeholder — swap the emoji for an <img> when the photo is ready */}
+        <div
+          className="flex size-16 shrink-0 items-center justify-center rounded-lg bg-stone-300/70 text-3xl dark:bg-gray-500/10"
+          role="img"
+          aria-label="Foto de perfil de alfonso reyes"
+        >
+          🧑‍💻
+        </div>
         <div className="flex flex-col gap-1">
           <h1 id="about-heading" className="text-2xl">
             👋 hola soy <span className="font-medium text-primary">alfonso reyes</span>

@@ -4,7 +4,11 @@ export type ThemeMode = 'light' | 'dark';
 
 export function applyTheme(theme: ThemeMode) {
   document.documentElement.classList.toggle('dark', theme === 'dark');
-  localStorage.setItem('theme', theme);
+  try {
+    localStorage.setItem('theme', theme);
+  } catch {
+    // Private mode / quota — theme still applies for this session.
+  }
   window.dispatchEvent(new CustomEvent('devfolio-theme-change', { detail: { theme } }));
 }
 

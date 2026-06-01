@@ -28,11 +28,6 @@ export const DESKTOP_ICON_URLS = {
 export type IconKey = keyof typeof DESKTOP_ICON_URLS;
 export type DesktopIconUrls = Record<string, string>;
 
-/** True for the bundled icon keys above — narrows arbitrary strings to IconKey. */
-export function isIconKey(key: string): key is IconKey {
-  return key in DESKTOP_ICON_URLS;
-}
-
 export function resolveIconUrl(urls: DesktopIconUrls, key: string): string {
   const url = urls[key];
   if (!url) {
@@ -52,6 +47,6 @@ export function resolveDesktopIcons(
 ): DesktopIcon[] {
   return definitions.map((definition) => ({
     ...definition,
-    iconSrc: resolveIconUrl(urls, definition.iconKey ?? definition.id),
+    iconSrc: definition.iconUrl ?? resolveIconUrl(urls, definition.iconKey ?? definition.id),
   }));
 }

@@ -13,14 +13,14 @@ interface TerminalAppProps {
 }
 
 function TerminalLine({ line }: { line: string }) {
-  return <div className="terminal__line">{line}</div>;
+  return <div className="whitespace-pre-wrap [word-break:break-word]">{line}</div>;
 }
 
 function TerminalCommandLine({ command }: { command: string }) {
   return (
-    <div className="terminal__line terminal__line--command">
-      <span className="terminal__prompt">{TERMINAL_PROMPT}</span>
-      <span className="terminal__command">{command}</span>
+    <div className="flex flex-wrap gap-[0.375rem] whitespace-pre-wrap [word-break:break-word]">
+      <span className="shrink-0 text-accent">{TERMINAL_PROMPT}</span>
+      <span className="min-w-0 flex-1">{command}</span>
     </div>
   );
 }
@@ -108,15 +108,23 @@ export default function TerminalApp({ posts, focused = false }: TerminalAppProps
   }
 
   return (
-    <div className="terminal" onPointerDown={focusInput} role="region" aria-label="Terminal">
-      <div ref={scrollRef} className="terminal__scroll">
-        <div className="terminal__motd" aria-hidden="true">
+    <div
+      className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#141414] font-[ui-monospace,monospace] text-[0.6875rem] leading-[1.45] text-[#d4d4d8]"
+      onPointerDown={focusInput}
+      role="region"
+      aria-label="Terminal"
+    >
+      <div
+        ref={scrollRef}
+        className="min-h-0 flex-[1_1_auto] overflow-x-hidden overflow-y-auto overscroll-contain px-3 pt-3 pb-2"
+      >
+        <div className="mb-1" aria-hidden="true">
           {TERMINAL_MOTD.map((line, index) => (
             <TerminalLine key={index} line={line} />
           ))}
         </div>
 
-        <div className="terminal__history">
+        <div className="min-h-0">
           {blocks.map((block, index) => (
             <TerminalBlockView key={index} block={block} />
           ))}
@@ -124,20 +132,20 @@ export default function TerminalApp({ posts, focused = false }: TerminalAppProps
       </div>
 
       <form
-        className="terminal__composer"
+        className="flex shrink-0 items-center gap-[0.375rem] border-t border-t-[rgb(63_63_70/0.6)] bg-[#141414] px-3 py-2"
         onSubmit={(event) => {
           event.preventDefault();
           submitCommand();
         }}
       >
-        <label className="terminal__prompt" htmlFor="terminal-input">
+        <label className="shrink-0 text-accent" htmlFor="terminal-input">
           {TERMINAL_PROMPT}
         </label>
         <input
           id="terminal-input"
           ref={inputRef}
           type="text"
-          className="terminal__input"
+          className="min-w-0 flex-1 border-0 bg-transparent p-0 font-[inherit] text-[length:inherit] leading-[inherit] text-[color:inherit] outline-none"
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={handleKeyDown}

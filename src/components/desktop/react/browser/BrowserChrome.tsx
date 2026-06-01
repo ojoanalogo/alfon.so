@@ -9,6 +9,9 @@ interface BrowserChromeProps {
   hideTitle?: boolean;
 }
 
+const RELOAD_BTN =
+  'inline-flex h-[1.125rem] shrink-0 cursor-pointer items-center justify-center border border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] px-[0.3125rem] py-0 text-[0.6875rem] leading-none text-secondary enabled:hover:border-[color:var(--color-highlight-border)] enabled:hover:text-primary disabled:cursor-default disabled:opacity-40 dark:bg-[rgb(24_24_27/0.65)] max-sm:h-6 max-sm:min-w-6 max-sm:px-[0.375rem]';
+
 /** Address bar + back/forward/reload, mounted into the window's titlebar. */
 export default function BrowserChrome({ appId, title, browsers, hideTitle = false }: BrowserChromeProps) {
   const state = browsers.get(appId);
@@ -32,8 +35,12 @@ export default function BrowserChrome({ appId, title, browsers, hideTitle = fals
   }
 
   return (
-    <div className="browser-titlebar">
-      {!hideTitle && <span className="browser-titlebar__app">{title}</span>}
+    <div className="flex w-full min-w-0 flex-1 items-center gap-[0.375rem] leading-none">
+      {!hideTitle && (
+        <span className="shrink-0 text-[0.6875rem] leading-[1.2] text-muted lowercase max-sm:hidden">
+          {title}
+        </span>
+      )}
       <div
         onPointerDown={(event) => event.stopPropagation()}
         role="group"
@@ -42,7 +49,7 @@ export default function BrowserChrome({ appId, title, browsers, hideTitle = fals
       >
         <button
           type="button"
-          className="browser-titlebar__reload"
+          className={RELOAD_BTN}
           title="Atrás"
           aria-label="Página anterior"
           disabled={!canBack}
@@ -52,7 +59,7 @@ export default function BrowserChrome({ appId, title, browsers, hideTitle = fals
         </button>
         <button
           type="button"
-          className="browser-titlebar__reload"
+          className={RELOAD_BTN}
           title="Adelante"
           aria-label="Página siguiente"
           disabled={!canForward}
@@ -62,7 +69,7 @@ export default function BrowserChrome({ appId, title, browsers, hideTitle = fals
         </button>
         <button
           type="button"
-          className="browser-titlebar__reload"
+          className={RELOAD_BTN}
           title="Recargar"
           aria-label="Recargar página"
           disabled={!url}
@@ -72,15 +79,15 @@ export default function BrowserChrome({ appId, title, browsers, hideTitle = fals
         </button>
       </div>
       <div
-        className="browser-titlebar__address"
+        className="flex h-[1.125rem] min-w-0 flex-1 items-center gap-1 border border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] px-[0.3125rem] py-0 font-[ui-monospace,monospace] text-[0.6875rem] leading-none dark:bg-[rgb(24_24_27/0.65)] max-sm:h-6"
         onPointerDown={(event) => event.stopPropagation()}
       >
-        <span className="browser-titlebar__scheme" aria-hidden="true">
+        <span className="shrink-0 text-[0.625rem] leading-none" aria-hidden="true">
           🌐
         </span>
         <input
           type="text"
-          className="browser-titlebar__url-input"
+          className="min-w-0 flex-1 border-0 bg-transparent p-0 font-[ui-monospace,monospace] text-[0.6875rem] leading-[1.2] text-secondary outline-none placeholder:text-muted focus:text-primary"
           value={draft}
           placeholder="about:blank"
           aria-label="Dirección web"
@@ -97,7 +104,7 @@ export default function BrowserChrome({ appId, title, browsers, hideTitle = fals
         />
         {url && (
           <a
-            className="browser-titlebar__external"
+            className="shrink-0 px-[0.125rem] py-0 text-[0.6875rem] leading-none text-secondary no-underline hover:text-accent hover:underline"
             href={url}
             target="_blank"
             rel="noopener noreferrer"

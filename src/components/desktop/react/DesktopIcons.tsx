@@ -7,7 +7,6 @@ import { type DesktopIconsState, type IconPosition } from './useDesktopIcons';
 interface DesktopIconsProps {
   state: DesktopIconsState;
   onOpenWindow: (windowId: string) => void;
-  onOpenLink: (url: string) => void;
   onDesktopClick?: () => void;
 }
 
@@ -48,7 +47,6 @@ interface MenuState {
 export default function DesktopIcons({
   state,
   onOpenWindow,
-  onOpenLink,
   onDesktopClick,
 }: DesktopIconsProps) {
   const {
@@ -77,14 +75,6 @@ export default function DesktopIcons({
   const suppressClick = useRef(false);
 
   function activate(icon: DesktopIcon) {
-    if (icon.kind === 'link' && icon.href) {
-      if (icon.external) {
-        onOpenLink(icon.href);
-      } else {
-        window.location.assign(icon.href);
-      }
-      return;
-    }
     if (icon.windowId) onOpenWindow(icon.windowId);
   }
 
@@ -252,7 +242,7 @@ export default function DesktopIcons({
   return (
     <>
       <div
-        className="desktop-surface"
+        className="absolute inset-0 z-[1] touch-none"
         onPointerDown={handleSurfacePointerDown}
         onPointerMove={handleSurfacePointerMove}
         onPointerUp={handleSurfacePointerUp}
@@ -285,10 +275,23 @@ export default function DesktopIcons({
               onClick={(event) => handleIconClick(event, icon)}
               onContextMenu={(event) => handleIconContextMenu(event, icon)}
             >
-              <span className="desktop-icon__graphic" aria-hidden="true">
-                <img src={icon.iconSrc} alt="" width={48} height={48} loading="lazy" decoding="async" />
+              <span
+                className="flex h-8 w-8 items-center justify-center max-sm:h-12 max-sm:w-12"
+                aria-hidden="true"
+              >
+                <img
+                  src={icon.iconSrc}
+                  alt=""
+                  width={48}
+                  height={48}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-8 w-8 object-contain [image-rendering:pixelated] max-sm:h-12 max-sm:w-12"
+                />
               </span>
-              <span className="desktop-icon__label">{icon.label}</span>
+              <span className="desktop-icon__label w-full max-w-[6.75rem] px-1 py-[0.125rem] text-[0.625rem] leading-[1.25] hyphens-auto [overflow-wrap:anywhere] [word-break:normal] max-sm:max-w-[5.5rem] max-sm:text-[0.6875rem] max-sm:leading-[1.25]">
+                {icon.label}
+              </span>
             </button>
           );
         })}
@@ -296,7 +299,7 @@ export default function DesktopIcons({
 
       {marquee && (
         <div
-          className="desktop-marquee"
+          className="pointer-events-none absolute z-[6] border border-[color:var(--color-highlight-border)] bg-[var(--color-highlight-bg)]"
           aria-hidden="true"
           style={{
             left: `${marquee.left}px`,

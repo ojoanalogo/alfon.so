@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
-import type { ExplorerViewMode } from '../layouts/LayoutSwitcher';
+import type { ExplorerViewMode } from '../layouts/types';
 
 interface ExplorerViewContextValue {
   mode: ExplorerViewMode;

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Modal from '../../ui/Modal';
+import { WINDOW_ACTION_BTN, WINDOW_ACTION_BTN_DESTRUCTIVE } from '../../../../../styles/tokens';
 import type { TrashController } from '../types';
 
 interface TrashFooterProps {
@@ -15,12 +16,12 @@ export default function TrashFooter({ trash }: TrashFooterProps) {
   return (
     <>
       <div className="explorer-actions flex flex-wrap gap-2">
-        <button type="button" className="window-action-btn" onClick={onRestoreAll}>
+        <button type="button" className={WINDOW_ACTION_BTN} onClick={onRestoreAll}>
           restaurar todo
         </button>
         <button
           type="button"
-          className="window-action-btn window-action-btn--destructive"
+          className={WINDOW_ACTION_BTN_DESTRUCTIVE}
           onClick={() => setConfirmEmpty(true)}
         >
           vaciar papelera

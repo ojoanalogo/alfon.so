@@ -15,12 +15,14 @@ export default function ListLayout({
   className,
   density = 'relaxed',
 }: ListLayoutProps) {
-  const listClass = density === 'compact' ? 'window-list-layout--compact' : 'window-list-layout--relaxed';
+  const listClass = density === 'compact' ? 'gap-2' : 'gap-4';
 
   return (
-    <div className={['window-list-layout', className].filter(Boolean).join(' ')}>
-      {heading && <p className="window-list-layout__heading">{heading}</p>}
-      <ul className={['window-list-layout__list', listClass].join(' ')}>{children}</ul>
+    <div className={className}>
+      {heading && (
+        <p className="mb-2 text-[0.6rem] tracking-[0.05em] uppercase text-muted">{heading}</p>
+      )}
+      <ul className={`m-0 flex list-none flex-col p-0 ${listClass}`}>{children}</ul>
     </div>
   );
 }

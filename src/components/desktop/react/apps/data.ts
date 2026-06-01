@@ -74,35 +74,28 @@ export interface TrashJunkItem {
   name: string;
   kind: string;
   icon: string;
-  /** Window opened on double-click; omit for inert junk. */
-  windowId?: string;
-  /** Icon key for the list/grid view (omit for emoji-only). */
-  iconKey?: string;
+  /**
+   * Registry id of the app this file opens on double-click; the list/grid icon
+   * is taken from that app. Resolved via `findApp` at runtime (an unknown id
+   * renders an inert, disabled item). Omit for inert junk (emoji only).
+   */
+  appId?: string;
+  /** Folders show "—" for size in the list view. */
+  isFolder?: boolean;
 }
 
 /** Permanent papelera contents — folder-style junk drawer. */
 export const TRASH_JUNK: TrashJunkItem[] = [
-  { id: 'area51', name: 'area51.pdf', kind: 'PDF', icon: '📄', windowId: 'area51', iconKey: 'classified' },
-  { id: 'ovnis', name: 'ovnis.pdf', kind: 'PDF', icon: '📄', windowId: 'ovnis', iconKey: 'classified' },
-  { id: 'happy', name: 'no_abrir.mp4', kind: 'Video', icon: '🎬', windowId: 'happy', iconKey: 'video' },
+  { id: 'area51', name: 'area51.pdf', kind: 'PDF', icon: '📄', appId: 'area51' },
+  { id: 'ovnis', name: 'ovnis.pdf', kind: 'PDF', icon: '📄', appId: 'ovnis' },
+  { id: 'happy', name: 'no_abrir.mp4', kind: 'Video', icon: '🎬', appId: 'happy' },
   { id: 'cv', name: 'mi_cv_final_FINAL_v7.doc', kind: 'Documento', icon: '📄' },
   { id: 'cv-copy', name: 'mi_cv_final_FINAL_v7 (copia).doc', kind: 'Documento', icon: '📄' },
-  { id: 'node_modules', name: 'node_modules', kind: 'Carpeta', icon: '📁' },
+  { id: 'node_modules', name: 'node_modules', kind: 'Carpeta', icon: '📁', isFolder: true },
   { id: 'ideas', name: 'ideas_de_negocio.txt', kind: 'Texto', icon: '📝' },
   { id: 'screenshot', name: 'captura_muy_importante.png', kind: 'Imagen', icon: '🖼️' },
-  { id: 'zip', name: 'backup_backup.zip', kind: 'Carpeta comprimida', icon: '🗜️' },
+  { id: 'zip', name: 'backup_backup.zip', kind: 'Carpeta comprimida', icon: '🗜️', isFolder: true },
   { id: 'exe', name: 'totally_not_a_virus.exe', kind: 'Aplicación', icon: '⚙️' },
   { id: 'todo', name: 'hacer_algo_productivo.md', kind: 'Markdown', icon: '📝' },
   { id: 'readme', name: 'leer_esto.txt', kind: 'Texto', icon: '📄' },
 ];
-
-export function getTrashWindowMeta(iconUrls: Record<string, string>) {
-  return TRASH_JUNK.filter(
-    (entry): entry is TrashJunkItem & { windowId: string; iconKey: string } =>
-      Boolean(entry.windowId && entry.iconKey),
-  ).map((entry) => ({
-    windowId: entry.windowId,
-    label: entry.name,
-    iconSrc: iconUrls[entry.iconKey] ?? '',
-  }));
-}
