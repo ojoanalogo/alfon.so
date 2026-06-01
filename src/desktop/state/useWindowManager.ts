@@ -217,13 +217,17 @@ export function useWindowManager(
           if (!def.center) continue;
 
           let measuredHeight: number | undefined;
-          if (measureCenter && def.defaultHeight == null) {
-            const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
-            const rawHeight = el?.getBoundingClientRect().height;
-            if (rawHeight) measuredHeight = rawHeight;
+          let measuredWidth: number | undefined;
+          const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.width > 0) measuredWidth = rect.width;
+            if (measureCenter && def.defaultHeight == null && rect.height > 0) {
+              measuredHeight = rect.height;
+            }
           }
 
-          const geo = resolveWindowGeometry(def, vw, vh, measuredHeight);
+          const geo = resolveWindowGeometry(def, vw, vh, measuredHeight, measuredWidth);
           const target = merged[def.id];
           if (!target) continue;
 

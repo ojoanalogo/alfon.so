@@ -75,8 +75,12 @@ export function useResponsiveLayout(
     // viewport is sized); falling back avoids applying mobile geometry at x:8.
     const rawVw = typeof window !== 'undefined' ? window.innerWidth : viewport.width;
     const rawVh = typeof window !== 'undefined' ? window.innerHeight : viewport.height;
-    const vw = rawVw > 0 ? rawVw : viewport.width;
-    const vh = rawVh > 0 ? rawVh : viewport.height;
+    // Skip until the browser reports a real viewport; falling back to the SSR
+    // size (390px) would apply mobile geometry (x: 8) on wide screens.
+    if (rawVw <= 0 || rawVh <= 0) return;
+
+    const vw = rawVw;
+    const vh = rawVh;
     const mobile = isMobileViewport(vw);
 
     let deferredVerticalCenter = false;

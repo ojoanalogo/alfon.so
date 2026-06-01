@@ -43,6 +43,7 @@ export function resolveWindowGeometry(
   viewportWidth: number,
   viewportHeight: number,
   measuredHeight?: number,
+  measuredWidth?: number,
 ): WindowGeometry {
   if (isMobileViewport(viewportWidth)) {
     const mobile = mobileWindowGeometry(viewportWidth, viewportHeight);
@@ -54,7 +55,10 @@ export function resolveWindowGeometry(
   }
 
   const minW = effectiveMinWidth(def, viewportWidth);
-  const width = Math.max(minW, Math.min(def.defaultWidth, viewportWidth - EDGE_MARGIN * 2));
+  const width =
+    measuredWidth != null && measuredWidth > 0
+      ? Math.max(minW, Math.round(measuredWidth))
+      : Math.max(minW, Math.min(def.defaultWidth, viewportWidth - EDGE_MARGIN * 2));
 
   if (def.center) {
     const height = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;

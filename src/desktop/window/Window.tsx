@@ -56,6 +56,7 @@ export default function Window({
     enabled: center && state.open && !state.minimized && !state.maximized,
     x: state.x,
     y: state.y,
+    width: state.width,
     onGeometryChange,
   });
 
