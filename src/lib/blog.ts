@@ -3,7 +3,7 @@ import { getImage } from 'astro:assets';
 import { marked } from 'marked';
 import readingTime from 'reading-time';
 import { render } from 'astro:content';
-import type { BlogPostSummary } from '../components/desktop/react/types';
+import type { BlogPostSummary } from '@/desktop/types';
 
 /**
  * Turn an Astro content entry into the serializable BlogPostSummary that

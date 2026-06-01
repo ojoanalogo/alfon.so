@@ -1,5 +1,5 @@
 import { createElement, type ComponentType, type ReactNode } from 'react';
-import type { IconKey } from '../../../../lib/desktopIcons';
+import type { IconKey } from '@/lib/desktopIcons';
 import type { ExplorerViewMode, ListItem } from '../layouts/types';
 import type { AppGeometry } from '../types';
 import type { WindowAppContext } from './types';

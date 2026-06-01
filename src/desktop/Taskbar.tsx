@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { SITE_TITLE } from '../../../config';
+import { SITE_TITLE } from '@/config';
 import ContextMenu, { type ContextMenuItem } from './ContextMenu';
 import StartMenu from './StartMenu';
 import ThemeToggle from './ThemeToggle';
 import TaskbarClock from './ui/TaskbarClock';
-import type { DesktopIcon } from '../../../config';
+import type { DesktopIcon } from '@/config';
 import type { WindowState } from './types';
 
 export interface WindowMeta {

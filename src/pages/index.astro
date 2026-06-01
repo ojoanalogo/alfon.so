@@ -2,12 +2,12 @@
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
-import DesktopApp from '../components/desktop/react/DesktopApp';
+import DesktopApp from '@/desktop/DesktopApp';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { DESKTOP_ICON_URLS } from '../lib/desktopIcons';
 import { prepareBlogPost } from '../lib/blog';
 import { sortMDByDate } from '../utils';
-import type { BlogPostSummary, WallpaperOption } from '../components/desktop/react/types';
+import type { BlogPostSummary, WallpaperOption } from '@/desktop/types';
 
 const MAX_POSTS = 10;
 const entries = sortMDByDate(await getCollection('blog')).slice(0, MAX_POSTS);

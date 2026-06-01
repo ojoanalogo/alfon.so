@@ -6,7 +6,7 @@ import { MIN_WIDTH } from '../useWindowManager';
 import WindowControls from './WindowControls';
 import WindowTitlebar from './WindowTitlebar';
 import { useWindowGestures } from './useWindowGestures';
-import { BORDER_DEFAULT } from '../../../../styles/tokens';
+import { BORDER_DEFAULT } from '@/styles/tokens';
 
 const RESIZE_DIRECTIONS: ResizeDirection[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
 

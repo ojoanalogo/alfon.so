@@ -5,7 +5,7 @@ import {
   type GridSortBy,
 } from '../context/GridSettingsContext';
 import { MoonIcon, SunIcon } from '../icons/ThemeIcons';
-import { WINDOW_ACTION_BTN } from '../../../../styles/tokens';
+import { WINDOW_ACTION_BTN } from '@/styles/tokens';
 import { SegmentedControl, SettingsRow, SETTINGS_GROUP } from './ui';
 
 /** Icon size / spacing / sort / label tone controls for the icon grid. */

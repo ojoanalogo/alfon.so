@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { SITE_TITLE } from '../../../config';
+import { SITE_TITLE } from '@/config';
 import { useWallpaper } from './context/WallpaperContext';
 
 const BOOT_MIN_MS = 400;

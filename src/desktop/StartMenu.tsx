@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
-import { NAV_LINKS, SITE_TITLE, SOCIAL_LINKS, type DesktopIcon, type NavLink } from '../../../config';
+import { NAV_LINKS, SITE_TITLE, SOCIAL_LINKS, type DesktopIcon, type NavLink } from '@/config';
 
 export interface StartMenuProps {
   anchorRef: RefObject<HTMLElement | null>;

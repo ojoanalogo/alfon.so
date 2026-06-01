@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { type DesktopIcon } from '../../../config';
+import { type DesktopIcon } from '@/config';
 import ContextMenu, { type ContextMenuItem } from './ContextMenu';
 import { useResolvedIconLabelTone } from './utils/useResolvedIconLabelTone';
 import { type DesktopIconsState, type IconPosition } from './useDesktopIcons';

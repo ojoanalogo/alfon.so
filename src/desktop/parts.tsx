@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { SOCIAL_LINKS, type SocialPlatform } from '../../../config';
-import { postDateFormatter, POST_DATE_MIN_WIDTH } from '../../../config/postFormatting';
+import { SOCIAL_LINKS, type SocialPlatform } from '@/config';
+import { postDateFormatter, POST_DATE_MIN_WIDTH } from '@/config/postFormatting';
 
 export function InfoRow({ label, children }: { label: string; children: ReactNode }) {
   return (

@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { DesktopIconUrls } from '../../../lib/desktopIcons';
+import type { DesktopIconUrls } from '@/lib/desktopIcons';
 import { APPS, createPostApps } from './apps/registry';
 import { appIconSrc, resolveDesktopShellIcons } from './apps/desktopIcons';
 import { appToWindowDef, renderApp } from './apps/renderApp';

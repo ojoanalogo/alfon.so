@@ -1,6 +1,6 @@
 import { Divider } from '../../parts';
-import { PROSE_CLASS_BASE } from '../../../../../styles/proseConfig';
-import { postLongDateFormatter } from '../../../../../config/postFormatting';
+import { PROSE_CLASS_BASE } from '@/styles/proseConfig';
+import { postLongDateFormatter } from '@/config/postFormatting';
 import type { BlogPostSummary } from '../../types';
 
 export default function PostContent({ post }: { post: BlogPostSummary }) {

@@ -1,4 +1,4 @@
-import { SOCIAL_LINKS } from '../../../../config';
+import { SOCIAL_LINKS } from '@/config';
 import type { BlogPostSummary } from '../types';
 import { APPS } from '../apps/registry';
 import { PROJECTS, TRASH_JUNK } from '../apps/data';

@@ -55,7 +55,7 @@ export interface DesktopIcon extends DesktopIconDefinition {
 }
 
 // DESKTOP_ICON_DEFS used to live here. The app registry now owns app icons
-// (src/components/desktop/react/apps/registry.ts).
+// (src/desktop/apps/registry.ts).
 
 export type SocialPlatform = 'twitter' | 'github' | 'instagram' | 'linkedin';
 

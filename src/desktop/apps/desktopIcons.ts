@@ -1,6 +1,6 @@
-import type { DesktopIconDefinition } from '../../../../config';
-import type { DesktopIconUrls } from '../../../../lib/desktopIcons';
-import { resolveDesktopIcons, resolveIconUrl } from '../../../../lib/desktopIcons';
+import type { DesktopIconDefinition } from '@/config';
+import type { DesktopIconUrls } from '@/lib/desktopIcons';
+import { resolveDesktopIcons, resolveIconUrl } from '@/lib/desktopIcons';
 import { appLabel, type AppDefinition } from './defineApp';
 
 /** Resolve an app's icon URL, preferring a co-located `iconUrl` over `iconKey`. */

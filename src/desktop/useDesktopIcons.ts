@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { DesktopIcon } from '../../../config';
+import type { DesktopIcon } from '@/config';
 
 export interface IconPosition {
   x: number;
