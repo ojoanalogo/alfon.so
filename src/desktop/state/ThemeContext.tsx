@@ -4,6 +4,7 @@ import {
   ensureThemeRuntime,
   getEffectiveTheme,
   getThemePreference,
+  syncThemeFromPreference,
   toggleThemePreference,
   type ThemeMode,
   type ThemePreference,
@@ -39,6 +40,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
 
     ensureThemeRuntime();
+    syncThemeFromPreference();
     syncFromDocument();
     window.addEventListener('devfolio-theme-change', syncFromDocument);
 

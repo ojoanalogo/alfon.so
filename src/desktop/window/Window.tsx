@@ -1,8 +1,9 @@
-import { useRef } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
 import { MIN_WIDTH } from '../state/useWindowManager';
+import { resolveLayoutWidth } from '../lib/viewport';
 import WindowControls from './WindowControls';
 import WindowTitlebar from './WindowTitlebar';
 import { useWindowGestures } from './useWindowGestures';
@@ -23,6 +24,8 @@ export interface WindowProps {
   onToggleMaximize: () => void;
   onGeometryChange: (geometry: Partial<WindowGeometry>) => void;
   minWidth?: number;
+  defaultWidth: number;
+  defaultHeight?: number;
   /** Floor height when the window is content-sized (`state.height === null`). */
   minHeight?: number;
   children: ReactNode;
@@ -44,6 +47,8 @@ export default function Window({
   onToggleMaximize,
   onGeometryChange,
   minWidth = MIN_WIDTH,
+  defaultWidth,
+  defaultHeight,
   minHeight,
   children,
   bodyClassName,
@@ -52,19 +57,73 @@ export default function Window({
   center = false,
 }: WindowProps) {
   const rootRef = useRef<HTMLElement | null>(null);
+  const prevMaximizedRef = useRef(state.maximized);
+  const [maximizeTransition, setMaximizeTransition] = useState(false);
+  const [displayMaximized, setDisplayMaximized] = useState(state.maximized);
   const prefersReduced = useReducedMotion();
 
-  const { markUserPositioned } = useWindowCenterLayout({
+  useLayoutEffect(() => {
+    if (state.maximized === prevMaximizedRef.current) return;
+    prevMaximizedRef.current = state.maximized;
+
+    if (!state.open || state.minimized || prefersReduced) {
+      setDisplayMaximized(state.maximized);
+      return;
+    }
+
+    setMaximizeTransition(true);
+    const frame = requestAnimationFrame(() => {
+      setDisplayMaximized(state.maximized);
+    });
+    const timer = window.setTimeout(() => setMaximizeTransition(false), 360);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [state.maximized, state.open, state.minimized, prefersReduced]);
+
+  const layoutWidth = useMemo(
+    () => resolveLayoutWidth(defaultWidth, state, minWidth),
+    [defaultWidth, state.width, state.userSized, minWidth],
+  );
+
+  useLayoutEffect(() => {
+    if (center || !state.open || state.minimized || state.maximized || state.userSized) return;
+    if (Math.abs(state.width - layoutWidth) <= 1) return;
+    onGeometryChange({ width: layoutWidth });
+  }, [
+    center,
+    state.open,
+    state.minimized,
+    state.maximized,
+    state.userSized,
+    state.width,
+    layoutWidth,
+    onGeometryChange,
+  ]);
+
+  const { markUserPositioned, displayX, displayY } = useWindowCenterLayout({
     rootRef,
     enabled: center && state.open && !state.minimized && !state.maximized,
     x: state.x,
     y: state.y,
-    width: state.width,
+    width: layoutWidth,
     onGeometryChange,
   });
 
+  const posX = center ? displayX : state.x;
+  const posY = center ? displayY : state.y;
+
+  const gestureState = useMemo(() => {
+    const width = state.width === layoutWidth ? state.width : layoutWidth;
+    if (center) {
+      return { ...state, x: displayX, y: displayY, width };
+    }
+    return { ...state, width };
+  }, [state, layoutWidth, center, displayX, displayY]);
+
   const { startMove, startResize } = useWindowGestures({
-    state,
+    state: gestureState,
     minWidth,
     rootRef,
     onFocus,
@@ -131,15 +190,29 @@ export default function Window({
   const interactive = state.open && !state.minimized;
   const sized = state.height != null || state.maximized;
 
-  const style: React.CSSProperties = state.maximized
-    ? { zIndex: state.zIndex, transformOrigin: 'bottom center' }
+  const style: React.CSSProperties = displayMaximized
+    ? {
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: 'auto',
+        height: 'auto',
+        zIndex: state.zIndex,
+        transformOrigin: 'center center',
+      }
     : {
-        left: `${state.x}px`,
-        top: `${state.y}px`,
-        width: `${state.width}px`,
+        left: `${posX}px`,
+        top: `${posY}px`,
+        width: `${layoutWidth}px`,
         minWidth: `${minWidth}px`,
         minHeight: state.height == null && minHeight != null ? minHeight : undefined,
-        height: state.height != null ? `${state.height}px` : undefined,
+        height:
+          state.height != null
+            ? `${state.height}px`
+            : defaultHeight != null
+              ? `${defaultHeight}px`
+              : undefined,
         zIndex: state.zIndex,
         transformOrigin: 'bottom center',
       };
@@ -148,6 +221,7 @@ export default function Window({
     'desktop-window',
     sized && 'is-sized',
     state.maximized && 'desktop-window--expanded',
+    maximizeTransition && 'desktop-window--maximize-transition',
     focused && 'is-focused',
     windowClassName,
   ]

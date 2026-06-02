@@ -42,6 +42,8 @@ export interface WindowChromeProps {
   state: WindowState;
   focused: boolean;
   minWidth: number;
+  defaultWidth: number;
+  defaultHeight?: number;
   center?: boolean;
   onFocus: () => void;
   onClose: () => void;

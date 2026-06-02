@@ -80,3 +80,27 @@ export function resolveWindowGeometry(
   );
   return { x, y, width, height: def.defaultHeight ?? null };
 }
+
+/** Canonical desktop open size from app defaults (ignores stale stored width). */
+export function resolveDefaultOpenGeometry(
+  def: WindowDef,
+  viewportWidth: number,
+  viewportHeight: number,
+  options?: { freshRandom?: boolean },
+): WindowGeometry {
+  return resolveWindowGeometry(def, viewportWidth, viewportHeight, undefined, undefined, options);
+}
+
+/** Width to paint in the DOM — uses app default unless the user resized. */
+export function resolveLayoutWidth(
+  defaultWidth: number,
+  state: { width: number; userSized?: boolean },
+  minWidth = MIN_WIDTH,
+  viewportWidth?: number,
+): number {
+  if (state.userSized) return state.width;
+  const vw =
+    viewportWidth ?? (typeof window !== 'undefined' ? window.innerWidth : defaultWidth + EDGE_MARGIN * 2);
+  const available = Math.max(240, vw - EDGE_MARGIN * 2);
+  return Math.max(minWidth, Math.min(defaultWidth, available));
+}

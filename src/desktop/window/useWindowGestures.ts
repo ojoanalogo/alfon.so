@@ -93,6 +93,13 @@ export function useWindowGestures({
     return rootRef.current?.getBoundingClientRect().height ?? MIN_HEIGHT;
   }
 
+  /** Inline width can lag behind the laid-out box when min-width/content sizing applies. */
+  function measuredWidth(): number {
+    const rect = rootRef.current?.getBoundingClientRect();
+    if (rect && rect.width > 0) return Math.round(rect.width);
+    return state.width;
+  }
+
   function startMove(event: React.PointerEvent) {
     if (event.button !== 0 || state.maximized) return;
     onFocus();
@@ -111,13 +118,14 @@ export function useWindowGestures({
   function startResize(event: React.PointerEvent, direction: ResizeDirection) {
     if (event.button !== 0 || state.maximized) return;
     onFocus();
+    const width = measuredWidth();
     gesture.current = {
       type: 'resize',
       direction,
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
-      origin: { x: state.x, y: state.y, width: state.width, height: state.height },
+      origin: { x: state.x, y: state.y, width, height: state.height },
       startHeight: measuredHeight(),
     };
     document.body.classList.add('is-window-gesturing');

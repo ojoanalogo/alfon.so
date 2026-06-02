@@ -21,6 +21,10 @@
     --color-highlight-bg: rgb(113 113 122 / 0.2);
     --color-highlight-bg-strong: rgb(82 82 91 / 0.3);
     --color-highlight-border: rgb(82 82 91 / 0.62);
+    /* Desktop icon selection — accent green (#3f9f6b / about icon), same in dark site theme. */
+    --desktop-highlight-bg: rgb(63 159 107 / 0.18);
+    --desktop-highlight-bg-strong: rgb(63 159 107 / 0.32);
+    --desktop-highlight-border: rgb(42 107 71 / 0.62);
     /* Theme-invariant zinc-500 hairlines (same in light and dark). */
     --color-hairline: rgb(113 113 122 / 0.35);
     --color-hairline-strong: rgb(113 113 122 / 0.45);
@@ -266,10 +270,21 @@
   }
 
   .desktop-window--expanded {
-    inset: 0 !important;
-    width: auto !important;
-    height: auto !important;
     max-width: none !important;
+  }
+
+  .desktop-window--maximize-transition {
+    transition:
+      left 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      top 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      right 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      bottom 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      width 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      height 0.32s cubic-bezier(0.34, 1.28, 0.64, 1);
+  }
+
+  .is-window-gesturing .desktop-window--maximize-transition {
+    transition: none;
   }
 
   .desktop-window__resize {
@@ -484,6 +499,10 @@
     .desktop-boot-overlay--exiting .desktop-boot-overlay__content {
       transform: none;
     }
+
+    .desktop-window--maximize-transition {
+      transition: none;
+    }
   }
 
   .desktop-boot-overlay__spinner {
@@ -505,7 +524,6 @@
     margin: 0;
     font-size: 0.6875rem;
     letter-spacing: 0.06em;
-    text-transform: lowercase;
     color: var(--color-muted);
   }
 
@@ -577,8 +595,16 @@
 
   .desktop-icon:hover .desktop-icon__label,
   .desktop-icon.is-selected .desktop-icon__label {
-    background: var(--color-highlight-bg-strong);
-    outline: 1px dotted var(--color-highlight-border);
+    background: var(--desktop-highlight-bg-strong);
+    outline: 1px dotted var(--desktop-highlight-border);
+  }
+
+  .desktop-selection-marquee {
+    pointer-events: none;
+    position: absolute;
+    z-index: 6;
+    border: 1px solid var(--desktop-highlight-border);
+    background: var(--desktop-highlight-bg);
   }
 
   .desktop-icons--labels-light .desktop-icon__label,
@@ -599,19 +625,19 @@
 
   /* Papelera label hover (driven by the trigger) */
   .papelera__trigger:hover .papelera__label {
-    background: var(--color-highlight-bg-strong);
-    outline: 1px dotted var(--color-highlight-border);
+    background: var(--desktop-highlight-bg-strong);
+    outline: 1px dotted var(--desktop-highlight-border);
   }
 
   body.is-trash-drop-target .papelera__trigger {
     scale: 1.06;
-    border-color: var(--color-highlight-border);
-    background: var(--color-highlight-bg-strong);
+    border-color: var(--desktop-highlight-border);
+    background: var(--desktop-highlight-bg-strong);
   }
 
   body.is-trash-drop-target .papelera__trigger .papelera__label {
-    background: var(--color-highlight-bg-strong);
-    outline: 1px dotted var(--color-highlight-border);
+    background: var(--desktop-highlight-bg-strong);
+    outline: 1px dotted var(--desktop-highlight-border);
   }
 
   /* --- Settings color swatch selection ring (generated content) ----------- */

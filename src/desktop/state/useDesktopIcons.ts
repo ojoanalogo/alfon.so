@@ -10,7 +10,7 @@ export interface IconPosition {
 const BASE_X = 16;
 const BASE_Y = 16;
 /** Wrap to a new column after this many icons (keeps them inside short viewports). */
-const MAX_ROWS_DESKTOP = 7;
+const MAX_ROWS_DESKTOP = 6;
 const ROW_PITCH_DESKTOP = 84;
 const COL_PITCH_DESKTOP = 96;
 /** Approximate icon footprint on desktop, used for viewport clamping. */

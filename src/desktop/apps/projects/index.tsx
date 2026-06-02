@@ -20,6 +20,6 @@ export default explorerApp({
     if (project?.link) ctx.onOpenLink(project.link);
   },
   geometry: { defaultX: 128, defaultY: 64, defaultWidth: 576, initialZ: 12 },
-  desktopIcon: { label: 'proyectos', tooltip: 'Mis proyectos' },
+  desktopIcon: { label: 'projects', tooltip: 'Mis proyectos' },
   taskbarTooltip: 'Proyectos',
 });

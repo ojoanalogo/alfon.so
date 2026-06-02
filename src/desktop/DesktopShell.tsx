@@ -115,6 +115,8 @@ export default function DesktopShell({
             state,
             focused: wm.focusedId === app.id,
             minWidth: minWidthForDef(def),
+            defaultWidth: def.defaultWidth,
+            defaultHeight: def.defaultHeight,
             minHeight: def.minHeight,
             center: def.center,
             onFocus: () => wm.focus(app.id),

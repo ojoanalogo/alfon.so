@@ -53,7 +53,7 @@ export default function DesktopBootOverlay() {
     >
       <div className="desktop-boot-overlay__content">
         <span className="desktop-boot-overlay__spinner" aria-hidden="true" />
-        <p className="desktop-boot-overlay__loading">loading</p>
+        <p className="desktop-boot-overlay__loading">Loading</p>
         <p className="desktop-boot-overlay__site">{SITE_TITLE}</p>
       </div>
     </div>

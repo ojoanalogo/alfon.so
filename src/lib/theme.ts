@@ -4,6 +4,9 @@ export type ThemePreference = ThemeMode | 'system';
 const STORAGE_KEY = 'theme';
 const THEME_CHANGE = 'devfolio-theme-change';
 
+/** Absent or invalid localStorage → follow OS light/dark. */
+export const DEFAULT_THEME_PREFERENCE: ThemePreference = 'system';
+
 export function getThemePreference(): ThemePreference {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -11,7 +14,7 @@ export function getThemePreference(): ThemePreference {
   } catch {
     /* private mode */
   }
-  return 'system';
+  return DEFAULT_THEME_PREFERENCE;
 }
 
 export function getEffectiveTheme(): ThemeMode {

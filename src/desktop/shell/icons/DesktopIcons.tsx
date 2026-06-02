@@ -287,7 +287,7 @@ export default function DesktopIcons({
 
       {marquee && (
         <div
-          className="pointer-events-none absolute z-[6] border border-[color:var(--color-highlight-border)] bg-[var(--color-highlight-bg)]"
+          className="desktop-selection-marquee"
           aria-hidden="true"
           style={{
             left: `${marquee.left}px`,

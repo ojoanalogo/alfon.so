@@ -4,7 +4,7 @@ import AboutContent from './AboutContent';
 
 export default defineApp({
   id: 'about',
-  title: 'about.txt',
+  title: 'about.html',
   iconKey: 'about',
   geometry: {
     defaultX: 0,
@@ -15,7 +15,7 @@ export default defineApp({
     center: true,
     defaultOpen: true,
   },
-  desktopIcon: { label: 'about.txt', tooltip: 'Mi info' },
-  taskbarTooltip: 'about.txt',
+  desktopIcon: { label: 'about', tooltip: 'Mi info' },
+  taskbarTooltip: 'about.html',
   body: () => createElement(AboutContent),
 });

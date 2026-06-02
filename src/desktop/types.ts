@@ -12,6 +12,8 @@ export interface WindowState extends WindowGeometry {
   minimized: boolean;
   maximized: boolean;
   zIndex: number;
+  /** Set after move/resize; relayout keeps custom width/height when true. */
+  userSized?: boolean;
 }
 
 /**

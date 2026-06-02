@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import type { WindowManager } from './useWindowManager';
 import type { WindowDef, WindowGeometry } from '../types';
 import { isMobileViewport, mobileWindowGeometry } from '../lib/viewport';
@@ -8,7 +9,7 @@ export function useResponsiveLayout(
   defs: WindowDef[],
   viewport: { width: number; height: number },
 ): { openWindow: (id: string) => void; fitWindowToMobile: (id: string) => void } {
-  const { setGeometry, setGeometries, relayoutToViewport } = wm;
+  const { setGeometry, setGeometries, relayoutToViewport, applyDefaultOpenLayout } = wm;
   const [layoutEpoch, setLayoutEpoch] = useState(0);
   const didPostMeasureCenter = useRef(false);
 
@@ -61,12 +62,18 @@ export function useResponsiveLayout(
 
   const openWindow = useCallback(
     (id: string) => {
-      wm.open(id);
+      flushSync(() => {
+        wm.open(id);
+      });
       if (isMobileViewport()) {
         fitWindowToMobile(id);
+        return;
       }
+      flushSync(() => {
+        applyDefaultOpenLayout(id);
+      });
     },
-    [wm, fitWindowToMobile],
+    [wm, fitWindowToMobile, applyDefaultOpenLayout],
   );
 
   // Clamp window geometry to the current viewport (desktop centering or mobile fit).
@@ -105,14 +112,13 @@ export function useResponsiveLayout(
       );
       if (clearingSizedHeight) deferredVerticalCenter = true;
 
-      relayoutToViewport(vw, vh, !clearingSizedHeight);
+      relayoutToViewport(vw, vh, true);
     }
 
     applyLayout();
     requestAnimationFrame(applyLayout);
     if (!mobile && defs.some((def) => def.center)) {
       requestAnimationFrame(() => {
-        applyLayout();
         relayoutToViewport(vw, vh, true);
       });
     }

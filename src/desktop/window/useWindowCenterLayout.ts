@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type RefObject } from 'react';
+import { useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { TASKBAR_HEIGHT } from '../state/useWindowManager';
 
 const EDGE_MARGIN = 8;
@@ -14,7 +14,7 @@ interface WindowCenterLayoutOptions {
 
 /**
  * Keeps center-flagged windows aligned to the viewport using the rendered box,
- * not the width stored in state (min-width / content can differ).
+ * not estimates from state (content-sized height must come from the DOM).
  */
 export function useWindowCenterLayout({
   rootRef,
@@ -25,15 +25,23 @@ export function useWindowCenterLayout({
   onGeometryChange,
 }: WindowCenterLayoutOptions) {
   const userPositioned = useRef(false);
-  const positionRef = useRef({ x, y, width });
-  positionRef.current = { x, y, width };
+  const [userLocked, setUserLocked] = useState(false);
+  const [displayPos, setDisplayPos] = useState({ x, y });
   const onGeometryChangeRef = useRef(onGeometryChange);
   onGeometryChangeRef.current = onGeometryChange;
+
+  useLayoutEffect(() => {
+    if (!userLocked) {
+      setDisplayPos({ x, y });
+    }
+  }, [x, y, userLocked]);
 
   useLayoutEffect(() => {
     if (!enabled || userPositioned.current || typeof window === 'undefined') return;
     const el = rootRef.current;
     if (!el) return;
+
+    let raf2 = 0;
 
     function syncPosition() {
       if (userPositioned.current || document.body.classList.contains('is-window-gesturing')) {
@@ -51,19 +59,14 @@ export function useWindowCenterLayout({
       const nextX = Math.round(Math.max(EDGE_MARGIN, (vw - rect.width) / 2));
       const nextY = Math.round(Math.max(EDGE_MARGIN, (vh - TASKBAR_HEIGHT - rect.height) / 2));
       const roundedWidth = Math.round(rect.width);
-      const { x: currentX, y: currentY, width: currentWidth } = positionRef.current;
 
-      const patch: { x?: number; y?: number; width?: number } = {};
-      if (Math.abs(currentX - nextX) > 1) patch.x = nextX;
-      if (Math.abs(currentY - nextY) > 1) patch.y = nextY;
-      if (Math.abs(currentWidth - roundedWidth) > 1) patch.width = roundedWidth;
-      if (Object.keys(patch).length === 0) return;
-
-      onGeometryChangeRef.current(patch);
+      setDisplayPos({ x: nextX, y: nextY });
+      onGeometryChangeRef.current({ x: nextX, y: nextY, width: roundedWidth });
     }
 
     syncPosition();
-    const raf1 = requestAnimationFrame(() => requestAnimationFrame(syncPosition));
+    const raf1 = requestAnimationFrame(syncPosition);
+    raf2 = requestAnimationFrame(() => requestAnimationFrame(syncPosition));
     void document.fonts?.ready.then(syncPosition);
 
     const observer = new ResizeObserver(syncPosition);
@@ -72,14 +75,19 @@ export function useWindowCenterLayout({
 
     return () => {
       cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
       observer.disconnect();
       window.removeEventListener('resize', syncPosition);
     };
-  }, [enabled, rootRef]);
+  }, [enabled, rootRef, width]);
 
   function markUserPositioned() {
     userPositioned.current = true;
+    setUserLocked(true);
   }
 
-  return { markUserPositioned };
+  const displayX = userLocked ? x : displayPos.x;
+  const displayY = userLocked ? y : displayPos.y;
+
+  return { markUserPositioned, displayX, displayY };
 }

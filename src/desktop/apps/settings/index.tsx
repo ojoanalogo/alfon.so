@@ -18,7 +18,7 @@ export default defineApp({
     defaultHeight: 420,
     initialZ: 18,
   },
-  desktopIcon: { label: 'ajustes', tooltip: 'Ajustes del escritorio' },
+  desktopIcon: { label: 'settings', tooltip: 'Ajustes del escritorio' },
   taskbarTooltip: 'Ajustes',
   bodyClassName: 'card-body--settings',
   body: () => createElement(SettingsBody, { sections: SETTINGS_SECTIONS }),

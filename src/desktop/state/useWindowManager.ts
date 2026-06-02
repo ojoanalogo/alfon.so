@@ -1,6 +1,11 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { WindowDef, WindowGeometry, WindowState } from '../types';
-import { isMobileViewport, resolveWindowGeometry, effectiveMinWidth } from '../lib/viewport';
+import {
+  isMobileViewport,
+  resolveWindowGeometry,
+  resolveDefaultOpenGeometry,
+  effectiveMinWidth,
+} from '../lib/viewport';
 
 export const MIN_WIDTH = 400;
 export const MIN_HEIGHT = 140;
@@ -46,7 +51,23 @@ function mergeWindowUiState(
       minimized: previous.minimized,
       maximized: previous.maximized,
       zIndex: previous.zIndex,
+      userSized: previous.userSized,
     };
+    // Only keep custom geometry after move/resize; centered/default layout comes from fresh.
+    if (
+      previous.userSized &&
+      previous.open &&
+      !previous.minimized &&
+      !previous.maximized
+    ) {
+      merged[id] = {
+        ...merged[id],
+        x: previous.x,
+        y: previous.y,
+        width: previous.width,
+        height: previous.height,
+      };
+    }
   }
   return merged;
 }
@@ -56,6 +77,8 @@ export interface WindowManager {
   order: string[];
   focusedId: string | null;
   open: (id: string) => void;
+  /** Apply declared default width/height when opening on desktop. */
+  applyDefaultOpenLayout: (id: string, options?: { freshRandom?: boolean }) => void;
   close: (id: string) => void;
   minimize: (id: string) => void;
   toggleMaximize: (id: string) => void;
@@ -117,6 +140,45 @@ export function useWindowManager(
     [bringToFront],
   );
 
+  const applyDefaultOpenLayout = useCallback(
+    (id: string, options?: { freshRandom?: boolean }) => {
+      const def = defs.find((entry) => entry.id === id);
+      if (!def || typeof window === 'undefined' || isMobileViewport()) return;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const geo = resolveDefaultOpenGeometry(def, vw, vh, options);
+
+      setWindows((prev) => {
+        const target = prev[id];
+        if (!target?.open) return prev;
+        const next: WindowState = {
+          ...target,
+          width: geo.width,
+          height: def.defaultHeight ?? geo.height ?? target.height,
+          userSized: false,
+          ...(def.center
+            ? {}
+            : {
+                x: geo.x,
+                y: geo.y,
+              }),
+        };
+        if (
+          next.x === target.x &&
+          next.y === target.y &&
+          next.width === target.width &&
+          next.height === target.height &&
+          target.userSized === false
+        ) {
+          return prev;
+        }
+        return { ...prev, [id]: next };
+      });
+    },
+    [defs],
+  );
+
   const open = useCallback(
     (id: string) => {
       const def = defs.find((entry) => entry.id === id);
@@ -131,10 +193,19 @@ export function useWindowManager(
         let next: WindowState = { ...target, open: true, minimized: false };
 
         if (wasClosed && def && !isMobileViewport(vw)) {
-          const geo = resolveWindowGeometry(def, vw, vh, undefined, target.width, {
-            freshRandom: true,
-          });
-          next = { ...next, x: geo.x, y: geo.y, width: geo.width };
+          const geo = resolveDefaultOpenGeometry(def, vw, vh, { freshRandom: true });
+          next = {
+            ...next,
+            width: geo.width,
+            height: def.defaultHeight ?? geo.height ?? next.height,
+            userSized: false,
+            ...(def.center
+              ? {}
+              : {
+                  x: geo.x,
+                  y: geo.y,
+                }),
+          };
         }
 
         return { ...prev, [id]: next };
@@ -186,12 +257,16 @@ export function useWindowManager(
       const def = defs.find((entry) => entry.id === id);
       const vw = typeof window !== 'undefined' ? window.innerWidth : viewportWidth;
       const minW = def ? effectiveMinWidth(def, vw) : Math.min(MIN_WIDTH, vw - 16);
-      const next: Partial<WindowGeometry> = { ...geometry };
+      const next: Partial<WindowGeometry> & { userSized?: boolean } = { ...geometry };
       if (next.width != null) next.width = Math.max(minW, next.width);
       if (next.height != null) next.height = Math.max(MIN_HEIGHT, next.height);
-      const changed = (Object.keys(next) as (keyof WindowGeometry)[]).some(
-        (key) => next[key] !== target[key],
-      );
+      if (document.body.classList.contains('is-window-gesturing')) {
+        next.userSized = true;
+      }
+      const changed =
+        next.userSized === true && target.userSized !== true
+          ? true
+          : (Object.keys(next) as (keyof WindowGeometry)[]).some((key) => next[key] !== target[key]);
       return changed ? next : null;
     },
     [defs, viewportWidth],
@@ -231,8 +306,34 @@ export function useWindowManager(
   const relayoutToViewport = useCallback(
     (vw: number, vh: number, measureCenter = false) => {
       setWindows((prev) => {
-        let merged = mergeWindowUiState(createInitialState(defs, vw, vh), prev);
+        let merged: Record<string, WindowState> = { ...prev };
         let changed = false;
+
+        for (const def of defs) {
+          const target = prev[def.id];
+          if (!target || target.open) continue;
+          const geo = resolveWindowGeometry(def, vw, vh);
+          const next: WindowState = {
+            ...target,
+            x: geo.x,
+            y: geo.y,
+            width: geo.width,
+            height: def.defaultHeight ?? geo.height,
+          };
+          if (
+            next.x === target.x &&
+            next.y === target.y &&
+            next.width === target.width &&
+            next.height === target.height
+          ) {
+            continue;
+          }
+          if (!changed) {
+            merged = { ...prev };
+            changed = true;
+          }
+          merged[def.id] = next;
+        }
 
         for (const def of defs) {
           if (!def.center) continue;
@@ -243,14 +344,19 @@ export function useWindowManager(
           if (el) {
             const rect = el.getBoundingClientRect();
             if (rect.width > 0) measuredWidth = rect.width;
-            if (measureCenter && def.defaultHeight == null && rect.height > 0) {
+            if (def.defaultHeight == null && rect.height > 0) {
               measuredHeight = rect.height;
             }
           }
 
+          // Content-sized center windows need a real box; avoid MIN_HEIGHT-based y.
+          if (def.defaultHeight == null && measuredHeight == null) continue;
+
           const geo = resolveWindowGeometry(def, vw, vh, measuredHeight, measuredWidth);
           const target = merged[def.id];
           if (!target) continue;
+
+          if (target.userSized) continue;
 
           const next = {
             ...target,
@@ -289,6 +395,7 @@ export function useWindowManager(
     order,
     focusedId,
     open,
+    applyDefaultOpenLayout,
     close,
     minimize,
     toggleMaximize,

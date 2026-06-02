@@ -40,6 +40,6 @@ export default explorerApp({
   items: () => GAMES,
   onActivate: (id, ctx) => ctx.onOpenApp(id),
   geometry: { defaultX: 200, defaultY: 88, defaultWidth: 480, defaultHeight: 340, initialZ: 13 },
-  desktopIcon: { label: 'Juegos', tooltip: 'Juegos' },
+  desktopIcon: { label: 'games', tooltip: 'Juegos' },
   taskbarTooltip: 'Juegos',
 });
