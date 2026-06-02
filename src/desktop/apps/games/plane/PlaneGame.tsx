@@ -118,16 +118,7 @@ function stepGame(prev: GameState, move: number): GameState {
   }
 
   const hit = obstacles.some((obstacle) =>
-    rectsOverlap(
-      planeX,
-      planeY,
-      PLANE_W,
-      PLANE_H,
-      obstacle.x,
-      obstacle.y,
-      obstacle.w,
-      obstacle.h,
-    ),
+    rectsOverlap(planeX, planeY, PLANE_W, PLANE_H, obstacle.x, obstacle.y, obstacle.w, obstacle.h),
   );
 
   if (hit) {

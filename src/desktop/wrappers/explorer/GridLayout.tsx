@@ -1,10 +1,6 @@
 import { type ReactNode } from 'react';
 import type { ListItem } from './types';
-import {
-  DEFAULT_GRID_SETTINGS,
-  ICON_SIZE_PX,
-  SPACING_GAP_PX,
-} from '@desktop/lib/gridSettings';
+import { DEFAULT_GRID_SETTINGS, ICON_SIZE_PX, SPACING_GAP_PX } from '@desktop/lib/gridSettings';
 import ListItemIcon from './ListItemIcon';
 
 const GRID_CELL =

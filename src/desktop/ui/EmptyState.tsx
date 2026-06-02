@@ -20,7 +20,9 @@ export default function EmptyState({
     <div
       className={[
         'empty-state flex flex-col',
-        compact ? 'items-start gap-2 px-2 py-3 text-left' : 'items-center justify-center gap-3 p-6 text-center',
+        compact
+          ? 'items-start gap-2 px-2 py-3 text-left'
+          : 'items-center justify-center gap-3 p-6 text-center',
         className,
       ]
         .filter(Boolean)

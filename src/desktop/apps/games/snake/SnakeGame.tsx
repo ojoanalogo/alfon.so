@@ -122,9 +122,7 @@ function stepGame(prev: GameState, direction: Direction): GameState {
   const hitWall = nextHead.x < 0 || nextHead.x >= COLS || nextHead.y < 0 || nextHead.y >= ROWS;
   const willEat = nextHead.x === prev.food.x && nextHead.y === prev.food.y;
   const body = willEat ? prev.snake : prev.snake.slice(0, -1);
-  const hitSelf = body.some(
-    (segment) => segment.x === nextHead.x && segment.y === nextHead.y,
-  );
+  const hitSelf = body.some((segment) => segment.x === nextHead.x && segment.y === nextHead.y);
 
   if (hitWall || hitSelf) {
     return { ...prev, gameOver: true };

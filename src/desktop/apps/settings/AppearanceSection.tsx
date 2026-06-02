@@ -62,7 +62,10 @@ export default function AppearanceSection() {
   return (
     <>
       <div className={SETTINGS_GROUP}>
-        <SettingsRow label="Tema" hint="Sistema sigue el modo del SO; el botón fuerza claro u oscuro">
+        <SettingsRow
+          label="Tema"
+          hint="Sistema sigue el modo del SO; el botón fuerza claro u oscuro"
+        >
           <ThemeSegmentedControl />
         </SettingsRow>
       </div>

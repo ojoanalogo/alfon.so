@@ -13,8 +13,7 @@ export default function NotesApp() {
     const q = query.trim().toLowerCase();
     if (!q) return notes;
     return notes.filter(
-      (note) =>
-        note.title.toLowerCase().includes(q) || note.content.toLowerCase().includes(q),
+      (note) => note.title.toLowerCase().includes(q) || note.content.toLowerCase().includes(q),
     );
   }, [notes, query]);
 

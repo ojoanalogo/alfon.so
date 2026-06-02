@@ -57,8 +57,7 @@ interface UseDesktopIconDragOptions {
 
 function prefersReducedMotion(): boolean {
   return (
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
 }
 
@@ -115,12 +114,7 @@ export function useDesktopIconDrag({
       return 1 - easeOutCubic(t);
     }
 
-    function publishVisual(
-      tiltX: number,
-      tiltY: number,
-      ramp: number,
-      draggingIds: Set<string>,
-    ) {
+    function publishVisual(tiltX: number, tiltY: number, ramp: number, draggingIds: Set<string>) {
       setVisual({
         tiltX,
         tiltY,
@@ -186,8 +180,12 @@ export function useDesktopIconDrag({
       const dy = event.clientY - drag.startY;
       if (!drag.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
 
-      const { positions: pos, selected: sel, selectOnly: select, moveIcons: move } =
-        snapshotRef.current;
+      const {
+        positions: pos,
+        selected: sel,
+        selectOnly: select,
+        moveIcons: move,
+      } = snapshotRef.current;
 
       if (!drag.moved) {
         drag.moved = true;
@@ -221,8 +219,11 @@ export function useDesktopIconDrag({
       document.body.classList.remove('is-trash-drop-target');
       overTrashRef.current = false;
 
-      const { trashRef: trash, deleteIcons: remove, suppressTrashClickRef: suppressTrash } =
-        snapshotRef.current;
+      const {
+        trashRef: trash,
+        deleteIcons: remove,
+        suppressTrashClickRef: suppressTrash,
+      } = snapshotRef.current;
 
       if (drag.moved) {
         suppressClickRef.current = true;

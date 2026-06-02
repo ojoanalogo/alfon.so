@@ -117,7 +117,10 @@ export default function NotesEditor({
         <div className="notes-editor__preview min-h-0 flex-1 overflow-auto px-4 py-3">
           <h1 className="mb-4 text-lg font-semibold text-primary">{displayTitle(note.title)}</h1>
           {previewHtml ? (
-            <article className={PROSE_CLASS_BASE} dangerouslySetInnerHTML={{ __html: previewHtml }} />
+            <article
+              className={PROSE_CLASS_BASE}
+              dangerouslySetInnerHTML={{ __html: previewHtml }}
+            />
           ) : (
             <EmptyState compact description="Sin contenido todavía." />
           )}
@@ -132,7 +135,9 @@ export default function NotesEditor({
           onConfirm={() => onDelete(note.id)}
           onClose={() => setConfirmDelete(false)}
         >
-          <p>¿Eliminar &ldquo;{displayTitle(note.title)}&rdquo;? Esta acción no se puede deshacer.</p>
+          <p>
+            ¿Eliminar &ldquo;{displayTitle(note.title)}&rdquo;? Esta acción no se puede deshacer.
+          </p>
         </Modal>
       )}
     </div>

@@ -69,7 +69,11 @@ export default function DesktopIcons({
   const marqueeDrag = useRef<MarqueeDrag | null>(null);
   const lastTap = useRef<{ id: string; time: number }>({ id: '', time: 0 });
 
-  const { visual: dragVisual, startDrag, consumeSuppressedClick } = useDesktopIconDrag({
+  const {
+    visual: dragVisual,
+    startDrag,
+    consumeSuppressedClick,
+  } = useDesktopIconDrag({
     positions,
     selected,
     selectOnly,

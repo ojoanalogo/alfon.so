@@ -18,7 +18,8 @@ export function useTaskbarMeta(
     );
     const base: Record<string, WindowMeta> = {};
     for (const app of apps) {
-      const rawLabel = trashNames.get(app.id) ?? (typeof app.title === 'string' ? app.title : app.id);
+      const rawLabel =
+        trashNames.get(app.id) ?? (typeof app.title === 'string' ? app.title : app.id);
       const label = formatWindowTitle(rawLabel);
       base[app.id] = {
         iconSrc: appIconSrc(app, desktopIconUrls),
