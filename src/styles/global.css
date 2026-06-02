@@ -254,6 +254,7 @@
   .desktop-window.is-sized > .desktop-window__card {
     display: flex;
     height: 100%;
+    min-height: inherit;
     flex-direction: column;
   }
 

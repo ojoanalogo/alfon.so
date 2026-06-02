@@ -50,6 +50,7 @@ export function useWindowGestures({
       const dir = active.direction!;
       let { x, y, width } = origin;
       let height = active.startHeight;
+      const contentSized = origin.height == null;
 
       if (dir.includes('e')) {
         width = Math.max(minWidth, origin.width + dx);
@@ -68,7 +69,12 @@ export function useWindowGestures({
         height = proposed;
       }
 
-      onGeometryChange({ x, y, width, height });
+      const affectsHeight = dir.includes('n') || dir.includes('s');
+      const patch: Partial<WindowGeometry> = { x, y, width };
+      if (affectsHeight || !contentSized) {
+        patch.height = height;
+      }
+      onGeometryChange(patch);
     }
 
     function handleUp(event: PointerEvent) {
