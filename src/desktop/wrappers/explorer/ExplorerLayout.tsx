@@ -19,19 +19,15 @@ interface ExplorerLayoutProps {
 
 function sortItems(items: ListItem[], sortBy: 'name' | 'kind'): ListItem[] {
   if (sortBy === 'kind') {
-    return [...items].sort((a, b) =>
-      (a.kind ?? '').localeCompare(b.kind ?? '') || a.label.localeCompare(b.label),
+    return [...items].sort(
+      (a, b) => (a.kind ?? '').localeCompare(b.kind ?? '') || a.label.localeCompare(b.label),
     );
   }
   // Default 'name': preserve insertion order for already-curated lists.
   return items;
 }
 
-export default function ExplorerLayout({
-  items,
-  onActivate,
-  children,
-}: ExplorerLayoutProps) {
+export default function ExplorerLayout({ items, onActivate, children }: ExplorerLayoutProps) {
   const { mode } = useExplorerView();
   const { settings } = useGridSettings();
 

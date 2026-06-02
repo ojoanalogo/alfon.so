@@ -68,7 +68,7 @@ export default function Taskbar({
 
   return (
     <footer
-      className="fixed right-0 bottom-0 left-0 z-[100] flex h-[2.5rem] items-center gap-[0.75rem] justify-between border-t border-[color:var(--color-hairline)] bg-[rgb(255_255_255/0.75)] px-[0.75rem] font-[ui-monospace,monospace] text-[0.75rem] backdrop-blur-[12px] dark:bg-[rgb(9_9_11/0.85)] max-sm:gap-[0.375rem] max-sm:px-[0.5rem]"
+      className="fixed right-0 bottom-0 left-0 z-[100] flex h-[2.5rem] items-center justify-between gap-[0.75rem] border-t border-[color:var(--color-hairline)] bg-[rgb(255_255_255/0.75)] px-[0.75rem] font-[ui-monospace,monospace] text-[0.75rem] backdrop-blur-[12px] max-sm:gap-[0.375rem] max-sm:px-[0.5rem] dark:bg-[rgb(9_9_11/0.85)]"
       aria-label="Barra de tareas"
     >
       <div className="flex min-w-0 flex-1 items-center gap-[0.75rem] max-sm:gap-[0.375rem]">
@@ -76,7 +76,7 @@ export default function Taskbar({
           ref={startRef}
           type="button"
           className={[
-            'flex shrink-0 cursor-pointer items-center gap-[0.375rem] border px-[0.45rem] py-[0.2rem] font-[inherit] text-[length:inherit] hover:border-[color:var(--color-hairline)] hover:bg-[rgb(255_255_255/0.08)] hover:text-primary hover:outline-none focus-visible:border-[color:var(--color-hairline)] focus-visible:bg-[rgb(255_255_255/0.08)] focus-visible:text-primary focus-visible:outline-none dark:hover:bg-[rgb(255_255_255/0.06)] dark:focus-visible:bg-[rgb(255_255_255/0.06)] max-sm:px-[0.4rem] max-sm:py-[0.2rem]',
+            'flex shrink-0 cursor-pointer items-center gap-[0.375rem] border px-[0.45rem] py-[0.2rem] font-[inherit] text-[length:inherit] hover:border-[color:var(--color-hairline)] hover:bg-[rgb(255_255_255/0.08)] hover:text-primary hover:outline-none focus-visible:border-[color:var(--color-hairline)] focus-visible:bg-[rgb(255_255_255/0.08)] focus-visible:text-primary focus-visible:outline-none max-sm:px-[0.4rem] max-sm:py-[0.2rem] dark:hover:bg-[rgb(255_255_255/0.06)] dark:focus-visible:bg-[rgb(255_255_255/0.06)]',
             startOpen
               ? 'border-[color:var(--color-highlight-border)] bg-[var(--color-highlight-bg)] text-primary'
               : 'border-transparent bg-transparent text-secondary',

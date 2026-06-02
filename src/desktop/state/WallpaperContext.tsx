@@ -20,11 +20,7 @@ import {
   type IconLabelTone,
 } from '../lib/iconLabelTone';
 import type { WallpaperOption } from '../types';
-import {
-  defaultWallpaperId,
-  DEFAULT_WALLPAPER_ID,
-  resolveWallpaperId,
-} from '@/config/wallpapers';
+import { defaultWallpaperId, DEFAULT_WALLPAPER_ID, resolveWallpaperId } from '@/config/wallpapers';
 
 const WALLPAPER_STORAGE_KEY = 'devfolio.wallpaper';
 const COLOR_STORAGE_KEY = 'devfolio.desktop-color';

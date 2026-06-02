@@ -36,10 +36,7 @@ function ExplorerWindowInner({
   );
 }
 
-export default function ExplorerWindow({
-  defaultMode = 'grid',
-  ...props
-}: ExplorerWindowProps) {
+export default function ExplorerWindow({ defaultMode = 'grid', ...props }: ExplorerWindowProps) {
   return (
     <ExplorerViewProvider defaultMode={defaultMode}>
       <ExplorerWindowInner {...props} />

@@ -148,18 +148,15 @@ export function useDesktopIcons(icons: DesktopIcon[]): DesktopIconsState {
     setSelectedState((prev) => (prev.size === 0 ? prev : new Set()));
   }, []);
 
-  const moveIcons = useCallback(
-    (origins: Record<string, IconPosition>, dx: number, dy: number) => {
-      setPositions((prev) => {
-        const next = { ...prev };
-        for (const [id, origin] of Object.entries(origins)) {
-          next[id] = clampPosition({ x: origin.x + dx, y: origin.y + dy });
-        }
-        return next;
-      });
-    },
-    [],
-  );
+  const moveIcons = useCallback((origins: Record<string, IconPosition>, dx: number, dy: number) => {
+    setPositions((prev) => {
+      const next = { ...prev };
+      for (const [id, origin] of Object.entries(origins)) {
+        next[id] = clampPosition({ x: origin.x + dx, y: origin.y + dy });
+      }
+      return next;
+    });
+  }, []);
 
   const deleteIcons = useCallback((ids: string[]) => {
     if (ids.length === 0) return;

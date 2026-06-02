@@ -1,11 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BlogPostSummary } from '../../types';
-import {
-  runTerminalCommand,
-  TERMINAL_MOTD,
-  TERMINAL_PROMPT,
-  type TerminalBlock,
-} from './commands';
+import { runTerminalCommand, TERMINAL_MOTD, TERMINAL_PROMPT, type TerminalBlock } from './commands';
 
 interface TerminalAppProps {
   posts: BlogPostSummary[];
@@ -13,12 +8,12 @@ interface TerminalAppProps {
 }
 
 function TerminalLine({ line }: { line: string }) {
-  return <div className="whitespace-pre-wrap [word-break:break-word]">{line}</div>;
+  return <div className="[word-break:break-word] whitespace-pre-wrap">{line}</div>;
 }
 
 function TerminalCommandLine({ command }: { command: string }) {
   return (
-    <div className="flex flex-wrap gap-[0.375rem] whitespace-pre-wrap [word-break:break-word]">
+    <div className="flex flex-wrap gap-[0.375rem] [word-break:break-word] whitespace-pre-wrap">
       <span className="shrink-0 text-accent">{TERMINAL_PROMPT}</span>
       <span className="min-w-0 flex-1">{command}</span>
     </div>

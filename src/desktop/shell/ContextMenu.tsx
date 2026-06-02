@@ -72,9 +72,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
   const moveFocus = useCallback((delta: number) => {
     const node = menuRef.current;
     if (!node) return;
-    const buttons = Array.from(
-      node.querySelectorAll<HTMLButtonElement>('button:not([disabled])'),
-    );
+    const buttons = Array.from(node.querySelectorAll<HTMLButtonElement>('button:not([disabled])'));
     if (buttons.length === 0) return;
     const active = document.activeElement as HTMLElement | null;
     const currentIndex = buttons.findIndex((button) => button === active);
@@ -110,7 +108,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
           <button
             type="button"
             role="menuitem"
-            className="block w-full cursor-pointer border border-transparent bg-transparent px-[0.6rem] py-[0.3rem] text-left font-[inherit] text-[length:inherit] text-secondary enabled:hover:border-[color:var(--color-highlight-border)] enabled:hover:bg-[var(--color-highlight-bg)] enabled:hover:text-primary enabled:hover:outline-none focus-visible:border-[color:var(--color-highlight-border)] focus-visible:bg-[var(--color-highlight-bg)] focus-visible:text-primary focus-visible:outline-none disabled:cursor-default disabled:text-muted disabled:opacity-60"
+            className="block w-full cursor-pointer border border-transparent bg-transparent px-[0.6rem] py-[0.3rem] text-left font-[inherit] text-[length:inherit] text-secondary focus-visible:border-[color:var(--color-highlight-border)] focus-visible:bg-[var(--color-highlight-bg)] focus-visible:text-primary focus-visible:outline-none enabled:hover:border-[color:var(--color-highlight-border)] enabled:hover:bg-[var(--color-highlight-bg)] enabled:hover:text-primary enabled:hover:outline-none disabled:cursor-default disabled:text-muted disabled:opacity-60"
             disabled={item.disabled}
             onClick={() => {
               item.onSelect();

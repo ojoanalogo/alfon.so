@@ -44,10 +44,7 @@ export default function DesktopBootOverlay() {
 
   return (
     <div
-      className={[
-        'desktop-boot-overlay',
-        phase === 'exiting' && 'desktop-boot-overlay--exiting',
-      ]
+      className={['desktop-boot-overlay', phase === 'exiting' && 'desktop-boot-overlay--exiting']
         .filter(Boolean)
         .join(' ')}
       aria-live="polite"

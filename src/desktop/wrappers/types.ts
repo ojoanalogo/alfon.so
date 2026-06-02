@@ -1,11 +1,6 @@
 import type { ReactNode } from 'react';
 import type { IconKey } from '@desktop/lib/desktopIcons';
-import type {
-  AppGeometry,
-  BlogPostSummary,
-  WindowGeometry,
-  WindowState,
-} from '../types';
+import type { AppGeometry, BlogPostSummary, WindowGeometry, WindowState } from '../types';
 import type { BrowserHistories } from './browser/useBrowserHistories';
 
 export type { AppGeometry };

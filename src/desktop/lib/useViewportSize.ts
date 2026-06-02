@@ -14,9 +14,7 @@ export function useViewportSize() {
   useLayoutEffect(() => {
     function update() {
       const next = readViewportSize();
-      setSize((prev) =>
-        prev.width === next.width && prev.height === next.height ? prev : next,
-      );
+      setSize((prev) => (prev.width === next.width && prev.height === next.height ? prev : next));
     }
     update();
     window.addEventListener('resize', update);

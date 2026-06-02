@@ -55,9 +55,7 @@ const CAT_FILES: Record<string, string[]> = {
   ],
 };
 
-export type TerminalBlock =
-  | { kind: 'command'; text: string }
-  | { kind: 'output'; lines: string[] };
+export type TerminalBlock = { kind: 'command'; text: string } | { kind: 'output'; lines: string[] };
 
 export type TerminalCommandResult = { blocks: TerminalBlock[] } | { clear: true } | null;
 

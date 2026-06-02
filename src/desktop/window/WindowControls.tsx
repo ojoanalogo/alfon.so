@@ -7,10 +7,14 @@ interface WindowControlsProps {
 const CONTROL_BASE =
   'relative z-[2] flex h-3 w-3 flex-[0_0_auto] cursor-pointer items-center justify-center rounded-full border-0 bg-[rgb(113_113_122/0.22)] p-0 transition-[transform,background-color] duration-[120ms] ease-[ease] active:scale-[0.92] dark:bg-[rgb(161_161_170/0.2)] max-sm:h-[1.125rem] max-sm:w-[1.125rem]';
 
-export default function WindowControls({ onClose, onMinimize, onToggleMaximize }: WindowControlsProps) {
+export default function WindowControls({
+  onClose,
+  onMinimize,
+  onToggleMaximize,
+}: WindowControlsProps) {
   return (
     <div
-      className="window-controls relative z-[2] flex flex-[0_0_auto] items-center gap-[0.4375rem] px-[0.625rem] pointer-events-auto max-sm:gap-[0.5rem] max-sm:px-[0.5rem]"
+      className="window-controls pointer-events-auto relative z-[2] flex flex-[0_0_auto] items-center gap-[0.4375rem] px-[0.625rem] max-sm:gap-[0.5rem] max-sm:px-[0.5rem]"
       role="group"
       aria-label="Controles de ventana"
     >

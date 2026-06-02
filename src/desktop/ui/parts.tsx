@@ -26,7 +26,9 @@ export function ExternalLink({
     <a
       target="_blank"
       rel="noopener noreferrer"
-      className={['text-primary hover:text-accent hover:underline focus:outline-none', className].filter(Boolean).join(' ')}
+      className={['text-primary hover:text-accent hover:underline focus:outline-none', className]
+        .filter(Boolean)
+        .join(' ')}
       href={href}
       aria-label={label}
     >

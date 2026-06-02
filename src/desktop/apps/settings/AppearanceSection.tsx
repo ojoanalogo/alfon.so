@@ -38,7 +38,11 @@ function ColorSwatch({
           <span className="bg-[var(--color-surface-dark)]" />
         </span>
       ) : (
-        <span className={`block ${SWATCH_INNER}`} style={{ backgroundColor: value }} aria-hidden="true" />
+        <span
+          className={`block ${SWATCH_INNER}`}
+          style={{ backgroundColor: value }}
+          aria-hidden="true"
+        />
       )}
     </button>
   );

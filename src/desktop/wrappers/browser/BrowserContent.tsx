@@ -10,9 +10,7 @@ export default function BrowserContent({ appId, browsers }: BrowserContentProps)
 
   if (!url) {
     return (
-      <p className="text-xs text-muted">
-        escribe una URL en la barra de arriba y presiona enter.
-      </p>
+      <p className="text-xs text-muted">escribe una URL en la barra de arriba y presiona enter.</p>
     );
   }
 
@@ -21,7 +19,7 @@ export default function BrowserContent({ appId, browsers }: BrowserContentProps)
       key={`${url}-${reloadKey}`}
       title={`web browser — ${url}`}
       src={url}
-      className="block h-full w-full min-h-0 flex-1 border-0 bg-white dark:bg-[#18181b]"
+      className="block h-full min-h-0 w-full flex-1 border-0 bg-white dark:bg-[#18181b]"
       sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
       referrerPolicy="no-referrer-when-downgrade"
       loading="lazy"

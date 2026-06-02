@@ -20,7 +20,7 @@ export default function WindowTitlebar({
       onDoubleClick={onDoubleClick}
     >
       {titleContent ?? (
-        <span className="min-w-0 overflow-hidden text-[0.6875rem] leading-[1.2] whitespace-nowrap text-ellipsis text-muted max-sm:text-[0.625rem]">
+        <span className="min-w-0 overflow-hidden text-[0.6875rem] leading-[1.2] text-ellipsis whitespace-nowrap text-muted max-sm:text-[0.625rem]">
           {title}
         </span>
       )}

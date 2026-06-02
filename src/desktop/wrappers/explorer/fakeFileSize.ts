@@ -1,4 +1,14 @@
-const SIZE_POOL = ['512 B', '4 KB', '12 KB', '48 KB', '128 KB', '847 KB', '1.2 MB', '4.7 MB', '24 MB'];
+const SIZE_POOL = [
+  '512 B',
+  '4 KB',
+  '12 KB',
+  '48 KB',
+  '128 KB',
+  '847 KB',
+  '1.2 MB',
+  '4.7 MB',
+  '24 MB',
+];
 
 export function fakeFileSize(id: string): string {
   let hash = 0;

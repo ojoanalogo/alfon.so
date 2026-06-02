@@ -36,7 +36,7 @@ export default function Papelera({ trashedCount, iconUrls, onOpen }: PapeleraPro
             alt=""
             width={32}
             height={32}
-            className="h-8 w-8 object-contain [image-rendering:pixelated] [filter:drop-shadow(1px_2px_0_rgb(0_0_0/0.12))]"
+            className="h-8 w-8 object-contain [filter:drop-shadow(1px_2px_0_rgb(0_0_0/0.12))] [image-rendering:pixelated]"
             loading="lazy"
             decoding="async"
           />

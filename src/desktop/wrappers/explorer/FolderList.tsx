@@ -12,7 +12,7 @@ interface FolderListProps {
 function FolderListHeader() {
   return (
     <li
-      className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto_auto] gap-2 border-b border-[color:var(--color-hairline)] bg-[rgb(229_231_235/0.35)] px-2 py-1 text-[0.5625rem] font-semibold tracking-[0.04em] uppercase text-muted dark:bg-[rgb(24_24_27/0.55)] max-sm:hidden"
+      className="grid grid-cols-[1.25rem_minmax(0,1fr)_auto_auto] gap-2 border-b border-[color:var(--color-hairline)] bg-[rgb(229_231_235/0.35)] px-2 py-1 text-[0.5625rem] font-semibold tracking-[0.04em] text-muted uppercase max-sm:hidden dark:bg-[rgb(24_24_27/0.55)]"
       aria-hidden="true"
     >
       <span />
@@ -23,22 +23,20 @@ function FolderListHeader() {
   );
 }
 
-function FolderListRow({
-  item,
-  onOpen,
-}: {
-  item: ListItem;
-  onOpen?: (id: string) => void;
-}) {
+function FolderListRow({ item, onOpen }: { item: ListItem; onOpen?: (id: string) => void }) {
   const size = item.isFolder ? '—' : (item.size ?? fakeFileSize(item.id));
   const content = (
     <>
       <span className="flex items-center justify-center leading-none" aria-hidden="true">
         <ListItemIcon item={item} size={16} imgClassName="h-4 w-4 [image-rendering:pixelated]" />
       </span>
-      <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-primary">{item.label}</span>
-      <span className="text-muted whitespace-nowrap max-sm:hidden">{item.kind ?? '—'}</span>
-      <span className="min-w-[3.5rem] text-right text-muted tabular-nums whitespace-nowrap max-sm:hidden">{size ?? '—'}</span>
+      <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-primary">
+        {item.label}
+      </span>
+      <span className="whitespace-nowrap text-muted max-sm:hidden">{item.kind ?? '—'}</span>
+      <span className="min-w-[3.5rem] text-right whitespace-nowrap text-muted tabular-nums max-sm:hidden">
+        {size ?? '—'}
+      </span>
     </>
   );
 
@@ -56,10 +54,7 @@ function FolderListRow({
 export default function FolderList({ items, onOpen, className, showHeader }: FolderListProps) {
   return (
     <ul
-      className={[
-        'folder-list m-0 list-none p-0 text-[0.6875rem]',
-        className,
-      ]
+      className={['folder-list m-0 list-none p-0 text-[0.6875rem]', className]
         .filter(Boolean)
         .join(' ')}
       role="list"

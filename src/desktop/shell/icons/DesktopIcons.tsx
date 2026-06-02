@@ -44,11 +44,7 @@ interface MenuState {
   items: ContextMenuItem[];
 }
 
-export default function DesktopIcons({
-  state,
-  onOpenWindow,
-  onDesktopClick,
-}: DesktopIconsProps) {
+export default function DesktopIcons({ state, onOpenWindow, onDesktopClick }: DesktopIconsProps) {
   const {
     positions,
     selected,
@@ -289,7 +285,7 @@ export default function DesktopIcons({
                   className="h-8 w-8 object-contain [image-rendering:pixelated] max-sm:h-12 max-sm:w-12"
                 />
               </span>
-              <span className="desktop-icon__label w-full max-w-[6.75rem] px-1 py-[0.125rem] text-[0.625rem] leading-[1.25] hyphens-auto [overflow-wrap:anywhere] [word-break:normal] max-sm:max-w-[5.5rem] max-sm:text-[0.6875rem] max-sm:leading-[1.25]">
+              <span className="desktop-icon__label w-full max-w-[6.75rem] px-1 py-[0.125rem] text-[0.625rem] leading-[1.25] [overflow-wrap:anywhere] [word-break:normal] hyphens-auto max-sm:max-w-[5.5rem] max-sm:text-[0.6875rem] max-sm:leading-[1.25]">
                 {icon.label}
               </span>
             </button>

@@ -4,11 +4,17 @@ import { appToWindowDef } from '../apps/appToWindowDef';
 import type { AppDefinition } from '@desktop/wrappers';
 import type { BlogPostSummary, WindowDef } from '../types';
 
-export function useDesktopApps(posts: BlogPostSummary[]): { apps: AppDefinition[]; defs: WindowDef[] } {
+export function useDesktopApps(posts: BlogPostSummary[]): {
+  apps: AppDefinition[];
+  defs: WindowDef[];
+} {
   const apps = useMemo<AppDefinition[]>(() => {
     const filtered = APPS.filter((app) => app.availableWhen?.({ posts }) ?? true);
     return [...filtered, ...createPostApps(posts)];
   }, [posts]);
-  const defs = useMemo<WindowDef[]>(() => apps.map((app, index) => appToWindowDef(app, index)), [apps]);
+  const defs = useMemo<WindowDef[]>(
+    () => apps.map((app, index) => appToWindowDef(app, index)),
+    [apps],
+  );
   return { apps, defs };
 }

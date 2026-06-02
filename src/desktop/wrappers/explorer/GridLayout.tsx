@@ -1,6 +1,10 @@
 import { type ReactNode } from 'react';
 import type { ListItem } from './types';
-import { ICON_SIZE_PX, useGridSettings, type GridSpacing } from '@desktop/state/GridSettingsContext';
+import {
+  ICON_SIZE_PX,
+  useGridSettings,
+  type GridSpacing,
+} from '@desktop/state/GridSettingsContext';
 import ListItemIcon from './ListItemIcon';
 
 const SPACING_GAP_PX: Record<GridSpacing, number> = {
@@ -40,7 +44,11 @@ function GridCell({
       <ListItemIcon item={item} size={iconPx} imgClassName="h-8 w-8 [image-rendering:pixelated]" />
     </span>
   );
-  const label_ = <span className="w-full overflow-hidden text-[0.6rem] leading-[1.25] whitespace-nowrap text-ellipsis text-secondary">{label}</span>;
+  const label_ = (
+    <span className="w-full overflow-hidden text-[0.6rem] leading-[1.25] text-ellipsis whitespace-nowrap text-secondary">
+      {label}
+    </span>
+  );
 
   if (disabled) {
     return (
@@ -82,7 +90,7 @@ export default function GridLayout({
   return (
     <div className={className}>
       {heading && (
-        <p className="mb-2 text-[0.6rem] tracking-[0.05em] uppercase text-muted">{heading}</p>
+        <p className="mb-2 text-[0.6rem] tracking-[0.05em] text-muted uppercase">{heading}</p>
       )}
       <div
         className="grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))]"

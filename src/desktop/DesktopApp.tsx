@@ -26,7 +26,13 @@ export default function DesktopApp({ posts, wallpapers, desktopIconUrls }: Deskt
       <ThemeProvider>
         <WallpaperProvider wallpapers={wallpapers}>
           <GridSettingsProvider>
-            <DesktopShell apps={apps} defs={defs} posts={posts} desktopIconUrls={desktopIconUrls} viewport={viewport} />
+            <DesktopShell
+              apps={apps}
+              defs={defs}
+              posts={posts}
+              desktopIconUrls={desktopIconUrls}
+              viewport={viewport}
+            />
           </GridSettingsProvider>
         </WallpaperProvider>
       </ThemeProvider>

@@ -22,7 +22,7 @@ export default function SettingsBody({ sections }: SettingsBodyProps) {
           {section.title && (
             <h3
               id={`settings-${section.id}-heading`}
-              className="m-0 mb-[0.375rem] px-[0.125rem] py-0 text-[0.625rem] font-semibold tracking-[0.04em] uppercase text-muted"
+              className="m-0 mb-[0.375rem] px-[0.125rem] py-0 text-[0.625rem] font-semibold tracking-[0.04em] text-muted uppercase"
             >
               {section.title}
             </h3>

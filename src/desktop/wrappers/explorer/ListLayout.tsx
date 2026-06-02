@@ -20,7 +20,7 @@ export default function ListLayout({
   return (
     <div className={className}>
       {heading && (
-        <p className="mb-2 text-[0.6rem] tracking-[0.05em] uppercase text-muted">{heading}</p>
+        <p className="mb-2 text-[0.6rem] tracking-[0.05em] text-muted uppercase">{heading}</p>
       )}
       <ul className={`m-0 flex list-none flex-col p-0 ${listClass}`}>{children}</ul>
     </div>

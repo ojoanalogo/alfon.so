@@ -117,7 +117,9 @@ export default function Window({
         scaleY: 0.02,
         x: target.dx,
         y: target.dy,
-        transition: prefersReduced ? { duration: 0 } : { duration: 0.42, ease: [0.4, 0.05, 0.25, 1] },
+        transition: prefersReduced
+          ? { duration: 0 }
+          : { duration: 0.42, ease: [0.4, 0.05, 0.25, 1] },
       };
     },
   };

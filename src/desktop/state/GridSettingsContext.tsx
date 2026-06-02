@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
 export type GridIconSize = 'small' | 'medium' | 'large';
 export type GridSpacing = 'compact' | 'normal' | 'roomy';

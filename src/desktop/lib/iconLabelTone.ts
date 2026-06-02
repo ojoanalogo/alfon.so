@@ -6,11 +6,7 @@ function channelLuminance(channel: number): number {
 }
 
 export function luminanceFromRgb(r: number, g: number, b: number): number {
-  return (
-    0.2126 * channelLuminance(r) +
-    0.7152 * channelLuminance(g) +
-    0.0722 * channelLuminance(b)
-  );
+  return 0.2126 * channelLuminance(r) + 0.7152 * channelLuminance(g) + 0.0722 * channelLuminance(b);
 }
 
 export function luminanceFromHex(hex: string): number | null {

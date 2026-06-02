@@ -13,7 +13,12 @@ const RELOAD_BTN =
   'inline-flex h-[1.125rem] shrink-0 cursor-pointer items-center justify-center border border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] px-[0.3125rem] py-0 text-[0.6875rem] leading-none text-secondary enabled:hover:border-[color:var(--color-highlight-border)] enabled:hover:text-primary disabled:cursor-default disabled:opacity-40 dark:bg-[rgb(24_24_27/0.65)] max-sm:h-6 max-sm:min-w-6 max-sm:px-[0.375rem]';
 
 /** Address bar + back/forward/reload, mounted into the window's titlebar. */
-export default function BrowserChrome({ appId, title, browsers, hideTitle = false }: BrowserChromeProps) {
+export default function BrowserChrome({
+  appId,
+  title,
+  browsers,
+  hideTitle = false,
+}: BrowserChromeProps) {
   const state = browsers.get(appId);
   const url = state.url;
   const canBack = browsers.canBack(appId);
@@ -79,7 +84,7 @@ export default function BrowserChrome({ appId, title, browsers, hideTitle = fals
         </button>
       </div>
       <div
-        className="flex h-[1.125rem] min-w-0 flex-1 items-center gap-1 border border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] px-[0.3125rem] py-0 font-[ui-monospace,monospace] text-[0.6875rem] leading-none dark:bg-[rgb(24_24_27/0.65)] max-sm:h-6"
+        className="flex h-[1.125rem] min-w-0 flex-1 items-center gap-1 border border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] px-[0.3125rem] py-0 font-[ui-monospace,monospace] text-[0.6875rem] leading-none max-sm:h-6 dark:bg-[rgb(24_24_27/0.65)]"
         onPointerDown={(event) => event.stopPropagation()}
       >
         <span className="shrink-0 text-[0.625rem] leading-none" aria-hidden="true">

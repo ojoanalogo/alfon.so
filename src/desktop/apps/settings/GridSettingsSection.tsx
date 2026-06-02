@@ -58,7 +58,11 @@ export default function GridSettingsSection() {
           selected={settings.labelTone}
           onChange={setLabelTone}
           options={[
-            { value: 'auto', label: 'Auto', icon: <span className="text-[0.75rem] leading-none">🖥</span> },
+            {
+              value: 'auto',
+              label: 'Auto',
+              icon: <span className="text-[0.75rem] leading-none">🖥</span>,
+            },
             { value: 'light', label: 'Claro', icon: <SunIcon className="h-3.5 w-3.5" /> },
             { value: 'dark', label: 'Oscuro', icon: <MoonIcon className="h-3.5 w-3.5" /> },
           ]}

@@ -65,7 +65,11 @@ export interface WindowManager {
   /** Apply many geometry patches in one state update (layout passes). */
   setGeometries: (updates: Record<string, Partial<WindowGeometry>>) => void;
   /** Recompute default geometry for every window from the live viewport. */
-  relayoutToViewport: (viewportWidth: number, viewportHeight: number, measureCenter?: boolean) => void;
+  relayoutToViewport: (
+    viewportWidth: number,
+    viewportHeight: number,
+    measureCenter?: boolean,
+  ) => void;
 }
 
 export function useWindowManager(
@@ -78,9 +82,7 @@ export function useWindowManager(
     createInitialState(defs, viewportWidth, viewportHeight),
   );
 
-  const topZ = useRef(
-    Math.max(10, ...defs.map((def) => def.initialZ ?? 10)),
-  );
+  const topZ = useRef(Math.max(10, ...defs.map((def) => def.initialZ ?? 10)));
   const [focusedId, setFocusedId] = useState<string | null>(() => {
     const firstOpen = defs.find((def) => def.defaultOpen);
     return firstOpen ? firstOpen.id : null;
@@ -161,7 +163,11 @@ export function useWindowManager(
   );
 
   const normalizeGeometryPatch = useCallback(
-    (id: string, geometry: Partial<WindowGeometry>, target: WindowState): Partial<WindowGeometry> | null => {
+    (
+      id: string,
+      geometry: Partial<WindowGeometry>,
+      target: WindowState,
+    ): Partial<WindowGeometry> | null => {
       const def = defs.find((entry) => entry.id === id);
       const vw = typeof window !== 'undefined' ? window.innerWidth : viewportWidth;
       const minW = def ? effectiveMinWidth(def, vw) : Math.min(MIN_WIDTH, vw - 16);

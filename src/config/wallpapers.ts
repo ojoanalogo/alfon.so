@@ -10,10 +10,7 @@ export const LEGACY_WALLPAPER_IDS: Record<string, string> = {
   'pissarro-landscape-eragny': '6',
 };
 
-export function resolveWallpaperId(
-  storedId: string,
-  availableIds: Set<string>,
-): string | null {
+export function resolveWallpaperId(storedId: string, availableIds: Set<string>): string | null {
   const normalized = LEGACY_WALLPAPER_IDS[storedId] ?? storedId;
   if (availableIds.has(normalized)) return normalized;
   return availableIds.has(DEFAULT_WALLPAPER_ID) ? DEFAULT_WALLPAPER_ID : null;

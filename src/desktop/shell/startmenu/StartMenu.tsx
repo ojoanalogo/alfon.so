@@ -113,7 +113,7 @@ export default function StartMenu({
   return (
     <motion.div
       ref={menuRef}
-      className="fixed z-[110] flex w-[min(16.5rem,calc(100vw-1rem))] flex-col border border-[color:var(--color-hairline-strong)] bg-[rgb(255_255_255/0.96)] font-[ui-monospace,monospace] text-[0.6875rem] text-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.8),2px_3px_0_rgb(0_0_0/0.12)] backdrop-blur-[8px] dark:bg-[rgb(24_24_27/0.96)] dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.06),2px_3px_0_rgb(0_0_0/0.35)] max-sm:w-[min(18rem,calc(100vw-0.75rem))] max-sm:max-h-[min(24rem,calc(100dvh-4rem))]"
+      className="fixed z-[110] flex w-[min(16.5rem,calc(100vw-1rem))] flex-col border border-[color:var(--color-hairline-strong)] bg-[rgb(255_255_255/0.96)] font-[ui-monospace,monospace] text-[0.6875rem] text-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.8),2px_3px_0_rgb(0_0_0/0.12)] backdrop-blur-[8px] max-sm:max-h-[min(24rem,calc(100dvh-4rem))] max-sm:w-[min(18rem,calc(100vw-0.75rem))] dark:bg-[rgb(24_24_27/0.96)] dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.06),2px_3px_0_rgb(0_0_0/0.35)]"
       role="menu"
       aria-label="Menú de inicio"
       style={{
@@ -128,12 +128,17 @@ export default function StartMenu({
       onContextMenu={(event) => event.preventDefault()}
     >
       <header className="flex items-center gap-[0.625rem] border-b border-[rgb(113_113_122/0.3)] bg-[linear-gradient(180deg,rgb(113_113_122/0.16)_0%,rgb(113_113_122/0.06)_100%)] px-3 py-[0.625rem] dark:bg-[linear-gradient(180deg,rgb(161_161_170/0.12)_0%,rgb(24_24_27/0.4)_100%)]">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] text-[1.125rem] leading-none dark:bg-[rgb(9_9_11/0.65)]" aria-hidden="true">
+        <span
+          className="flex h-8 w-8 shrink-0 items-center justify-center border border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] text-[1.125rem] leading-none dark:bg-[rgb(9_9_11/0.65)]"
+          aria-hidden="true"
+        >
           🧐
         </span>
         <div className="flex min-w-0 flex-col gap-[0.125rem]">
           <span className="text-[0.8125rem] font-semibold text-primary">{SITE_TITLE}</span>
-          <span className="overflow-hidden text-[0.5625rem] text-muted text-ellipsis whitespace-nowrap">guest@alfon.so · devfolio v1.0</span>
+          <span className="overflow-hidden text-[0.5625rem] text-ellipsis whitespace-nowrap text-muted">
+            guest@alfon.so · devfolio v1.0
+          </span>
         </div>
       </header>
 

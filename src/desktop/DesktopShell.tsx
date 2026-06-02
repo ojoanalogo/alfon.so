@@ -28,7 +28,13 @@ interface DesktopShellProps {
   viewport: { width: number; height: number };
 }
 
-export default function DesktopShell({ apps, defs, posts, desktopIconUrls, viewport }: DesktopShellProps) {
+export default function DesktopShell({
+  apps,
+  defs,
+  posts,
+  desktopIconUrls,
+  viewport,
+}: DesktopShellProps) {
   const wm = useWindowManagerContext();
   const { setGeometry, unfocus } = wm;
   const browsers = useBrowserHistories();
@@ -90,11 +96,7 @@ export default function DesktopShell({ apps, defs, posts, desktopIconUrls, viewp
       <Wallpaper />
       <BootOverlay />
 
-      <DesktopIcons
-        state={icons}
-        onOpenWindow={openWindow}
-        onDesktopClick={unfocus}
-      />
+      <DesktopIcons state={icons} onOpenWindow={openWindow} onDesktopClick={unfocus} />
 
       <div className="pointer-events-none relative min-h-[calc(100dvh-5rem)]">
         {apps.map((app) => {
@@ -110,7 +112,8 @@ export default function DesktopShell({ apps, defs, posts, desktopIconUrls, viewp
             onClose: () => wm.close(app.id),
             onMinimize: () => wm.minimize(app.id),
             onToggleMaximize: () => wm.toggleMaximize(app.id),
-            onGeometryChange: (geometry: Partial<WindowGeometry>) => wm.setGeometry(app.id, geometry),
+            onGeometryChange: (geometry: Partial<WindowGeometry>) =>
+              wm.setGeometry(app.id, geometry),
           };
           return <Fragment key={app.id}>{app.render(appContext, win)}</Fragment>;
         })}
