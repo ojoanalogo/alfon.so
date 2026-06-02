@@ -1,5 +1,7 @@
 import about from '../../assets/icons/desktop/about.svg?url';
 import blog from '../../assets/icons/desktop/blog.svg?url';
+import notes from '../../assets/icons/desktop/notes.svg?url';
+import games from '../../assets/icons/desktop/games.svg?url';
 import classified from '../../assets/icons/desktop/classified.svg?url';
 import photos from '../../assets/icons/desktop/photos.svg?url';
 import projects from '../../assets/icons/desktop/projects.svg?url';
@@ -14,6 +16,8 @@ import type { DesktopIconDefinition, DesktopIcon } from '@/config';
 export const DESKTOP_ICON_URLS = {
   about,
   blog,
+  notes,
+  games,
   classified,
   photos,
   projects,

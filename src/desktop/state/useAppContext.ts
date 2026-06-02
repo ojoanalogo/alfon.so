@@ -36,6 +36,7 @@ export function useAppContext({
     () => ({
       posts,
       onOpenPost: (slug: string) => openWindow(postWindowId(slug)),
+      onOpenApp: openWindow,
       onOpenLink: handleOpenLink,
       browsers,
       trash,

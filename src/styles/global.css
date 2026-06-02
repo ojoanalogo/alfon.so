@@ -381,6 +381,57 @@
     overflow: hidden;
   }
 
+  .notes-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card > .card-body.notes-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .notes-sidebar__item:hover {
+    background: rgb(0 0 0 / 0.04);
+  }
+
+  :is(.dark) .notes-sidebar__item:hover {
+    background: rgb(255 255 255 / 0.06);
+  }
+
+  .snake-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .game-shell__stage canvas {
+    display: block;
+    height: 100%;
+    width: 100%;
+    image-rendering: pixelated;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card > .card-body.snake-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
   /* --- Boot overlay (keyframe + exiting state drives children) ------------ */
   .desktop-boot-overlay {
     position: fixed;

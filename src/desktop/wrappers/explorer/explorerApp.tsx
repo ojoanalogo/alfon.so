@@ -11,6 +11,7 @@ export interface ExplorerAppInput<Id extends string> {
   iconKey?: AppDefinition['iconKey'];
   iconUrl?: string;
   items: (ctx: AppContext) => ListItem[];
+  /** Initial grid vs list layout when the folder window opens. */
   defaultMode?: ExplorerViewMode;
   onActivate?: (id: string, ctx: AppContext) => void;
   footer?: (ctx: AppContext) => ReactNode;

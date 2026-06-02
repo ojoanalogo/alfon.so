@@ -48,9 +48,16 @@ function ColorSwatch({
   );
 }
 
-/** Theme + desktop fill color — composed by the Settings app. */
+/** Theme + desktop fill color + wallpaper picker — composed by the Settings app. */
 export default function AppearanceSection() {
-  const { wallpaperId, backgroundColorId, setBackgroundColor, desktopColors } = useWallpaper();
+  const {
+    wallpapers,
+    wallpaperId,
+    backgroundColorId,
+    setWallpaper,
+    setBackgroundColor,
+    desktopColors,
+  } = useWallpaper();
 
   return (
     <>
@@ -75,6 +82,53 @@ export default function AppearanceSection() {
           ))}
         </div>
       </div>
+
+      <h4>Imágenes</h4>
+      {wallpapers.length === 0 ? (
+        <p className="m-0 text-[0.6875rem] text-muted">
+          No hay fondos en <code>assets/wallpapers</code>.
+        </p>
+      ) : (
+        <div className={`${SETTINGS_GROUP} p-[0.375rem]`}>
+          <ul
+            className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-2 p-0"
+            role="list"
+          >
+            {wallpapers.map((wallpaper) => {
+              const selected = wallpaper.id === wallpaperId;
+              return (
+                <li key={wallpaper.id}>
+                  <button
+                    type="button"
+                    className={[
+                      'block aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-[0.375rem] border-2 bg-[rgb(113_113_122/0.12)] p-0',
+                      selected
+                        ? 'border-[color:var(--color-highlight-border)] shadow-[0_0_0_1px_var(--color-highlight-border)]'
+                        : 'border-transparent hover:border-[color:var(--color-hairline-strong)]',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-pressed={selected}
+                    aria-label={wallpaper.label}
+                    title={wallpaper.label}
+                    onClick={() => setWallpaper(wallpaper.id)}
+                  >
+                    <img
+                      src={wallpaper.thumbSrc}
+                      alt=""
+                      width={280}
+                      height={158}
+                      loading="lazy"
+                      decoding="async"
+                      className="block h-full w-full object-cover"
+                    />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </>
   );
 }

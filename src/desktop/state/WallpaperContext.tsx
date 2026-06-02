@@ -20,7 +20,10 @@ import {
   type IconLabelTone,
 } from '../lib/iconLabelTone';
 import type { WallpaperOption } from '../types';
-import { defaultWallpaperId } from '@/config/wallpapers';
+import { defaultWallpaperId, resolveWallpaperId } from '@/config/wallpapers';
+
+const WALLPAPER_STORAGE_KEY = 'devfolio.wallpaper';
+const COLOR_STORAGE_KEY = 'devfolio.desktop-color';
 
 export type WallpaperStatus = 'loading' | 'ready' | 'error';
 
@@ -34,13 +37,82 @@ interface WallpaperContextValue {
   status: WallpaperStatus;
   iconLabelTone: IconLabelTone;
   bootContentReady: boolean;
+  setWallpaper: (id: string | null) => void;
   setBackgroundColor: (id: string) => void;
 }
 
 const WallpaperContext = createContext<WallpaperContextValue | null>(null);
 
-function initialWallpaperId(wallpapers: WallpaperOption[]): string | null {
-  return defaultWallpaperId(new Set(wallpapers.map((wallpaper) => wallpaper.id)));
+type WallpaperPreference = 'unset' | 'color' | string;
+
+function readWallpaperPreference(): WallpaperPreference {
+  try {
+    if (!localStorage.getItem(WALLPAPER_STORAGE_KEY)) return 'unset';
+    const stored = localStorage.getItem(WALLPAPER_STORAGE_KEY);
+    if (stored === '') return 'color';
+    return stored ?? 'unset';
+  } catch {
+    return 'unset';
+  }
+}
+
+function readStoredBackgroundColorId(): string | null {
+  try {
+    return localStorage.getItem(COLOR_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function persistWallpaperId(id: string | null) {
+  try {
+    if (id) {
+      localStorage.setItem(WALLPAPER_STORAGE_KEY, id);
+    } else {
+      localStorage.setItem(WALLPAPER_STORAGE_KEY, '');
+    }
+  } catch {
+    /* ignore quota / privacy mode */
+  }
+}
+
+function persistBackgroundColorId(id: string) {
+  try {
+    localStorage.setItem(COLOR_STORAGE_KEY, id);
+  } catch {
+    /* ignore quota / privacy mode */
+  }
+}
+
+function resolveStoredPreferences(wallpapers: WallpaperOption[]) {
+  const availableIds = new Set(wallpapers.map((wallpaper) => wallpaper.id));
+  const wallpaperPreference = readWallpaperPreference();
+
+  let nextWallpaperId: string | null;
+  if (wallpaperPreference === 'unset') {
+    nextWallpaperId = defaultWallpaperId(availableIds);
+  } else if (wallpaperPreference === 'color') {
+    nextWallpaperId = null;
+  } else {
+    nextWallpaperId = resolveWallpaperId(wallpaperPreference, availableIds);
+    if (nextWallpaperId !== wallpaperPreference && nextWallpaperId) {
+      persistWallpaperId(nextWallpaperId);
+    }
+    if (!nextWallpaperId) {
+      persistWallpaperId(null);
+    }
+  }
+
+  const storedColor = readStoredBackgroundColorId();
+  const nextColorId =
+    storedColor && DESKTOP_COLORS.some((color) => color.id === storedColor)
+      ? storedColor
+      : 'default';
+  if (storedColor && nextColorId === 'default' && storedColor !== 'default') {
+    persistBackgroundColorId('default');
+  }
+
+  return { wallpaperId: nextWallpaperId, backgroundColorId: nextColorId };
 }
 
 export function WallpaperProvider({
@@ -50,10 +122,14 @@ export function WallpaperProvider({
   wallpapers: WallpaperOption[];
   children: ReactNode;
 }) {
-  const [wallpaperId, setWallpaperId] = useState<string | null>(() =>
-    typeof window === 'undefined' ? null : initialWallpaperId(wallpapers),
-  );
-  const [backgroundColorId, setBackgroundColorId] = useState('default');
+  const [wallpaperId, setWallpaperId] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return resolveStoredPreferences(wallpapers).wallpaperId;
+  });
+  const [backgroundColorId, setBackgroundColorId] = useState(() => {
+    if (typeof window === 'undefined') return 'default';
+    return resolveStoredPreferences(wallpapers).backgroundColorId;
+  });
   const [loadedWallpaper, setLoadedWallpaper] = useState<{
     id: string;
     status: 'ready' | 'error';
@@ -131,11 +207,25 @@ export function WallpaperProvider({
     };
   }, [activeWallpaper, desktopBackgroundColor, hydrated, status, theme]);
 
+  const setWallpaper = useCallback(
+    (id: string | null) => {
+      if (id !== null && !wallpapers.some((wallpaper) => wallpaper.id === id)) return;
+      setWallpaperId(id);
+      persistWallpaperId(id);
+      if (!id) {
+        setLoadedWallpaper(null);
+      }
+    },
+    [wallpapers],
+  );
+
   const setBackgroundColor = useCallback((id: string) => {
     if (!DESKTOP_COLORS.some((color) => color.id === id)) return;
     setBackgroundColorId(id);
-    setLoadedWallpaper(null);
+    persistBackgroundColorId(id);
     setWallpaperId(null);
+    persistWallpaperId(null);
+    setLoadedWallpaper(null);
   }, []);
 
   const bootContentReady = hydrated && !(wallpaperId !== null && status === 'loading');
@@ -151,6 +241,7 @@ export function WallpaperProvider({
       status,
       iconLabelTone,
       bootContentReady,
+      setWallpaper,
       setBackgroundColor,
     }),
     [
@@ -162,6 +253,7 @@ export function WallpaperProvider({
       status,
       iconLabelTone,
       bootContentReady,
+      setWallpaper,
       setBackgroundColor,
     ],
   );

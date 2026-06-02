@@ -19,6 +19,12 @@ import ovnisApp from './ovnis';
 import happyApp from './happy';
 import trashApp from './trash';
 import browserApp from './browser';
+import notesApp from './notes';
+import gamesApp from './games';
+import snakeApp from './games/snake';
+import pongApp from './games/pong';
+import breakoutApp from './games/breakout';
+import planeApp from './games/plane';
 
 // ---------------------------------------------------------------------------
 // APPS — the canonical registry. Order here drives the start menu and the
@@ -30,6 +36,12 @@ export const APPS = [
   aboutApp,
   projectsApp,
   blogApp,
+  notesApp,
+  gamesApp,
+  snakeApp,
+  pongApp,
+  breakoutApp,
+  planeApp,
   photosApp,
   startupApp,
   settingsApp,

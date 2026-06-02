@@ -23,6 +23,8 @@ export interface WindowProps {
   onToggleMaximize: () => void;
   onGeometryChange: (geometry: Partial<WindowGeometry>) => void;
   minWidth?: number;
+  /** Floor height when the window is content-sized (`state.height === null`). */
+  minHeight?: number;
   children: ReactNode;
   bodyClassName?: string;
   /** Replaces the default title text in the titlebar drag region. */
@@ -42,6 +44,7 @@ export default function Window({
   onToggleMaximize,
   onGeometryChange,
   minWidth = MIN_WIDTH,
+  minHeight,
   children,
   bodyClassName,
   titleContent,
@@ -135,6 +138,7 @@ export default function Window({
         top: `${state.y}px`,
         width: `${state.width}px`,
         minWidth: `${minWidth}px`,
+        minHeight: state.height == null && minHeight != null ? minHeight : undefined,
         height: state.height != null ? `${state.height}px` : undefined,
         zIndex: state.zIndex,
         transformOrigin: 'bottom center',

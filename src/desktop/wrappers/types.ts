@@ -27,6 +27,8 @@ export interface TrashController {
 export interface AppContext {
   posts: BlogPostSummary[];
   onOpenPost: (slug: string) => void;
+  /** Open a registered app window by id. */
+  onOpenApp: (id: string) => void;
   /** Open a URL in the main browser window. */
   onOpenLink: (url: string) => void;
   /** Per-browser-app navigation state. */
@@ -46,6 +48,8 @@ export interface WindowChromeProps {
   onMinimize: () => void;
   onToggleMaximize: () => void;
   onGeometryChange: (geometry: Partial<WindowGeometry>) => void;
+  /** Minimum height for content-sized windows. */
+  minHeight?: number;
 }
 
 export interface DesktopIconConfig {

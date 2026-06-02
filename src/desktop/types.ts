@@ -27,6 +27,8 @@ export interface AppGeometry {
   defaultWidth: number;
   /** Initial height in px; omit for content-driven height. */
   defaultHeight?: number;
+  /** Floor height for content-driven windows (height unset). */
+  minHeight?: number;
   /** Minimum width when resizing; defaults to global MIN_WIDTH. */
   minWidth?: number;
   /** Stacking order; omit to derive from the app's registry order. */

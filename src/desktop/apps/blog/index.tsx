@@ -16,7 +16,7 @@ export default explorerApp({
     })),
   onActivate: (id, ctx) => ctx.onOpenPost(id),
   availableWhen: (ctx) => ctx.posts.length > 0,
-  geometry: { defaultX: 160, defaultY: 96, defaultWidth: 576, initialZ: 13 },
+  geometry: { defaultX: 160, defaultY: 96, defaultWidth: 576, minHeight: 320, initialZ: 13 },
   desktopIcon: { label: 'blog.sql', tooltip: 'Mis posts' },
   taskbarTooltip: 'Blog',
 });

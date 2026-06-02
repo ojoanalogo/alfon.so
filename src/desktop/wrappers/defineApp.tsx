@@ -7,6 +7,7 @@ import {
   type AppContext,
   type AppDefinition,
   type DesktopIconConfig,
+  type WindowChromeProps,
 } from './types';
 
 export interface DefineAppInput<Id extends string> {
@@ -21,8 +22,8 @@ export interface DefineAppInput<Id extends string> {
   windowClassName?: string;
   bodyClassName?: string;
   initialBrowserUrl?: string | null;
-  /** The window body. Receives the runtime AppContext. */
-  body: (ctx: AppContext) => ReactNode;
+  /** Window body. The optional `win` arg is the live window-manager wiring. */
+  body: (ctx: AppContext, win?: WindowChromeProps) => ReactNode;
   /** Optional titlebar chrome (e.g. the browser URL bar). */
   titleContent?: (ctx: AppContext) => ReactNode;
 }
@@ -45,7 +46,7 @@ export function defineApp<Id extends string>(input: DefineAppInput<Id>): AppDefi
           windowClassName={meta.windowClassName}
           bodyClassName={meta.bodyClassName}
         >
-          {body(ctx)}
+          {body(ctx, win)}
         </Window>
       );
     },
