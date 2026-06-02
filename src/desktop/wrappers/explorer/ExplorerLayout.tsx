@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useExplorerView } from './ExplorerViewContext';
-import { useGridSettings } from '@desktop/state/GridSettingsContext';
+import { DEFAULT_GRID_SETTINGS } from '@desktop/lib/gridSettings';
 import GridLayout from './GridLayout';
 import FolderList from './FolderList';
 import type { ListItem } from './types';
@@ -29,9 +29,7 @@ function sortItems(items: ListItem[], sortBy: 'name' | 'kind'): ListItem[] {
 
 export default function ExplorerLayout({ items, onActivate, children }: ExplorerLayoutProps) {
   const { mode } = useExplorerView();
-  const { settings } = useGridSettings();
-
-  const sorted = sortItems(items, settings.sortBy);
+  const sorted = sortItems(items, DEFAULT_GRID_SETTINGS.sortBy);
 
   function handleActivate(id: string) {
     const item = items.find((entry) => entry.id === id);

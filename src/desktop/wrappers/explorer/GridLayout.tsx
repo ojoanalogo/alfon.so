@@ -1,17 +1,11 @@
 import { type ReactNode } from 'react';
 import type { ListItem } from './types';
 import {
+  DEFAULT_GRID_SETTINGS,
   ICON_SIZE_PX,
-  useGridSettings,
-  type GridSpacing,
-} from '@desktop/state/GridSettingsContext';
+  SPACING_GAP_PX,
+} from '@desktop/lib/gridSettings';
 import ListItemIcon from './ListItemIcon';
-
-const SPACING_GAP_PX: Record<GridSpacing, number> = {
-  compact: 8,
-  normal: 16,
-  roomy: 24,
-};
 
 const GRID_CELL =
   'flex flex-col items-center gap-1 rounded-[0.25rem] border border-transparent p-2 text-center font-[inherit] text-[color:inherit]';
@@ -83,9 +77,8 @@ export default function GridLayout({
   className,
   children,
 }: GridLayoutProps) {
-  const { settings } = useGridSettings();
-  const iconPx = ICON_SIZE_PX[settings.iconSize];
-  const gap = SPACING_GAP_PX[settings.spacing];
+  const iconPx = ICON_SIZE_PX[DEFAULT_GRID_SETTINGS.iconSize];
+  const gap = SPACING_GAP_PX[DEFAULT_GRID_SETTINGS.spacing];
 
   return (
     <div className={className}>

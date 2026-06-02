@@ -1,3 +1,4 @@
+import { formatWindowTitle } from '@desktop/lib/formatWindowTitle';
 import { defineApp } from '../defineApp';
 import BrowserChrome from './BrowserChrome';
 import BrowserContent from './BrowserContent';
@@ -58,7 +59,7 @@ export function browserApp<Id extends string>(input: BrowserAppInput<Id>): AppDe
     titleContent: (ctx) => (
       <BrowserChrome
         appId={input.id}
-        title={title(ctx)}
+        title={formatWindowTitle(title(ctx))}
         browsers={ctx.browsers}
         hideTitle={input.hideTitle}
       />

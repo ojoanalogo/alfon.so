@@ -1,4 +1,5 @@
 import type { WindowDef, WindowGeometry } from '../types';
+import { positionNearCenter } from './windowPlacement';
 import { minWidthForDef, MIN_WIDTH, MIN_HEIGHT, TASKBAR_HEIGHT } from '../state/useWindowManager';
 
 /** Matches `40rem` breakpoints used in global.css. */
@@ -44,6 +45,7 @@ export function resolveWindowGeometry(
   viewportHeight: number,
   measuredHeight?: number,
   measuredWidth?: number,
+  options?: { freshRandom?: boolean },
 ): WindowGeometry {
   if (isMobileViewport(viewportWidth)) {
     const mobile = mobileWindowGeometry(viewportWidth, viewportHeight);
@@ -67,7 +69,14 @@ export function resolveWindowGeometry(
     return { x, y, width, height: def.defaultHeight ?? null };
   }
 
-  const maxX = Math.max(EDGE_MARGIN, viewportWidth - width - EDGE_MARGIN);
-  const x = Math.min(def.defaultX, maxX);
-  return { x, y: def.defaultY, width, height: null };
+  const height = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
+  const { x, y } = positionNearCenter(
+    viewportWidth,
+    viewportHeight,
+    width,
+    height,
+    def.id,
+    options?.freshRandom,
+  );
+  return { x, y, width, height: def.defaultHeight ?? null };
 }

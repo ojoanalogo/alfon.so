@@ -1,3 +1,4 @@
+import type { RefObject } from 'react';
 import { useResolvedIconLabelTone } from '../../lib/useResolvedIconLabelTone';
 import { resolveIconUrl } from '@desktop/lib/desktopIcons';
 
@@ -8,9 +9,17 @@ interface PapeleraProps {
   trashedCount: number;
   iconUrls: Record<string, string>;
   onOpen: () => void;
+  trashRef: RefObject<HTMLButtonElement | null>;
+  suppressNextClickRef: RefObject<boolean>;
 }
 
-export default function Papelera({ trashedCount, iconUrls, onOpen }: PapeleraProps) {
+export default function Papelera({
+  trashedCount,
+  iconUrls,
+  onOpen,
+  trashRef,
+  suppressNextClickRef,
+}: PapeleraProps) {
   const iconLabelTone = useResolvedIconLabelTone();
   const iconSrc =
     trashedCount > 0
@@ -25,9 +34,16 @@ export default function Papelera({ trashedCount, iconUrls, onOpen }: PapeleraPro
       ].join(' ')}
     >
       <button
+        ref={trashRef}
         type="button"
-        className="papelera__trigger pointer-events-auto flex w-20 cursor-pointer flex-col items-center gap-[0.375rem] border border-transparent bg-transparent p-1 text-center font-[ui-monospace,monospace] text-primary transition-transform duration-150 ease-[ease] active:scale-[0.97]"
-        onClick={onOpen}
+        className="papelera__trigger pointer-events-auto flex w-20 cursor-pointer flex-col items-center gap-[0.375rem] border border-transparent bg-transparent p-1 text-center font-[ui-monospace,monospace] text-primary transition-[transform,background-color,border-color] duration-150 ease-[ease] active:scale-[0.97]"
+        onClick={() => {
+          if (suppressNextClickRef.current) {
+            suppressNextClickRef.current = false;
+            return;
+          }
+          onOpen();
+        }}
         aria-label="Papelera"
       >
         <span className="flex h-8 w-8 items-center justify-center" aria-hidden="true">

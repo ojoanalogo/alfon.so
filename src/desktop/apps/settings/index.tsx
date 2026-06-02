@@ -2,11 +2,9 @@ import { createElement } from 'react';
 import { defineApp, type SettingsSection } from '@desktop/wrappers';
 import SettingsBody from './SettingsBody';
 import AppearanceSection from './AppearanceSection';
-import GridSettingsSection from './GridSettingsSection';
 
 const SETTINGS_SECTIONS: SettingsSection[] = [
   { id: 'apariencia', title: 'Apariencia', render: () => createElement(AppearanceSection) },
-  { id: 'escritorio', title: 'Escritorio', render: () => createElement(GridSettingsSection) },
 ];
 
 export default defineApp({

@@ -1,26 +1,21 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type RefObject } from 'react';
 import { type DesktopIcon } from '@/config';
 import ContextMenu, { type ContextMenuItem } from '../ContextMenu';
 import { useResolvedIconLabelTone } from '../../lib/useResolvedIconLabelTone';
 import { type DesktopIconsState, type IconPosition } from '../../state/useDesktopIcons';
+import { iconGlyphDragTransform } from './iconDragTransform';
+import { useDesktopIconDrag } from './useDesktopIconDrag';
 
 interface DesktopIconsProps {
   state: DesktopIconsState;
   onOpenWindow: (windowId: string) => void;
   onDesktopClick?: () => void;
+  trashRef: RefObject<HTMLElement | null>;
+  suppressTrashClickRef: RefObject<boolean>;
 }
 
 const DRAG_THRESHOLD = 4;
 const DOUBLE_CLICK_MS = 450;
-
-interface IconDrag {
-  id: string;
-  pointerId: number;
-  startX: number;
-  startY: number;
-  origins: Record<string, IconPosition>;
-  moved: boolean;
-}
 
 interface MarqueeDrag {
   pointerId: number;
@@ -44,7 +39,13 @@ interface MenuState {
   items: ContextMenuItem[];
 }
 
-export default function DesktopIcons({ state, onOpenWindow, onDesktopClick }: DesktopIconsProps) {
+export default function DesktopIcons({
+  state,
+  onOpenWindow,
+  onDesktopClick,
+  trashRef,
+  suppressTrashClickRef,
+}: DesktopIconsProps) {
   const {
     positions,
     selected,
@@ -65,10 +66,18 @@ export default function DesktopIcons({ state, onOpenWindow, onDesktopClick }: De
   const [menu, setMenu] = useState<MenuState | null>(null);
 
   const iconRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
-  const iconDrag = useRef<IconDrag | null>(null);
   const marqueeDrag = useRef<MarqueeDrag | null>(null);
   const lastTap = useRef<{ id: string; time: number }>({ id: '', time: 0 });
-  const suppressClick = useRef(false);
+
+  const { visual: dragVisual, startDrag, consumeSuppressedClick } = useDesktopIconDrag({
+    positions,
+    selected,
+    selectOnly,
+    moveIcons,
+    deleteIcons,
+    trashRef,
+    suppressTrashClickRef,
+  });
 
   function activate(icon: DesktopIcon) {
     if (icon.windowId) onOpenWindow(icon.windowId);
@@ -77,58 +86,19 @@ export default function DesktopIcons({ state, onOpenWindow, onDesktopClick }: De
   // --- Icon pointer interactions (move + click/double-click) ---------------
 
   function handleIconPointerDown(event: React.PointerEvent, icon: DesktopIcon) {
-    if (event.button !== 0) return;
     const origins: Record<string, IconPosition> = {};
     if (selected.has(icon.id)) {
       selected.forEach((id) => {
         if (positions[id]) origins[id] = positions[id];
       });
-    } else {
+    } else if (positions[icon.id]) {
       origins[icon.id] = positions[icon.id];
     }
-    iconDrag.current = {
-      id: icon.id,
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      origins,
-      moved: false,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-
-  function handleIconPointerMove(event: React.PointerEvent, icon: DesktopIcon) {
-    const drag = iconDrag.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    const dx = event.clientX - drag.startX;
-    const dy = event.clientY - drag.startY;
-    if (!drag.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
-    if (!drag.moved) {
-      drag.moved = true;
-      if (!selected.has(icon.id)) {
-        selectOnly(icon.id);
-        drag.origins = { [icon.id]: positions[icon.id] };
-      }
-      document.body.classList.add('is-window-gesturing');
-    }
-    moveIcons(drag.origins, dx, dy);
-  }
-
-  function handleIconPointerUp(event: React.PointerEvent) {
-    const drag = iconDrag.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    if (drag.moved) {
-      suppressClick.current = true;
-      document.body.classList.remove('is-window-gesturing');
-    }
-    iconDrag.current = null;
+    startDrag(event, icon.id, origins);
   }
 
   function handleIconClick(event: React.MouseEvent, icon: DesktopIcon) {
-    if (suppressClick.current) {
-      suppressClick.current = false;
-      return;
-    }
+    if (consumeSuppressedClick()) return;
     const now = event.timeStamp;
     if (event.shiftKey || event.ctrlKey || event.metaKey) {
       toggleSelection(icon.id);
@@ -252,41 +222,59 @@ export default function DesktopIcons({ state, onOpenWindow, onDesktopClick }: De
       >
         {visibleIcons.map((icon) => {
           const pos = positions[icon.id] ?? { x: 0, y: 0 };
+          const isDragging = dragVisual.draggingIds.has(icon.id);
           return (
             <button
               key={icon.id}
               ref={(node) => registerIconRef(icon.id, node)}
               type="button"
-              className={['desktop-icon', isSelected(icon.id) && 'is-selected']
+              className={[
+                'desktop-icon',
+                isSelected(icon.id) && 'is-selected',
+                isDragging && 'is-dragging',
+              ]
                 .filter(Boolean)
                 .join(' ')}
-              style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
+              style={{
+                left: `${pos.x}px`,
+                top: `${pos.y}px`,
+              }}
               title={icon.tooltip}
               aria-label={icon.tooltip ?? icon.label}
               aria-pressed={isSelected(icon.id)}
               onPointerDown={(event) => handleIconPointerDown(event, icon)}
-              onPointerMove={(event) => handleIconPointerMove(event, icon)}
-              onPointerUp={handleIconPointerUp}
-              onPointerCancel={handleIconPointerUp}
               onClick={(event) => handleIconClick(event, icon)}
               onContextMenu={(event) => handleIconContextMenu(event, icon)}
             >
-              <span
-                className="flex h-8 w-8 items-center justify-center max-sm:h-12 max-sm:w-12"
-                aria-hidden="true"
-              >
-                <img
-                  src={icon.iconSrc}
-                  alt=""
-                  width={48}
-                  height={48}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-8 w-8 object-contain [image-rendering:pixelated] max-sm:h-12 max-sm:w-12"
-                />
-              </span>
-              <span className="desktop-icon__label w-full max-w-[6.75rem] px-1 py-[0.125rem] text-[0.625rem] leading-[1.25] [overflow-wrap:anywhere] [word-break:normal] hyphens-auto max-sm:max-w-[5.5rem] max-sm:text-[0.6875rem] max-sm:leading-[1.25]">
-                {icon.label}
+              <span className="desktop-icon__body">
+                <span
+                  className="desktop-icon__glyph h-8 w-8 max-sm:h-12 max-sm:w-12"
+                  aria-hidden="true"
+                  style={
+                    isDragging
+                      ? {
+                          transform: iconGlyphDragTransform(
+                            dragVisual.tiltX,
+                            dragVisual.tiltY,
+                            dragVisual.ramp,
+                          ),
+                        }
+                      : undefined
+                  }
+                >
+                  <img
+                    src={icon.iconSrc}
+                    alt=""
+                    width={48}
+                    height={48}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-contain [image-rendering:pixelated]"
+                  />
+                </span>
+                <span className="desktop-icon__label w-full max-w-[6.75rem] px-1 py-[0.125rem] text-[0.625rem] leading-[1.25] [overflow-wrap:anywhere] [word-break:normal] hyphens-auto max-sm:max-w-[5.5rem] max-sm:text-[0.6875rem] max-sm:leading-[1.25]">
+                  {icon.label}
+                </span>
               </span>
             </button>
           );

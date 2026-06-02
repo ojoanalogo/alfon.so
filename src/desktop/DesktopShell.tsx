@@ -1,4 +1,4 @@
-import { Fragment, useCallback } from 'react';
+import { Fragment, useCallback, useRef } from 'react';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';
 import { resolveDesktopShellIcons } from './apps/desktopIcons';
 import { TRASH_APP_ID } from './apps/postWindow';
@@ -60,6 +60,8 @@ export default function DesktopShell({
   );
 
   const icons = useDesktopIcons(desktopIcons);
+  const trashRef = useRef<HTMLButtonElement>(null);
+  const suppressTrashClickRef = useRef(false);
 
   const trash = useTrashController(icons, openWindow);
 
@@ -96,7 +98,13 @@ export default function DesktopShell({
       <Wallpaper />
       <BootOverlay />
 
-      <DesktopIcons state={icons} onOpenWindow={openWindow} onDesktopClick={unfocus} />
+      <DesktopIcons
+        state={icons}
+        onOpenWindow={openWindow}
+        onDesktopClick={unfocus}
+        trashRef={trashRef}
+        suppressTrashClickRef={suppressTrashClickRef}
+      />
 
       <div className="pointer-events-none relative min-h-[calc(100dvh-5rem)]">
         {apps.map((app) => {
@@ -137,6 +145,8 @@ export default function DesktopShell({
         trashedCount={icons.trashedCount}
         iconUrls={desktopIconUrls}
         onOpen={() => openWindow(TRASH_APP_ID)}
+        trashRef={trashRef}
+        suppressNextClickRef={suppressTrashClickRef}
       />
     </>
   );

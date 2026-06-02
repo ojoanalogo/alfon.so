@@ -1,6 +1,6 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { WindowDef, WindowGeometry, WindowState } from '../types';
-import { resolveWindowGeometry, effectiveMinWidth } from '../lib/viewport';
+import { isMobileViewport, resolveWindowGeometry, effectiveMinWidth } from '../lib/viewport';
 
 export const MIN_WIDTH = 400;
 export const MIN_HEIGHT = 140;
@@ -119,14 +119,29 @@ export function useWindowManager(
 
   const open = useCallback(
     (id: string) => {
+      const def = defs.find((entry) => entry.id === id);
+      const vw = typeof window !== 'undefined' ? window.innerWidth : viewportWidth;
+      const vh = typeof window !== 'undefined' ? window.innerHeight : viewportHeight;
+
       setWindows((prev) => {
         const target = prev[id];
         if (!target) return prev;
-        return { ...prev, [id]: { ...target, open: true, minimized: false } };
+
+        const wasClosed = !target.open;
+        let next: WindowState = { ...target, open: true, minimized: false };
+
+        if (wasClosed && def && !isMobileViewport(vw)) {
+          const geo = resolveWindowGeometry(def, vw, vh, undefined, target.width, {
+            freshRandom: true,
+          });
+          next = { ...next, x: geo.x, y: geo.y, width: geo.width };
+        }
+
+        return { ...prev, [id]: next };
       });
       bringToFront(id);
     },
-    [bringToFront],
+    [bringToFront, defs, viewportWidth, viewportHeight],
   );
 
   const close = useCallback((id: string) => {

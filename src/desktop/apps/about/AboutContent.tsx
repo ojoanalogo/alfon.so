@@ -1,6 +1,8 @@
 import { Divider, ExternalLink, InfoRow, SocialMediaIcons } from '@desktop/ui/parts';
 import { TECH_STACK } from '../projects/data';
 
+const ABOUT_LINK_CLASS = 'text-link hover:underline focus:outline-none';
+
 export default function AboutContent() {
   return (
     <div className="space-y-4 text-xs sm:space-y-2">
@@ -34,7 +36,11 @@ export default function AboutContent() {
 
       <InfoRow label="trabajo">
         ingeniero backend @{' '}
-        <ExternalLink href="https://monopolio.com.mx" label="Visitar sitio web monopolio.com.mx">
+        <ExternalLink
+          href="https://monopolio.com.mx"
+          label="Visitar sitio web monopolio.com.mx"
+          className={ABOUT_LINK_CLASS}
+        >
           monopolio.com.mx
         </ExternalLink>
       </InfoRow>
@@ -44,6 +50,7 @@ export default function AboutContent() {
         <ExternalLink
           href="https://ojoanalogo.com"
           label="Visitar portafolio de fotografía ojoanalogo.com"
+          className={ABOUT_LINK_CLASS}
         >
           ojoanalogo.com
         </ExternalLink>
@@ -51,7 +58,11 @@ export default function AboutContent() {
 
       <InfoRow label="comunidad">
         cursor ambassador @{' '}
-        <ExternalLink href="https://cursor.com/ambassadors" label="Cursor Ambassador Program">
+        <ExternalLink
+          href="https://cursor.com/ambassadors"
+          label="Cursor Ambassador Program"
+          className={ABOUT_LINK_CLASS}
+        >
           cursor.com/ambassadors
         </ExternalLink>
       </InfoRow>
@@ -60,6 +71,7 @@ export default function AboutContent() {
         <ExternalLink
           href="https://sofinanzas.mx"
           label="Visitar SofIA - Asistente de finanzas con IA"
+          className={ABOUT_LINK_CLASS}
         >
           sofia
         </ExternalLink>{' '}
@@ -72,7 +84,7 @@ export default function AboutContent() {
 
       <InfoRow label="contacto">
         <a
-          className="text-primary hover:text-accent hover:underline focus:outline-none"
+          className={ABOUT_LINK_CLASS}
           href="mailto:hola@alfon.so"
           aria-label="Enviar email a hola@alfon.so"
         >

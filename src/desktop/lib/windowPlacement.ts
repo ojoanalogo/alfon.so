@@ -1,0 +1,53 @@
+import { MIN_HEIGHT, TASKBAR_HEIGHT } from '../state/useWindowManager';
+
+const EDGE_MARGIN = 8;
+/** Max px a window center may shift from the viewport center. */
+const JITTER_X = 140;
+const JITTER_Y = 100;
+
+function hashUnit(id: string, salt: number): number {
+  let hash = salt;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  }
+  return (Math.abs(hash) % 10_000) / 10_000;
+}
+
+function jitterOffsets(id: string | null, random: boolean): { x: number; y: number } {
+  if (random) {
+    return {
+      x: (Math.random() - 0.5) * 2 * JITTER_X,
+      y: (Math.random() - 0.5) * 2 * JITTER_Y,
+    };
+  }
+
+  const seed = id ?? 'window';
+  return {
+    x: (hashUnit(seed, 1) - 0.5) * 2 * JITTER_X,
+    y: (hashUnit(seed, 2) - 0.5) * 2 * JITTER_Y,
+  };
+}
+
+export function positionNearCenter(
+  viewportWidth: number,
+  viewportHeight: number,
+  windowWidth: number,
+  windowHeight: number,
+  windowId: string | null,
+  random = false,
+): { x: number; y: number } {
+  const workHeight = viewportHeight - TASKBAR_HEIGHT;
+  const height = Math.max(MIN_HEIGHT, windowHeight);
+  const { x: jitterX, y: jitterY } = jitterOffsets(windowId, random);
+
+  const centerX = (viewportWidth - windowWidth) / 2;
+  const centerY = (workHeight - height) / 2;
+
+  const maxX = Math.max(EDGE_MARGIN, viewportWidth - windowWidth - EDGE_MARGIN);
+  const maxY = Math.max(EDGE_MARGIN, workHeight - height - EDGE_MARGIN);
+
+  const x = Math.round(Math.max(EDGE_MARGIN, Math.min(maxX, centerX + jitterX)));
+  const y = Math.round(Math.max(EDGE_MARGIN, Math.min(maxY, centerY + jitterY)));
+
+  return { x, y };
+}

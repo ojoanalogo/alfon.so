@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { formatWindowTitle } from '@desktop/lib/formatWindowTitle';
 import type { IconKey } from '@desktop/lib/desktopIcons';
 import type { AppGeometry, BlogPostSummary, WindowGeometry, WindowState } from '../types';
 import type { BrowserHistories } from './browser/useBrowserHistories';
@@ -81,7 +82,8 @@ export interface AppDefinition<Id extends string = string> {
 }
 
 export function resolveAppTitle(app: AppDefinition, ctx: AppContext): string {
-  return typeof app.title === 'function' ? app.title(ctx) : app.title;
+  const raw = typeof app.title === 'function' ? app.title(ctx) : app.title;
+  return formatWindowTitle(raw);
 }
 
 export function appLabel(app: AppDefinition): string {

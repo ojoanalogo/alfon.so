@@ -1,5 +1,6 @@
 import type { DesktopIconDefinition } from '@/config';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';
+import { formatWindowTitle } from '@desktop/lib/formatWindowTitle';
 import { resolveDesktopIcons, resolveIconUrl } from '@desktop/lib/desktopIcons';
 import { appLabel, type AppDefinition } from '@desktop/wrappers';
 
@@ -16,7 +17,7 @@ export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIc
       const cfg = typeof app.desktopIcon === 'object' && app.desktopIcon ? app.desktopIcon : {};
       return {
         id: app.id,
-        label: cfg.label ?? appLabel(app),
+        label: formatWindowTitle(cfg.label ?? appLabel(app)),
         iconKey: app.iconKey,
         iconUrl: app.iconUrl,
         windowId: app.id,

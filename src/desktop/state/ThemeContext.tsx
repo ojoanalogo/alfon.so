@@ -1,53 +1,64 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import {
+  applyThemePreference,
+  ensureThemeRuntime,
+  getEffectiveTheme,
+  getThemePreference,
+  toggleThemePreference,
+  type ThemeMode,
+  type ThemePreference,
+} from '@/lib/theme';
 
-export type ThemeMode = 'light' | 'dark';
-
-export function applyTheme(theme: ThemeMode) {
-  document.documentElement.classList.toggle('dark', theme === 'dark');
-  try {
-    localStorage.setItem('theme', theme);
-  } catch {
-    // Private mode / quota — theme still applies for this session.
-  }
-  window.dispatchEvent(new CustomEvent('devfolio-theme-change', { detail: { theme } }));
-}
-
-export function readTheme(): ThemeMode {
-  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-}
+export type { ThemeMode, ThemePreference };
 
 export interface ThemeContextValue {
+  /** Stored preference; `system` follows OS light/dark. */
+  preference: ThemePreference;
+  /** Resolved light/dark applied to the document. */
   theme: ThemeMode;
   isDark: boolean;
-  setTheme: (next: ThemeMode) => void;
+  setTheme: (next: ThemePreference) => void;
   toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
+function readSnapshot() {
+  return {
+    preference: getThemePreference(),
+    theme: getEffectiveTheme(),
+  };
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>('light');
+  const [{ preference, theme }, setSnapshot] = useState(readSnapshot);
 
   useEffect(() => {
-    function syncTheme() {
-      setThemeState(readTheme());
+    function syncFromDocument() {
+      setSnapshot(readSnapshot());
     }
 
-    syncTheme();
-    window.addEventListener('devfolio-theme-change', syncTheme);
-    return () => window.removeEventListener('devfolio-theme-change', syncTheme);
+    ensureThemeRuntime();
+    syncFromDocument();
+    window.addEventListener('devfolio-theme-change', syncFromDocument);
+
+    return () => {
+      window.removeEventListener('devfolio-theme-change', syncFromDocument);
+    };
   }, []);
 
-  function setTheme(next: ThemeMode) {
-    applyTheme(next);
-    setThemeState(next);
+  function setTheme(next: ThemePreference) {
+    applyThemePreference(next);
+    setSnapshot(readSnapshot());
   }
 
   function toggleTheme() {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    toggleThemePreference();
+    setSnapshot(readSnapshot());
   }
 
   const value: ThemeContextValue = {
+    preference,
     theme,
     isDark: theme === 'dark',
     setTheme,

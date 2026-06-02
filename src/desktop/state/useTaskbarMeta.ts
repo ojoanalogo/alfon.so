@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatWindowTitle } from '@desktop/lib/formatWindowTitle';
 import { TRASH_JUNK } from '../apps/trash/junk';
 import { appIconSrc } from '../apps/desktopIcons';
 import type { AppDefinition } from '@desktop/wrappers';
@@ -17,7 +18,8 @@ export function useTaskbarMeta(
     );
     const base: Record<string, WindowMeta> = {};
     for (const app of apps) {
-      const label = trashNames.get(app.id) ?? (typeof app.title === 'string' ? app.title : app.id);
+      const rawLabel = trashNames.get(app.id) ?? (typeof app.title === 'string' ? app.title : app.id);
+      const label = formatWindowTitle(rawLabel);
       base[app.id] = {
         iconSrc: appIconSrc(app, desktopIconUrls),
         label,

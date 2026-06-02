@@ -24,6 +24,8 @@ const {
     <script is:inline>
       (function () {
         const theme = localStorage.getItem('theme');
+        const preference = theme === 'light' || theme === 'dark' ? theme : 'system';
+        document.documentElement.dataset.themePreference = preference;
         if (
           theme === 'dark' ||
           (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)

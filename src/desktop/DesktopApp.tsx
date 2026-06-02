@@ -3,7 +3,6 @@ import { useViewportSize } from './lib/useViewportSize';
 import { useDesktopApps } from './state/useDesktopApps';
 import { WindowManagerProvider } from './state/WindowManagerContext';
 import { WallpaperProvider } from './state/WallpaperContext';
-import { GridSettingsProvider } from './state/GridSettingsContext';
 import { ThemeProvider } from './state/ThemeContext';
 import DesktopShell from './DesktopShell';
 import type { BlogPostSummary, WallpaperOption } from './types';
@@ -25,15 +24,13 @@ export default function DesktopApp({ posts, wallpapers, desktopIconUrls }: Deskt
     >
       <ThemeProvider>
         <WallpaperProvider wallpapers={wallpapers}>
-          <GridSettingsProvider>
-            <DesktopShell
-              apps={apps}
-              defs={defs}
-              posts={posts}
-              desktopIconUrls={desktopIconUrls}
-              viewport={viewport}
-            />
-          </GridSettingsProvider>
+          <DesktopShell
+            apps={apps}
+            defs={defs}
+            posts={posts}
+            desktopIconUrls={desktopIconUrls}
+            viewport={viewport}
+          />
         </WallpaperProvider>
       </ThemeProvider>
     </WindowManagerProvider>

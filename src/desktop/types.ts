@@ -20,9 +20,9 @@ export interface WindowState extends WindowGeometry {
  * (e.g. `maxWidth`) propagates to both without a hand-maintained mapping.
  */
 export interface AppGeometry {
-  /** Left offset; omit to auto-cascade from the app's registry order. */
+  /** Legacy; placement is computed near viewport center at runtime. */
   defaultX?: number;
-  /** Top offset; omit to auto-cascade from the app's registry order. */
+  /** Legacy; placement is computed near viewport center at runtime. */
   defaultY?: number;
   defaultWidth: number;
   /** Initial height in px; omit for content-driven height. */
@@ -37,8 +37,8 @@ export interface AppGeometry {
 }
 
 /**
- * Resolved window definition. `appToWindowDef` fills the cascade/stacking
- * defaults, so the geometry fields the runtime reads are always concrete.
+ * Resolved window definition. `appToWindowDef` fills stacking defaults;
+ * x/y placement is resolved near the viewport center when a window opens.
  */
 export interface WindowDef extends AppGeometry {
   id: string;
