@@ -61,29 +61,38 @@ export default function Window({
   const [maximizeTransition, setMaximizeTransition] = useState(false);
   const [displayMaximized, setDisplayMaximized] = useState(state.maximized);
   const prefersReduced = useReducedMotion();
+  const canAnimateMaximize = state.open && !state.minimized && !prefersReduced;
+
+  if (!canAnimateMaximize && displayMaximized !== state.maximized) {
+    setDisplayMaximized(state.maximized);
+  }
 
   useLayoutEffect(() => {
+    if (!canAnimateMaximize) {
+      prevMaximizedRef.current = state.maximized;
+      return;
+    }
     if (state.maximized === prevMaximizedRef.current) return;
     prevMaximizedRef.current = state.maximized;
 
-    if (!state.open || state.minimized || prefersReduced) {
-      setDisplayMaximized(state.maximized);
-      return;
-    }
-
-    setMaximizeTransition(true);
     const frame = requestAnimationFrame(() => {
       setDisplayMaximized(state.maximized);
+      setMaximizeTransition(true);
     });
     const timer = window.setTimeout(() => setMaximizeTransition(false), 360);
     return () => {
       cancelAnimationFrame(frame);
       window.clearTimeout(timer);
     };
-  }, [state.maximized, state.open, state.minimized, prefersReduced]);
+  }, [state.maximized, canAnimateMaximize]);
 
   const layoutWidth = useMemo(
-    () => resolveLayoutWidth(defaultWidth, state, minWidth),
+    () =>
+      resolveLayoutWidth(
+        defaultWidth,
+        { width: state.width, userSized: state.userSized },
+        minWidth,
+      ),
     [defaultWidth, state.width, state.userSized, minWidth],
   );
 

@@ -7,10 +7,9 @@ export default function HappyContent() {
         style={{ aspectRatio: '16 / 9' }}
       >
         <iframe
-          className="absolute inset-0 h-full w-full"
+          className="absolute inset-0 h-full w-full border-0"
           src="https://www.youtube.com/embed/I_NkBrDmGxM?si=aOwcN8js3gwgg5vE&controls=0"
           title="YouTube video player"
-          frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />

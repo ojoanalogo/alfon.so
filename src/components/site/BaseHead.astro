@@ -82,16 +82,35 @@ const siteName = 'Alfonso - Ingeniero Backend';
 
 <script>
   function onKonamiCode(cb: () => void) {
-    let input = '';
-    const key = '38384040373937396665';
-    document.addEventListener('keydown', (e) => {
-      input += String(e.keyCode);
-      if (input === key) {
-        cb();
+    const sequence = [
+      'ArrowUp',
+      'ArrowUp',
+      'ArrowDown',
+      'ArrowDown',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowLeft',
+      'ArrowRight',
+      'b',
+      'a',
+    ];
+    let input = 0;
+
+    function matchesKey(event: KeyboardEvent, expected: string) {
+      return event.key === expected || event.key.toLowerCase() === expected;
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (matchesKey(event, sequence[input]!)) {
+        input += 1;
+        if (input === sequence.length) {
+          cb();
+          input = 0;
+        }
         return;
       }
-      if (!key.indexOf(input)) return;
-      input = String(e.keyCode);
+
+      input = matchesKey(event, sequence[0]!) ? 1 : 0;
     });
   }
 

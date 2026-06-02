@@ -335,6 +335,8 @@ export function useWindowManager(
           merged[def.id] = next;
         }
 
+        if (!measureCenter) return merged;
+
         for (const def of defs) {
           if (!def.center) continue;
 
