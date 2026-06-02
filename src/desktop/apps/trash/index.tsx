@@ -19,9 +19,9 @@ export default explorerApp({
         id: entry.id,
         label: entry.name,
         kind: entry.kind,
-        graphic: entry.icon,
-        iconSrc: app ? appIconSrc(app, ctx.iconUrls) : undefined,
+        iconSrc: app ? appIconSrc(app, ctx.iconUrls) : entry.iconSrc,
         isFolder: entry.isFolder,
+        size: entry.size,
         disabled: !entry.appId,
       };
     });

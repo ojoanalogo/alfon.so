@@ -40,7 +40,7 @@ export const NAV_LINKS: NavLink[] = [
 export interface DesktopIconDefinition {
   id: string;
   label: string;
-  /** Asset filename stem in src/assets/icons/desktop. Defaults to id. */
+  /** Icon key registered in DESKTOP_ICON_URLS. Defaults to id. */
   iconKey?: string;
   /** Direct icon URL; overrides iconKey lookup when set. */
   iconUrl?: string;

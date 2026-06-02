@@ -24,9 +24,9 @@ export interface ListItem {
   iconSrc?: string;
   /** Emoji or inline ReactNode — used when no `iconSrc`. */
   graphic?: ReactNode;
-  /** Pre-formatted file size for the list view. */
+  /** Pre-formatted file size for the list view. Takes precedence over the folder "—". */
   size?: string;
-  /** Folders show "—" for size instead of a synthetic file size. */
+  /** Folders show "—" for size instead of a synthetic file size, unless `size` is set. */
   isFolder?: boolean;
   disabled?: boolean;
 }

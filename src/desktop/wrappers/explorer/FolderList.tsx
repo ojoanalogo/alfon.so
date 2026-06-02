@@ -24,7 +24,7 @@ function FolderListHeader() {
 }
 
 function FolderListRow({ item, onOpen }: { item: ListItem; onOpen?: (id: string) => void }) {
-  const size = item.isFolder ? '—' : (item.size ?? fakeFileSize(item.id));
+  const size = item.size ?? (item.isFolder ? '—' : fakeFileSize(item.id));
   const content = (
     <>
       <span className="flex items-center justify-center leading-none" aria-hidden="true">

@@ -1,16 +1,17 @@
-import about from '../../assets/icons/desktop/about.svg?url';
-import blog from '../../assets/icons/desktop/blog.svg?url';
-import notes from '../../assets/icons/desktop/notes.svg?url';
-import games from '../../assets/icons/desktop/games.svg?url';
-import classified from '../../assets/icons/desktop/classified.svg?url';
-import photos from '../../assets/icons/desktop/photos.svg?url';
-import projects from '../../assets/icons/desktop/projects.svg?url';
-import settings from '../../assets/icons/desktop/settings.svg?url';
-import startup from '../../assets/icons/desktop/startup.svg?url';
-import terminal from '../../assets/icons/desktop/terminal.svg?url';
-import trashFull from '../../assets/icons/desktop/trash-full.svg?url';
-import trash from '../../assets/icons/desktop/trash.svg?url';
-import video from '../../assets/icons/desktop/video.svg?url';
+import about from '../../assets/icons/paper.png?url';
+import blog from '../../assets/icons/book-pencil.png?url';
+import notes from '../../assets/icons/notes.png?url';
+import games from '../../assets/icons/games.png?url';
+import classified from '../../assets/icons/attachment.png?url';
+import photos from '../../assets/icons/photos-folder.png?url';
+import projects from '../../assets/icons/open-folder.png?url';
+import settings from '../../assets/icons/settings.png?url';
+import startup from '../../assets/icons/rocket.png?url';
+import terminal from '../../assets/icons/terminal.png?url';
+import video from '../../assets/icons/video.png?url';
+// Trashcan keeps the original SVG icons.
+import trashFull from '../../assets/icons/trash-full.svg?url';
+import trash from '../../assets/icons/trash.svg?url';
 import type { DesktopIconDefinition, DesktopIcon } from '@/config';
 
 export const DESKTOP_ICON_URLS = {
@@ -37,7 +38,7 @@ export function resolveIconUrl(urls: DesktopIconUrls, key: string): string {
   if (!url) {
     if (import.meta.env.DEV) {
       throw new Error(
-        `[desktopIcons] Unknown icon key "${key}". Add the SVG to src/assets/icons/desktop/ and register it in DESKTOP_ICON_URLS.`,
+        `[desktopIcons] Unknown icon key "${key}". Add the icon to src/assets/icons/ and register it in DESKTOP_ICON_URLS.`,
       );
     }
     return '';
