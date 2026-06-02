@@ -40,7 +40,10 @@ export function useWindowCenterLayout({
         return;
       }
 
-      const rect = el.getBoundingClientRect();
+      const node = rootRef.current;
+      if (!node) return;
+
+      const rect = node.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
 
       const vw = window.innerWidth;
