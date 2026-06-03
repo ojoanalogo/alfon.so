@@ -1,7 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
+import { useEffect } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Window from './Window';
 import { makeWindowChromeProps, makeWindowState } from '@test/factories';
+
+function Probe({ onMount }: { onMount: () => void }) {
+  useEffect(() => {
+    onMount();
+  }, [onMount]);
+  return <p>probe-body</p>;
+}
 
 function renderWindow(overrides = {}, { title = 'My Window', children = <p>hello body</p> } = {}) {
   const props = makeWindowChromeProps({
@@ -231,6 +239,57 @@ describe('Window - maximize display', () => {
     const root = container.querySelector('.desktop-window') as HTMLElement;
     expect(root.style.left).toBe('120px');
     expect(root.style.width).toBe('600px');
+  });
+});
+
+describe('Window - body mounting (lazy until first open, then kept mounted)', () => {
+  it('does not mount the body for a window that has never been opened', () => {
+    const onMount = vi.fn();
+    renderWindow(
+      { state: makeWindowState({ open: false }) },
+      { children: <Probe onMount={onMount} /> },
+    );
+    expect(screen.queryByText('probe-body')).toBeNull();
+    expect(onMount).not.toHaveBeenCalled();
+  });
+
+  it('mounts the body once the window is open', () => {
+    const onMount = vi.fn();
+    renderWindow(
+      { state: makeWindowState({ open: true }) },
+      { children: <Probe onMount={onMount} /> },
+    );
+    expect(screen.getByText('probe-body')).toBeTruthy();
+    expect(onMount).toHaveBeenCalledOnce();
+  });
+
+  it('keeps the body mounted across close then reopen (state survives)', () => {
+    const onMount = vi.fn();
+    const body = <Probe onMount={onMount} />;
+    const open = makeWindowChromeProps({ state: makeWindowState({ id: 'w', open: true }) });
+    const closed = makeWindowChromeProps({ state: makeWindowState({ id: 'w', open: false }) });
+
+    const { rerender } = render(
+      <Window title="t" {...open}>
+        {body}
+      </Window>,
+    );
+    expect(onMount).toHaveBeenCalledOnce();
+
+    rerender(
+      <Window title="t" {...closed}>
+        {body}
+      </Window>,
+    );
+    rerender(
+      <Window title="t" {...open}>
+        {body}
+      </Window>,
+    );
+
+    // Mounted exactly once — not torn down on close, not remounted on reopen.
+    expect(onMount).toHaveBeenCalledOnce();
+    expect(screen.getByText('probe-body')).toBeTruthy();
   });
 });
 

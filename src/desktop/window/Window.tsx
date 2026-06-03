@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
@@ -59,6 +59,15 @@ export default function Window({
   center = false,
 }: WindowProps) {
   const rootRef = useRef<HTMLElement | null>(null);
+
+  // Don't mount an app's body until its window is first opened, then keep it
+  // mounted so per-app state (terminal history, unsaved notes) survives a
+  // close+reopen. Render-phase latch with an equality bail-out.
+  const [wasOpened, setWasOpened] = useState(state.open);
+  if (state.open && !wasOpened) {
+    setWasOpened(true);
+  }
+
   const prefersReduced = useReducedMotion();
   const canAnimateMaximize = state.open && !state.minimized && !prefersReduced;
   const { displayMaximized, maximizeTransition } = useMaximizeAnimation(
@@ -226,7 +235,7 @@ export default function Window({
         </div>
 
         <div className={['card-body', bodyClassName].filter(Boolean).join(' ')}>
-          {children}
+          {wasOpened ? children : null}
           {!focused && interactive && (
             <div
               className="absolute inset-0 z-[2] cursor-default"
