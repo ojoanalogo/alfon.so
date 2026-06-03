@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { defineApp, type DefineAppInput } from '@desktop/wrappers';
-import type { WindowChromeProps } from '@desktop/wrappers/types';
+import { defineApp, type DefineAppInput } from '../defineApp';
+import type { WindowChromeProps } from '../types';
 
 type GameAppInput<Id extends string> = Omit<DefineAppInput<Id>, 'body'> & {
   body: (props: { active: boolean }) => ReactNode;

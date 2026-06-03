@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { gameApp } from '../gameApp';
+import { gameApp } from '@desktop/wrappers';
 import AppLoading from '../../AppLoading';
 
 const PongGame = lazy(() => import('./PongGame'));
