@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SOCIAL_LINKS } from '@/config';
-import { postDateFormatter, POST_DATE_MIN_WIDTH } from '@/config/postFormatting';
+import { postDateFormatter } from '@/config/postFormatting';
 import {
   InfoRow,
   ExternalLink,
@@ -138,13 +138,19 @@ describe('PostListItem', () => {
     expect(link.getAttribute('href')).toBe('/blog/hello-world/');
   });
 
-  it('renders the formatted publish date with a datetime attribute', () => {
+  it('renders the formatted publish date — small and muted — with a datetime attribute', () => {
     const { container } = render(<PostListItem {...baseProps} />);
     const time = container.querySelector('time') as HTMLTimeElement;
     const date = new Date(baseProps.publishDate);
     expect(time.textContent).toBe(postDateFormatter.format(date));
     expect(time.getAttribute('datetime')).toBe(date.toISOString());
-    expect(time.style.minWidth).toBe(`${POST_DATE_MIN_WIDTH}px`);
+    expect(time.className).toContain('text-xs');
+    expect(time.className).toContain('text-muted');
+  });
+
+  it('separates the date and title with a dot', () => {
+    const { container } = render(<PostListItem {...baseProps} />);
+    expect(container.textContent).toContain('·');
   });
 
   it('calls onOpen and prevents default on a plain left click', () => {

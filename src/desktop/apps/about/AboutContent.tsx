@@ -1,11 +1,24 @@
-import { Divider, ExternalLink, InfoRow, SocialMediaIcons } from '@desktop/ui/parts';
+import { Divider, ExternalLink, InfoRow, PostListItem, SocialMediaIcons } from '@desktop/ui/parts';
+import type { BlogPostSummary } from '../../types';
 import { TECH_STACK } from '../projects/data';
 
 const ABOUT_LINK_CLASS = 'text-link hover:underline focus:outline-none';
 
-export default function AboutContent() {
+/** How many recent posts to surface in the About card. */
+const MAX_ABOUT_POSTS = 3;
+
+interface AboutContentProps {
+  /** Latest-first published posts (already sorted upstream). */
+  posts?: BlogPostSummary[];
+  /** Opens a post in the desktop; omit on the static (mobile) view to link out. */
+  onOpenPost?: (slug: string) => void;
+}
+
+export default function AboutContent({ posts = [], onOpenPost }: AboutContentProps) {
+  const latestPosts = posts.slice(0, MAX_ABOUT_POSTS);
+
   return (
-    <div className="space-y-4 text-xs sm:space-y-2">
+    <div className="mx-auto max-w-2xl space-y-4 text-xs sm:space-y-2">
       <div className="mb-4 flex items-center gap-3">
         {/* Profile photo placeholder — swap the emoji for an <img> when the photo is ready */}
         <div
@@ -112,6 +125,26 @@ export default function AboutContent() {
           </div>
         </div>
       </div>
+
+      {latestPosts.length > 0 && (
+        <>
+          <Divider className="my-2" />
+          <div className="flex flex-col gap-1.5">
+            <span className="text-muted">últimos posts</span>
+            <ul className="m-0 flex list-none flex-col gap-1 p-0" aria-label="Últimos posts">
+              {latestPosts.map((post) => (
+                <PostListItem
+                  key={post.slug}
+                  title={post.title}
+                  slug={post.slug}
+                  publishDate={post.publishDate}
+                  onOpen={onOpenPost ? () => onOpenPost(post.slug) : undefined}
+                />
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { SOCIAL_LINKS, type SocialPlatform } from '@/config';
-import { postDateFormatter, POST_DATE_MIN_WIDTH } from '@/config/postFormatting';
+import { postDateFormatter } from '@/config/postFormatting';
 
 export function InfoRow({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -112,13 +112,16 @@ export function PostListItem({
 }) {
   const date = new Date(publishDate);
   return (
-    <li className="flex flex-col gap-x-2 sm:flex-row">
-      <div className="flex flex-row items-center gap-2 text-sm">
-        <time dateTime={date.toISOString()} style={{ minWidth: `${POST_DATE_MIN_WIDTH}px` }}>
+    <li>
+      <div className="flex flex-row items-baseline gap-1.5 text-sm">
+        <time dateTime={date.toISOString()} className="shrink-0 text-xs text-muted">
           {postDateFormatter.format(date)}
         </time>
+        <span aria-hidden="true" className="text-muted">
+          ·
+        </span>
         <a
-          className="hover:text-accent hover:underline"
+          className="min-w-0 hover:text-accent hover:underline"
           href={`/blog/${slug}/`}
           onClick={(event) => {
             if (!onOpen || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) {

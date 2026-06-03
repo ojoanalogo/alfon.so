@@ -156,3 +156,6 @@ vite.config.ts.timestamp-*
 
 # Superpowers
 #superpowers/
+
+# LLM stuff
+.claude/workflows

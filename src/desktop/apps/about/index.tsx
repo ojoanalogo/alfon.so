@@ -17,5 +17,5 @@ export default defineApp({
   },
   desktopIcon: { label: 'about', tooltip: 'Mi info' },
   taskbarTooltip: 'about.html',
-  body: () => createElement(AboutContent),
+  body: (ctx) => createElement(AboutContent, { posts: ctx.posts, onOpenPost: ctx.onOpenPost }),
 });
