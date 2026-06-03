@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Modal from '../../ui/Modal';
+import Dialog from '../../ui/Dialog';
 import { WINDOW_ACTION_BTN, WINDOW_ACTION_BTN_DESTRUCTIVE } from '@/styles/tokens';
 import type { TrashController } from '@desktop/wrappers';
 
@@ -29,7 +29,7 @@ export default function TrashFooter({ trash }: TrashFooterProps) {
       </div>
 
       {confirmEmpty && (
-        <Modal
+        <Dialog
           title="Vaciar papelera"
           confirmLabel="Vaciar"
           destructive
@@ -40,7 +40,7 @@ export default function TrashFooter({ trash }: TrashFooterProps) {
             ¿Eliminar permanentemente {items.length} icono{items.length === 1 ? '' : 's'}? Esta
             acción no se puede deshacer.
           </p>
-        </Modal>
+        </Dialog>
       )}
     </>
   );

@@ -4,7 +4,7 @@ import { marked } from 'marked';
 import { PROSE_CLASS_BASE } from '@/styles/proseConfig';
 import { WINDOW_ACTION_BTN, WINDOW_ACTION_BTN_DESTRUCTIVE } from '@/styles/tokens';
 import EmptyState from '../../ui/EmptyState';
-import Modal from '../../ui/Modal';
+import Dialog from '../../ui/Dialog';
 import type { Note } from './types';
 
 const ICON = 'h-3.5 w-3.5 shrink-0';
@@ -128,7 +128,7 @@ export default function NotesEditor({
       )}
 
       {confirmDelete && (
-        <Modal
+        <Dialog
           title="Eliminar nota"
           confirmLabel="Eliminar"
           destructive
@@ -138,7 +138,7 @@ export default function NotesEditor({
           <p>
             ¿Eliminar &ldquo;{displayTitle(note.title)}&rdquo;? Esta acción no se puede deshacer.
           </p>
-        </Modal>
+        </Dialog>
       )}
     </div>
   );
