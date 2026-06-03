@@ -42,9 +42,7 @@ describe('NotesEditor', () => {
     it('renders the empty prompt and create button instead of an editor', () => {
       const { container } = setup({ note: null });
       expect(
-        screen.getByText(
-          'Selecciona una nota o crea una nueva para empezar a escribir markdown.',
-        ),
+        screen.getByText('Selecciona una nota o crea una nueva para empezar a escribir markdown.'),
       ).toBeTruthy();
       expect(container.querySelector('.notes-editor__toolbar')).toBeNull();
       expect(container.querySelector('textarea')).toBeNull();
@@ -138,7 +136,10 @@ describe('NotesEditor', () => {
     });
 
     it('opens the confirm modal and fires onDelete with the note id on confirm', () => {
-      const { onDelete } = setup({ note: makeNote({ id: 'del-1', title: 'Doomed' }), mode: 'preview' });
+      const { onDelete } = setup({
+        note: makeNote({ id: 'del-1', title: 'Doomed' }),
+        mode: 'preview',
+      });
       // toolbar "Eliminar" button opens the modal
       fireEvent.click(screen.getByText('Eliminar'));
       expect(screen.getByText('Eliminar nota')).toBeTruthy();

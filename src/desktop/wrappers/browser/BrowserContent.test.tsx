@@ -18,9 +18,7 @@ const APP_ID = 'site';
 
 describe('BrowserContent', () => {
   it('renders the empty-state prompt when there is no url', () => {
-    const { container } = render(
-      <BrowserContent appId={APP_ID} browsers={makeBrowsers()} />,
-    );
+    const { container } = render(<BrowserContent appId={APP_ID} browsers={makeBrowsers()} />);
     expect(
       screen.getByText('escribe una URL en la barra de arriba y presiona enter.'),
     ).toBeTruthy();
@@ -29,10 +27,7 @@ describe('BrowserContent', () => {
 
   it('renders an iframe pointing at the current url', () => {
     const { container } = render(
-      <BrowserContent
-        appId={APP_ID}
-        browsers={makeBrowsers({ url: 'https://example.com' })}
-      />,
+      <BrowserContent appId={APP_ID} browsers={makeBrowsers({ url: 'https://example.com' })} />,
     );
     const iframe = container.querySelector('iframe') as HTMLIFrameElement;
     expect(iframe).toBeTruthy();
@@ -41,10 +36,7 @@ describe('BrowserContent', () => {
 
   it('titles the iframe with the current url', () => {
     const { container } = render(
-      <BrowserContent
-        appId={APP_ID}
-        browsers={makeBrowsers({ url: 'https://example.com' })}
-      />,
+      <BrowserContent appId={APP_ID} browsers={makeBrowsers({ url: 'https://example.com' })} />,
     );
     const iframe = container.querySelector('iframe') as HTMLIFrameElement;
     expect(iframe.getAttribute('title')).toBe('web browser — https://example.com');
@@ -52,10 +44,7 @@ describe('BrowserContent', () => {
 
   it('applies the sandbox and referrer-policy hardening attributes', () => {
     const { container } = render(
-      <BrowserContent
-        appId={APP_ID}
-        browsers={makeBrowsers({ url: 'https://example.com' })}
-      />,
+      <BrowserContent appId={APP_ID} browsers={makeBrowsers({ url: 'https://example.com' })} />,
     );
     const iframe = container.querySelector('iframe') as HTMLIFrameElement;
     expect(iframe.getAttribute('sandbox')).toBe(
@@ -98,10 +87,7 @@ describe('BrowserContent', () => {
 
   it('still renders an iframe for an embeddable host', () => {
     const { container } = render(
-      <BrowserContent
-        appId={APP_ID}
-        browsers={makeBrowsers({ url: 'https://ojoanalogo.com' })}
-      />,
+      <BrowserContent appId={APP_ID} browsers={makeBrowsers({ url: 'https://ojoanalogo.com' })} />,
     );
     expect(container.querySelector('iframe')).toBeTruthy();
   });

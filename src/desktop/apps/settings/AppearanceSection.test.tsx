@@ -69,7 +69,9 @@ describe('AppearanceSection', () => {
       expect(screen.getByRole('button', { name: wallpaper.label })).toBeTruthy();
     }
 
-    const thumbs = Array.from(container.querySelectorAll('img')).map((img) => img.getAttribute('src'));
+    const thumbs = Array.from(container.querySelectorAll('img')).map((img) =>
+      img.getAttribute('src'),
+    );
     expect(thumbs).toContain('/wp/4-thumb.jpg');
   });
 

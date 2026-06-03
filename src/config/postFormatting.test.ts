@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  POST_DATE_MIN_WIDTH,
-  postDateFormatter,
-  postLongDateFormatter,
-} from './postFormatting';
+import { POST_DATE_MIN_WIDTH, postDateFormatter, postLongDateFormatter } from './postFormatting';
 
 describe('postFormatting', () => {
   describe('POST_DATE_MIN_WIDTH', () => {

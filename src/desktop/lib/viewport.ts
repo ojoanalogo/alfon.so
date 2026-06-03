@@ -113,7 +113,8 @@ export function resolveLayoutWidth(
 ): number {
   if (state.userSized) return state.width;
   const vw =
-    viewportWidth ?? (typeof window !== 'undefined' ? window.innerWidth : defaultWidth + EDGE_MARGIN * 2);
+    viewportWidth ??
+    (typeof window !== 'undefined' ? window.innerWidth : defaultWidth + EDGE_MARGIN * 2);
   const available = Math.max(240, vw - EDGE_MARGIN * 2);
   return Math.max(minWidth, Math.min(defaultWidth, available));
 }

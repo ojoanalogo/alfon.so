@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { isMobileViewport, minWidthForDef, MIN_WIDTH, MOBILE_BREAKPOINT_PX } from './layoutConstants';
+import {
+  isMobileViewport,
+  minWidthForDef,
+  MIN_WIDTH,
+  MOBILE_BREAKPOINT_PX,
+} from './layoutConstants';
 import type { WindowDef } from '../types';
 
 function makeDef(overrides: Partial<WindowDef> = {}): WindowDef {

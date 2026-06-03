@@ -51,7 +51,10 @@ describe('useAppContext', () => {
   });
 
   it('exposes iconUrls from the desktopIconUrls param', () => {
-    const desktopIconUrls: DesktopIconUrls = { blog: '/blog.png', notes: '/notes.png' } as DesktopIconUrls;
+    const desktopIconUrls: DesktopIconUrls = {
+      blog: '/blog.png',
+      notes: '/notes.png',
+    } as DesktopIconUrls;
     const params = makeParams({ desktopIconUrls });
     const { result } = renderHook(() => useAppContext(params));
 
@@ -129,10 +132,9 @@ describe('useAppContext', () => {
     const postsB = [makeBlogPost({ slug: 'b' })];
     const base = makeParams();
 
-    const { result, rerender } = renderHook(
-      ({ posts }) => useAppContext({ ...base, posts }),
-      { initialProps: { posts: postsA } },
-    );
+    const { result, rerender } = renderHook(({ posts }) => useAppContext({ ...base, posts }), {
+      initialProps: { posts: postsA },
+    });
     const first = result.current;
 
     rerender({ posts: postsB });

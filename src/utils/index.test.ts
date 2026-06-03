@@ -32,25 +32,16 @@ describe('sortMDByDate', () => {
   });
 
   it('returns a new sorted array without mutating the input', () => {
-    const posts = [
-      entry('2024-01-01T00:00:00.000Z'),
-      entry('2024-05-01T00:00:00.000Z'),
-    ];
+    const posts = [entry('2024-01-01T00:00:00.000Z'), entry('2024-05-01T00:00:00.000Z')];
 
     const result = sortMDByDate(posts);
 
     // A fresh array, not the same reference.
     expect(result).not.toBe(posts);
     // The original array keeps its original order.
-    expect(dates(posts)).toEqual([
-      '2024-01-01T00:00:00.000Z',
-      '2024-05-01T00:00:00.000Z',
-    ]);
+    expect(dates(posts)).toEqual(['2024-01-01T00:00:00.000Z', '2024-05-01T00:00:00.000Z']);
     // The returned array is sorted newest-first.
-    expect(dates(result)).toEqual([
-      '2024-05-01T00:00:00.000Z',
-      '2024-01-01T00:00:00.000Z',
-    ]);
+    expect(dates(result)).toEqual(['2024-05-01T00:00:00.000Z', '2024-01-01T00:00:00.000Z']);
   });
 
   it('returns an empty array when called with no argument (default param)', () => {
@@ -126,9 +117,6 @@ describe('sortMDByDate', () => {
     const result = sortMDByDate(posts);
 
     expect(result).toHaveLength(2);
-    expect(dates(result)).toEqual([
-      '2024-04-04T00:00:00.000Z',
-      '2024-04-04T00:00:00.000Z',
-    ]);
+    expect(dates(result)).toEqual(['2024-04-04T00:00:00.000Z', '2024-04-04T00:00:00.000Z']);
   });
 });

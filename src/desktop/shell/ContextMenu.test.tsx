@@ -39,12 +39,7 @@ describe('ContextMenu', () => {
     const onSelect = vi.fn();
     const onClose = vi.fn();
     render(
-      <ContextMenu
-        x={0}
-        y={0}
-        items={[makeItem({ label: 'Go', onSelect })]}
-        onClose={onClose}
-      />,
+      <ContextMenu x={0} y={0} items={[makeItem({ label: 'Go', onSelect })]} onClose={onClose} />,
     );
 
     fireEvent.click(screen.getByText('Go'));
@@ -107,10 +102,7 @@ describe('ContextMenu', () => {
       <ContextMenu
         x={0}
         y={0}
-        items={[
-          makeItem({ label: 'First' }),
-          makeItem({ label: 'Second', separatorBefore: true }),
-        ]}
+        items={[makeItem({ label: 'First' }), makeItem({ label: 'Second', separatorBefore: true })]}
         onClose={vi.fn()}
       />,
     );
@@ -200,9 +192,7 @@ describe('ContextMenu', () => {
 
   it('removes its window listeners on unmount', () => {
     const onClose = vi.fn();
-    const { unmount } = render(
-      <ContextMenu x={0} y={0} items={[makeItem()]} onClose={onClose} />,
-    );
+    const { unmount } = render(<ContextMenu x={0} y={0} items={[makeItem()]} onClose={onClose} />);
 
     unmount();
     fireEvent.keyDown(window, { key: 'Escape' });

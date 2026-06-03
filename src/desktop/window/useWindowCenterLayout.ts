@@ -61,7 +61,9 @@ export function useWindowCenterLayout({
       const nextY = Math.round(Math.max(EDGE_MARGIN, (vh - TASKBAR_HEIGHT - rect.height) / 2));
       const roundedWidth = Math.round(rect.width);
 
-      setDisplayPos((prev) => (prev.x === nextX && prev.y === nextY ? prev : { x: nextX, y: nextY }));
+      setDisplayPos((prev) =>
+        prev.x === nextX && prev.y === nextY ? prev : { x: nextX, y: nextY },
+      );
 
       const last = lastSentRef.current;
       if (!last || last.x !== nextX || last.y !== nextY || last.width !== roundedWidth) {

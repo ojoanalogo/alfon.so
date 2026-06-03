@@ -140,7 +140,10 @@ describe('gameApp', () => {
     expect(seen.at(-1)).toBe(true);
 
     rerender(
-      app.render(ctx, makeWindowChromeProps({ focused: false, state: makeWindowState({ open: true }) })),
+      app.render(
+        ctx,
+        makeWindowChromeProps({ focused: false, state: makeWindowState({ open: true }) }),
+      ),
     );
     expect(seen.at(-1)).toBe(false);
     expect(screen.getByText('paused')).toBeTruthy();

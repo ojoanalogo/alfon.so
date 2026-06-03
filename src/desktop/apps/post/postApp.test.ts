@@ -79,10 +79,7 @@ describe('createPostApps', () => {
   });
 
   it('sets a fixed default width and an index-offset z-order', () => {
-    const posts = [
-      makeBlogPost({ slug: 'first' }),
-      makeBlogPost({ slug: 'second' }),
-    ];
+    const posts = [makeBlogPost({ slug: 'first' }), makeBlogPost({ slug: 'second' })];
     const apps = createPostApps(posts);
     expect(apps[0].geometry.defaultWidth).toBe(640);
     expect(apps[0].geometry.initialZ).toBe(20);

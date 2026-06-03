@@ -14,7 +14,11 @@ const VH = 768;
 
 function setViewport(width: number, height: number) {
   Object.defineProperty(window, 'innerWidth', { value: width, configurable: true, writable: true });
-  Object.defineProperty(window, 'innerHeight', { value: height, configurable: true, writable: true });
+  Object.defineProperty(window, 'innerHeight', {
+    value: height,
+    configurable: true,
+    writable: true,
+  });
 }
 
 function defs(extra: Partial<WindowDef>[] = []): WindowDef[] {
@@ -384,7 +388,12 @@ describe('useWindowManager - relayoutToViewport', () => {
   });
 
   it('does not throw and respects userSized for centered windows when measuring', () => {
-    const centered = makeWindowDef({ id: 'c', center: true, defaultWidth: 500, defaultHeight: 350 });
+    const centered = makeWindowDef({
+      id: 'c',
+      center: true,
+      defaultWidth: 500,
+      defaultHeight: 350,
+    });
     const { result } = renderManager([centered]);
     // Provide a DOM element so the measure branch runs.
     const el = document.createElement('div');
@@ -448,7 +457,12 @@ describe('useWindowManager - applyDefaultOpenLayout', () => {
   });
 
   it('sizes a centered window without moving it', () => {
-    const centered = makeWindowDef({ id: 'c', center: true, defaultWidth: 500, defaultHeight: 350 });
+    const centered = makeWindowDef({
+      id: 'c',
+      center: true,
+      defaultWidth: 500,
+      defaultHeight: 350,
+    });
     const { result } = renderManager([centered]);
     act(() => result.current.open('c'));
     const { x, y } = result.current.windows.c;

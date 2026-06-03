@@ -51,10 +51,7 @@ describe('ListItemIcon', () => {
 
   it('renders a JSX graphic node', () => {
     const { container } = render(
-      <ListItemIcon
-        item={item({ graphic: <span data-testid="custom">node</span> })}
-        size={16}
-      />,
+      <ListItemIcon item={item({ graphic: <span data-testid="custom">node</span> })} size={16} />,
     );
     expect(container.querySelector('[data-testid="custom"]')).toBeTruthy();
   });

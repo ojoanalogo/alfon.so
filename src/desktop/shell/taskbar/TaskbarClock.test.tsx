@@ -42,8 +42,9 @@ describe('TaskbarClock', () => {
     vi.setSystemTime(new Date('2026-06-02T13:37:00.000'));
 
     const { container } = render(<TaskbarClock />);
-    const initial = (container.querySelector('time') as HTMLTimeElement).querySelector('span')!
-      .textContent;
+    const initial = (container.querySelector('time') as HTMLTimeElement).querySelector(
+      'span',
+    )!.textContent;
 
     // advance to 13:38 — the setTimeout(msUntilNextMinute) should fire and tick().
     // advanceTimersByTime also advances the fake Date clock, so new Date() reads 13:38.
@@ -51,8 +52,9 @@ describe('TaskbarClock', () => {
       vi.advanceTimersByTime(60_000);
     });
 
-    const updated = (container.querySelector('time') as HTMLTimeElement).querySelector('span')!
-      .textContent;
+    const updated = (container.querySelector('time') as HTMLTimeElement).querySelector(
+      'span',
+    )!.textContent;
 
     expect(updated).not.toBe(initial);
     expect(updated).toBe(timeFormatter.format(new Date('2026-06-02T13:38:00.000')));
@@ -73,8 +75,9 @@ describe('TaskbarClock', () => {
       vi.advanceTimersByTime(60_000);
     });
 
-    const text = (container.querySelector('time') as HTMLTimeElement).querySelector('span')!
-      .textContent;
+    const text = (container.querySelector('time') as HTMLTimeElement).querySelector(
+      'span',
+    )!.textContent;
 
     expect(text).toBe(timeFormatter.format(new Date('2026-06-02T13:39:00.000')));
   });

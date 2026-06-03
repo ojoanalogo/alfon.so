@@ -32,9 +32,7 @@ describe('SettingsBody', () => {
   });
 
   it('omits the heading and aria-labelledby when a section has no title', () => {
-    const sections: SettingsSection[] = [
-      { id: 'plain', render: () => <p>solo-cuerpo</p> },
-    ];
+    const sections: SettingsSection[] = [{ id: 'plain', render: () => <p>solo-cuerpo</p> }];
 
     const { container } = render(<SettingsBody sections={sections} />);
 

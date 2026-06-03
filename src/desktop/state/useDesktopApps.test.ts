@@ -63,10 +63,7 @@ describe('useDesktopApps', () => {
 
     // Post apps come after all registry-derived apps.
     const firstPostIndex = ids.findIndex((id) => id.startsWith('post:'));
-    const lastNonPostIndex = ids.reduce(
-      (acc, id, i) => (id.startsWith('post:') ? acc : i),
-      -1,
-    );
+    const lastNonPostIndex = ids.reduce((acc, id, i) => (id.startsWith('post:') ? acc : i), -1);
     expect(firstPostIndex).toBeGreaterThan(lastNonPostIndex);
   });
 
@@ -103,10 +100,9 @@ describe('useDesktopApps', () => {
 
   it('memoizes apps and defs across rerenders with the same posts array', () => {
     const posts = [makeBlogPost({ slug: 'hello' })];
-    const { result, rerender } = renderHook(
-      ({ posts }) => useDesktopApps(posts),
-      { initialProps: { posts } },
-    );
+    const { result, rerender } = renderHook(({ posts }) => useDesktopApps(posts), {
+      initialProps: { posts },
+    });
     const firstApps = result.current.apps;
     const firstDefs = result.current.defs;
 
@@ -118,10 +114,9 @@ describe('useDesktopApps', () => {
   it('recomputes apps and defs when the posts array changes', () => {
     const postsA = [makeBlogPost({ slug: 'a' })];
     const postsB = [makeBlogPost({ slug: 'b' })];
-    const { result, rerender } = renderHook(
-      ({ posts }) => useDesktopApps(posts),
-      { initialProps: { posts: postsA } },
-    );
+    const { result, rerender } = renderHook(({ posts }) => useDesktopApps(posts), {
+      initialProps: { posts: postsA },
+    });
     const firstApps = result.current.apps;
 
     rerender({ posts: postsB });

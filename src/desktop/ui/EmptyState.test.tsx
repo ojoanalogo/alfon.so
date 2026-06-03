@@ -10,10 +10,7 @@ describe('EmptyState', () => {
 
   it('renders the icon when provided', () => {
     const { container } = render(
-      <EmptyState
-        description="No items"
-        icon={<svg data-testid="empty-icon" />}
-      />,
+      <EmptyState description="No items" icon={<svg data-testid="empty-icon" />} />,
     );
     expect(container.querySelector('[data-testid="empty-icon"]')).toBeTruthy();
   });
@@ -25,12 +22,7 @@ describe('EmptyState', () => {
   });
 
   it('renders the action node when provided', () => {
-    render(
-      <EmptyState
-        description="No items"
-        action={<button type="button">Retry</button>}
-      />,
-    );
+    render(<EmptyState description="No items" action={<button type="button">Retry</button>} />);
     expect(screen.getByText('Retry')).toBeTruthy();
   });
 
@@ -72,23 +64,17 @@ describe('EmptyState', () => {
   });
 
   it('gives the icon wrapper svg sizing classes only in non-compact mode', () => {
-    const { container: normal } = render(
-      <EmptyState description="x" icon={<svg />} />,
-    );
+    const { container: normal } = render(<EmptyState description="x" icon={<svg />} />);
     const normalWrapper = normal.querySelector('p')!.previousElementSibling as HTMLElement;
     expect(normalWrapper.className).toContain('[&_svg]:h-10');
 
-    const { container: compact } = render(
-      <EmptyState description="x" icon={<svg />} compact />,
-    );
+    const { container: compact } = render(<EmptyState description="x" icon={<svg />} compact />);
     const compactWrapper = compact.querySelector('p')!.previousElementSibling as HTMLElement;
     expect(compactWrapper.className).toBe('text-muted');
   });
 
   it('appends an extra className when provided', () => {
-    const { container } = render(
-      <EmptyState description="x" className="custom-cls" />,
-    );
+    const { container } = render(<EmptyState description="x" className="custom-cls" />);
     const root = container.querySelector('.empty-state') as HTMLElement;
     expect(root.className).toContain('custom-cls');
   });

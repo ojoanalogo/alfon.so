@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  DEFAULT_WALLPAPER_ID,
-  resolveWallpaperId,
-  defaultWallpaperId,
-} from './wallpapers';
+import { DEFAULT_WALLPAPER_ID, resolveWallpaperId, defaultWallpaperId } from './wallpapers';
 
 describe('DEFAULT_WALLPAPER_ID', () => {
   it('is "4"', () => {

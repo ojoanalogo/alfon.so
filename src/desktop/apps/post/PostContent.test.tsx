@@ -76,7 +76,11 @@ describe('PostContent', () => {
   });
 
   it('falls back to the title for hero alt when heroImageAlt is missing', () => {
-    const post = makeBlogPost({ heroImageSrc: '/hero.jpg', heroImageAlt: undefined, title: 'Fallback Title' });
+    const post = makeBlogPost({
+      heroImageSrc: '/hero.jpg',
+      heroImageAlt: undefined,
+      title: 'Fallback Title',
+    });
     const { container } = render(<PostContent post={post} />);
     expect(container.querySelector('img')?.getAttribute('alt')).toBe('Fallback Title');
   });

@@ -16,11 +16,7 @@ describe('DEFAULT_GRID_SETTINGS', () => {
   });
 
   it('exposes exactly the three known keys', () => {
-    expect(Object.keys(DEFAULT_GRID_SETTINGS).sort()).toEqual([
-      'iconSize',
-      'sortBy',
-      'spacing',
-    ]);
+    expect(Object.keys(DEFAULT_GRID_SETTINGS).sort()).toEqual(['iconSize', 'sortBy', 'spacing']);
   });
 
   it('uses values that are valid keys of the lookup maps', () => {

@@ -34,7 +34,10 @@ describe('NotesApp', () => {
   });
 
   it('hydrates persisted notes into the sidebar list', () => {
-    seed([makeNote({ id: 'a', title: 'Persisted A' }), makeNote({ id: 'b', title: 'Persisted B' })]);
+    seed([
+      makeNote({ id: 'a', title: 'Persisted A' }),
+      makeNote({ id: 'b', title: 'Persisted B' }),
+    ]);
     render(<NotesApp />);
     expect(screen.getByText('Persisted A')).toBeTruthy();
     expect(screen.getByText('Persisted B')).toBeTruthy();

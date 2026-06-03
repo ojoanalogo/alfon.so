@@ -58,7 +58,12 @@ describe('defineApp', () => {
       body: () => <p>body content here</p>,
     });
 
-    render(app.render(makeAppContext(), makeWindowChromeProps({ state: makeWindowState({ open: true }) })));
+    render(
+      app.render(
+        makeAppContext(),
+        makeWindowChromeProps({ state: makeWindowState({ open: true }) }),
+      ),
+    );
 
     expect(screen.getByText('body content here')).toBeTruthy();
   });
@@ -72,7 +77,10 @@ describe('defineApp', () => {
     });
 
     const { container } = render(
-      app.render(makeAppContext(), makeWindowChromeProps({ state: makeWindowState({ open: true }) })),
+      app.render(
+        makeAppContext(),
+        makeWindowChromeProps({ state: makeWindowState({ open: true }) }),
+      ),
     );
 
     // formatWindowTitle uppercases the first letter -> "Navegador"
@@ -128,7 +136,12 @@ describe('defineApp', () => {
       body: () => <p>body</p>,
     });
 
-    render(app.render(makeAppContext(), makeWindowChromeProps({ state: makeWindowState({ open: true }) })));
+    render(
+      app.render(
+        makeAppContext(),
+        makeWindowChromeProps({ state: makeWindowState({ open: true }) }),
+      ),
+    );
 
     expect(screen.getByText('custom-chrome')).toBeTruthy();
     expect(screen.getByText('body')).toBeTruthy();
@@ -144,7 +157,10 @@ describe('defineApp', () => {
     });
 
     const { container } = render(
-      app.render(makeAppContext(), makeWindowChromeProps({ state: makeWindowState({ open: true }) })),
+      app.render(
+        makeAppContext(),
+        makeWindowChromeProps({ state: makeWindowState({ open: true }) }),
+      ),
     );
 
     expect(container.querySelector('.desktop-window--special')).toBeTruthy();
@@ -168,7 +184,12 @@ describe('defineApp', () => {
       },
     });
 
-    render(app.render(makeAppContext(), makeWindowChromeProps({ state: makeWindowState({ open: true }) })));
+    render(
+      app.render(
+        makeAppContext(),
+        makeWindowChromeProps({ state: makeWindowState({ open: true }) }),
+      ),
+    );
 
     // The default <Window> is bypassed in favor of the seam's shell.
     expect(screen.getByTestId('custom-shell')).toBeTruthy();

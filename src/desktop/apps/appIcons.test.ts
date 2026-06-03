@@ -47,10 +47,7 @@ describe('appsToIconDefinitions', () => {
   });
 
   it('filters out apps whose desktopIcon === false', () => {
-    const apps = [
-      makeApp({ id: 'about' }),
-      makeApp({ id: 'blog', desktopIcon: false }),
-    ];
+    const apps = [makeApp({ id: 'about' }), makeApp({ id: 'blog', desktopIcon: false })];
     const defs = appsToIconDefinitions(apps);
     expect(defs.map((d) => d.id)).toEqual(['about']);
   });
@@ -118,9 +115,7 @@ describe('appsToIconDefinitions', () => {
   });
 
   it('derives tooltip from desktopIcon.tooltip when provided', () => {
-    const apps = [
-      makeApp({ id: 'about', title: 'About', desktopIcon: { tooltip: 'hover text' } }),
-    ];
+    const apps = [makeApp({ id: 'about', title: 'About', desktopIcon: { tooltip: 'hover text' } })];
     const [def] = appsToIconDefinitions(apps);
     expect(def.tooltip).toBe('hover text');
   });
@@ -150,20 +145,14 @@ describe('appsToIconDefinitions', () => {
     });
 
     it('does not throw for missing ids when an app with that id has desktopIcon === false', () => {
-      const apps = [
-        makeApp({ id: 'about' }),
-        makeApp({ id: 'unknown-app', desktopIcon: false }),
-      ];
+      const apps = [makeApp({ id: 'about' }), makeApp({ id: 'unknown-app', desktopIcon: false })];
       expect(() => appsToIconDefinitions(apps)).not.toThrow();
       expect(appsToIconDefinitions(apps).map((d) => d.id)).toEqual(['about']);
     });
 
     it('does NOT throw in production even when an id is missing, sorting it last', () => {
       vi.stubEnv('DEV', false);
-      const apps = [
-        makeApp({ id: 'unknown-app' }),
-        makeApp({ id: 'about' }),
-      ];
+      const apps = [makeApp({ id: 'unknown-app' }), makeApp({ id: 'about' })];
       let defs: ReturnType<typeof appsToIconDefinitions> = [];
       expect(() => {
         defs = appsToIconDefinitions(apps);

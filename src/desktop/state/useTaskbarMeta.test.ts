@@ -36,9 +36,7 @@ describe('useTaskbarMeta', () => {
   });
 
   it('falls back to the app id when the title is a function (not a string)', () => {
-    const apps = [
-      makeApp({ id: 'browser', title: () => 'dynamic title', iconUrl: '/b.png' }),
-    ];
+    const apps = [makeApp({ id: 'browser', title: () => 'dynamic title', iconUrl: '/b.png' })];
     const { result } = renderHook(() => useTaskbarMeta(apps, {}));
 
     // appLabel-style fallback: non-string title -> use id, then capitalize.
@@ -123,10 +121,9 @@ describe('useTaskbarMeta', () => {
     const apps = [makeApp({ id: 'a', title: 'a', iconUrl: '/a.png' })];
     const urls: DesktopIconUrls = {};
 
-    const { result, rerender } = renderHook(
-      ({ apps, urls }) => useTaskbarMeta(apps, urls),
-      { initialProps: { apps, urls } },
-    );
+    const { result, rerender } = renderHook(({ apps, urls }) => useTaskbarMeta(apps, urls), {
+      initialProps: { apps, urls },
+    });
     const first = result.current;
 
     rerender({ apps, urls });

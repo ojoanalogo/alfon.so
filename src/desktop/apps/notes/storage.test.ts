@@ -110,11 +110,9 @@ describe('notes/storage', () => {
 
   describe('saveNotes error resilience', () => {
     it('swallows errors thrown by localStorage.setItem (quota / private mode)', () => {
-      const spy = vi
-        .spyOn(Storage.prototype, 'setItem')
-        .mockImplementation(() => {
-          throw new Error('QuotaExceededError');
-        });
+      const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('QuotaExceededError');
+      });
       expect(() => saveNotes([makeNote()])).not.toThrow();
       expect(spy).toHaveBeenCalled();
       spy.mockRestore();

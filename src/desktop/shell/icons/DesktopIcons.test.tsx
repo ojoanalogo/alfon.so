@@ -55,7 +55,9 @@ function Harness({ icons, onOpenWindow, onDesktopClick, stateRef }: HarnessProps
   );
 }
 
-function renderIcons(opts: Omit<HarnessProps, 'stateRef'> & { stateRef?: HarnessProps['stateRef'] }) {
+function renderIcons(
+  opts: Omit<HarnessProps, 'stateRef'> & { stateRef?: HarnessProps['stateRef'] },
+) {
   return render(
     <Providers>
       <Harness {...opts} />
@@ -122,10 +124,7 @@ describe('DesktopIcons', () => {
   it('selects an icon on single click (selectOnly)', () => {
     const stateRef: { current: DesktopIconsState | null } = { current: null };
     const { container } = renderIcons({
-      icons: [
-        makeIcon({ id: 'a', label: 'Alpha' }),
-        makeIcon({ id: 'b', label: 'Beta' }),
-      ],
+      icons: [makeIcon({ id: 'a', label: 'Alpha' }), makeIcon({ id: 'b', label: 'Beta' })],
       stateRef,
     });
     const buttons = container.querySelectorAll('button.desktop-icon');
@@ -139,10 +138,7 @@ describe('DesktopIcons', () => {
   it('toggles selection with a modifier-click instead of replacing it', () => {
     const stateRef: { current: DesktopIconsState | null } = { current: null };
     const { container } = renderIcons({
-      icons: [
-        makeIcon({ id: 'a', label: 'Alpha' }),
-        makeIcon({ id: 'b', label: 'Beta' }),
-      ],
+      icons: [makeIcon({ id: 'a', label: 'Alpha' }), makeIcon({ id: 'b', label: 'Beta' })],
       stateRef,
     });
     const buttons = container.querySelectorAll('button.desktop-icon');
@@ -220,10 +216,7 @@ describe('DesktopIcons', () => {
   it('context-menu Eliminar removes the icon from the visible set', () => {
     const stateRef: { current: DesktopIconsState | null } = { current: null };
     const { container } = renderIcons({
-      icons: [
-        makeIcon({ id: 'a', label: 'Alpha' }),
-        makeIcon({ id: 'b', label: 'Beta' }),
-      ],
+      icons: [makeIcon({ id: 'a', label: 'Alpha' }), makeIcon({ id: 'b', label: 'Beta' })],
       stateRef,
     });
     const button = container.querySelectorAll('button.desktop-icon')[0] as HTMLButtonElement;
@@ -236,10 +229,7 @@ describe('DesktopIcons', () => {
 
   it('shows a pluralized delete label when multiple icons are selected', () => {
     const { container } = renderIcons({
-      icons: [
-        makeIcon({ id: 'a', label: 'Alpha' }),
-        makeIcon({ id: 'b', label: 'Beta' }),
-      ],
+      icons: [makeIcon({ id: 'a', label: 'Alpha' }), makeIcon({ id: 'b', label: 'Beta' })],
     });
     const buttons = container.querySelectorAll('button.desktop-icon');
     fireEvent.click(buttons[0]);

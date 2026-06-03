@@ -172,7 +172,8 @@ export default function Window({
   // Content-sized windows with a min-height floor still need the card to stretch
   // to that floor, otherwise the box (and its bottom resize handle) sits below
   // the visible card in empty space.
-  const sized = state.height != null || state.maximized || (state.height == null && minHeight != null);
+  const sized =
+    state.height != null || state.maximized || (state.height == null && minHeight != null);
 
   const style: React.CSSProperties = displayMaximized
     ? {

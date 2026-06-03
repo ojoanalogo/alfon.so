@@ -18,8 +18,10 @@ const ENTRIES: Entry[] = [
 
 beforeEach(() => {
   // Emulate Astro's getCollection(collection, filter) contract.
-  vi.mocked(getCollection).mockImplementation((async (_c: string, filter?: (e: Entry) => boolean) =>
-    filter ? ENTRIES.filter(filter) : ENTRIES) as never);
+  vi.mocked(getCollection).mockImplementation((async (
+    _c: string,
+    filter?: (e: Entry) => boolean,
+  ) => (filter ? ENTRIES.filter(filter) : ENTRIES)) as never);
 });
 
 afterEach(() => {

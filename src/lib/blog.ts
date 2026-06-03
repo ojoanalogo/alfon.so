@@ -12,10 +12,7 @@ import type { BlogPostSummary } from '@/desktop/types';
  * the desktop never disagree on what is live.
  */
 export async function getPublishedPosts(): Promise<CollectionEntry<'blog'>[]> {
-  return getCollection(
-    'blog',
-    (entry) => import.meta.env.DEV || entry.data.published !== false,
-  );
+  return getCollection('blog', (entry) => import.meta.env.DEV || entry.data.published !== false);
 }
 
 /**

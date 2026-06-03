@@ -50,8 +50,7 @@ describe('config: NAV_LINKS', () => {
   it('every link has either a url or a redirect, never both missing', () => {
     for (const link of NAV_LINKS) {
       const hasUrl = typeof link.url === 'string' && link.url.length > 0;
-      const hasRedirect =
-        typeof link.redirect === 'string' && link.redirect.length > 0;
+      const hasRedirect = typeof link.redirect === 'string' && link.redirect.length > 0;
       expect(hasUrl || hasRedirect).toBe(true);
     }
   });
@@ -81,9 +80,7 @@ describe('config: NAV_LINKS', () => {
   });
 
   it('all declared ids are unique', () => {
-    const ids = NAV_LINKS.map((l) => l.id).filter(
-      (id): id is string => typeof id === 'string',
-    );
+    const ids = NAV_LINKS.map((l) => l.id).filter((id): id is string => typeof id === 'string');
     expect(new Set(ids).size).toBe(ids.length);
   });
 
@@ -119,12 +116,7 @@ describe('config: NAV_LINKS', () => {
 });
 
 describe('config: SOCIAL_LINKS', () => {
-  const allowedPlatforms: SocialPlatform[] = [
-    'twitter',
-    'github',
-    'instagram',
-    'linkedin',
-  ];
+  const allowedPlatforms: SocialPlatform[] = ['twitter', 'github', 'instagram', 'linkedin'];
 
   it('is a non-empty array', () => {
     expect(Array.isArray(SOCIAL_LINKS)).toBe(true);

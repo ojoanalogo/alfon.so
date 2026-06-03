@@ -15,12 +15,14 @@ const MAX_Y = window.innerHeight - TASKBAR_HEIGHT - 8; // 720
  * Build a fake React.PointerEvent-like object. The hook only reads
  * button, pointerId, clientX, clientY and calls preventDefault/stopPropagation.
  */
-function fakePointerEvent(overrides: {
-  button?: number;
-  pointerId?: number;
-  clientX?: number;
-  clientY?: number;
-} = {}) {
+function fakePointerEvent(
+  overrides: {
+    button?: number;
+    pointerId?: number;
+    clientX?: number;
+    clientY?: number;
+  } = {},
+) {
   return {
     button: overrides.button ?? 0,
     pointerId: overrides.pointerId ?? 1,
@@ -131,9 +133,7 @@ describe('useWindowGestures - move drag geometry', () => {
       state: { x: 100, y: 100, width: 600 },
     });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 7, clientX: 50, clientY: 50 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 7, clientX: 50, clientY: 50 }));
     });
     dispatchMove(7, 90, 130); // dx=40, dy=80
     expect(onGeometryChange).toHaveBeenLastCalledWith({ x: 140, y: 180 });
@@ -142,9 +142,7 @@ describe('useWindowGestures - move drag geometry', () => {
   it('ignores pointermove from a different pointerId', () => {
     const { hook, onGeometryChange } = setup({ state: { x: 10, y: 10 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 3, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 3, clientX: 0, clientY: 0 }));
     });
     dispatchMove(99, 100, 100); // wrong pointer
     expect(onGeometryChange).not.toHaveBeenCalled();
@@ -153,9 +151,7 @@ describe('useWindowGestures - move drag geometry', () => {
   it('clamps x to the right edge (maxX = innerWidth - 48)', () => {
     const { hook, onGeometryChange } = setup({ state: { x: 0, y: 0 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }));
     });
     dispatchMove(1, 5000, 0); // huge dx
     const last = onGeometryChange.mock.calls.at(-1)![0];
@@ -165,9 +161,7 @@ describe('useWindowGestures - move drag geometry', () => {
   it('clamps x to the left so part of the window stays on-screen (min = -width + 96)', () => {
     const { hook, onGeometryChange } = setup({ state: { x: 0, y: 0, width: 600 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }));
     });
     dispatchMove(1, -5000, 0); // huge negative dx
     const last = onGeometryChange.mock.calls.at(-1)![0];
@@ -177,9 +171,7 @@ describe('useWindowGestures - move drag geometry', () => {
   it('clamps y at the top to 0', () => {
     const { hook, onGeometryChange } = setup({ state: { x: 50, y: 50 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }));
     });
     dispatchMove(1, 0, -5000);
     const last = onGeometryChange.mock.calls.at(-1)![0];
@@ -189,9 +181,7 @@ describe('useWindowGestures - move drag geometry', () => {
   it('clamps y at the bottom to innerHeight - TASKBAR_HEIGHT - 8', () => {
     const { hook, onGeometryChange } = setup({ state: { x: 50, y: 50 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }));
     });
     dispatchMove(1, 0, 5000);
     const last = onGeometryChange.mock.calls.at(-1)![0];
@@ -201,9 +191,7 @@ describe('useWindowGestures - move drag geometry', () => {
   it('does not emit height during a move', () => {
     const { hook, onGeometryChange } = setup({ state: { x: 0, y: 0 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }));
     });
     dispatchMove(1, 10, 10);
     const last = onGeometryChange.mock.calls.at(-1)![0];
@@ -215,9 +203,7 @@ describe('useWindowGestures - pointerup / pointercancel end the gesture', () => 
   it('stops emitting after pointerup and clears the body class', () => {
     const { hook, onGeometryChange } = setup({ state: { x: 0, y: 0 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }));
     });
     expect(document.body.classList.contains('is-window-gesturing')).toBe(true);
     dispatchUp('pointerup', 1);
@@ -231,9 +217,7 @@ describe('useWindowGestures - pointerup / pointercancel end the gesture', () => 
   it('ignores pointerup from a different pointerId (gesture stays active)', () => {
     const { hook, onGeometryChange } = setup({ state: { x: 0, y: 0 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }));
     });
     dispatchUp('pointerup', 42); // wrong pointer
     expect(document.body.classList.contains('is-window-gesturing')).toBe(true);
@@ -244,9 +228,7 @@ describe('useWindowGestures - pointerup / pointercancel end the gesture', () => 
   it('pointercancel also ends the gesture', () => {
     const { hook } = setup({ state: { x: 0, y: 0 } });
     act(() => {
-      hook.result.current.startMove(
-        fakePointerEvent({ pointerId: 5, clientX: 0, clientY: 0 }),
-      );
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 5, clientX: 0, clientY: 0 }));
     });
     dispatchUp('pointercancel', 5);
     expect(document.body.classList.contains('is-window-gesturing')).toBe(false);

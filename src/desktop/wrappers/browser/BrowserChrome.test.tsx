@@ -56,9 +56,7 @@ describe('BrowserChrome', () => {
     const { container, rerender } = renderChrome(makeBrowsers(), { title: 'my site' });
     expect(screen.getByText('my site')).toBeTruthy();
 
-    rerender(
-      <BrowserChrome appId={APP_ID} title="my site" browsers={makeBrowsers()} hideTitle />,
-    );
+    rerender(<BrowserChrome appId={APP_ID} title="my site" browsers={makeBrowsers()} hideTitle />);
     expect(screen.queryByText('my site')).toBeNull();
     // nav group + address bar still render
     expect(container.querySelector('input')).toBeTruthy();
@@ -130,9 +128,7 @@ describe('BrowserChrome', () => {
   });
 
   it('disables back/forward per canBack/canForward and reload per url presence', () => {
-    renderChrome(
-      makeBrowsers({ state: { url: null }, canBack: false, canForward: false }),
-    );
+    renderChrome(makeBrowsers({ state: { url: null }, canBack: false, canForward: false }));
     expect(backBtn().disabled).toBe(true);
     expect(forwardBtn().disabled).toBe(true);
     // reload disabled when no url
@@ -204,17 +200,13 @@ describe('BrowserChrome', () => {
 
     // Simulate the controller URL changing out from under the input.
     const browsers2 = makeBrowsers({ state: { url: 'https://two.dev' } });
-    rerender(
-      <BrowserChrome appId={APP_ID} title="mi sitio" browsers={browsers2} />,
-    );
+    rerender(<BrowserChrome appId={APP_ID} title="mi sitio" browsers={browsers2} />);
     expect(addressInput().value).toBe('https://two.dev');
   });
 
   it('reads state/canBack/canForward for the provided appId', () => {
     const browsers = makeBrowsers({ state: { url: 'https://example.com' } });
-    render(
-      <BrowserChrome appId="custom-app" title="t" browsers={browsers} />,
-    );
+    render(<BrowserChrome appId="custom-app" title="t" browsers={browsers} />);
     expect(browsers.get).toHaveBeenCalledWith('custom-app');
     expect(browsers.canBack).toHaveBeenCalledWith('custom-app');
     expect(browsers.canForward).toHaveBeenCalledWith('custom-app');

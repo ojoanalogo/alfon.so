@@ -103,10 +103,7 @@ describe('re-exported post helpers', () => {
   });
 
   it('findPostBySlug round-trips a generated post app id back to its post', () => {
-    const posts = [
-      makeBlogPost({ slug: 'alpha' }),
-      makeBlogPost({ slug: 'beta' }),
-    ];
+    const posts = [makeBlogPost({ slug: 'alpha' }), makeBlogPost({ slug: 'beta' })];
     const postApps = createPostApps(posts);
     postApps.forEach((app, i) => {
       expect(findPostBySlug(posts, app.id)).toBe(posts[i]);

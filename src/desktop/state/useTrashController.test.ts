@@ -69,11 +69,7 @@ describe('useTrashController', () => {
       const { result } = renderHook(() => useTrashController(icons, vi.fn()));
 
       expect(result.current.items).toHaveLength(1);
-      expect(Object.keys(result.current.items[0]).sort()).toEqual([
-        'iconSrc',
-        'id',
-        'label',
-      ]);
+      expect(Object.keys(result.current.items[0]).sort()).toEqual(['iconSrc', 'id', 'label']);
     });
   });
 
@@ -123,10 +119,9 @@ describe('useTrashController', () => {
     it('returns a stable reference when icons and openWindow are unchanged', () => {
       const icons = makeIconsState();
       const openWindow = vi.fn();
-      const { result, rerender } = renderHook(
-        ({ i, o }) => useTrashController(i, o),
-        { initialProps: { i: icons, o: openWindow } },
-      );
+      const { result, rerender } = renderHook(({ i, o }) => useTrashController(i, o), {
+        initialProps: { i: icons, o: openWindow },
+      });
       const first = result.current;
       rerender({ i: icons, o: openWindow });
       expect(result.current).toBe(first);
@@ -140,25 +135,21 @@ describe('useTrashController', () => {
       const iconsB = makeIconsState({
         trashedIcons: [makeTrashedIcon('b', 'B', '/b.png')],
       });
-      const { result, rerender } = renderHook(
-        ({ i }) => useTrashController(i, openWindow),
-        { initialProps: { i: iconsA } },
-      );
+      const { result, rerender } = renderHook(({ i }) => useTrashController(i, openWindow), {
+        initialProps: { i: iconsA },
+      });
       const first = result.current;
       rerender({ i: iconsB });
 
       expect(result.current).not.toBe(first);
-      expect(result.current.items).toEqual([
-        { id: 'b', label: 'B', iconSrc: '/b.png' },
-      ]);
+      expect(result.current.items).toEqual([{ id: 'b', label: 'B', iconSrc: '/b.png' }]);
     });
 
     it('recomputes when openWindow changes', () => {
       const icons = makeIconsState();
-      const { result, rerender } = renderHook(
-        ({ o }) => useTrashController(icons, o),
-        { initialProps: { o: vi.fn() } },
-      );
+      const { result, rerender } = renderHook(({ o }) => useTrashController(icons, o), {
+        initialProps: { o: vi.fn() },
+      });
       const first = result.current;
       const next = vi.fn();
       rerender({ o: next });

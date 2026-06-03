@@ -273,7 +273,7 @@ export default function DesktopIcons({
                     height={48}
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-contain [image-rendering:pixelated] drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
+                    className="h-full w-full object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)] [image-rendering:pixelated]"
                   />
                 </span>
                 <span className="desktop-icon__label w-full max-w-[6.75rem] px-1 py-[0.125rem] text-[0.625rem] leading-[1.25] [overflow-wrap:anywhere] [word-break:normal] hyphens-auto max-sm:max-w-[5.5rem] max-sm:text-[0.6875rem] max-sm:leading-[1.25]">

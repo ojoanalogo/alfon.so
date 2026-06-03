@@ -11,14 +11,28 @@ const VH = 768;
 
 function setViewport(width: number, height: number) {
   Object.defineProperty(window, 'innerWidth', { value: width, configurable: true, writable: true });
-  Object.defineProperty(window, 'innerHeight', { value: height, configurable: true, writable: true });
+  Object.defineProperty(window, 'innerHeight', {
+    value: height,
+    configurable: true,
+    writable: true,
+  });
 }
 
 /** Build a detached element whose measured box is fixed at the given size. */
 function elWithRect(width: number, height: number): HTMLElement {
   const el = document.createElement('div');
   el.getBoundingClientRect = () =>
-    ({ width, height, top: 0, left: 0, right: width, bottom: height, x: 0, y: 0, toJSON() {} }) as DOMRect;
+    ({
+      width,
+      height,
+      top: 0,
+      left: 0,
+      right: width,
+      bottom: height,
+      x: 0,
+      y: 0,
+      toJSON() {},
+    }) as DOMRect;
   return el;
 }
 
@@ -33,7 +47,8 @@ interface Args {
 
 function renderCenter(args: Args = {}) {
   const onGeometryChange =
-    args.onGeometryChange ?? vi.fn<(geometry: { x?: number; y?: number; width?: number }) => void>();
+    args.onGeometryChange ??
+    vi.fn<(geometry: { x?: number; y?: number; width?: number }) => void>();
   const ref = createRef<HTMLElement>();
   // createRef.current is read-only typed; assign through Object to set the node.
   (ref as { current: HTMLElement | null }).current =

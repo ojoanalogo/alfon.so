@@ -4,9 +4,7 @@ import WindowTitlebar from './WindowTitlebar';
 
 describe('WindowTitlebar', () => {
   it('renders the title text when no titleContent is provided', () => {
-    render(
-      <WindowTitlebar title="My Window" onMoveStart={vi.fn()} onDoubleClick={vi.fn()} />,
-    );
+    render(<WindowTitlebar title="My Window" onMoveStart={vi.fn()} onDoubleClick={vi.fn()} />);
 
     expect(screen.getByText('My Window')).toBeTruthy();
   });

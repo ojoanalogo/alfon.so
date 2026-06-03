@@ -114,7 +114,17 @@ describe('Dialog', () => {
 
     // Give the dialog a measurable box so the drag math has real dimensions.
     dialog.getBoundingClientRect = () =>
-      ({ left: 300, top: 200, width: 360, height: 200, right: 660, bottom: 400, x: 300, y: 200, toJSON: () => ({}) }) as DOMRect;
+      ({
+        left: 300,
+        top: 200,
+        width: 360,
+        height: 200,
+        right: 660,
+        bottom: 400,
+        x: 300,
+        y: 200,
+        toJSON: () => ({}),
+      }) as DOMRect;
 
     const titlebar = document.querySelector('[data-dialog-titlebar]') as HTMLElement;
     fireEvent.pointerDown(titlebar, { button: 0, pointerId: 1, clientX: 320, clientY: 210 });

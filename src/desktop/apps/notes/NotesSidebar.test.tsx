@@ -43,10 +43,7 @@ describe('NotesSidebar', () => {
   });
 
   it('lists each note with its title', () => {
-    const notes = [
-      makeNote({ id: 'a', title: 'Alpha' }),
-      makeNote({ id: 'b', title: 'Beta' }),
-    ];
+    const notes = [makeNote({ id: 'a', title: 'Alpha' }), makeNote({ id: 'b', title: 'Beta' })];
     const { container } = setup({ notes });
     expect(screen.getByText('Alpha')).toBeTruthy();
     expect(screen.getByText('Beta')).toBeTruthy();
@@ -80,10 +77,7 @@ describe('NotesSidebar', () => {
   });
 
   it('marks the active note with the highlight classes', () => {
-    const notes = [
-      makeNote({ id: 'a', title: 'Alpha' }),
-      makeNote({ id: 'b', title: 'Beta' }),
-    ];
+    const notes = [makeNote({ id: 'a', title: 'Alpha' }), makeNote({ id: 'b', title: 'Beta' })];
     const { container } = setup({ notes, activeId: 'b' });
     const items = container.querySelectorAll('.notes-sidebar__item');
     expect(items[0].className.includes('bg-[var(--color-highlight-bg)]')).toBe(false);

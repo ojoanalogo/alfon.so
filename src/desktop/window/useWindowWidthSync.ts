@@ -24,7 +24,11 @@ export function useWindowWidthSync({
 }: WidthSyncOptions): number {
   const layoutWidth = useMemo(
     () =>
-      resolveLayoutWidth(defaultWidth, { width: state.width, userSized: state.userSized }, minWidth),
+      resolveLayoutWidth(
+        defaultWidth,
+        { width: state.width, userSized: state.userSized },
+        minWidth,
+      ),
     [defaultWidth, state.width, state.userSized, minWidth],
   );
 

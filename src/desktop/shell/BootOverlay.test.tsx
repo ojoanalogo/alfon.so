@@ -101,9 +101,9 @@ describe('DesktopBootOverlay', () => {
     expect(overlay.getAttribute('aria-live')).toBe('polite');
     expect(overlay.getAttribute('aria-label')).toBe('Loading alfon.so');
     // The spinner is purely decorative.
-    expect(overlay.querySelector('.desktop-boot-overlay__spinner')?.getAttribute('aria-hidden')).toBe(
-      'true',
-    );
+    expect(
+      overlay.querySelector('.desktop-boot-overlay__spinner')?.getAttribute('aria-hidden'),
+    ).toBe('true');
   });
 
   it('does not add the exiting class while still loading', async () => {

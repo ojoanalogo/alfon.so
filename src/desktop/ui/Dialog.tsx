@@ -170,7 +170,7 @@ export default function Dialog({
         onPointerDown={startDrag}
         data-dialog-titlebar
       >
-        <h2 id="desktop-dialog-title" className="m-0 select-none text-[0.75rem] font-semibold">
+        <h2 id="desktop-dialog-title" className="m-0 text-[0.75rem] font-semibold select-none">
           {title}
         </h2>
         <button

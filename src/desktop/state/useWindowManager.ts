@@ -46,12 +46,7 @@ function mergeWindowUiState(
       userSized: previous.userSized,
     };
     // Only keep custom geometry after move/resize; centered/default layout comes from fresh.
-    if (
-      previous.userSized &&
-      previous.open &&
-      !previous.minimized &&
-      !previous.maximized
-    ) {
+    if (previous.userSized && previous.open && !previous.minimized && !previous.maximized) {
       merged[id] = {
         ...merged[id],
         x: previous.x,
@@ -269,7 +264,9 @@ export function useWindowManager(
       const changed =
         next.userSized === true && target.userSized !== true
           ? true
-          : (Object.keys(next) as (keyof WindowGeometry)[]).some((key) => next[key] !== target[key]);
+          : (Object.keys(next) as (keyof WindowGeometry)[]).some(
+              (key) => next[key] !== target[key],
+            );
       return changed ? next : null;
     },
     [defs, viewportWidth],

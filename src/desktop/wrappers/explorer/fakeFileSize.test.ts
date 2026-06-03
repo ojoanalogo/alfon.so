@@ -113,9 +113,7 @@ describe('fakeFileSize', () => {
     expect(fakeFileSize('ba')).toBe(expectedFor('ba'));
     // Demonstrate position-sensitivity exists somewhere in the space.
     const differs = ['ab', 'ba', 'xy', 'yx', 'abc', 'cba'].some(
-      (s) =>
-        fakeFileSize(s) !==
-        fakeFileSize(s.split('').reverse().join('')),
+      (s) => fakeFileSize(s) !== fakeFileSize(s.split('').reverse().join('')),
     );
     expect(differs).toBe(true);
   });

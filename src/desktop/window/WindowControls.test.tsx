@@ -86,15 +86,11 @@ describe('WindowControls', () => {
     );
 
     // If stopPropagation were missing, the parent handler would throw.
-    expect(() =>
-      fireEvent.pointerDown(screen.getByLabelText('Cerrar ventana')),
-    ).not.toThrow();
+    expect(() => fireEvent.pointerDown(screen.getByLabelText('Cerrar ventana'))).not.toThrow();
   });
 
   it('each button uses an exact, distinct aria-label', () => {
-    render(
-      <WindowControls onClose={vi.fn()} onMinimize={vi.fn()} onToggleMaximize={vi.fn()} />,
-    );
+    render(<WindowControls onClose={vi.fn()} onMinimize={vi.fn()} onToggleMaximize={vi.fn()} />);
 
     expect(screen.getByLabelText('Cerrar ventana')).toBeTruthy();
     expect(screen.getByLabelText('Minimizar ventana')).toBeTruthy();

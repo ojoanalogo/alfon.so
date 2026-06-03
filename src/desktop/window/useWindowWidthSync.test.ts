@@ -40,7 +40,9 @@ describe('useWindowWidthSync', () => {
   });
 
   it('does not correct centered windows', () => {
-    expect(run({ width: 800, userSized: false }, { center: true }).onGeometryChange).not.toHaveBeenCalled();
+    expect(
+      run({ width: 800, userSized: false }, { center: true }).onGeometryChange,
+    ).not.toHaveBeenCalled();
   });
 
   it('does not correct when already within 1px', () => {

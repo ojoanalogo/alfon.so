@@ -2,13 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SOCIAL_LINKS } from '@/config';
 import { postDateFormatter } from '@/config/postFormatting';
-import {
-  InfoRow,
-  ExternalLink,
-  Divider,
-  SocialMediaIcons,
-  PostListItem,
-} from './parts';
+import { InfoRow, ExternalLink, Divider, SocialMediaIcons, PostListItem } from './parts';
 
 describe('InfoRow', () => {
   it('renders the label and children', () => {
@@ -26,9 +20,7 @@ describe('InfoRow', () => {
 
 describe('ExternalLink', () => {
   it('renders children inside an anchor pointing at href', () => {
-    render(
-      <ExternalLink href="https://example.com">Visit</ExternalLink>,
-    );
+    render(<ExternalLink href="https://example.com">Visit</ExternalLink>);
     const link = screen.getByText('Visit') as HTMLAnchorElement;
     expect(link.tagName).toBe('A');
     expect(link.getAttribute('href')).toBe('https://example.com');
@@ -103,9 +95,7 @@ describe('SocialMediaIcons', () => {
   it('renders each link with its url and accessible label', () => {
     const { container } = render(<SocialMediaIcons />);
     for (const link of SOCIAL_LINKS) {
-      const anchor = container.querySelector(
-        `a[href="${link.url}"]`,
-      ) as HTMLAnchorElement;
+      const anchor = container.querySelector(`a[href="${link.url}"]`) as HTMLAnchorElement;
       expect(anchor).toBeTruthy();
       expect(anchor.getAttribute('target')).toBe('_blank');
       expect(anchor.getAttribute('rel')).toBe('noopener noreferrer');

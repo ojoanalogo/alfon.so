@@ -153,11 +153,7 @@ describe('useDesktopIcons - moveIcons (clamped)', () => {
     const { result } = renderHook(() => useDesktopIcons(makeIcons('a', 'b')));
 
     act(() => {
-      result.current.moveIcons(
-        { a: { x: 100, y: 100 }, b: { x: 200, y: 200 } },
-        10,
-        -10,
-      );
+      result.current.moveIcons({ a: { x: 100, y: 100 }, b: { x: 200, y: 200 } }, 10, -10);
     });
     expect(result.current.positions.a).toEqual({ x: 110, y: 90 });
     expect(result.current.positions.b).toEqual({ x: 210, y: 190 });

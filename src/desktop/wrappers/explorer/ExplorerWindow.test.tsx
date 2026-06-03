@@ -23,7 +23,12 @@ function renderExplorer(
     ...overrides,
   });
   const utils = render(
-    <ExplorerWindow title={title} defaultMode={defaultMode} bodyClassName={bodyClassName} {...props}>
+    <ExplorerWindow
+      title={title}
+      defaultMode={defaultMode}
+      bodyClassName={bodyClassName}
+      {...props}
+    >
       {children}
     </ExplorerWindow>,
   );
