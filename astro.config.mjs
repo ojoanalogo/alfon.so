@@ -11,9 +11,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     react(),
-    sitemap({
-      filter: (page) => !page.includes('/happy'),
-    }),
+    sitemap(),
   ],
   vite: {
     plugins: [tailwindcss()],

@@ -80,43 +80,4 @@ const siteName = 'Alfonso - Ingeniero Backend';
   )
 }
 
-<script>
-  function onKonamiCode(cb: () => void) {
-    const sequence = [
-      'ArrowUp',
-      'ArrowUp',
-      'ArrowDown',
-      'ArrowDown',
-      'ArrowLeft',
-      'ArrowRight',
-      'ArrowLeft',
-      'ArrowRight',
-      'b',
-      'a',
-    ];
-    let input = 0;
-
-    function matchesKey(event: KeyboardEvent, expected: string) {
-      return event.key === expected || event.key.toLowerCase() === expected;
-    }
-
-    document.addEventListener('keydown', (event) => {
-      if (matchesKey(event, sequence[input]!)) {
-        input += 1;
-        if (input === sequence.length) {
-          cb();
-          input = 0;
-        }
-        return;
-      }
-
-      input = matchesKey(event, sequence[0]!) ? 1 : 0;
-    });
-  }
-
-  onKonamiCode(() => {
-    window.location.href = '/happy';
-  });
-</script>
-
 <ClientRouter />
