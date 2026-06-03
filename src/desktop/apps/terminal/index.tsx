@@ -1,6 +1,8 @@
-import { createElement } from 'react';
+import { lazy, Suspense } from 'react';
 import { defineApp } from '@desktop/wrappers';
-import TerminalApp from './TerminalApp';
+import AppLoading from '../AppLoading';
+
+const TerminalApp = lazy(() => import('./TerminalApp'));
 
 export default defineApp({
   id: 'terminal',
@@ -10,6 +12,9 @@ export default defineApp({
   desktopIcon: { label: 'terminal', tooltip: 'Terminal' },
   taskbarTooltip: 'Terminal',
   bodyClassName: 'terminal-window__body',
-  body: (ctx, win) =>
-    createElement(TerminalApp, { posts: ctx.posts, focused: win?.focused ?? false }),
+  body: (ctx, win) => (
+    <Suspense fallback={<AppLoading />}>
+      <TerminalApp posts={ctx.posts} focused={win?.focused ?? false} />
+    </Suspense>
+  ),
 });

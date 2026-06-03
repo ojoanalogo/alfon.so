@@ -1,6 +1,8 @@
-import { createElement } from 'react';
+import { lazy, Suspense } from 'react';
 import { defineApp } from '@desktop/wrappers';
-import NotesApp from './NotesApp';
+import AppLoading from '../AppLoading';
+
+const NotesApp = lazy(() => import('./NotesApp'));
 
 export default defineApp({
   id: 'notes',
@@ -10,5 +12,9 @@ export default defineApp({
   desktopIcon: { label: 'notes', tooltip: 'Notas' },
   taskbarTooltip: 'Notas',
   bodyClassName: 'notes-window__body',
-  body: () => createElement(NotesApp),
+  body: () => (
+    <Suspense fallback={<AppLoading />}>
+      <NotesApp />
+    </Suspense>
+  ),
 });

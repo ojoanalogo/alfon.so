@@ -12,6 +12,23 @@ if (!('ResizeObserver' in globalThis)) {
   (globalThis as { ResizeObserver?: unknown }).ResizeObserver = ResizeObserverStub;
 }
 
+// jsdom lacks matchMedia; the theme runtime and framer-motion read it. Default
+// to "no match" (light, full motion). Individual tests can override.
+if (typeof window !== 'undefined' && !window.matchMedia) {
+  window.matchMedia = ((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener() {},
+    removeEventListener() {},
+    addListener() {},
+    removeListener() {},
+    dispatchEvent() {
+      return false;
+    },
+  })) as typeof window.matchMedia;
+}
+
 // Unmount React trees and reset jsdom between tests so component renders and
 // body-class side effects (e.g. is-window-gesturing) don't leak across cases.
 afterEach(() => {

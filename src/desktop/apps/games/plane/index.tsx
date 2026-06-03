@@ -1,6 +1,8 @@
-import { createElement } from 'react';
+import { lazy, Suspense } from 'react';
 import { gameApp } from '../gameApp';
-import PlaneGame from './PlaneGame';
+import AppLoading from '../../AppLoading';
+
+const PlaneGame = lazy(() => import('./PlaneGame'));
 
 export default gameApp({
   id: 'plane',
@@ -10,5 +12,9 @@ export default gameApp({
   desktopIcon: false,
   taskbarTooltip: 'Plane',
   bodyClassName: 'snake-window__body',
-  body: ({ active }) => createElement(PlaneGame, { active }),
+  body: ({ active }) => (
+    <Suspense fallback={<AppLoading />}>
+      <PlaneGame active={active} />
+    </Suspense>
+  ),
 });
