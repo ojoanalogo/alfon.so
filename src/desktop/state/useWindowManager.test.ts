@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { makeWindowDef } from '@test/factories';
 import { useWindowManager } from './useWindowManager';
+import { EDGE_MARGIN, TASKBAR_HEIGHT } from '../lib/layoutConstants';
 import type { WindowDef } from '../types';
 
 // jsdom defaults window.innerWidth to 1024 (desktop, not mobile). We rely on
@@ -394,5 +395,87 @@ describe('useWindowManager - relayoutToViewport', () => {
     }).not.toThrow();
     // Closed centered window gets repositioned for the new viewport.
     expect(result.current.windows.c).toBeTruthy();
+  });
+
+  it('recenters a content-sized centered window from its measured DOM box', () => {
+    // No defaultHeight => content-sized (height null); not userSized.
+    const centered = makeWindowDef({ id: 'c', center: true, defaultWidth: 500 });
+    const { result } = renderManager([centered]);
+
+    const el = document.createElement('div');
+    el.setAttribute('data-window-id', 'c');
+    el.getBoundingClientRect = () =>
+      ({
+        width: 480,
+        height: 320,
+        top: 0,
+        left: 0,
+        right: 480,
+        bottom: 320,
+        x: 0,
+        y: 0,
+        toJSON() {},
+      }) as DOMRect;
+    document.body.appendChild(el);
+
+    const vw = 1600;
+    const vh = 900;
+    act(() => result.current.relayoutToViewport(vw, vh, true));
+
+    const c = result.current.windows.c;
+    // Width comes from the measured box; height stays null (content-sized).
+    expect(c.width).toBe(480);
+    expect(c.height).toBeNull();
+    // Centered from the measured 480x320 box (center branch does not round).
+    expect(c.x).toBe(Math.max(EDGE_MARGIN, (vw - 480) / 2));
+    expect(c.y).toBe(Math.max(EDGE_MARGIN, (vh - TASKBAR_HEIGHT - 320) / 2));
+  });
+});
+
+describe('useWindowManager - applyDefaultOpenLayout', () => {
+  it('resets an open window to its declared default width and clears userSized', () => {
+    const { result } = renderManager();
+    act(() => result.current.open('a'));
+    document.body.classList.add('is-window-gesturing');
+    act(() => result.current.setGeometry('a', { width: 720 }));
+    document.body.classList.remove('is-window-gesturing');
+    expect(result.current.windows.a.userSized).toBe(true);
+
+    act(() => result.current.applyDefaultOpenLayout('a'));
+    // defaultWidth 600 fits the 1024 viewport, so width returns to 600.
+    expect(result.current.windows.a.width).toBe(600);
+    expect(result.current.windows.a.userSized).toBe(false);
+  });
+
+  it('sizes a centered window without moving it', () => {
+    const centered = makeWindowDef({ id: 'c', center: true, defaultWidth: 500, defaultHeight: 350 });
+    const { result } = renderManager([centered]);
+    act(() => result.current.open('c'));
+    const { x, y } = result.current.windows.c;
+
+    document.body.classList.add('is-window-gesturing');
+    act(() => result.current.setGeometry('c', { width: 680 }));
+    document.body.classList.remove('is-window-gesturing');
+
+    act(() => result.current.applyDefaultOpenLayout('c'));
+    expect(result.current.windows.c.width).toBe(500); // reset to default
+    expect(result.current.windows.c.userSized).toBe(false);
+    expect(result.current.windows.c.x).toBe(x); // unchanged — centered
+    expect(result.current.windows.c.y).toBe(y);
+  });
+
+  it('is a no-op for a closed window (state identity preserved)', () => {
+    const { result } = renderManager();
+    const before = result.current.windows; // 'a' is closed
+    act(() => result.current.applyDefaultOpenLayout('a'));
+    expect(result.current.windows).toBe(before);
+  });
+
+  it('is a no-op for unknown ids', () => {
+    const { result } = renderManager();
+    act(() => result.current.open('a'));
+    const before = result.current.windows;
+    act(() => result.current.applyDefaultOpenLayout('nope'));
+    expect(result.current.windows).toBe(before);
   });
 });

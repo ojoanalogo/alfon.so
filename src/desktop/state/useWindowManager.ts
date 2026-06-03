@@ -64,6 +64,45 @@ function mergeWindowUiState(
   return merged;
 }
 
+/** Apply an app's default geometry to a window, clearing the user-resized flag. */
+function applyDefaultGeometry(
+  target: WindowState,
+  geo: WindowGeometry,
+  def: WindowDef,
+): WindowState {
+  return {
+    ...target,
+    width: geo.width,
+    height: def.defaultHeight ?? geo.height ?? target.height,
+    userSized: false,
+    ...(def.center ? {} : { x: geo.x, y: geo.y }),
+  };
+}
+
+/** True when two states share x/y/width/height — the relayout/open bail-out. */
+function geometryUnchanged(next: WindowState, target: WindowState): boolean {
+  return (
+    next.x === target.x &&
+    next.y === target.y &&
+    next.width === target.width &&
+    next.height === target.height
+  );
+}
+
+/** Measure a center window's on-screen box (the only DOM read in this module). */
+function measureCenterWindow(def: WindowDef): {
+  measuredWidth?: number;
+  measuredHeight?: number;
+} {
+  const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
+  if (!el) return {};
+  const rect = el.getBoundingClientRect();
+  return {
+    measuredWidth: rect.width > 0 ? rect.width : undefined,
+    measuredHeight: def.defaultHeight == null && rect.height > 0 ? rect.height : undefined,
+  };
+}
+
 export interface WindowManager {
   windows: Record<string, WindowState>;
   order: string[];
@@ -144,25 +183,8 @@ export function useWindowManager(
       setWindows((prev) => {
         const target = prev[id];
         if (!target?.open) return prev;
-        const next: WindowState = {
-          ...target,
-          width: geo.width,
-          height: def.defaultHeight ?? geo.height ?? target.height,
-          userSized: false,
-          ...(def.center
-            ? {}
-            : {
-                x: geo.x,
-                y: geo.y,
-              }),
-        };
-        if (
-          next.x === target.x &&
-          next.y === target.y &&
-          next.width === target.width &&
-          next.height === target.height &&
-          target.userSized === false
-        ) {
+        const next = applyDefaultGeometry(target, geo, def);
+        if (geometryUnchanged(next, target) && target.userSized === false) {
           return prev;
         }
         return { ...prev, [id]: next };
@@ -186,18 +208,7 @@ export function useWindowManager(
 
         if (wasClosed && def && !isMobileViewport(vw)) {
           const geo = resolveDefaultOpenGeometry(def, vw, vh, { freshRandom: true });
-          next = {
-            ...next,
-            width: geo.width,
-            height: def.defaultHeight ?? geo.height ?? next.height,
-            userSized: false,
-            ...(def.center
-              ? {}
-              : {
-                  x: geo.x,
-                  y: geo.y,
-                }),
-          };
+          next = applyDefaultGeometry(next, geo, def);
         }
 
         return { ...prev, [id]: next };
@@ -312,12 +323,7 @@ export function useWindowManager(
             width: geo.width,
             height: def.defaultHeight ?? geo.height,
           };
-          if (
-            next.x === target.x &&
-            next.y === target.y &&
-            next.width === target.width &&
-            next.height === target.height
-          ) {
+          if (geometryUnchanged(next, target)) {
             continue;
           }
           if (!changed) {
@@ -332,16 +338,7 @@ export function useWindowManager(
         for (const def of defs) {
           if (!def.center) continue;
 
-          let measuredHeight: number | undefined;
-          let measuredWidth: number | undefined;
-          const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            if (rect.width > 0) measuredWidth = rect.width;
-            if (def.defaultHeight == null && rect.height > 0) {
-              measuredHeight = rect.height;
-            }
-          }
+          const { measuredWidth, measuredHeight } = measureCenterWindow(def);
 
           // Content-sized center windows need a real box; avoid MIN_HEIGHT-based y.
           if (def.defaultHeight == null && measuredHeight == null) continue;
@@ -352,19 +349,14 @@ export function useWindowManager(
 
           if (target.userSized) continue;
 
-          const next = {
+          const next: WindowState = {
             ...target,
             x: geo.x,
             y: geo.y,
             width: geo.width,
             height: def.defaultHeight ?? null,
           };
-          if (
-            next.x === target.x &&
-            next.y === target.y &&
-            next.width === target.width &&
-            next.height === target.height
-          ) {
+          if (geometryUnchanged(next, target)) {
             continue;
           }
           if (!changed) {
