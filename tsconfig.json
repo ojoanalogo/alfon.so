@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@desktop/*": ["src/desktop/*"]
+      "@desktop/*": ["src/desktop/*"],
+      "@test/*": ["test/*"]
     }
   }
 }

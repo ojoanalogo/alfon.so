@@ -26,6 +26,18 @@ export default defineConfig(
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
     },
+    rules: {
+      // Allow intentionally-unused names prefixed with `_` (e.g. typed-but-ignored
+      // callback args like `(_ctx) => …`).
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
   },
 
   // React — JSX/TSX islands only (recommended, jsx-runtime, hooks, r3f prop exceptions).
