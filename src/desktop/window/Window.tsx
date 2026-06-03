@@ -1,13 +1,15 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
 import { MIN_WIDTH } from '../lib/layoutConstants';
-import { resolveLayoutWidth } from '../lib/viewport';
+import { resolveWindowHeightStyle } from '../lib/viewport';
 import WindowControls from './WindowControls';
 import WindowTitlebar from './WindowTitlebar';
 import { useWindowGestures } from './useWindowGestures';
 import { useWindowCenterLayout } from './useWindowCenterLayout';
+import { useMaximizeAnimation } from './useMaximizeAnimation';
+import { useWindowWidthSync } from './useWindowWidthSync';
 import { BORDER_DEFAULT } from '@/styles/tokens';
 
 const RESIZE_DIRECTIONS: ResizeDirection[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
@@ -57,59 +59,20 @@ export default function Window({
   center = false,
 }: WindowProps) {
   const rootRef = useRef<HTMLElement | null>(null);
-  const prevMaximizedRef = useRef(state.maximized);
-  const [maximizeTransition, setMaximizeTransition] = useState(false);
-  const [displayMaximized, setDisplayMaximized] = useState(state.maximized);
   const prefersReduced = useReducedMotion();
   const canAnimateMaximize = state.open && !state.minimized && !prefersReduced;
-
-  if (!canAnimateMaximize && displayMaximized !== state.maximized) {
-    setDisplayMaximized(state.maximized);
-  }
-
-  useLayoutEffect(() => {
-    if (!canAnimateMaximize) {
-      prevMaximizedRef.current = state.maximized;
-      return;
-    }
-    if (state.maximized === prevMaximizedRef.current) return;
-    prevMaximizedRef.current = state.maximized;
-
-    const frame = requestAnimationFrame(() => {
-      setDisplayMaximized(state.maximized);
-      setMaximizeTransition(true);
-    });
-    const timer = window.setTimeout(() => setMaximizeTransition(false), 360);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.clearTimeout(timer);
-    };
-  }, [state.maximized, canAnimateMaximize]);
-
-  const layoutWidth = useMemo(
-    () =>
-      resolveLayoutWidth(
-        defaultWidth,
-        { width: state.width, userSized: state.userSized },
-        minWidth,
-      ),
-    [defaultWidth, state.width, state.userSized, minWidth],
+  const { displayMaximized, maximizeTransition } = useMaximizeAnimation(
+    state.maximized,
+    canAnimateMaximize,
   );
 
-  useLayoutEffect(() => {
-    if (center || !state.open || state.minimized || state.maximized || state.userSized) return;
-    if (Math.abs(state.width - layoutWidth) <= 1) return;
-    onGeometryChange({ width: layoutWidth });
-  }, [
+  const layoutWidth = useWindowWidthSync({
+    state,
+    defaultWidth,
+    minWidth,
     center,
-    state.open,
-    state.minimized,
-    state.maximized,
-    state.userSized,
-    state.width,
-    layoutWidth,
     onGeometryChange,
-  ]);
+  });
 
   const { markUserPositioned, displayX, displayY } = useWindowCenterLayout({
     rootRef,
@@ -218,13 +181,7 @@ export default function Window({
         top: `${posY}px`,
         width: `${layoutWidth}px`,
         minWidth: `${minWidth}px`,
-        minHeight: state.height == null && minHeight != null ? minHeight : undefined,
-        height:
-          state.height != null
-            ? `${state.height}px`
-            : defaultHeight != null
-              ? `${defaultHeight}px`
-              : undefined,
+        ...resolveWindowHeightStyle(state.height, defaultHeight, minHeight),
         zIndex: state.zIndex,
         transformOrigin: 'bottom center',
       };

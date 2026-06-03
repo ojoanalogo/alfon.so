@@ -177,3 +177,82 @@ describe('Window', () => {
     expect(body.className.includes('extra-body')).toBe(true);
   });
 });
+
+describe('Window - width sync', () => {
+  it('corrects a drifted width via onGeometryChange when not user-sized', () => {
+    const onGeometryChange = vi.fn();
+    // defaultWidth 600 resolves to 600 at the 1024 jsdom viewport; state.width is 800.
+    renderWindow({
+      state: makeWindowState({ open: true, width: 800, userSized: false }),
+      defaultWidth: 600,
+      onGeometryChange,
+    });
+    expect(onGeometryChange).toHaveBeenCalledWith({ width: 600 });
+  });
+
+  it('does not correct width when the window is user-sized', () => {
+    const onGeometryChange = vi.fn();
+    renderWindow({
+      state: makeWindowState({ open: true, width: 800, userSized: true }),
+      defaultWidth: 600,
+      onGeometryChange,
+    });
+    expect(onGeometryChange).not.toHaveBeenCalled();
+  });
+
+  it('does not run width sync for centered windows', () => {
+    const onGeometryChange = vi.fn();
+    renderWindow({
+      state: makeWindowState({ open: true, width: 800, userSized: false }),
+      defaultWidth: 600,
+      center: true,
+      onGeometryChange,
+    });
+    expect(onGeometryChange).not.toHaveBeenCalledWith({ width: 600 });
+  });
+});
+
+describe('Window - maximize display', () => {
+  it('renders a full-bleed box when the window starts maximized', () => {
+    const { container } = renderWindow({
+      state: makeWindowState({ open: true, maximized: true }),
+    });
+    const root = container.querySelector('.desktop-window') as HTMLElement;
+    expect(root.style.left).toBe('0px');
+    expect(root.style.width).toBe('auto');
+    expect(root.style.height).toBe('auto');
+  });
+
+  it('renders a positioned box (not full-bleed) when not maximized', () => {
+    const { container } = renderWindow({
+      state: makeWindowState({ open: true, maximized: false, x: 120, y: 80, width: 600 }),
+      defaultWidth: 600,
+    });
+    const root = container.querySelector('.desktop-window') as HTMLElement;
+    expect(root.style.left).toBe('120px');
+    expect(root.style.width).toBe('600px');
+  });
+});
+
+describe('Window - sized class', () => {
+  it('is-sized when the window has a fixed height', () => {
+    const { container } = renderWindow({ state: makeWindowState({ open: true, height: 400 }) });
+    expect(container.querySelector('.desktop-window')!.className.includes('is-sized')).toBe(true);
+  });
+
+  it('is-sized when content-sized with a min-height floor', () => {
+    const { container } = renderWindow({
+      state: makeWindowState({ open: true, height: null }),
+      minHeight: 200,
+    });
+    expect(container.querySelector('.desktop-window')!.className.includes('is-sized')).toBe(true);
+  });
+
+  it('not is-sized when content-sized without a floor', () => {
+    const { container } = renderWindow({
+      state: makeWindowState({ open: true, height: null }),
+      minHeight: undefined,
+    });
+    expect(container.querySelector('.desktop-window')!.className.includes('is-sized')).toBe(false);
+  });
+});

@@ -88,6 +88,22 @@ export function resolveDefaultOpenGeometry(
   return resolveWindowGeometry(def, viewportWidth, viewportHeight, undefined, undefined, options);
 }
 
+/**
+ * Inline height + min-height for a window: a fixed pixel height, the app default
+ * height, or (when content-sized) just a min-height floor.
+ */
+export function resolveWindowHeightStyle(
+  height: number | null,
+  defaultHeight: number | undefined,
+  minHeight: number | undefined,
+): { height?: string; minHeight?: number } {
+  return {
+    height:
+      height != null ? `${height}px` : defaultHeight != null ? `${defaultHeight}px` : undefined,
+    minHeight: height == null && minHeight != null ? minHeight : undefined,
+  };
+}
+
 /** Width to paint in the DOM — uses app default unless the user resized. */
 export function resolveLayoutWidth(
   defaultWidth: number,
