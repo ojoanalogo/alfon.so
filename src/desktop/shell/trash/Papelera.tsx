@@ -29,7 +29,7 @@ export default function Papelera({
   return (
     <div
       className={[
-        'pointer-events-none fixed right-4 bottom-[3.25rem] z-[90] max-sm:right-2 max-sm:bottom-12',
+        'pointer-events-none fixed right-4 bottom-[3.25rem] z-[1] max-sm:right-2 max-sm:bottom-12',
         `papelera--labels-${iconLabelTone}`,
       ].join(' ')}
     >
