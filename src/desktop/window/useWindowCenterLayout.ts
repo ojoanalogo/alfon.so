@@ -1,7 +1,5 @@
 import { useLayoutEffect, useRef, useState, type RefObject } from 'react';
-import { TASKBAR_HEIGHT } from '../state/useWindowManager';
-
-const EDGE_MARGIN = 8;
+import { TASKBAR_HEIGHT, EDGE_MARGIN } from '../lib/layoutConstants';
 
 interface WindowCenterLayoutOptions {
   rootRef: RefObject<HTMLElement | null>;
@@ -29,6 +27,9 @@ export function useWindowCenterLayout({
   const [displayPos, setDisplayPos] = useState({ x, y });
   const onGeometryChangeRef = useRef(onGeometryChange);
   onGeometryChangeRef.current = onGeometryChange;
+  // Last geometry pushed upstream. The settle triggers (rAF passes, fonts.ready,
+  // ResizeObserver) often resolve to the same box; only report real changes.
+  const lastSentRef = useRef<{ x: number; y: number; width: number } | null>(null);
 
   useLayoutEffect(() => {
     if (!userLocked) {
@@ -60,8 +61,13 @@ export function useWindowCenterLayout({
       const nextY = Math.round(Math.max(EDGE_MARGIN, (vh - TASKBAR_HEIGHT - rect.height) / 2));
       const roundedWidth = Math.round(rect.width);
 
-      setDisplayPos({ x: nextX, y: nextY });
-      onGeometryChangeRef.current({ x: nextX, y: nextY, width: roundedWidth });
+      setDisplayPos((prev) => (prev.x === nextX && prev.y === nextY ? prev : { x: nextX, y: nextY }));
+
+      const last = lastSentRef.current;
+      if (!last || last.x !== nextX || last.y !== nextY || last.width !== roundedWidth) {
+        lastSentRef.current = { x: nextX, y: nextY, width: roundedWidth };
+        onGeometryChangeRef.current({ x: nextX, y: nextY, width: roundedWidth });
+      }
     }
 
     syncPosition();

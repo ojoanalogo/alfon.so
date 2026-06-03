@@ -1,16 +1,13 @@
 import type { WindowDef, WindowGeometry } from '../types';
 import { positionNearCenter } from './windowPlacement';
-import { minWidthForDef, MIN_WIDTH, MIN_HEIGHT, TASKBAR_HEIGHT } from '../state/useWindowManager';
-
-/** Matches `40rem` breakpoints used in global.css. */
-export const MOBILE_BREAKPOINT_PX = 640;
-
-const EDGE_MARGIN = 8;
-
-export function isMobileViewport(width?: number): boolean {
-  if (typeof window === 'undefined') return false;
-  return (width ?? window.innerWidth) < MOBILE_BREAKPOINT_PX;
-}
+import {
+  minWidthForDef,
+  isMobileViewport,
+  MIN_WIDTH,
+  MIN_HEIGHT,
+  TASKBAR_HEIGHT,
+  EDGE_MARGIN,
+} from './layoutConstants';
 
 export function effectiveMinWidth(def: WindowDef, viewportWidth: number): number {
   const configured = minWidthForDef(def);

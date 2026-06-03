@@ -12,16 +12,23 @@ export function useViewportSize() {
   const [size, setSize] = useState(readViewportSize);
 
   useLayoutEffect(() => {
-    function update() {
+    let raf = 0;
+    function apply() {
+      raf = 0;
       const next = readViewportSize();
       setSize((prev) => (prev.width === next.width && prev.height === next.height ? prev : next));
     }
-    update();
-    window.addEventListener('resize', update);
-    window.visualViewport?.addEventListener('resize', update);
+    // Coalesce bursts of resize/visualViewport events into one update per frame.
+    function schedule() {
+      if (raf === 0) raf = requestAnimationFrame(apply);
+    }
+    apply();
+    window.addEventListener('resize', schedule);
+    window.visualViewport?.addEventListener('resize', schedule);
     return () => {
-      window.removeEventListener('resize', update);
-      window.visualViewport?.removeEventListener('resize', update);
+      if (raf !== 0) cancelAnimationFrame(raf);
+      window.removeEventListener('resize', schedule);
+      window.visualViewport?.removeEventListener('resize', schedule);
     };
   }, []);
 

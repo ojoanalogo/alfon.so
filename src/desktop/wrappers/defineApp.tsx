@@ -36,19 +36,16 @@ export function defineApp<Id extends string>(input: DefineAppInput<Id>): AppDefi
   const { body, titleContent, ...meta } = input;
   return {
     ...meta,
-    render: (ctx, win) => {
-      const app: AppDefinition = { ...meta, render: () => null };
-      return (
-        <Window
-          {...win}
-          title={resolveAppTitle(app, ctx)}
-          titleContent={titleContent?.(ctx)}
-          windowClassName={meta.windowClassName}
-          bodyClassName={meta.bodyClassName}
-        >
-          {body(ctx, win)}
-        </Window>
-      );
-    },
+    render: (ctx, win) => (
+      <Window
+        {...win}
+        title={resolveAppTitle(meta, ctx)}
+        titleContent={titleContent?.(ctx)}
+        windowClassName={meta.windowClassName}
+        bodyClassName={meta.bodyClassName}
+      >
+        {body(ctx, win)}
+      </Window>
+    ),
   };
 }

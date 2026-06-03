@@ -30,8 +30,24 @@ export function appIconSrc(app: AppDefinition, urls: DesktopIconUrls): string {
 
 /** Derive desktop icon definitions from the app registry. */
 export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIconDefinition[] {
-  return apps
-    .filter((app) => app.desktopIcon !== false)
+  const iconApps = apps.filter((app) => app.desktopIcon !== false);
+
+  if (import.meta.env.DEV) {
+    // Any icon-bearing app missing from DESKTOP_ICON_ORDER would silently sort
+    // last (sentinel index). Fail loud during dev so the order list stays in
+    // sync with the registry instead of drifting unnoticed.
+    const missing = iconApps
+      .map((app) => app.id)
+      .filter((id) => !DESKTOP_ICON_ORDER.includes(id as AppId));
+    if (missing.length > 0) {
+      throw new Error(
+        `[desktopIcons] App(s) ${missing.join(', ')} have a desktop icon but are missing ` +
+          `from DESKTOP_ICON_ORDER in apps/desktopIcons.ts (they would silently sort last).`,
+      );
+    }
+  }
+
+  return iconApps
     .sort((a, b) => desktopIconSortIndex(a.id) - desktopIconSortIndex(b.id))
     .map((app) => {
       const cfg = typeof app.desktopIcon === 'object' && app.desktopIcon ? app.desktopIcon : {};

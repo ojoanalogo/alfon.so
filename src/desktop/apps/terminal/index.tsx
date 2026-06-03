@@ -10,5 +10,6 @@ export default defineApp({
   desktopIcon: { label: 'terminal', tooltip: 'Terminal' },
   taskbarTooltip: 'Terminal',
   bodyClassName: 'terminal-window__body',
-  body: (ctx) => createElement(TerminalApp, { posts: ctx.posts, focused: true }),
+  body: (ctx, win) =>
+    createElement(TerminalApp, { posts: ctx.posts, focused: win?.focused ?? false }),
 });

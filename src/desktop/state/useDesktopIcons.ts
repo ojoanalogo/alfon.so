@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { DesktopIcon } from '@/config';
+import { EDGE_MARGIN, TASKBAR_HEIGHT, isMobileViewport } from '../lib/layoutConstants';
 
 export interface IconPosition {
   x: number;
@@ -16,13 +17,6 @@ const COL_PITCH_DESKTOP = 96;
 /** Approximate icon footprint on desktop, used for viewport clamping. */
 const ICON_WIDTH_DESKTOP = 80;
 const ICON_HEIGHT_DESKTOP = 72;
-const EDGE_MARGIN = 8;
-const TASKBAR_HEIGHT = 40;
-const MOBILE_BREAKPOINT = 640;
-
-function isMobileViewport(): boolean {
-  return typeof window !== 'undefined' && window.innerWidth < MOBILE_BREAKPOINT;
-}
 
 function iconGridForViewport(): { maxRows: number; rowPitch: number; colPitch: number } {
   if (isMobileViewport()) {
@@ -99,7 +93,9 @@ export function useDesktopIcons(icons: DesktopIcon[]): DesktopIconsState {
   const [purged, setPurged] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
+    let raf = 0;
     function relayout() {
+      raf = 0;
       setPositions((prev) => {
         const visible = icons.filter((icon) => !deleted.has(icon.id) && !purged.has(icon.id));
         const baseline = defaultPositions(visible);
@@ -111,8 +107,15 @@ export function useDesktopIcons(icons: DesktopIcon[]): DesktopIconsState {
         return next;
       });
     }
-    window.addEventListener('resize', relayout);
-    return () => window.removeEventListener('resize', relayout);
+    // Coalesce resize bursts into one relayout per frame.
+    function schedule() {
+      if (raf === 0) raf = requestAnimationFrame(relayout);
+    }
+    window.addEventListener('resize', schedule);
+    return () => {
+      if (raf !== 0) cancelAnimationFrame(raf);
+      window.removeEventListener('resize', schedule);
+    };
   }, [icons, deleted, purged]);
 
   const visibleIcons = useMemo(

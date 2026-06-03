@@ -11,7 +11,7 @@ import {
   DESKTOP_COLORS,
   resolveDesktopColorValue,
   type DesktopColorOption,
-} from '../apps/settings/desktopColors';
+} from '../lib/desktopColors';
 import { useTheme } from './ThemeContext';
 import {
   iconLabelToneFromLuminance,
@@ -122,14 +122,15 @@ export function WallpaperProvider({
   wallpapers: WallpaperOption[];
   children: ReactNode;
 }) {
-  const [wallpaperId, setWallpaperId] = useState<string | null>(() => {
-    if (typeof window === 'undefined') return null;
-    return resolveStoredPreferences(wallpapers).wallpaperId;
-  });
-  const [backgroundColorId, setBackgroundColorId] = useState(() => {
-    if (typeof window === 'undefined') return 'default';
-    return resolveStoredPreferences(wallpapers).backgroundColorId;
-  });
+  // Resolve stored wallpaper + color once. The resolver also normalizes storage
+  // as a side effect, so running it per-initializer would do that work twice.
+  const [initialPreferences] = useState(() =>
+    typeof window === 'undefined'
+      ? { wallpaperId: null as string | null, backgroundColorId: 'default' }
+      : resolveStoredPreferences(wallpapers),
+  );
+  const [wallpaperId, setWallpaperId] = useState<string | null>(initialPreferences.wallpaperId);
+  const [backgroundColorId, setBackgroundColorId] = useState(initialPreferences.backgroundColorId);
   const [loadedWallpaper, setLoadedWallpaper] = useState<{
     id: string;
     status: 'ready' | 'error';

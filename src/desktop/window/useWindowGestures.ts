@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
-import { MIN_HEIGHT, TASKBAR_HEIGHT } from '../state/useWindowManager';
+import { MIN_HEIGHT, TASKBAR_HEIGHT } from '../lib/layoutConstants';
 
 interface DragGesture {
   type: 'move' | 'resize';

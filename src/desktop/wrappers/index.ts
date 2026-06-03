@@ -10,4 +10,5 @@ export {
   type SettingsSection,
   type TrashController,
   type TrashItem,
+  type WindowChromeProps,
 } from './types';

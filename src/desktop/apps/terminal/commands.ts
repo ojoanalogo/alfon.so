@@ -1,4 +1,5 @@
 import { SOCIAL_LINKS } from '@/config';
+import type { ThemeMode } from '@/lib/theme';
 import type { BlogPostSummary } from '../../types';
 import { APPS } from '../registry';
 import { PROJECTS } from '../projects/data';
@@ -61,10 +62,10 @@ export type TerminalCommandResult = { blocks: TerminalBlock[] } | { clear: true 
 
 export interface TerminalCommandContext {
   posts: BlogPostSummary[];
+  theme: ThemeMode;
 }
 
-function neofetchLines(): string[] {
-  const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+function neofetchLines(theme: ThemeMode): string[] {
   return [
     '        ▄▄▄▄▄▄▄        guest@alfon.so',
     '      ▄████████▄      ─────────────────',
@@ -200,7 +201,7 @@ export function runTerminalCommand(
     }
     case 'neofetch':
     case 'fetch':
-      return { blocks: [commandBlock, { kind: 'output', lines: neofetchLines() }] };
+      return { blocks: [commandBlock, { kind: 'output', lines: neofetchLines(ctx.theme) }] };
     case 'clear':
       return { clear: true };
     case 'whoami':

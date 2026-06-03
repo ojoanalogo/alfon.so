@@ -1,13 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
 import Card from '../../components/ui/Card.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { sortMDByDate } from '../../utils';
+import { getPublishedPosts } from '../../lib/blog';
 import TerminalPrompt from '../../components/ui/TerminalPrompt.astro';
 import SectionHeading from '../../components/ui/SectionHeading.astro';
 import PostList from '../../components/ui/PostList.astro';
 
-const allPosts = await getCollection('blog');
+const allPosts = await getPublishedPosts();
 const allPostsByDate = sortMDByDate(allPosts);
 ---
 

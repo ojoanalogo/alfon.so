@@ -2,7 +2,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { flushSync } from 'react-dom';
 import type { WindowManager } from './useWindowManager';
 import type { WindowDef, WindowGeometry } from '../types';
-import { isMobileViewport, mobileWindowGeometry } from '../lib/viewport';
+import { mobileWindowGeometry } from '../lib/viewport';
+import { isMobileViewport } from '../lib/layoutConstants';
 
 export function useResponsiveLayout(
   wm: WindowManager,

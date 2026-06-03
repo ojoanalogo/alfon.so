@@ -1,18 +1,17 @@
 ---
 import type { ImageMetadata } from 'astro';
-import { getCollection } from 'astro:content';
 import { getImage } from 'astro:assets';
 import DesktopApp from '@/desktop/DesktopApp';
 import AboutContent from '@/desktop/apps/about/AboutContent';
 import Card from '../components/ui/Card.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { DESKTOP_ICON_URLS } from '@desktop/lib/desktopIcons';
-import { prepareBlogPost } from '../lib/blog';
+import { getPublishedPosts, prepareBlogPost } from '../lib/blog';
 import { sortMDByDate } from '../utils';
 import type { BlogPostSummary, WallpaperOption } from '@/desktop/types';
 
 const MAX_POSTS = 10;
-const entries = sortMDByDate(await getCollection('blog')).slice(0, MAX_POSTS);
+const entries = sortMDByDate(await getPublishedPosts()).slice(0, MAX_POSTS);
 const posts: BlogPostSummary[] = await Promise.all(entries.map((entry) => prepareBlogPost(entry)));
 
 const wallpaperModules = import.meta.glob<{ default: ImageMetadata }>(

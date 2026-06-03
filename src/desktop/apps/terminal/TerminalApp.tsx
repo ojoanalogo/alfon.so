@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BlogPostSummary } from '../../types';
+import { useTheme } from '../../state/ThemeContext';
 import { runTerminalCommand, TERMINAL_MOTD, TERMINAL_PROMPT, type TerminalBlock } from './commands';
 
 interface TerminalAppProps {
@@ -35,6 +36,7 @@ function TerminalBlockView({ block }: { block: TerminalBlock }) {
 }
 
 export default function TerminalApp({ posts, focused = false }: TerminalAppProps) {
+  const { theme } = useTheme();
   const [blocks, setBlocks] = useState<TerminalBlock[]>([]);
   const [draft, setDraft] = useState('');
   const [history, setHistory] = useState<string[]>([]);
@@ -61,7 +63,7 @@ export default function TerminalApp({ posts, focused = false }: TerminalAppProps
     const trimmed = draft.trim();
     if (!trimmed) return;
 
-    const result = runTerminalCommand(trimmed, { posts });
+    const result = runTerminalCommand(trimmed, { posts, theme });
 
     setHistory((prev) => [...prev, trimmed]);
     setHistoryIndex(-1);

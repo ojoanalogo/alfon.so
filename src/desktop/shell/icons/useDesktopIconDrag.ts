@@ -212,12 +212,16 @@ export function useDesktopIconDrag({
       }
     }
 
+    /** Single end-of-drag reset shared by every termination path. */
+    function teardown() {
+      document.body.classList.remove('is-window-gesturing', 'is-trash-drop-target');
+      overTrashRef.current = false;
+      dragRef.current = null;
+    }
+
     function endDrag(event: PointerEvent) {
       const drag = dragRef.current;
       if (!drag || event.pointerId !== drag.pointerId) return;
-
-      document.body.classList.remove('is-trash-drop-target');
-      overTrashRef.current = false;
 
       const {
         trashRef: trash,
@@ -227,29 +231,29 @@ export function useDesktopIconDrag({
 
       if (drag.moved) {
         suppressClickRef.current = true;
-        document.body.classList.remove('is-window-gesturing');
 
         const droppedOnTrash = isPointerOverTrash(event.clientX, event.clientY, trash.current);
         if (droppedOnTrash) {
           remove(Object.keys(drag.origins));
           suppressTrash.current = true;
-          dragRef.current = null;
+          teardown();
           publishVisual(0, 0, 0, new Set());
           return;
         }
 
-        releaseRef.current = {
+        const released = {
           tiltX: drag.tiltX,
           tiltY: drag.tiltY,
           draggingIds: new Set(Object.keys(drag.origins)),
           releaseStart: performance.now(),
         };
-        dragRef.current = null;
+        teardown();
+        releaseRef.current = released;
         scheduleFrame();
         return;
       }
 
-      dragRef.current = null;
+      teardown();
       publishVisual(0, 0, 0, new Set());
     }
 

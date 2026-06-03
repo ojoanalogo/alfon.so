@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { NAV_LINKS, SITE_TITLE, SOCIAL_LINKS, type DesktopIcon, type NavLink } from '@/config';
+import { TASKBAR_HEIGHT } from '@desktop/lib/layoutConstants';
 
 export interface StartMenuProps {
   anchorRef: RefObject<HTMLElement | null>;
@@ -12,7 +13,6 @@ export interface StartMenuProps {
 }
 
 const VIEWPORT_MARGIN = 8;
-const TASKBAR_HEIGHT = 40;
 
 const MENU_SECTION = 'px-[0.375rem]';
 const MENU_SECTION_TITLE =
@@ -152,7 +152,7 @@ export default function StartMenu({
                   type="button"
                   role="menuitem"
                   className={MENU_ITEM}
-                  onClick={() => run(() => onOpenWindow(icon.windowId!))}
+                  onClick={() => run(() => onOpenWindow(icon.windowId))}
                 >
                   <img
                     src={icon.iconSrc}

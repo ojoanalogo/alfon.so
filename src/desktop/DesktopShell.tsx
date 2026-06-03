@@ -4,7 +4,7 @@ import { resolveDesktopShellIcons } from './apps/desktopIcons';
 import { TRASH_APP_ID } from './apps/postWindow';
 import { useBrowserHistories } from './wrappers/browser/useBrowserHistories';
 import { useWindowManagerContext } from './state/WindowManagerContext';
-import type { AppDefinition } from '@desktop/wrappers';
+import type { AppDefinition, WindowChromeProps } from '@desktop/wrappers';
 import type { BlogPostSummary, WindowDef, WindowGeometry } from './types';
 import Wallpaper from './shell/Wallpaper';
 import BootOverlay from './shell/BootOverlay';
@@ -12,12 +12,11 @@ import DesktopIcons from './shell/icons/DesktopIcons';
 import Taskbar from './shell/taskbar/Taskbar';
 import Papelera from './shell/trash/Papelera';
 import { useDesktopIcons } from './state/useDesktopIcons';
-import { minWidthForDef } from './state/useWindowManager';
 import { useResponsiveLayout } from './state/useResponsiveLayout';
 import { useTrashController } from './state/useTrashController';
 import { useAppContext } from './state/useAppContext';
 import { useTaskbarMeta } from './state/useTaskbarMeta';
-import { isMobileViewport } from './lib/viewport';
+import { isMobileViewport, minWidthForDef } from './lib/layoutConstants';
 import { useMemo, useEffect } from 'react';
 
 interface DesktopShellProps {
@@ -111,7 +110,7 @@ export default function DesktopShell({
           const state = wm.windows[app.id];
           const def = defs.find((d) => d.id === app.id);
           if (!state || !def) return null;
-          const win = {
+          const win: WindowChromeProps = {
             state,
             focused: wm.focusedId === app.id,
             minWidth: minWidthForDef(def),

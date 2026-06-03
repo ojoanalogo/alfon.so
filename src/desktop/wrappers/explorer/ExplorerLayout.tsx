@@ -5,12 +5,6 @@ import GridLayout from './GridLayout';
 import FolderList from './FolderList';
 import type { ListItem } from './types';
 
-/**
- * Back-compat alias — ExplorerItem was renamed to ListItem.
- * Prefer importing ListItem directly from `./types` in new code.
- */
-export type ExplorerItem = ListItem;
-
 interface ExplorerLayoutProps {
   items: ListItem[];
   onActivate: (id: string) => void;

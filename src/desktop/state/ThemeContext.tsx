@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   applyThemePreference,
   ensureThemeRuntime,
@@ -49,23 +57,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  function setTheme(next: ThemePreference) {
+  const setTheme = useCallback((next: ThemePreference) => {
     applyThemePreference(next);
     setSnapshot(readSnapshot());
-  }
+  }, []);
 
-  function toggleTheme() {
+  const toggleTheme = useCallback(() => {
     toggleThemePreference();
     setSnapshot(readSnapshot());
-  }
+  }, []);
 
-  const value: ThemeContextValue = {
-    preference,
-    theme,
-    isDark: theme === 'dark',
-    setTheme,
-    toggleTheme,
-  };
+  const value = useMemo<ThemeContextValue>(
+    () => ({
+      preference,
+      theme,
+      isDark: theme === 'dark',
+      setTheme,
+      toggleTheme,
+    }),
+    [preference, theme, setTheme, toggleTheme],
+  );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

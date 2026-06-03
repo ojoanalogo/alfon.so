@@ -26,14 +26,11 @@ export function explorerApp<Id extends string>(input: ExplorerAppInput<Id>): App
   const { items, onActivate, footer, defaultMode, ...meta } = input;
   return {
     ...meta,
-    render: (ctx, win) => {
-      const app: AppDefinition = { ...meta, render: () => null };
-      return (
-        <ExplorerWindow {...win} title={resolveAppTitle(app, ctx)} defaultMode={defaultMode}>
-          <ExplorerLayout items={items(ctx)} onActivate={(id) => onActivate?.(id, ctx)} />
-          {footer?.(ctx)}
-        </ExplorerWindow>
-      );
-    },
+    render: (ctx, win) => (
+      <ExplorerWindow {...win} title={resolveAppTitle(meta, ctx)} defaultMode={defaultMode}>
+        <ExplorerLayout items={items(ctx)} onActivate={(id) => onActivate?.(id, ctx)} />
+        {footer?.(ctx)}
+      </ExplorerWindow>
+    ),
   };
 }

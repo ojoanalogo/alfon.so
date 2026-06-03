@@ -1,6 +1,5 @@
-import { MIN_HEIGHT, TASKBAR_HEIGHT } from '../state/useWindowManager';
+import { MIN_HEIGHT, TASKBAR_HEIGHT, EDGE_MARGIN } from './layoutConstants';
 
-const EDGE_MARGIN = 8;
 /** Max px a window center may shift from the viewport center. */
 const JITTER_X = 140;
 const JITTER_Y = 100;

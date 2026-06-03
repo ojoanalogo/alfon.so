@@ -1,19 +1,11 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { WindowDef, WindowGeometry, WindowState } from '../types';
 import {
-  isMobileViewport,
   resolveWindowGeometry,
   resolveDefaultOpenGeometry,
   effectiveMinWidth,
 } from '../lib/viewport';
-
-export const MIN_WIDTH = 400;
-export const MIN_HEIGHT = 140;
-export const TASKBAR_HEIGHT = 40;
-
-export function minWidthForDef(def: WindowDef): number {
-  return def.minWidth ?? MIN_WIDTH;
-}
+import { isMobileViewport, MIN_WIDTH, MIN_HEIGHT } from '../lib/layoutConstants';
 
 function createInitialState(
   defs: WindowDef[],

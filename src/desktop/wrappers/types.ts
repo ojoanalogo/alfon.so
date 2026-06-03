@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { formatWindowTitle } from '@desktop/lib/formatWindowTitle';
 import type { IconKey } from '@desktop/lib/desktopIcons';
-import type { AppGeometry, BlogPostSummary, WindowGeometry, WindowState } from '../types';
+import type { AppGeometry, BlogPostSummary } from '../types';
+import type { WindowProps } from '../window/Window';
 import type { BrowserHistories } from './browser/useBrowserHistories';
 
 export type { AppGeometry };
@@ -37,22 +38,15 @@ export interface AppContext {
   iconUrls: Record<string, string>;
 }
 
-/** Window-manager wiring handed to each app's render by DesktopShell. */
-export interface WindowChromeProps {
-  state: WindowState;
-  focused: boolean;
-  minWidth: number;
-  defaultWidth: number;
-  defaultHeight?: number;
-  center?: boolean;
-  onFocus: () => void;
-  onClose: () => void;
-  onMinimize: () => void;
-  onToggleMaximize: () => void;
-  onGeometryChange: (geometry: Partial<WindowGeometry>) => void;
-  /** Minimum height for content-sized windows. */
-  minHeight?: number;
-}
+/**
+ * Window-manager wiring handed to each app's render by DesktopShell. Derived
+ * from `WindowProps` (minus the chrome/content props the wrapper supplies) so
+ * the two cannot drift; `minWidth` is required at this boundary.
+ */
+export type WindowChromeProps = Omit<
+  WindowProps,
+  'title' | 'children' | 'titleContent' | 'bodyClassName' | 'windowClassName'
+> & { minWidth: number };
 
 export interface DesktopIconConfig {
   label?: string;
@@ -87,7 +81,7 @@ export interface AppDefinition<Id extends string = string> {
   render: (ctx: AppContext, win: WindowChromeProps) => ReactNode;
 }
 
-export function resolveAppTitle(app: AppDefinition, ctx: AppContext): string {
+export function resolveAppTitle(app: Pick<AppDefinition, 'title'>, ctx: AppContext): string {
   const raw = typeof app.title === 'function' ? app.title(ctx) : app.title;
   return formatWindowTitle(raw);
 }
