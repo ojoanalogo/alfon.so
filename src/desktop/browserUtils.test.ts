@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeBrowserUrl } from './browserUtils';
+import { normalizeBrowserUrl, isFrameBlockedUrl } from './browserUtils';
 
 describe('normalizeBrowserUrl', () => {
   describe('invalid / empty input fallbacks', () => {
@@ -97,5 +97,43 @@ describe('normalizeBrowserUrl', () => {
       const b = normalizeBrowserUrl('example.com/page');
       expect(a).toBe(b);
     });
+  });
+});
+
+describe('isFrameBlockedUrl', () => {
+  it('returns false for null / undefined / empty', () => {
+    expect(isFrameBlockedUrl(null)).toBe(false);
+    expect(isFrameBlockedUrl(undefined)).toBe(false);
+    expect(isFrameBlockedUrl('')).toBe(false);
+  });
+
+  it('returns false for an unparseable url', () => {
+    expect(isFrameBlockedUrl('not a url')).toBe(false);
+  });
+
+  it('flags a known blocked host', () => {
+    expect(isFrameBlockedUrl('https://github.com/torvalds')).toBe(true);
+    expect(isFrameBlockedUrl('https://x.com/home')).toBe(true);
+    expect(isFrameBlockedUrl('https://youtube.com/watch?v=abc')).toBe(true);
+  });
+
+  it('matches subdomains of a blocked host (suffix match)', () => {
+    expect(isFrameBlockedUrl('https://gist.github.com/foo')).toBe(true);
+    expect(isFrameBlockedUrl('https://www.linkedin.com/in/foo')).toBe(true);
+  });
+
+  it('does not flag a host that merely ends with a blocked label (no dot boundary)', () => {
+    // "notgithub.com" must NOT match "github.com"
+    expect(isFrameBlockedUrl('https://notgithub.com')).toBe(false);
+    expect(isFrameBlockedUrl('https://mygoogle.com')).toBe(false);
+  });
+
+  it('returns false for an embeddable site', () => {
+    expect(isFrameBlockedUrl('https://ojoanalogo.com')).toBe(false);
+    expect(isFrameBlockedUrl('https://example.com/path')).toBe(false);
+  });
+
+  it('is case-insensitive on the host', () => {
+    expect(isFrameBlockedUrl('https://GitHub.com')).toBe(true);
   });
 });

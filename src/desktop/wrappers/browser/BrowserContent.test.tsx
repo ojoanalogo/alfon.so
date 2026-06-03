@@ -71,6 +71,41 @@ describe('BrowserContent', () => {
     expect(browsers.get).toHaveBeenCalledWith('other-app');
   });
 
+  it('shows the open-in-new-tab fallback (no iframe) for a frame-blocked host', () => {
+    const { container } = render(
+      <BrowserContent
+        appId={APP_ID}
+        browsers={makeBrowsers({ url: 'https://github.com/torvalds' })}
+      />,
+    );
+    expect(container.querySelector('iframe')).toBeNull();
+    expect(screen.getByText(/no permite incrustarse/i)).toBeTruthy();
+    const link = screen.getByRole('link', { name: /abrir en pestaña nueva/i }) as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('https://github.com/torvalds');
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
+  it('shows the blocked host (not the full url) in the fallback message', () => {
+    render(
+      <BrowserContent
+        appId={APP_ID}
+        browsers={makeBrowsers({ url: 'https://x.com/some/deep/path' })}
+      />,
+    );
+    expect(screen.getByText('x.com')).toBeTruthy();
+  });
+
+  it('still renders an iframe for an embeddable host', () => {
+    const { container } = render(
+      <BrowserContent
+        appId={APP_ID}
+        browsers={makeBrowsers({ url: 'https://ojoanalogo.com' })}
+      />,
+    );
+    expect(container.querySelector('iframe')).toBeTruthy();
+  });
+
   it('keys the iframe so url + reloadKey changes force a remount', () => {
     const { container, rerender } = render(
       <BrowserContent
