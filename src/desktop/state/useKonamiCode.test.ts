@@ -1,8 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { KONAMI_SEQUENCE } from '../lib/konami';
 import { useKonamiCode } from './useKonamiCode';
 
+// renderHook auto-unmounts after each test, so the document keydown listener is
+// always removed between cases — no manual teardown is needed.
 function dispatch(keys: readonly string[]) {
   act(() => {
     for (const key of keys) {
@@ -10,10 +12,6 @@ function dispatch(keys: readonly string[]) {
     }
   });
 }
-
-beforeEach(() => {
-  document.body.innerHTML = '';
-});
 
 describe('useKonamiCode', () => {
   it('calls onUnlock exactly once after the full sequence', () => {
