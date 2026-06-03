@@ -105,7 +105,7 @@ export default function DesktopShell({
         suppressTrashClickRef={suppressTrashClickRef}
       />
 
-      <div className="pointer-events-none relative min-h-[calc(100dvh-5rem)]">
+      <div className="pointer-events-none relative min-h-full">
         {apps.map((app) => {
           const state = wm.windows[app.id];
           const def = defs.find((d) => d.id === app.id);
