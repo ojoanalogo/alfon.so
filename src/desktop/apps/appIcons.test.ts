@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { AppDefinition } from '@desktop/wrappers';
-import { appIconSrc, appsToIconDefinitions } from './desktopIcons';
+import { appIconSrc, appsToIconDefinitions } from './appIcons';
 
 /**
  * Build a minimal AppDefinition-shaped object. Only the fields read by

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { formatWindowTitle } from '@desktop/lib/formatWindowTitle';
 import { TRASH_JUNK } from '../apps/trash/junk';
-import { appIconSrc } from '../apps/desktopIcons';
+import { appIconSrc } from '../apps/appIcons';
 import type { AppDefinition } from '@desktop/wrappers';
 import type { WindowMeta } from '../types';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';

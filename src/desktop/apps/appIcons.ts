@@ -41,8 +41,8 @@ export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIc
       .filter((id) => !DESKTOP_ICON_ORDER.includes(id as AppId));
     if (missing.length > 0) {
       throw new Error(
-        `[desktopIcons] App(s) ${missing.join(', ')} have a desktop icon but are missing ` +
-          `from DESKTOP_ICON_ORDER in apps/desktopIcons.ts (they would silently sort last).`,
+        `[appIcons] App(s) ${missing.join(', ')} have a desktop icon but are missing ` +
+          `from DESKTOP_ICON_ORDER in apps/appIcons.ts (they would silently sort last).`,
       );
     }
   }

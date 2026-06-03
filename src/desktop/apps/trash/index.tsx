@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { explorerApp } from '@desktop/wrappers';
 import type { ListItem } from '../../wrappers/explorer/types';
-import { appIconSrc } from '../desktopIcons';
+import { appIconSrc } from '../appIcons';
 // registry also imports this module; the cycle is safe — findApp() is only
 // called at render time (inside items()), not during module initialisation.
 import { findApp } from '../registry';
