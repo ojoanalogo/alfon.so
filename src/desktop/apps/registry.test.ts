@@ -1,13 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { makeAppContext, makeBlogPost } from '@test/factories';
-import {
-  APPS,
-  findApp,
-  createPostApps,
-  isPostApp,
-  findPostBySlug,
-} from './registry';
-import { postWindowId } from './postWindow';
+import { APPS, findApp, createPostApps, findPostBySlug } from './registry';
+import { postWindowId, isPostWindowId } from './postWindow';
 
 describe('APPS registry', () => {
   it('is a non-empty list', () => {
@@ -59,7 +53,7 @@ describe('APPS registry', () => {
 
   it('does not include any dynamic post apps (those are created at runtime)', () => {
     for (const app of APPS) {
-      expect(isPostApp(app.id)).toBe(false);
+      expect(isPostWindowId(app.id)).toBe(false);
     }
   });
 
@@ -102,7 +96,7 @@ describe('re-exported post helpers', () => {
     const postApps = createPostApps(posts);
     expect(postApps).toHaveLength(2);
     for (const app of postApps) {
-      expect(isPostApp(app.id)).toBe(true);
+      expect(isPostWindowId(app.id)).toBe(true);
       // Dynamic apps live outside the static registry.
       expect(findApp(app.id)).toBeUndefined();
     }
@@ -120,8 +114,8 @@ describe('re-exported post helpers', () => {
     expect(findPostBySlug(posts, postWindowId('missing'))).toBeUndefined();
   });
 
-  it('isPostApp discriminates post ids from registry ids', () => {
-    expect(isPostApp(postWindowId('x'))).toBe(true);
-    expect(isPostApp('terminal')).toBe(false);
+  it('isPostWindowId discriminates post ids from registry ids', () => {
+    expect(isPostWindowId(postWindowId('x'))).toBe(true);
+    expect(isPostWindowId('terminal')).toBe(false);
   });
 });

@@ -22,10 +22,6 @@ export function createPostApps(posts: BlogPostSummary[]): AppDefinition[] {
   );
 }
 
-export function isPostApp(id: string): boolean {
-  return id.startsWith('post:');
-}
-
 export function findPostBySlug(posts: BlogPostSummary[], windowId: string) {
   const slug = postSlugFromWindowId(windowId);
   return posts.find((post) => post.slug === slug);

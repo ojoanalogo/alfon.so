@@ -62,4 +62,4 @@ export function findApp(id: string): AppDefinition | undefined {
 // Dynamic per-post apps
 // ---------------------------------------------------------------------------
 
-export { createPostApps, isPostApp, findPostBySlug } from './post/postApp';
+export { createPostApps, findPostBySlug } from './post/postApp';

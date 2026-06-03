@@ -3,7 +3,6 @@ import {
   POST_DATE_MIN_WIDTH,
   postDateFormatter,
   postLongDateFormatter,
-  formatPostDate,
 } from './postFormatting';
 
 describe('postFormatting', () => {
@@ -60,35 +59,6 @@ describe('postFormatting', () => {
       expect(postLongDateFormatter.format(d).length).toBeGreaterThan(
         postDateFormatter.format(d).length,
       );
-    });
-  });
-
-  describe('formatPostDate', () => {
-    it('formats a Date instance using the short formatter', () => {
-      const d = new Date(2024, 0, 15);
-      expect(formatPostDate(d)).toBe(postDateFormatter.format(d));
-    });
-
-    it('accepts an ISO date string and parses it before formatting', () => {
-      const iso = '2024-01-15T00:00:00.000Z';
-      const expected = postDateFormatter.format(new Date(iso));
-      expect(formatPostDate(iso)).toBe(expected);
-    });
-
-    it('produces equal output for a Date and its equivalent ISO string', () => {
-      const iso = '2023-06-20T12:00:00.000Z';
-      expect(formatPostDate(iso)).toBe(formatPostDate(new Date(iso)));
-    });
-
-    it('returns the short (abbreviated month) representation, not the long one', () => {
-      const d = new Date(2024, 0, 15);
-      expect(formatPostDate(d)).not.toBe(postLongDateFormatter.format(d));
-    });
-
-    it('throws RangeError for an unparseable string (Invalid Date)', () => {
-      // typeof 'string' branch -> new Date('nope') -> Invalid Date,
-      // which Intl.DateTimeFormat.format rejects with "Invalid time value".
-      expect(() => formatPostDate('not-a-real-date')).toThrow(RangeError);
     });
   });
 });

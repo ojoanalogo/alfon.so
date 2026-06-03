@@ -16,8 +16,3 @@ export const postLongDateFormatter = new Intl.DateTimeFormat('es-MX', {
   month: 'long',
   year: 'numeric',
 });
-
-export function formatPostDate(date: Date | string): string {
-  const value = typeof date === 'string' ? new Date(date) : date;
-  return postDateFormatter.format(value);
-}

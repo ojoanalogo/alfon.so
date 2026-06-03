@@ -8,7 +8,6 @@ import {
   ensureThemeRuntime,
   getEffectiveTheme,
   getThemePreference,
-  readTheme,
   setupThemeToggles,
   syncThemeFromPreference,
   toggleThemePreference,
@@ -138,15 +137,6 @@ describe('applyThemeToDocument', () => {
     document.documentElement.classList.add('dark');
     applyThemeToDocument('light');
     expect(document.documentElement.classList.contains('dark')).toBe(false);
-  });
-});
-
-describe('readTheme (deprecated alias)', () => {
-  it('mirrors getEffectiveTheme', () => {
-    stubMatchMedia(true);
-    expect(readTheme()).toBe('dark');
-    stubMatchMedia(false);
-    expect(readTheme()).toBe('light');
   });
 });
 

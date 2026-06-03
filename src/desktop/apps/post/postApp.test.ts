@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { makeBlogPost } from '@test/factories';
-import { createPostApps, isPostApp, findPostBySlug } from './postApp';
+import { createPostApps, findPostBySlug } from './postApp';
 import {
   postWindowId,
   isPostWindowId,
@@ -43,24 +43,6 @@ describe('postWindow id helpers', () => {
   });
 });
 
-describe('isPostApp', () => {
-  it('returns true for ids starting with the post prefix', () => {
-    expect(isPostApp('post:foo')).toBe(true);
-    expect(isPostApp(postWindowId('bar'))).toBe(true);
-  });
-
-  it('returns false for non-post app ids', () => {
-    expect(isPostApp('browser')).toBe(false);
-    expect(isPostApp('trash')).toBe(false);
-    expect(isPostApp('')).toBe(false);
-  });
-
-  it('does not match the prefix without the colon', () => {
-    expect(isPostApp('postman')).toBe(false);
-    expect(isPostApp('post')).toBe(false);
-  });
-});
-
 describe('createPostApps', () => {
   it('creates one app definition per post', () => {
     const posts = [
@@ -81,7 +63,6 @@ describe('createPostApps', () => {
     const [app] = createPostApps([post]);
     expect(app.id).toBe(postWindowId('derived-id'));
     expect(app.id).toBe('post:derived-id');
-    expect(isPostApp(app.id)).toBe(true);
   });
 
   it('sets the title to "<slug>.md" and tooltip to the post title', () => {

@@ -65,11 +65,6 @@ export function toggleThemePreference() {
   applyThemePreference(effective === 'dark' ? 'light' : 'dark');
 }
 
-/** @deprecated Use getEffectiveTheme — kept for call sites that expect readTheme. */
-export function readTheme(): ThemeMode {
-  return getEffectiveTheme();
-}
-
 export function syncThemeFromPreference() {
   applyThemeToDocument(getEffectiveTheme());
   syncThemePreferenceAttribute(getThemePreference());
