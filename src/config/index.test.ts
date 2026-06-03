@@ -7,7 +7,7 @@ import {
   type NavLink,
   type SocialLink,
   type SocialPlatform,
-} from './config';
+} from './index';
 
 // NOTE: The task brief mentions DESKTOP_ICON_DEFINITIONS, but config.ts no
 // longer exports it — per the in-file comment the desktop icon defs moved to
