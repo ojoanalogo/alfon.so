@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { WINDOW_ACTION_BTN } from '@/styles/tokens';
-import GameShell from '../GameShell';
+import GameShell, { GameOverOverlay } from '../GameShell';
 import { useGameControls } from '../useGameControls';
 import { useGameLoop } from '../useGameLoop';
 
@@ -194,15 +193,7 @@ export default function SnakeGame({ active }: SnakeGameProps) {
     <GameShell
       hint="flechas / wasd · espacio reinicia"
       score={`puntos: ${game.score}`}
-      overlay={
-        game.gameOver ? (
-          <div className="absolute inset-x-0 bottom-2 flex justify-center">
-            <button type="button" className={WINDOW_ACTION_BTN} onClick={restart}>
-              jugar de nuevo
-            </button>
-          </div>
-        ) : null
-      }
+      overlay={<GameOverOverlay show={game.gameOver} onRestart={restart} />}
     >
       <canvas ref={canvasRef} width={COLS * CELL} height={ROWS * CELL} aria-label="Snake" />
     </GameShell>

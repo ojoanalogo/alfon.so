@@ -1,4 +1,17 @@
 import type { ReactNode } from 'react';
+import { WINDOW_ACTION_BTN } from '@/styles/tokens';
+
+/** Standard "jugar de nuevo" overlay shown over the stage when a game ends. */
+export function GameOverOverlay({ show, onRestart }: { show: boolean; onRestart: () => void }) {
+  if (!show) return null;
+  return (
+    <div className="absolute inset-x-0 bottom-2 flex justify-center">
+      <button type="button" className={WINDOW_ACTION_BTN} onClick={onRestart}>
+        jugar de nuevo
+      </button>
+    </div>
+  );
+}
 
 interface GameShellProps {
   hint?: string;

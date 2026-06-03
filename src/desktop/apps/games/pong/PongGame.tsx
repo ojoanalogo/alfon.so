@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { WINDOW_ACTION_BTN } from '@/styles/tokens';
-import GameShell from '../GameShell';
+import GameShell, { GameOverOverlay } from '../GameShell';
+import { useAxisControls } from '../useAxisControls';
 import { useGameControls } from '../useGameControls';
 import { useGameLoop } from '../useGameLoop';
 
@@ -114,6 +114,7 @@ export default function PongGame({ active }: PongGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [game, setGame] = useState(initialState);
   const moveRef = useRef(0);
+  useAxisControls(active, moveRef);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -144,21 +145,6 @@ export default function PongGame({ active }: PongGameProps) {
     [game.gameOver, restart],
   );
 
-  const handleKeyUp = useCallback((event: KeyboardEvent) => {
-    if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(event.key)) {
-      moveRef.current = 0;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!active) {
-      moveRef.current = 0;
-      return;
-    }
-    window.addEventListener('keyup', handleKeyUp);
-    return () => window.removeEventListener('keyup', handleKeyUp);
-  }, [active, handleKeyUp]);
-
   useGameControls(active, handleKeyDown);
 
   const tick = useCallback(() => {
@@ -171,15 +157,7 @@ export default function PongGame({ active }: PongGameProps) {
     <GameShell
       hint="← → / a d · rebota la pelota"
       score={`puntos: ${game.score}`}
-      overlay={
-        game.gameOver ? (
-          <div className="absolute inset-x-0 bottom-2 flex justify-center">
-            <button type="button" className={WINDOW_ACTION_BTN} onClick={restart}>
-              jugar de nuevo
-            </button>
-          </div>
-        ) : null
-      }
+      overlay={<GameOverOverlay show={game.gameOver} onRestart={restart} />}
     >
       <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} aria-label="Pong" />
     </GameShell>
