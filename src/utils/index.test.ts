@@ -31,7 +31,7 @@ describe('sortMDByDate', () => {
     ]);
   });
 
-  it('mutates the input array in place and returns the same reference', () => {
+  it('returns a new sorted array without mutating the input', () => {
     const posts = [
       entry('2024-01-01T00:00:00.000Z'),
       entry('2024-05-01T00:00:00.000Z'),
@@ -39,10 +39,15 @@ describe('sortMDByDate', () => {
 
     const result = sortMDByDate(posts);
 
-    // Same array reference (Array.prototype.sort mutates and returns it).
-    expect(result).toBe(posts);
-    // The original array is now reordered.
+    // A fresh array, not the same reference.
+    expect(result).not.toBe(posts);
+    // The original array keeps its original order.
     expect(dates(posts)).toEqual([
+      '2024-01-01T00:00:00.000Z',
+      '2024-05-01T00:00:00.000Z',
+    ]);
+    // The returned array is sorted newest-first.
+    expect(dates(result)).toEqual([
       '2024-05-01T00:00:00.000Z',
       '2024-01-01T00:00:00.000Z',
     ]);
@@ -55,12 +60,11 @@ describe('sortMDByDate', () => {
     expect(result).toHaveLength(0);
   });
 
-  it('returns an empty array unchanged when given an empty array', () => {
+  it('returns an empty array when given an empty array', () => {
     const posts: BlogEntry[] = [];
 
     const result = sortMDByDate(posts);
 
-    expect(result).toBe(posts);
     expect(result).toHaveLength(0);
   });
 
