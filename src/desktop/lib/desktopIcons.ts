@@ -2,7 +2,6 @@ import about from '../../assets/icons/paper.png?url';
 import blog from '../../assets/icons/book-pencil.png?url';
 import notes from '../../assets/icons/notes.png?url';
 import games from '../../assets/icons/games.png?url';
-import classified from '../../assets/icons/attachment.png?url';
 import photos from '../../assets/icons/photos-folder.png?url';
 import projects from '../../assets/icons/open-folder.png?url';
 import settings from '../../assets/icons/settings.png?url';
@@ -19,7 +18,6 @@ export const DESKTOP_ICON_URLS = {
   blog,
   notes,
   games,
-  classified,
   photos,
   projects,
   settings,

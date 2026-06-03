@@ -25,8 +25,8 @@ export interface TrashJunkItem {
 
 /** Permanent papelera contents — folder-style junk drawer. */
 export const TRASH_JUNK: TrashJunkItem[] = [
-  { id: 'area51', name: 'area51.pdf', kind: 'PDF', iconSrc: paper, appId: 'area51' },
-  { id: 'ovnis', name: 'ovnis.pdf', kind: 'PDF', iconSrc: paper, appId: 'ovnis' },
+  { id: 'area51', name: 'area51.pdf', kind: 'PDF', iconSrc: paper },
+  { id: 'ovnis', name: 'ovnis.pdf', kind: 'PDF', iconSrc: paper },
   { id: 'happy', name: 'no_abrir.mp4', kind: 'Video', iconSrc: video, appId: 'happy' },
   { id: 'cv', name: 'mi_cv_final_FINAL_v7.doc', kind: 'Documento', iconSrc: paper },
   { id: 'cv-copy', name: 'mi_cv_final_FINAL_v7 (copia).doc', kind: 'Documento', iconSrc: paper },

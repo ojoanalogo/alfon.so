@@ -83,19 +83,15 @@ describe('useTaskbarMeta', () => {
   });
 
   it('overrides the label with the bare trash-junk filename for junk apps', () => {
-    // area51/ovnis/happy are wired to TRASH_JUNK entries with appId set.
-    const apps = [
-      makeApp({ id: 'area51', title: 'Top Secret Dossier', iconUrl: '/p.png' }),
-      makeApp({ id: 'happy', title: 'A Wholesome Video', iconUrl: '/v.png' }),
-    ];
+    // happy is wired to a TRASH_JUNK entry with appId set.
+    const apps = [makeApp({ id: 'happy', title: 'A Wholesome Video', iconUrl: '/v.png' })];
     const { result } = renderHook(() => useTaskbarMeta(apps, {}));
 
-    // Raw junk names are 'area51.pdf' and 'no_abrir.mp4'; formatWindowTitle
-    // capitalizes the first LETTER it finds.
-    expect(result.current.area51.label).toBe('Area51.pdf');
+    // Raw junk name is 'no_abrir.mp4'; formatWindowTitle capitalizes the first
+    // LETTER it finds.
     expect(result.current.happy.label).toBe('No_abrir.mp4');
     // tooltip defaults to the (junk-overridden) label.
-    expect(result.current.area51.tooltip).toBe('Area51.pdf');
+    expect(result.current.happy.tooltip).toBe('No_abrir.mp4');
   });
 
   it('does NOT apply the trash-junk override to non-junk app ids', () => {

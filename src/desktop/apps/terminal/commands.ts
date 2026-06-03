@@ -31,24 +31,6 @@ const CAT_FILES: Record<string, string[]> = {
   proyectos: PROJECTS.map(
     (project) => `drwxr-xr-x  ${`${project.title}/`.padEnd(12)}${project.description}`,
   ),
-  'area51.pdf': [
-    '*** TOP SECRET — area51.pdf ***',
-    '',
-    'INFORME DE INCIDENTE — SECTOR 7',
-    'A las [REDACTED] horas se observó un objeto [REDACTED]',
-    'sobre el hangar [REDACTED]. Solicitó una quesadilla.',
-    '',
-    'Conclusión: era [REDACTED]. Probablemente.',
-    'si lees esto, ya saben dónde vives 👁️',
-  ],
-  'ovnis.pdf': [
-    '*** CLASIFICADO — ovnis.pdf ***',
-    '',
-    'CATÁLOGO DE AVISTAMIENTOS NO EXPLICADOS',
-    '[REDACTED] avistamientos entre [REDACTED] y el martes pasado.',
-    'Forma: [REDACTED] · Velocidad: [REDACTED] nudos',
-    'Recomendación: no mirar al cielo después de las [REDACTED].',
-  ],
   'no_abrir.mp4': [
     'no_abrir.mp4 — archivo multimedia',
     '⚠️  te dijeron que NO lo abrieras.',

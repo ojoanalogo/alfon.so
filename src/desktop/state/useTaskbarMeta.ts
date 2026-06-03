@@ -11,8 +11,8 @@ export function useTaskbarMeta(
   desktopIconUrls: DesktopIconUrls,
 ): Record<string, WindowMeta> {
   return useMemo<Record<string, WindowMeta>>(() => {
-    // Trash-junk apps (area51/ovnis/happy) show their bare filename in the
-    // taskbar rather than the flavored window title.
+    // Trash-junk apps (e.g. happy) show their bare filename in the taskbar
+    // rather than the flavored window title.
     const trashNames = new Map(
       TRASH_JUNK.flatMap((entry) => (entry.appId ? [[entry.appId, entry.name] as const] : [])),
     );

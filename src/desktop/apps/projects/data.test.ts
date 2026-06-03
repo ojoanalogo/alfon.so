@@ -129,12 +129,17 @@ describe('TRASH_JUNK', () => {
     }
   });
 
-  it('includes the known app-opening junk entries (area51, ovnis, happy) with appIds', () => {
+  it('wires happy as the app-opening junk entry; area51/ovnis are present but inert', () => {
     const byId = new Map(TRASH_JUNK.map((i) => [i.id, i]));
-    for (const id of ['area51', 'ovnis', 'happy']) {
+
+    // happy opens its app on double-click.
+    expect(byId.get('happy')?.appId).toBe('happy');
+
+    // area51/ovnis still show as files in the papelera but are non-accessible.
+    for (const id of ['area51', 'ovnis']) {
       const item = byId.get(id);
       expect(item).toBeTruthy();
-      expect(item?.appId).toBeTruthy();
+      expect(item?.appId).toBeUndefined();
     }
   });
 

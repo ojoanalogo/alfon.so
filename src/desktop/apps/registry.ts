@@ -14,8 +14,6 @@ import blogApp from './blog';
 import photosApp from './photos';
 import startupApp from './startup';
 import settingsApp from './settings';
-import area51App from './area51';
-import ovnisApp from './ovnis';
 import happyApp from './happy';
 import trashApp from './trash';
 import browserApp from './browser';
@@ -45,8 +43,6 @@ export const APPS = [
   photosApp,
   startupApp,
   settingsApp,
-  area51App,
-  ovnisApp,
   happyApp,
   trashApp,
   browserApp,
