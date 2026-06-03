@@ -1,10 +1,9 @@
-import { createElement } from 'react';
 import { defineApp, type SettingsSection } from '@desktop/wrappers';
 import SettingsBody from './SettingsBody';
 import AppearanceSection from './AppearanceSection';
 
 const SETTINGS_SECTIONS: SettingsSection[] = [
-  { id: 'apariencia', title: 'Apariencia', render: () => createElement(AppearanceSection) },
+  { id: 'apariencia', title: 'Apariencia', render: () => <AppearanceSection /> },
 ];
 
 export default defineApp({
@@ -21,5 +20,5 @@ export default defineApp({
   desktopIcon: { label: 'settings', tooltip: 'Ajustes del escritorio' },
   taskbarTooltip: 'Ajustes',
   bodyClassName: 'card-body--settings',
-  body: () => createElement(SettingsBody, { sections: SETTINGS_SECTIONS }),
+  body: () => <SettingsBody sections={SETTINGS_SECTIONS} />,
 });

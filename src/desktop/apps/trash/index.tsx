@@ -1,4 +1,3 @@
-import { createElement } from 'react';
 import { explorerApp } from '@desktop/wrappers';
 import type { ListItem } from '../../wrappers/explorer/types';
 import { appIconSrc } from '../appIcons';
@@ -43,7 +42,7 @@ export default explorerApp({
       ctx.trash.onRestore(id);
     }
   },
-  footer: (ctx) => createElement(TrashFooter, { trash: ctx.trash }),
+  footer: (ctx) => <TrashFooter trash={ctx.trash} />,
   geometry: { defaultX: 320, defaultY: 140, defaultWidth: 420, initialZ: 17 },
   desktopIcon: false,
 });
