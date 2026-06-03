@@ -5,7 +5,7 @@ import {
   postWindowId,
   isPostWindowId,
   postSlugFromWindowId,
-} from './postWindow';
+} from './appIds';
 
 describe('postWindowId', () => {
   it('prefixes the slug with the post window prefix', () => {

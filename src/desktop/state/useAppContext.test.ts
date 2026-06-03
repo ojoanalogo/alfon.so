@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useAppContext } from './useAppContext';
-import { BROWSER_APP_ID, postWindowId } from '../apps/postWindow';
+import { BROWSER_APP_ID, postWindowId } from '../lib/appIds';
 import { makeBlogPost } from '@test/factories';
 import type { BlogPostSummary } from '../types';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';

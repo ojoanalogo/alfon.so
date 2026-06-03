@@ -1,4 +1,8 @@
-/** Slug helpers + IDs shared by the post window registry and the runtime. */
+/**
+ * App/window-id constants and post-window slug helpers, shared across every layer
+ * (apps, state, shell). App-agnostic infrastructure — lives in lib so state/shell
+ * never have to reach into an app folder for a well-known window id.
+ */
 
 export const POST_WINDOW_PREFIX = 'post:';
 export const BROWSER_APP_ID = 'browser';

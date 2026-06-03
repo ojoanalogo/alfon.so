@@ -1,5 +1,5 @@
 import { browserApp } from '@desktop/wrappers';
-import { BROWSER_APP_ID } from '../postWindow';
+import { BROWSER_APP_ID } from '../../lib/appIds';
 
 export default browserApp({
   id: BROWSER_APP_ID,

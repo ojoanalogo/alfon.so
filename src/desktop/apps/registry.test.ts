@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { makeAppContext, makeBlogPost } from '@test/factories';
 import { APPS, findApp, createPostApps, findPostBySlug } from './registry';
-import { postWindowId, isPostWindowId } from './postWindow';
+import { postWindowId, isPostWindowId } from '../lib/appIds';
 
 describe('APPS registry', () => {
   it('is a non-empty list', () => {

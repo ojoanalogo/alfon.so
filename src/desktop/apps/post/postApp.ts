@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { defineApp, type AppDefinition } from '@desktop/wrappers';
 import type { BlogPostSummary } from '../../types';
-import { postWindowId, postSlugFromWindowId } from '../postWindow';
+import { postWindowId, postSlugFromWindowId } from '../../lib/appIds';
 import PostContent from './PostContent';
 
 /** One `AppDefinition` per blog post (dynamic window + taskbar entry). */

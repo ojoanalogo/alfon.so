@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useRef } from 'react';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';
-import { resolveDesktopShellIcons } from './apps/desktopIcons';
-import { TRASH_APP_ID } from './apps/postWindow';
+import { resolveDesktopShellIcons } from './apps/appIcons';
+import { TRASH_APP_ID } from './lib/appIds';
 import { useBrowserHistories } from './wrappers/browser/useBrowserHistories';
 import { useWindowManagerContext } from './state/WindowManagerContext';
 import type { AppDefinition, WindowChromeProps } from '@desktop/wrappers';

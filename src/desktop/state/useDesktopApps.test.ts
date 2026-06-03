@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useDesktopApps } from './useDesktopApps';
 import { APPS } from '../apps/registry';
-import { postWindowId } from '../apps/postWindow';
+import { postWindowId } from '../lib/appIds';
 import { makeBlogPost } from '@test/factories';
 
 // Registry apps that are gated by availableWhen (blog requires posts.length > 0).

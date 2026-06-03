@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { BROWSER_APP_ID, postWindowId } from '../apps/postWindow';
+import { BROWSER_APP_ID, postWindowId } from '../lib/appIds';
 import type { AppContext, TrashController } from '@desktop/wrappers';
 import type { BlogPostSummary, WindowGeometry } from '../types';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';
