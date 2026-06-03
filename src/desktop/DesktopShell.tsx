@@ -15,6 +15,7 @@ import { useDesktopIcons } from './state/useDesktopIcons';
 import { useResponsiveLayout } from './state/useResponsiveLayout';
 import { useTrashController } from './state/useTrashController';
 import { useAppContext } from './state/useAppContext';
+import { useKonamiCode } from './state/useKonamiCode';
 import { useTaskbarMeta } from './state/useTaskbarMeta';
 import { isMobileViewport, minWidthForDef } from './lib/layoutConstants';
 import { useMemo, useEffect } from 'react';
@@ -39,6 +40,8 @@ export default function DesktopShell({
   const browsers = useBrowserHistories();
 
   const { openWindow, fitWindowToMobile } = useResponsiveLayout(wm, defs, viewport);
+
+  useKonamiCode(() => openWindow('happy'));
 
   // Hydrate per-app initial URLs once per app definition.
   useEffect(() => {
