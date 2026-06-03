@@ -64,8 +64,13 @@ export function useWindowGestures({
         height = Math.max(MIN_HEIGHT, active.startHeight + dy);
       }
       if (dir.includes('n')) {
-        const proposed = Math.max(MIN_HEIGHT, active.startHeight - dy);
-        y = origin.y + (active.startHeight - proposed);
+        const bottom = origin.y + active.startHeight;
+        let proposed = Math.max(MIN_HEIGHT, active.startHeight - dy);
+        // Never let the top edge cross the viewport top — the titlebar is the only
+        // move handle, so a window dragged above y=0 would become unmovable. Pin the
+        // top at 0 and grow the height down to the (fixed) bottom edge instead.
+        if (bottom - proposed < 0) proposed = bottom;
+        y = bottom - proposed;
         height = proposed;
       }
 

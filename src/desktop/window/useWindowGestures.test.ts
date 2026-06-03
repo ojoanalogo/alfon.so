@@ -421,6 +421,43 @@ describe('useWindowGestures - resize math per direction', () => {
     expect(last.y).toBe(360);
   });
 
+  it('north: pins the top at y=0 when dragged above the viewport, extending height to the bottom', () => {
+    const { hook, onGeometryChange } = setup({
+      state: { x: 0, y: 100, width: 600, height: 400 },
+    });
+    act(() => {
+      hook.result.current.startResize(
+        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
+        'n',
+      );
+    });
+    // bottom = 100 + 400 = 500. dy=-300 -> proposed 700 would put top at -200.
+    dispatchMove(1, 0, -300);
+    const last = onGeometryChange.mock.calls.at(-1)![0];
+    expect(last.y).toBe(0); // titlebar stays grabbable at the top
+    expect(last.height).toBe(500); // height grows only to the bottom edge, no further
+  });
+
+  it('northwest: clamps the top to 0 while still resizing width from the west', () => {
+    const { hook, onGeometryChange } = setup({
+      state: { x: 200, y: 80, width: 600, height: 400 },
+    });
+    act(() => {
+      hook.result.current.startResize(
+        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
+        'nw',
+      );
+    });
+    // bottom = 80 + 400 = 480. dy=-200 -> top would be -120 -> clamped to 0, height 480.
+    // west: dx=40 -> proposed width = 560, x = 200 + (600 - 560) = 240.
+    dispatchMove(1, 40, -200);
+    const last = onGeometryChange.mock.calls.at(-1)![0];
+    expect(last.y).toBe(0);
+    expect(last.height).toBe(480);
+    expect(last.width).toBe(560);
+    expect(last.x).toBe(240);
+  });
+
   it('southeast: combines east width growth and south height growth', () => {
     const { hook, onGeometryChange } = setup({
       state: { x: 0, y: 0, width: 600, height: 400 },
