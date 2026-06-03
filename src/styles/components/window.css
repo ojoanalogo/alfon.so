@@ -1,0 +1,238 @@
+@layer components {
+  /* --- Window card surface (frosted glass; focus + sized variants) --------- */
+  .desktop-window__card {
+    overflow: hidden;
+    border-radius: var(--window-radius);
+    background-color: color-mix(in srgb, var(--color-surface) 76%, transparent);
+    backdrop-filter: blur(14px) saturate(110%);
+    -webkit-backdrop-filter: blur(14px) saturate(110%);
+    transition:
+      background-color 220ms ease-out,
+      backdrop-filter 220ms ease-out,
+      -webkit-backdrop-filter 220ms ease-out;
+  }
+
+  html.dark .desktop-window__card {
+    background-color: color-mix(in srgb, var(--color-surface) 78%, transparent);
+  }
+
+  .desktop-window.is-focused .desktop-window__card {
+    background-color: var(--color-surface);
+    backdrop-filter: blur(0) saturate(100%);
+    -webkit-backdrop-filter: blur(0) saturate(100%);
+  }
+
+  /* --- Window geometry, state & resize handles ---------------------------- */
+  .desktop-window {
+    position: absolute;
+    min-width: 25rem;
+    max-width: calc(100vw - 2rem);
+    pointer-events: auto;
+  }
+
+  .desktop-window[hidden] {
+    display: none;
+  }
+
+  /* Closed/minimized windows are inert; keep them out of hit-testing. */
+  .desktop-window[inert] {
+    pointer-events: none;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card {
+    display: flex;
+    height: 100%;
+    min-height: inherit;
+    flex-direction: column;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card > .card-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card > .card-body--settings {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .desktop-window--expanded {
+    max-width: none !important;
+  }
+
+  .desktop-window--maximize-transition {
+    transition:
+      left 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      top 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      right 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      bottom 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      width 0.32s cubic-bezier(0.34, 1.28, 0.64, 1),
+      height 0.32s cubic-bezier(0.34, 1.28, 0.64, 1);
+  }
+
+  .is-window-gesturing .desktop-window--maximize-transition {
+    transition: none;
+  }
+
+  .desktop-window__resize {
+    position: absolute;
+    z-index: 3;
+    touch-action: none;
+  }
+
+  .desktop-window__resize--n {
+    top: -3px;
+    right: 0;
+    left: 0;
+    height: 8px;
+    cursor: ns-resize;
+  }
+
+  .desktop-window__resize--s {
+    right: 0;
+    bottom: -3px;
+    left: 0;
+    height: 8px;
+    cursor: ns-resize;
+  }
+
+  .desktop-window__resize--e {
+    top: 0;
+    right: -3px;
+    bottom: 0;
+    width: 8px;
+    cursor: ew-resize;
+  }
+
+  .desktop-window__resize--w {
+    top: 0;
+    bottom: 0;
+    left: -3px;
+    width: 8px;
+    cursor: ew-resize;
+  }
+
+  .desktop-window__resize--ne,
+  .desktop-window__resize--nw,
+  .desktop-window__resize--se,
+  .desktop-window__resize--sw {
+    z-index: 4;
+    width: 14px;
+    height: 14px;
+  }
+
+  .desktop-window__resize--ne {
+    top: -4px;
+    right: -4px;
+    cursor: nesw-resize;
+  }
+
+  .desktop-window__resize--nw {
+    top: -4px;
+    left: -4px;
+    cursor: nwse-resize;
+  }
+
+  .desktop-window__resize--se {
+    right: -4px;
+    bottom: -4px;
+    cursor: nwse-resize;
+  }
+
+  .desktop-window__resize--sw {
+    bottom: -4px;
+    left: -4px;
+    cursor: nesw-resize;
+  }
+
+  body.is-window-gesturing {
+    user-select: none;
+  }
+
+  body.is-window-gesturing iframe {
+    pointer-events: none;
+  }
+
+  /* --- Browser & terminal window bodies (contextual) ---------------------- */
+  .desktop-window--browser .browser-window__body {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .desktop-window--browser.is-sized > .desktop-window__card > .browser-window__body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  .terminal-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card > .card-body.terminal-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .notes-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card > .card-body.notes-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .notes-sidebar__item:hover {
+    background: rgb(0 0 0 / 0.04);
+  }
+
+  :is(.dark) .notes-sidebar__item:hover {
+    background: rgb(255 255 255 / 0.06);
+  }
+
+  .snake-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .game-shell__stage canvas {
+    display: block;
+    height: 100%;
+    width: 100%;
+    image-rendering: pixelated;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card > .card-body.snake-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+}

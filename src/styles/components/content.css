@@ -1,0 +1,106 @@
+@layer components {
+  /* --- Window titlebar — contextual hook (base styles are inline) --------- */
+  .window-titlebar--plain .window-titlebar__drag {
+    flex: 1;
+  }
+
+  /* --- Card body — padding is contextual (explorer/settings/sized reset) --- */
+  .card-body {
+    position: relative;
+    padding: 1rem;
+  }
+
+  @media (width >= 40rem) {
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  .card-body.card-body--explorer-list,
+  .card-body.card-body--settings {
+    padding: 0;
+  }
+
+  @media (width >= 40rem) {
+    .card-body.card-body--explorer-list,
+    .card-body.card-body--settings {
+      padding: 0;
+    }
+  }
+
+  .card-body--settings {
+    overflow: hidden;
+  }
+
+  /* --- Explorer list contextual layout ------------------------------------ */
+  .card-body--explorer-list .folder-list {
+    border-right: none;
+    border-bottom: none;
+    border-left: none;
+  }
+
+  .card-body--explorer-list .explorer-layout {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .card-body--explorer-list .explorer-actions {
+    padding: 0.625rem 0.75rem 0.75rem;
+  }
+
+  .explorer-actions {
+    padding: 0.75rem 1rem 1rem;
+  }
+
+  @media (width >= 40rem) {
+    .explorer-actions {
+      padding: 0.75rem 1.5rem 1.5rem;
+    }
+
+    .card-body--explorer-list .explorer-actions {
+      padding: 0.625rem 0.75rem 0.75rem;
+    }
+  }
+
+  /* --- Folder list — border is contextual; rows keep their state styling --- */
+  .folder-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-hairline);
+    font-size: 0.6875rem;
+  }
+
+  .folder-list__row {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1.25rem minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    border-bottom: 1px solid rgb(113 113 122 / 0.2);
+    background: transparent;
+    padding: 0.3rem 0.5rem;
+    font: inherit;
+    text-align: left;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .folder-list li:last-child .folder-list__row {
+    border-bottom: none;
+  }
+
+  .folder-list__row:hover:not(.folder-list__row--disabled) {
+    background: var(--color-highlight-bg);
+  }
+
+  html.dark .folder-list__row:hover:not(.folder-list__row--disabled) {
+    background: var(--color-highlight-bg-strong);
+  }
+
+  .folder-list__row--disabled {
+    cursor: default;
+    opacity: 0.72;
+  }
+}

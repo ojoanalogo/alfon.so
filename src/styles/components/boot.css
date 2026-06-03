@@ -1,0 +1,87 @@
+@layer components {
+  /* --- Boot overlay (keyframe + exiting state drives children) ------------ */
+  .desktop-boot-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background);
+    opacity: 1;
+    pointer-events: all;
+    transition:
+      opacity 120ms ease-out,
+      background-color 120ms ease-out;
+  }
+
+  .desktop-boot-overlay--exiting {
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .desktop-boot-overlay__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: ui-monospace, monospace;
+    text-align: center;
+    transition:
+      opacity 100ms ease-out,
+      transform 100ms ease-out;
+  }
+
+  .desktop-boot-overlay--exiting .desktop-boot-overlay__content {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
+
+  .desktop-boot-overlay--exiting .desktop-boot-overlay__spinner {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-boot-overlay,
+    .desktop-boot-overlay__content {
+      transition-duration: 0ms;
+    }
+
+    .desktop-boot-overlay--exiting .desktop-boot-overlay__content {
+      transform: none;
+    }
+
+    .desktop-window--maximize-transition {
+      transition: none;
+    }
+  }
+
+  .desktop-boot-overlay__spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 1.5px solid rgb(113 113 122 / 0.22);
+    border-top-color: var(--color-highlight-border);
+    border-radius: 9999px;
+    animation: desktop-boot-spin 0.85s linear infinite;
+  }
+
+  @keyframes desktop-boot-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .desktop-boot-overlay__loading {
+    margin: 0;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+  }
+
+  .desktop-boot-overlay__site {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-primary);
+  }
+}

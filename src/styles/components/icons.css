@@ -1,0 +1,108 @@
+@layer components {
+  /* --- Desktop icon layer (marker + contextual label tone/hover/selected) -- */
+  /* The icon layer spans the whole desktop but is transparent to pointer
+     events; only the icons themselves are interactive. */
+  .desktop-icons {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: block;
+    width: auto;
+    max-height: none;
+    pointer-events: none;
+  }
+
+  .desktop-icon {
+    position: absolute;
+    display: flex;
+    width: 7rem;
+    max-width: 7rem;
+    margin: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 0.25rem;
+    font-family: ui-monospace, monospace;
+    color: var(--color-primary);
+    cursor: default;
+    text-align: center;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .desktop-icon.is-dragging {
+    z-index: 10;
+    perspective: 90px;
+  }
+
+  .desktop-icon__body {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: inherit;
+  }
+
+  .desktop-icon__glyph {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    transform-style: preserve-3d;
+  }
+
+  .desktop-icon.is-dragging .desktop-icon__glyph {
+    will-change: transform;
+  }
+
+  .desktop-icon:hover .desktop-icon__label,
+  .desktop-icon.is-selected .desktop-icon__label {
+    background: var(--desktop-highlight-bg-strong);
+    outline: 1px dotted var(--desktop-highlight-border);
+  }
+
+  .desktop-selection-marquee {
+    pointer-events: none;
+    position: absolute;
+    z-index: 6;
+    border: 1px solid var(--desktop-highlight-border);
+    background: var(--desktop-highlight-bg);
+  }
+
+  .desktop-icons--labels-light .desktop-icon__label,
+  .papelera--labels-light .papelera__label {
+    color: #f4f4f5;
+    text-shadow:
+      0 1px 2px rgb(0 0 0 / 0.65),
+      0 0 1px rgb(0 0 0 / 0.9);
+  }
+
+  .desktop-icons--labels-dark .desktop-icon__label,
+  .papelera--labels-dark .papelera__label {
+    color: #18181b;
+    text-shadow:
+      0 1px 2px rgb(255 255 255 / 0.65),
+      0 0 1px rgb(255 255 255 / 0.85);
+  }
+
+  /* Papelera label hover (driven by the trigger) */
+  .papelera__trigger:hover .papelera__label {
+    background: var(--desktop-highlight-bg-strong);
+    outline: 1px dotted var(--desktop-highlight-border);
+  }
+
+  body.is-trash-drop-target .papelera__trigger {
+    scale: 1.06;
+    border-color: var(--desktop-highlight-border);
+    background: var(--desktop-highlight-bg-strong);
+  }
+
+  body.is-trash-drop-target .papelera__trigger .papelera__label {
+    background: var(--desktop-highlight-bg-strong);
+    outline: 1px dotted var(--desktop-highlight-border);
+  }
+}

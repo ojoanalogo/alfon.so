@@ -1,0 +1,11 @@
+@layer components {
+  /* --- Settings color swatch selection ring (generated content) ----------- */
+  .settings-color-swatch.is-selected::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 2px solid var(--color-highlight-border);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+}
