@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
+import { defineApp } from '../defineApp';
 import ExplorerWindow from './ExplorerWindow';
 import ExplorerLayout from './ExplorerLayout';
 import type { ExplorerViewMode, ListItem } from './types';
-import { resolveAppTitle, type AppContext, type AppDefinition } from '../types';
+import { type AppContext, type AppDefinition } from '../types';
 import type { AppGeometry } from '../../types';
 
 export interface ExplorerAppInput<Id extends string> {
@@ -24,13 +25,20 @@ export interface ExplorerAppInput<Id extends string> {
 /** File-list archetype: grid/list view + activate + optional footer. */
 export function explorerApp<Id extends string>(input: ExplorerAppInput<Id>): AppDefinition<Id> {
   const { items, onActivate, footer, defaultMode, ...meta } = input;
-  return {
+  return defineApp({
     ...meta,
-    render: (ctx, win) => (
-      <ExplorerWindow {...win} title={resolveAppTitle(meta, ctx)} defaultMode={defaultMode}>
+    body: (ctx) => (
+      <>
         <ExplorerLayout items={items(ctx)} onActivate={(id) => onActivate?.(id, ctx)} />
         {footer?.(ctx)}
+      </>
+    ),
+    // Explorer needs its <Window> wrapped in the view-mode provider, so it mounts
+    // through this seam instead of defineApp's default <Window>.
+    renderWindow: ({ win, title, children }) => (
+      <ExplorerWindow {...win} title={title} defaultMode={defaultMode}>
+        {children}
       </ExplorerWindow>
     ),
-  };
+  });
 }

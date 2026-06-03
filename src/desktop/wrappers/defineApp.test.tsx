@@ -149,4 +149,31 @@ describe('defineApp', () => {
 
     expect(container.querySelector('.desktop-window--special')).toBeTruthy();
   });
+
+  it('delegates to renderWindow when provided, passing the resolved title + body', () => {
+    let received: { title: string } | undefined;
+    const app = defineApp({
+      id: 'demo',
+      title: 'mi título',
+      geometry: GEOMETRY,
+      body: () => <p>seam-body</p>,
+      renderWindow: ({ title, children }) => {
+        received = { title };
+        return (
+          <section data-testid="custom-shell">
+            <h1>{title}</h1>
+            {children}
+          </section>
+        );
+      },
+    });
+
+    render(app.render(makeAppContext(), makeWindowChromeProps({ state: makeWindowState({ open: true }) })));
+
+    // The default <Window> is bypassed in favor of the seam's shell.
+    expect(screen.getByTestId('custom-shell')).toBeTruthy();
+    // The seam receives the *resolved* (formatWindowTitle-capitalized) title.
+    expect(received?.title).toBe('Mi título');
+    expect(screen.getByText('seam-body')).toBeTruthy();
+  });
 });
