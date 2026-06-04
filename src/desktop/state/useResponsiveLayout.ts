@@ -12,7 +12,6 @@ export function useResponsiveLayout(
 ): { openWindow: (id: string) => void; fitWindowToMobile: (id: string) => void } {
   const { setGeometry, setGeometries, relayoutToViewport, applyDefaultOpenLayout } = wm;
   const [layoutEpoch, setLayoutEpoch] = useState(0);
-  const didPostMeasureCenter = useRef(false);
 
   // Read window state inside the relayout effect without making it a dependency:
   // otherwise a drag (which mutates wm.windows on every pointer move) re-fires
@@ -37,19 +36,6 @@ export function useResponsiveLayout(
       window.visualViewport?.removeEventListener('resize', bumpLayout);
     };
   }, []);
-
-  // After the first paint, measure content-sized center windows so x/y match the DOM.
-  useLayoutEffect(() => {
-    if (didPostMeasureCenter.current || typeof window === 'undefined') return;
-    if (!defs.some((def) => def.center)) return;
-
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    if (vw <= 0 || vh <= 0 || isMobileViewport(vw)) return;
-
-    didPostMeasureCenter.current = true;
-    relayoutToViewport(vw, vh, true);
-  }, [defs, relayoutToViewport]);
 
   const fitWindowToMobile = useCallback(
     (id: string) => {
@@ -91,8 +77,6 @@ export function useResponsiveLayout(
     const vh = rawVh;
     const mobile = isMobileViewport(vw);
 
-    let deferredVerticalCenter = false;
-
     function applyLayout() {
       if (mobile) {
         const updates: Record<string, Partial<WindowGeometry>> = {};
@@ -108,27 +92,15 @@ export function useResponsiveLayout(
         return;
       }
 
-      const clearingSizedHeight = defs.some(
-        (def) => def.defaultHeight == null && windowsRef.current[def.id]?.height != null,
-      );
-      if (clearingSizedHeight) deferredVerticalCenter = true;
-
-      relayoutToViewport(vw, vh, true);
+      // Reposition closed windows; open centered windows settle themselves via
+      // useWindowCenterLayout from their measured box.
+      relayoutToViewport(vw, vh);
     }
 
     applyLayout();
-    requestAnimationFrame(applyLayout);
-    if (!mobile && defs.some((def) => def.center)) {
-      requestAnimationFrame(() => {
-        relayoutToViewport(vw, vh, true);
-      });
-    }
-
-    // rAF passes above still see pre-commit window state in windowsRef; after
-    // height:null lands, run layout again so centered windows settle.
-    if (deferredVerticalCenter) {
-      setLayoutEpoch((epoch) => epoch + 1);
-    }
+    // Re-run once after the first paint when innerWidth/Height are reliable.
+    const frame = requestAnimationFrame(applyLayout);
+    return () => cancelAnimationFrame(frame);
   }, [defs, setGeometries, relayoutToViewport, viewport.width, viewport.height, layoutEpoch]);
 
   return { openWindow, fitWindowToMobile };

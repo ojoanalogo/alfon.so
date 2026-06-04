@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { makeWindowDef } from '@test/factories';
 import { useWindowManager } from './useWindowManager';
-import { EDGE_MARGIN, TASKBAR_HEIGHT } from '../lib/layoutConstants';
 import type { WindowDef } from '../types';
 
 // jsdom defaults window.innerWidth to 1024 (desktop, not mobile). We rely on
@@ -387,57 +386,17 @@ describe('useWindowManager - relayoutToViewport', () => {
     expect(result.current.windows.b.y).toBe(b.y);
   });
 
-  it('does not throw and respects userSized for centered windows when measuring', () => {
-    const centered = makeWindowDef({
-      id: 'c',
-      center: true,
-      defaultWidth: 500,
-      defaultHeight: 350,
-    });
-    const { result } = renderManager([centered]);
-    // Provide a DOM element so the measure branch runs.
-    const el = document.createElement('div');
-    el.setAttribute('data-window-id', 'c');
-    document.body.appendChild(el);
-    expect(() => {
-      act(() => result.current.relayoutToViewport(1600, 900, true));
-    }).not.toThrow();
-    // Closed centered window gets repositioned for the new viewport.
-    expect(result.current.windows.c).toBeTruthy();
-  });
-
-  it('recenters a content-sized centered window from its measured DOM box', () => {
-    // No defaultHeight => content-sized (height null); not userSized.
+  it('leaves centered windows for useWindowCenterLayout to place (no DOM measurement)', () => {
+    // The manager no longer measures the DOM; it only repositions closed windows
+    // from app defaults. Open centered windows are owned by useWindowCenterLayout.
     const centered = makeWindowDef({ id: 'c', center: true, defaultWidth: 500 });
     const { result } = renderManager([centered]);
-
-    const el = document.createElement('div');
-    el.setAttribute('data-window-id', 'c');
-    el.getBoundingClientRect = () =>
-      ({
-        width: 480,
-        height: 320,
-        top: 0,
-        left: 0,
-        right: 480,
-        bottom: 320,
-        x: 0,
-        y: 0,
-        toJSON() {},
-      }) as DOMRect;
-    document.body.appendChild(el);
-
-    const vw = 1600;
-    const vh = 900;
-    act(() => result.current.relayoutToViewport(vw, vh, true));
-
-    const c = result.current.windows.c;
-    // Width comes from the measured box; height stays null (content-sized).
-    expect(c.width).toBe(480);
-    expect(c.height).toBeNull();
-    // Centered from the measured 480x320 box (center branch does not round).
-    expect(c.x).toBe(Math.max(EDGE_MARGIN, (vw - 480) / 2));
-    expect(c.y).toBe(Math.max(EDGE_MARGIN, (vh - TASKBAR_HEIGHT - 320) / 2));
+    act(() => result.current.open('c'));
+    const openSnapshot = { ...result.current.windows.c };
+    act(() => result.current.relayoutToViewport(1600, 900));
+    // Open window is untouched by relayout regardless of center.
+    expect(result.current.windows.c.x).toBe(openSnapshot.x);
+    expect(result.current.windows.c.y).toBe(openSnapshot.y);
   });
 });
 

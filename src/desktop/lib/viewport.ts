@@ -18,6 +18,12 @@ export function effectiveMinWidth(def: WindowDef, viewportWidth: number): number
   return Math.min(configured, Math.max(MIN_WIDTH, available));
 }
 
+/** Clamp a default width to the viewport's usable span, never below `minWidth`. */
+export function clampWidth(defaultWidth: number, minWidth: number, viewportWidth: number): number {
+  const available = Math.max(240, viewportWidth - EDGE_MARGIN * 2);
+  return Math.max(minWidth, Math.min(defaultWidth, available));
+}
+
 export function mobileWindowGeometry(
   viewportWidth: number,
   viewportHeight: number,
@@ -57,7 +63,7 @@ export function resolveWindowGeometry(
   const width =
     measuredWidth != null && measuredWidth > 0
       ? Math.max(minW, Math.round(measuredWidth))
-      : Math.max(minW, Math.min(def.defaultWidth, viewportWidth - EDGE_MARGIN * 2));
+      : clampWidth(def.defaultWidth, minW, viewportWidth);
 
   if (def.center) {
     const height = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
@@ -115,6 +121,5 @@ export function resolveLayoutWidth(
   const vw =
     viewportWidth ??
     (typeof window !== 'undefined' ? window.innerWidth : defaultWidth + EDGE_MARGIN * 2);
-  const available = Math.max(240, vw - EDGE_MARGIN * 2);
-  return Math.max(minWidth, Math.min(defaultWidth, available));
+  return clampWidth(defaultWidth, minWidth, vw);
 }

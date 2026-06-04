@@ -1,15 +1,16 @@
 import { useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
 import { MIN_WIDTH } from '../lib/layoutConstants';
-import { resolveWindowHeightStyle } from '../lib/viewport';
 import WindowControls from './WindowControls';
 import WindowTitlebar from './WindowTitlebar';
 import { useWindowGestures } from './useWindowGestures';
 import { useWindowCenterLayout } from './useWindowCenterLayout';
 import { useMaximizeAnimation } from './useMaximizeAnimation';
 import { useWindowWidthSync } from './useWindowWidthSync';
+import { useWindowVariants } from './useWindowVariants';
+import { resolveWindowChrome } from './windowChrome';
 import { BORDER_DEFAULT } from '@/styles/tokens';
 
 const RESIZE_DIRECTIONS: ResizeDirection[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
@@ -96,11 +97,10 @@ export default function Window({
   const posY = center ? displayY : state.y;
 
   const gestureState = useMemo(() => {
-    const width = state.width === layoutWidth ? state.width : layoutWidth;
     if (center) {
-      return { ...state, x: displayX, y: displayY, width };
+      return { ...state, x: displayX, y: displayY, width: layoutWidth };
     }
-    return { ...state, width };
+    return { ...state, width: layoutWidth };
   }, [state, layoutWidth, center, displayX, displayY]);
 
   const { startMove, startResize } = useWindowGestures({
@@ -116,96 +116,25 @@ export default function Window({
     startMove(event);
   }
 
-  function measureGenieTarget(): { dx: number; dy: number } {
-    const el = rootRef.current;
-    if (!el) return { dx: 0, dy: 360 };
-    const rect = el.getBoundingClientRect();
-    const winCenterX = rect.left + rect.width / 2;
-    const winBottomY = rect.top + rect.height;
-    const tab = document.querySelector(`[data-taskbar-window="${state.id}"]`);
-    if (tab) {
-      const tabRect = tab.getBoundingClientRect();
-      return {
-        dx: tabRect.left + tabRect.width / 2 - winCenterX,
-        dy: tabRect.top + tabRect.height / 2 - winBottomY,
-      };
-    }
-    return { dx: 0, dy: window.innerHeight - winBottomY + 48 };
-  }
+  const variants = useWindowVariants(rootRef, state.id, Boolean(prefersReduced));
 
-  const variants: Variants = {
-    open: {
-      opacity: 1,
-      scaleX: 1,
-      scaleY: 1,
-      x: 0,
-      y: 0,
-      transition: prefersReduced
-        ? { duration: 0 }
-        : { type: 'spring', stiffness: 460, damping: 34, mass: 0.85 },
-    },
-    closed: {
-      opacity: 0,
-      scaleX: 0.9,
-      scaleY: 0.9,
-      x: 0,
-      y: 0,
-      transition: prefersReduced ? { duration: 0 } : { duration: 0.16, ease: 'easeIn' },
-    },
-    minimized: () => {
-      const target = measureGenieTarget();
-      return {
-        opacity: 0,
-        scaleX: 0.12,
-        scaleY: 0.02,
-        x: target.dx,
-        y: target.dy,
-        transition: prefersReduced
-          ? { duration: 0 }
-          : { duration: 0.42, ease: [0.4, 0.05, 0.25, 1] },
-      };
-    },
-  };
-
-  const status = !state.open ? 'closed' : state.minimized ? 'minimized' : 'open';
-  const interactive = state.open && !state.minimized;
-  // Content-sized windows with a min-height floor still need the card to stretch
-  // to that floor, otherwise the box (and its bottom resize handle) sits below
-  // the visible card in empty space.
-  const sized =
-    state.height != null || state.maximized || (state.height == null && minHeight != null);
-
-  const style: React.CSSProperties = displayMaximized
-    ? {
-        left: 0,
-        top: 0,
-        right: 0,
-        bottom: 0,
-        width: 'auto',
-        height: 'auto',
-        zIndex: state.zIndex,
-        transformOrigin: 'center center',
-      }
-    : {
-        left: `${posX}px`,
-        top: `${posY}px`,
-        width: `${layoutWidth}px`,
-        minWidth: `${minWidth}px`,
-        ...resolveWindowHeightStyle(state.height, defaultHeight, minHeight),
-        zIndex: state.zIndex,
-        transformOrigin: 'bottom center',
-      };
-
-  const className = [
-    'desktop-window',
-    sized && 'is-sized',
-    state.maximized && 'desktop-window--expanded',
-    maximizeTransition && 'desktop-window--maximize-transition',
-    focused && 'is-focused',
+  const { style, className, status, interactive } = resolveWindowChrome({
+    displayMaximized,
+    posX,
+    posY,
+    layoutWidth,
+    minWidth,
+    height: state.height,
+    defaultHeight,
+    minHeight,
+    zIndex: state.zIndex,
+    maximized: state.maximized,
+    maximizeTransition,
+    focused,
     windowClassName,
-  ]
-    .filter(Boolean)
-    .join(' ');
+    open: state.open,
+    minimized: state.minimized,
+  });
 
   return (
     <motion.section

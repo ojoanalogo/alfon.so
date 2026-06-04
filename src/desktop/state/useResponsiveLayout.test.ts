@@ -114,7 +114,7 @@ describe('useResponsiveLayout - mobile geometry', () => {
 
     renderHook(() => useResponsiveLayout(wm, defs, { width: DESKTOP_VW, height: DESKTOP_VH }));
 
-    expect(wm.relayoutToViewport).toHaveBeenCalledWith(DESKTOP_VW, DESKTOP_VH, true);
+    expect(wm.relayoutToViewport).toHaveBeenCalledWith(DESKTOP_VW, DESKTOP_VH);
     expect(wm.setGeometries).not.toHaveBeenCalled();
   });
 });

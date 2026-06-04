@@ -84,20 +84,6 @@ function geometryUnchanged(next: WindowState, target: WindowState): boolean {
   );
 }
 
-/** Measure a center window's on-screen box (the only DOM read in this module). */
-function measureCenterWindow(def: WindowDef): {
-  measuredWidth?: number;
-  measuredHeight?: number;
-} {
-  const el = document.querySelector<HTMLElement>(`[data-window-id="${def.id}"]`);
-  if (!el) return {};
-  const rect = el.getBoundingClientRect();
-  return {
-    measuredWidth: rect.width > 0 ? rect.width : undefined,
-    measuredHeight: def.defaultHeight == null && rect.height > 0 ? rect.height : undefined,
-  };
-}
-
 export interface WindowManager {
   windows: Record<string, WindowState>;
   order: string[];
@@ -113,12 +99,12 @@ export interface WindowManager {
   setGeometry: (id: string, geometry: Partial<WindowGeometry>) => void;
   /** Apply many geometry patches in one state update (layout passes). */
   setGeometries: (updates: Record<string, Partial<WindowGeometry>>) => void;
-  /** Recompute default geometry for every window from the live viewport. */
-  relayoutToViewport: (
-    viewportWidth: number,
-    viewportHeight: number,
-    measureCenter?: boolean,
-  ) => void;
+  /**
+   * Recompute default geometry for closed windows from the live viewport. Open
+   * windows are left alone — centered ones are owned by `useWindowCenterLayout`,
+   * which measures their real box and reports back through `setGeometry`.
+   */
+  relayoutToViewport: (viewportWidth: number, viewportHeight: number) => void;
 }
 
 export function useWindowManager(
@@ -188,6 +174,10 @@ export function useWindowManager(
     [defs],
   );
 
+  // `open` flips the closed→open transition (resetting userSized + default size);
+  // `applyDefaultOpenLayout` runs right after in `openWindow` and owns final x/y
+  // placement (it also handles re-snapping an *already*-open window). Both resolve
+  // the same deterministic geometry, so the second pass is a no-op for a fresh open.
   const open = useCallback(
     (id: string) => {
       const def = defs.find((entry) => entry.id === id);
@@ -202,7 +192,7 @@ export function useWindowManager(
         let next: WindowState = { ...target, open: true, minimized: false };
 
         if (wasClosed && def && !isMobileViewport(vw)) {
-          const geo = resolveDefaultOpenGeometry(def, vw, vh, { freshRandom: true });
+          const geo = resolveDefaultOpenGeometry(def, vw, vh);
           next = applyDefaultGeometry(next, geo, def);
         }
 
@@ -304,66 +294,25 @@ export function useWindowManager(
   );
 
   const relayoutToViewport = useCallback(
-    (vw: number, vh: number, measureCenter = false) => {
+    (vw: number, vh: number) => {
       setWindows((prev) => {
-        let merged: Record<string, WindowState> = { ...prev };
-        let changed = false;
-
+        let next: Record<string, WindowState> | null = null;
         for (const def of defs) {
           const target = prev[def.id];
           if (!target || target.open) continue;
           const geo = resolveWindowGeometry(def, vw, vh);
-          const next: WindowState = {
+          const updated: WindowState = {
             ...target,
             x: geo.x,
             y: geo.y,
             width: geo.width,
             height: def.defaultHeight ?? geo.height,
           };
-          if (geometryUnchanged(next, target)) {
-            continue;
-          }
-          if (!changed) {
-            merged = { ...prev };
-            changed = true;
-          }
-          merged[def.id] = next;
+          if (geometryUnchanged(updated, target)) continue;
+          if (!next) next = { ...prev };
+          next[def.id] = updated;
         }
-
-        if (!measureCenter) return merged;
-
-        for (const def of defs) {
-          if (!def.center) continue;
-
-          const { measuredWidth, measuredHeight } = measureCenterWindow(def);
-
-          // Content-sized center windows need a real box; avoid MIN_HEIGHT-based y.
-          if (def.defaultHeight == null && measuredHeight == null) continue;
-
-          const geo = resolveWindowGeometry(def, vw, vh, measuredHeight, measuredWidth);
-          const target = merged[def.id];
-          if (!target) continue;
-
-          if (target.userSized) continue;
-
-          const next: WindowState = {
-            ...target,
-            x: geo.x,
-            y: geo.y,
-            width: geo.width,
-            height: def.defaultHeight ?? null,
-          };
-          if (geometryUnchanged(next, target)) {
-            continue;
-          }
-          if (!changed) {
-            merged = { ...merged };
-            changed = true;
-          }
-          merged[def.id] = next;
-        }
-
-        return merged;
+        return next ?? prev;
       });
     },
     [defs],
