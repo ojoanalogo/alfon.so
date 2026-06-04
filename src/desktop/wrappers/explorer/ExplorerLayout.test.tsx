@@ -153,10 +153,10 @@ describe('ExplorerLayout', () => {
       expect(onActivate).not.toHaveBeenCalled();
     });
 
-    it('guards activation via handleActivate even for an unknown id (no item match)', () => {
-      // Sanity: clicking an enabled item whose id IS present works; we already
-      // cover that. This asserts the find()-based guard does not throw and only
-      // the matched, non-disabled item activates.
+    it('activates only the matched enabled item when a disabled item is also present', () => {
+      // The find()-based guard must pick the clicked enabled item, not the
+      // disabled sibling. (The unmatched-id branch of handleActivate is
+      // unreachable via clicks — every rendered item has a real id.)
       const onActivate = vi.fn();
       const items: ListItem[] = [
         { id: 'a', label: 'Alpha', disabled: true },

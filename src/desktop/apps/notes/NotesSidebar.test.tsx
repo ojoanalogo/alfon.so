@@ -103,8 +103,8 @@ describe('NotesSidebar', () => {
     expect(onCreate).toHaveBeenCalledTimes(1);
   });
 
-  it('renders a same-day timestamp as a time and an older one as a date', () => {
-    // sameDay path: build an ISO for "now" so the branch is deterministic
+  it('formats a same-day timestamp as a time and an older one as a date', () => {
+    // sameDay path: build an ISO for "now" so the branch is deterministic.
     const now = new Date();
     const sameDayNote = makeNote({ id: 'today', title: 'Today', updatedAt: now.toISOString() });
     const olderNote = makeNote({
@@ -113,11 +113,17 @@ describe('NotesSidebar', () => {
       updatedAt: '2000-03-15T10:00:00.000Z',
     });
     const { container } = setup({ notes: [sameDayNote, olderNote] });
-    // both branches render some non-empty timestamp text without throwing
     const items = container.querySelectorAll('.notes-sidebar__item');
-    expect(items).toHaveLength(2);
-    items.forEach((item) => {
-      expect(item.textContent?.trim().length).toBeGreaterThan(0);
-    });
+
+    // The timestamp is the last span in each item. Assert the discriminating
+    // shape (time has H:MM, the date does not) rather than locale-pinned text.
+    const timestampOf = (item: Element) => {
+      const spans = item.querySelectorAll('span');
+      return spans[spans.length - 1].textContent?.trim() ?? '';
+    };
+
+    expect(timestampOf(items[0])).toMatch(/\d{1,2}:\d{2}/);
+    expect(timestampOf(items[1])).not.toMatch(/\d{1,2}:\d{2}/);
+    expect(timestampOf(items[1]).length).toBeGreaterThan(0);
   });
 });

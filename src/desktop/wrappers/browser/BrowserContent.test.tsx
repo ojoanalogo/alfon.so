@@ -92,7 +92,7 @@ describe('BrowserContent', () => {
     expect(container.querySelector('iframe')).toBeTruthy();
   });
 
-  it('keys the iframe so url + reloadKey changes force a remount', () => {
+  it('keys the iframe so a url change remounts it (new DOM node)', () => {
     const { container, rerender } = render(
       <BrowserContent
         appId={APP_ID}
@@ -102,14 +102,35 @@ describe('BrowserContent', () => {
     const first = container.querySelector('iframe');
     expect(first).toBeTruthy();
 
-    // A new url should still render an iframe at the new src.
     rerender(
       <BrowserContent
         appId={APP_ID}
-        browsers={makeBrowsers({ url: 'https://other.com', reloadKey: 1 })}
+        browsers={makeBrowsers({ url: 'https://other.com', reloadKey: 0 })}
       />,
     );
     const second = container.querySelector('iframe') as HTMLIFrameElement;
     expect(second.getAttribute('src')).toBe('https://other.com');
+    // A changed key unmounts the old iframe and mounts a fresh one.
+    expect(second).not.toBe(first);
+  });
+
+  it('remounts on a reloadKey bump alone (same url) — what keying on reloadKey buys', () => {
+    const { container, rerender } = render(
+      <BrowserContent
+        appId={APP_ID}
+        browsers={makeBrowsers({ url: 'https://example.com', reloadKey: 0 })}
+      />,
+    );
+    const first = container.querySelector('iframe');
+
+    rerender(
+      <BrowserContent
+        appId={APP_ID}
+        browsers={makeBrowsers({ url: 'https://example.com', reloadKey: 1 })}
+      />,
+    );
+    const second = container.querySelector('iframe') as HTMLIFrameElement;
+    expect(second.getAttribute('src')).toBe('https://example.com');
+    expect(second).not.toBe(first);
   });
 });

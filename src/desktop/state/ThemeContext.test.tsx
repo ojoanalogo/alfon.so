@@ -116,20 +116,32 @@ describe('ThemeProvider + useTheme', () => {
     expect(localStorage.getItem('theme')).toBe('light');
   });
 
-  it('syncs across two consumers via the devfolio-theme-change event', () => {
+  it('re-syncs every consumer when a devfolio-theme-change event fires', () => {
     localStorage.setItem('theme', 'light');
 
-    function TwoConsumers() {
-      const a = useTheme();
-      return <span data-testid="theme">{a.theme}</span>;
+    function Consumer({ id }: { id: string }) {
+      const { theme } = useTheme();
+      return <span data-testid={id}>{theme}</span>;
     }
 
     const { getByTestId } = render(
       <ThemeProvider>
-        <TwoConsumers />
+        <Consumer id="a" />
+        <Consumer id="b" />
       </ThemeProvider>,
     );
 
-    expect(getByTestId('theme').textContent).toBe('light');
+    expect(getByTestId('a').textContent).toBe('light');
+    expect(getByTestId('b').textContent).toBe('light');
+
+    // Simulate an out-of-React theme change (e.g. the Astro header toggle):
+    // flip storage, then broadcast the sync event the provider listens for.
+    act(() => {
+      localStorage.setItem('theme', 'dark');
+      window.dispatchEvent(new Event('devfolio-theme-change'));
+    });
+
+    expect(getByTestId('a').textContent).toBe('dark');
+    expect(getByTestId('b').textContent).toBe('dark');
   });
 });
