@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { useExplorerView } from './ExplorerViewContext';
-import { DEFAULT_GRID_SETTINGS } from '@desktop/lib/gridSettings';
 import GridLayout from './GridLayout';
 import FolderList from './FolderList';
 import type { ListItem } from './types';
@@ -11,19 +10,8 @@ interface ExplorerLayoutProps {
   children?: ReactNode;
 }
 
-function sortItems(items: ListItem[], sortBy: 'name' | 'kind'): ListItem[] {
-  if (sortBy === 'kind') {
-    return [...items].sort(
-      (a, b) => (a.kind ?? '').localeCompare(b.kind ?? '') || a.label.localeCompare(b.label),
-    );
-  }
-  // Default 'name': preserve insertion order for already-curated lists.
-  return items;
-}
-
 export default function ExplorerLayout({ items, onActivate, children }: ExplorerLayoutProps) {
   const { mode } = useExplorerView();
-  const sorted = sortItems(items, DEFAULT_GRID_SETTINGS.sortBy);
 
   function handleActivate(id: string) {
     const item = items.find((entry) => entry.id === id);
@@ -31,12 +19,13 @@ export default function ExplorerLayout({ items, onActivate, children }: Explorer
     onActivate(id);
   }
 
+  // Items render in their curated insertion order (no client-side sorting).
   return (
     <div className="explorer-layout text-xs">
       {mode === 'grid' ? (
-        <GridLayout items={sorted} onActivate={handleActivate} />
+        <GridLayout items={items} onActivate={handleActivate} />
       ) : (
-        <FolderList items={sorted} onOpen={handleActivate} showHeader />
+        <FolderList items={items} onOpen={handleActivate} showHeader />
       )}
       {children}
     </div>

@@ -190,4 +190,46 @@ describe('DesktopBootOverlay', () => {
     expect(overlay.className).not.toContain('desktop-boot-overlay--exiting');
     expect(overlay.getAttribute('aria-busy')).toBe('true');
   });
+
+  it('exits immediately when content becomes ready after the minimum boot time', async () => {
+    // Stored wallpaper keeps bootContentReady false until the image loads.
+    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    const instances: Array<{ onload: (() => void) | null }> = [];
+    class FakeImage {
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      private _src = '';
+      constructor() {
+        instances.push(this);
+      }
+      set src(value: string) {
+        this._src = value;
+      }
+      get src() {
+        return this._src;
+      }
+    }
+    vi.stubGlobal('Image', FakeImage);
+
+    const graph = await loadBootModuleGraph();
+    const { container } = renderBoot(graph, [makeWallpaper()]);
+
+    // Past the minimum boot window but content still loading → still on screen.
+    await act(async () => {
+      vi.advanceTimersByTime(BOOT_MIN_MS * 2);
+    });
+    expect(container.querySelector('.desktop-boot-overlay--exiting')).toBeNull();
+
+    // Content finishes late → remaining clamps to 0, so the exit fires at once.
+    await act(async () => {
+      instances[instances.length - 1]?.onload?.();
+    });
+    await act(async () => {
+      vi.advanceTimersByTime(0);
+    });
+
+    expect(container.querySelector('.desktop-boot-overlay')?.className).toContain(
+      'desktop-boot-overlay--exiting',
+    );
+  });
 });

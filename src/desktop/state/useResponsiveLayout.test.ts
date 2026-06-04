@@ -140,6 +140,39 @@ describe('useResponsiveLayout - resize epoch', () => {
   });
 });
 
+describe('useResponsiveLayout - fonts ready', () => {
+  it('runs an extra layout pass when document.fonts.ready resolves', async () => {
+    let resolveReady: () => void = () => {};
+    const ready = new Promise<void>((r) => {
+      resolveReady = r;
+    });
+    Object.defineProperty(document, 'fonts', { value: { ready }, configurable: true });
+
+    try {
+      const defs: WindowDef[] = [makeWindowDef({ id: 'a', defaultHeight: 400 })];
+      const wm = makeWm({ a: makeWindowState({ id: 'a', open: false }) });
+      renderHook(() => useResponsiveLayout(wm, defs, { width: DESKTOP_VW, height: DESKTOP_VH }));
+
+      await act(async () => {
+        await flushFrame();
+      });
+      const before = (wm.relayoutToViewport as ReturnType<typeof vi.fn>).mock.calls.length;
+
+      // Fonts settling bumps the layout epoch → one more relayout pass.
+      await act(async () => {
+        resolveReady();
+        await ready;
+        await flushFrame();
+      });
+
+      const after = (wm.relayoutToViewport as ReturnType<typeof vi.fn>).mock.calls.length;
+      expect(after).toBeGreaterThan(before);
+    } finally {
+      delete (document as { fonts?: unknown }).fonts;
+    }
+  });
+});
+
 describe('useResponsiveLayout - fitWindowToMobile', () => {
   it('sets mobile geometry for the given id from the live viewport', () => {
     setViewport(MOBILE_VW, MOBILE_VH);
