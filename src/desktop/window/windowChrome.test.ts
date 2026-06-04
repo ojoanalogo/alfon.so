@@ -77,7 +77,10 @@ describe('resolveWindowChrome', () => {
       focused: true,
       windowClassName: 'app-notes',
     });
-    expect(className).toContain('desktop-window');
+    // split() so the base class isn't satisfied by a substring of a modifier
+    // (e.g. 'desktop-window--expanded' contains 'desktop-window').
+    const classes = className.split(' ');
+    expect(classes).toContain('desktop-window');
     expect(className).toContain('desktop-window--expanded');
     expect(className).toContain('desktop-window--maximize-transition');
     expect(className).toContain('is-focused');

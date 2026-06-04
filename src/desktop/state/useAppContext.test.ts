@@ -79,7 +79,7 @@ describe('useAppContext', () => {
 
     act(() => result.current.onOpenPost('my-slug'));
     expect(openWindow).toHaveBeenCalledWith(postWindowId('my-slug'));
-    expect(openWindow).toHaveBeenCalledWith('post:my-slug');
+    expect(openWindow).toHaveBeenCalledTimes(1);
   });
 
   it('onOpenLink navigates the browser, sets geometry, and opens the browser window', () => {

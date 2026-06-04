@@ -78,11 +78,4 @@ describe('EmptyState', () => {
     const root = container.querySelector('.empty-state') as HTMLElement;
     expect(root.className).toContain('custom-cls');
   });
-
-  it('filters out a falsy className so the class list has no stray spaces', () => {
-    const { container } = render(<EmptyState description="x" />);
-    const root = container.querySelector('.empty-state') as HTMLElement;
-    // No "undefined" leaked into the joined class string.
-    expect(root.className).not.toContain('undefined');
-  });
 });

@@ -144,8 +144,10 @@ describe('Window', () => {
       focused: true,
       state: makeWindowState({ open: true, minimized: false }),
     });
-    // The card-body should only contain the children, no inset overlay div
-    const overlay = container.querySelector('.card-body > div.absolute.inset-0');
+    // The card-body should only contain the children, no focus-capture overlay.
+    // (Mirrors the semantic selector used by the "renders a focus-capture
+    // overlay" test above, instead of pinning Tailwind utility classes.)
+    const overlay = container.querySelector('.card-body [aria-hidden="true"]');
     expect(overlay).toBeNull();
   });
 

@@ -44,7 +44,6 @@ describe('ThemeToggle', () => {
   it('renders a button with the toggle tooltip dataset', () => {
     renderToggle();
     const btn = getButton();
-    expect(btn).toBeTruthy();
     expect(btn.getAttribute('data-tooltip')).toBe('Cambiar tema');
     expect(btn.getAttribute('type')).toBe('button');
   });

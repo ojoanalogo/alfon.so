@@ -65,9 +65,10 @@ describe('NotesSidebar', () => {
 
   it('omits the preview line when content is empty', () => {
     const { container } = setup({ notes: [makeNote({ content: '   ' })] });
-    // only title + updatedAt spans, no preview span with text
-    const item = container.querySelector('.notes-sidebar__item');
-    expect(item?.textContent?.includes('first line')).toBe(false);
+    // Only the title and timestamp spans render — the preview span is dropped.
+    // (Asserts the structure rather than the absence of arbitrary text.)
+    const item = container.querySelector('.notes-sidebar__item') as HTMLElement;
+    expect(item.querySelectorAll('span')).toHaveLength(2);
   });
 
   it('fires onSelect with the note id when an item is clicked', () => {
