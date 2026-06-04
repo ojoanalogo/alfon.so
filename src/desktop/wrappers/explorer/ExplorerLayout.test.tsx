@@ -54,6 +54,17 @@ describe('ExplorerLayout', () => {
     expect(container.querySelector('.explorer-layout')).toBeTruthy();
   });
 
+  it('renders children passed alongside the items', () => {
+    render(
+      <ExplorerViewProvider defaultMode="grid">
+        <ExplorerLayout items={[{ id: 'a', label: 'Alpha' }]} onActivate={vi.fn()}>
+          <div data-testid="extra-child">footer</div>
+        </ExplorerLayout>
+      </ExplorerViewProvider>,
+    );
+    expect(screen.getByTestId('extra-child')).toBeTruthy();
+  });
+
   it('throws if rendered outside an ExplorerViewProvider', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() =>

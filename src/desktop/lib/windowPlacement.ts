@@ -1,8 +1,8 @@
 import { MIN_HEIGHT, TASKBAR_HEIGHT, EDGE_MARGIN } from './layoutConstants';
 
 /** Max px a window center may shift from the viewport center. */
-const JITTER_X = 140;
-const JITTER_Y = 100;
+export const JITTER_X = 140;
+export const JITTER_Y = 100;
 
 function hashUnit(id: string, salt: number): number {
   let hash = salt;

@@ -194,4 +194,34 @@ describe('WallpaperProvider + useWallpaper', () => {
     expect(result.current.status).toBe('ready');
     expect(result.current.bootContentReady).toBe(true);
   });
+
+  it('reports error status when the active wallpaper image fails to load', () => {
+    // Capture each constructed Image so the test can fire its onerror handler.
+    const instances: Array<{ onerror: (() => void) | null }> = [];
+    class FakeImage {
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      private _src = '';
+      constructor() {
+        instances.push(this);
+      }
+      set src(value: string) {
+        this._src = value;
+      }
+      get src() {
+        return this._src;
+      }
+    }
+    vi.stubGlobal('Image', FakeImage);
+
+    const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
+    // Default wallpaper '4' is active → the load effect constructs an Image.
+    expect(result.current.status).toBe('loading');
+
+    act(() => {
+      instances[instances.length - 1]?.onerror?.();
+    });
+
+    expect(result.current.status).toBe('error');
+  });
 });

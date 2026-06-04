@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   isMobileViewport,
   minWidthForDef,
@@ -6,6 +6,10 @@ import {
   MOBILE_BREAKPOINT_PX,
 } from './layoutConstants';
 import type { WindowDef } from '../types';
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 function makeDef(overrides: Partial<WindowDef> = {}): WindowDef {
   return {
@@ -28,6 +32,11 @@ describe('isMobileViewport', () => {
   it('is false at and above the breakpoint', () => {
     expect(isMobileViewport(MOBILE_BREAKPOINT_PX)).toBe(false);
     expect(isMobileViewport(1024)).toBe(false);
+  });
+
+  it('returns false during SSR (no window) when called without a width', () => {
+    vi.stubGlobal('window', undefined);
+    expect(isMobileViewport()).toBe(false);
   });
 });
 

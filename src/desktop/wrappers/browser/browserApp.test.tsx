@@ -120,4 +120,32 @@ describe('browserApp', () => {
     expect(browserApp({ id: 'site', title: 'foo' }).taskbarTooltip).toBe('foo');
     expect(browserApp({ id: 'site', taskbarTooltip: 'tip' }).taskbarTooltip).toBe('tip');
   });
+
+  it('forwards custom iconKey, iconUrl, availableWhen, and desktopIcon', () => {
+    const availableWhen = () => true;
+    const desktopIcon = { label: 'Site' };
+    const app = browserApp({
+      id: 'site',
+      iconKey: 'notes',
+      iconUrl: '/x.png',
+      availableWhen,
+      desktopIcon,
+    });
+    expect(app.iconKey).toBe('notes');
+    expect(app.iconUrl).toBe('/x.png');
+    expect(app.availableWhen).toBe(availableWhen);
+    expect(app.desktopIcon).toBe(desktopIcon);
+  });
+
+  it('hides the title label in the chrome when hideTitle is set', () => {
+    const app = browserApp({ id: 'site', hideTitle: true });
+    const { container } = render(
+      app.render(
+        ctxWithUrl('https://news.ycombinator.com/'),
+        makeWindowChromeProps({ state: makeWindowState({ open: true }) }),
+      ),
+    );
+    // The derived host is the title label; hideTitle drops it from the chrome.
+    expect(container.textContent).not.toContain('News.ycombinator.com');
+  });
 });

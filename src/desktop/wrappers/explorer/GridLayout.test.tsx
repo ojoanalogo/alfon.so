@@ -54,6 +54,20 @@ describe('GridLayout', () => {
     expect(buttons[1]?.getAttribute('title')).toBe('NoTitle');
   });
 
+  it('uses title (falling back to label) as the tooltip on a disabled cell', () => {
+    render(
+      <GridLayout
+        items={[
+          item({ id: 'd', label: 'Locked', title: 'Why locked', disabled: true }),
+          item({ id: 'e', label: 'AlsoLocked', disabled: true }),
+        ]}
+        onActivate={vi.fn()}
+      />,
+    );
+    expect(screen.getByLabelText('Locked').getAttribute('title')).toBe('Why locked');
+    expect(screen.getByLabelText('AlsoLocked').getAttribute('title')).toBe('AlsoLocked');
+  });
+
   it('renders an optional heading above the grid', () => {
     render(<GridLayout items={[item()]} onActivate={vi.fn()} heading="My Files" />);
     expect(screen.getByText('My Files')).toBeTruthy();

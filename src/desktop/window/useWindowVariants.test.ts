@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { measureGenieTarget } from './useWindowVariants';
+import { renderHook } from '@testing-library/react';
+import { createRef } from 'react';
+import { measureGenieTarget, useWindowVariants } from './useWindowVariants';
+
+type TransitionVariant = { transition: { duration?: number; type?: string } };
+const asTransition = (v: unknown) => v as TransitionVariant;
+const callMinimized = (v: unknown) => (v as () => TransitionVariant)();
 
 function makeBox(rect: Partial<DOMRect>): HTMLElement {
   const el = document.createElement('div');
@@ -33,5 +39,22 @@ describe('measureGenieTarget', () => {
     expect(dy).toBe(760 + 30 / 2 - winBottomY);
 
     tab.remove();
+  });
+});
+
+describe('useWindowVariants', () => {
+  it('uses instant (duration 0) transitions when reduced motion is preferred', () => {
+    const ref = createRef<HTMLElement>();
+    const { result } = renderHook(() => useWindowVariants(ref, 'notes', true));
+    expect(asTransition(result.current.open).transition).toEqual({ duration: 0 });
+    expect(asTransition(result.current.closed).transition).toEqual({ duration: 0 });
+    expect(callMinimized(result.current.minimized).transition).toEqual({ duration: 0 });
+  });
+
+  it('uses spring/eased transitions when motion is allowed', () => {
+    const ref = createRef<HTMLElement>();
+    const { result } = renderHook(() => useWindowVariants(ref, 'notes', false));
+    expect(asTransition(result.current.open).transition.type).toBe('spring');
+    expect(callMinimized(result.current.minimized).transition.duration).toBe(0.42);
   });
 });

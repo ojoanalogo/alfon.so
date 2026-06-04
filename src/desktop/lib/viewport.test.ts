@@ -4,6 +4,7 @@ import {
   mobileWindowGeometry,
   resolveLayoutWidth,
   resolveWindowGeometry,
+  resolveWindowHeightStyle,
 } from './viewport';
 import { EDGE_MARGIN, MIN_WIDTH, TASKBAR_HEIGHT } from './layoutConstants';
 import type { WindowDef } from '../types';
@@ -86,5 +87,48 @@ describe('resolveWindowGeometry', () => {
     const def = makeDef({ defaultWidth: 1000, minWidth: 500 });
     const geo = resolveWindowGeometry(def, 1200, 800);
     expect(geo.width).toBeGreaterThanOrEqual(Math.min(MIN_WIDTH, effectiveMinWidth(def, 1200)));
+  });
+
+  it('uses the measured width when provided (rounded, min-clamped)', () => {
+    const geo = resolveWindowGeometry(makeDef({ defaultWidth: 600 }), 1200, 800, undefined, 523.4);
+    expect(geo.width).toBe(523);
+  });
+
+  it('centers a content-sized window from the measured height; height stays null', () => {
+    // No defaultHeight → content-sized; the measured box drives y, not height.
+    const def = makeDef({ center: true, defaultWidth: 600 });
+    const geo = resolveWindowGeometry(def, 1200, 800, 320);
+    expect(geo.y).toBe(Math.max(EDGE_MARGIN, (800 - TASKBAR_HEIGHT - 320) / 2));
+    expect(geo.height).toBeNull();
+  });
+
+  it('positions a non-centered content-sized window near center with null height', () => {
+    const geo = resolveWindowGeometry(makeDef({ defaultWidth: 600 }), 1200, 800);
+    expect(geo.height).toBeNull();
+    expect(geo.x).toBeGreaterThanOrEqual(EDGE_MARGIN);
+    expect(geo.y).toBeGreaterThanOrEqual(EDGE_MARGIN);
+  });
+});
+
+describe('resolveWindowHeightStyle', () => {
+  it('uses an explicit pixel height when set', () => {
+    expect(resolveWindowHeightStyle(420, 500, 200)).toEqual({
+      height: '420px',
+      minHeight: undefined,
+    });
+  });
+
+  it('falls back to the app default height when height is null', () => {
+    expect(resolveWindowHeightStyle(null, 500, undefined)).toEqual({
+      height: '500px',
+      minHeight: undefined,
+    });
+  });
+
+  it('uses only a min-height floor for content-sized windows with no default', () => {
+    expect(resolveWindowHeightStyle(null, undefined, 200)).toEqual({
+      height: undefined,
+      minHeight: 200,
+    });
   });
 });

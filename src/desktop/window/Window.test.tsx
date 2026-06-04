@@ -186,6 +186,26 @@ describe('Window', () => {
     const body = container.querySelector('.card-body') as HTMLElement;
     expect(body.className.includes('extra-body')).toBe(true);
   });
+
+  it('applies the app default height to a content-sized window', () => {
+    // height must be null, otherwise the stored pixel height wins.
+    const { container } = renderWindow({
+      state: makeWindowState({ open: true, height: null }),
+      defaultHeight: 500,
+    });
+    const root = container.querySelector('[data-window-id]') as HTMLElement;
+    expect(root.style.height).toBe('500px');
+  });
+
+  it('applies a min-height floor (not a fixed height) to a content-sized window', () => {
+    const { container } = renderWindow({
+      state: makeWindowState({ open: true, height: null }),
+      minHeight: 200,
+    });
+    const root = container.querySelector('[data-window-id]') as HTMLElement;
+    expect(root.style.height).toBe('');
+    expect(root.style.minHeight).toBe('200px');
+  });
 });
 
 describe('Window - width sync', () => {

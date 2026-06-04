@@ -54,11 +54,32 @@ describe('ThemeProvider + useTheme', () => {
     expect(result.current.isDark).toBe(true);
   });
 
-  it('falls back to system preference when storage is empty', () => {
+  it('falls back to system preference (light) when storage is empty', () => {
     const { result } = renderHook(() => useTheme(), { wrapper });
     // matchMedia is stubbed in jsdom to not-match → system resolves to light.
     expect(result.current.preference).toBe('system');
-    expect(['light', 'dark']).toContain(result.current.theme);
+    expect(result.current.theme).toBe('light');
+    expect(result.current.isDark).toBe(false);
+  });
+
+  it('resolves system preference to dark when the OS prefers dark', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn((query: string) => ({
+        matches: true,
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    );
+    const { result } = renderHook(() => useTheme(), { wrapper });
+    expect(result.current.preference).toBe('system');
+    expect(result.current.theme).toBe('dark');
+    expect(result.current.isDark).toBe(true);
   });
 
   it('toggleTheme flips light → dark and persists the override', () => {

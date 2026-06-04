@@ -68,6 +68,11 @@ describe('Dialog', () => {
     expect(screen.getByRole('button', { name: 'Cancelar' })).toBeTruthy();
   });
 
+  it('focuses the first actionable control (the close button) on mount', () => {
+    setup();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Cerrar' }));
+  });
+
   it('fires onConfirm then onClose when the confirm button is clicked', () => {
     const { onConfirm, onClose } = setup();
     fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }));

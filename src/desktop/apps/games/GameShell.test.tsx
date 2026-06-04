@@ -22,6 +22,35 @@ describe('GameShell', () => {
     );
     expect(container.querySelector('.game-shell__hud')).toBeNull();
   });
+
+  it('renders the HUD with only a hint (no score)', () => {
+    const { container } = render(
+      <GameShell hint="solo hint">
+        <div>stage</div>
+      </GameShell>,
+    );
+    expect(container.querySelector('.game-shell__hud')).toBeTruthy();
+    expect(screen.getByText('solo hint')).toBeTruthy();
+  });
+
+  it('renders the HUD with only a score (no hint)', () => {
+    const { container } = render(
+      <GameShell score="puntos: 7">
+        <div>stage</div>
+      </GameShell>,
+    );
+    expect(container.querySelector('.game-shell__hud')).toBeTruthy();
+    expect(screen.getByText('puntos: 7')).toBeTruthy();
+  });
+
+  it('renders the overlay node inside the stage', () => {
+    render(
+      <GameShell overlay={<div>game over</div>}>
+        <div>stage</div>
+      </GameShell>,
+    );
+    expect(screen.getByText('game over')).toBeTruthy();
+  });
 });
 
 describe('GameOverOverlay', () => {

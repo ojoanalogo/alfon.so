@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import FolderList from './FolderList';
+import { fakeFileSize } from './fakeFileSize';
 import type { ListItem } from './types';
 
 function item(overrides: Partial<ListItem> = {}): ListItem {
@@ -67,6 +68,11 @@ describe('FolderList', () => {
     expect(screen.getByText('99 MB')).toBeTruthy();
     // Folder with no explicit size shows the em-dash placeholder.
     expect(screen.getAllByText('—').length).toBeGreaterThan(0);
+  });
+
+  it('generates a deterministic fake size for a non-folder item without an explicit size', () => {
+    render(<FolderList items={[item({ id: 'doc', label: 'Doc', kind: 'PDF' })]} onOpen={vi.fn()} />);
+    expect(screen.getByText(fakeFileSize('doc'))).toBeTruthy();
   });
 
   it('renders the kind column, falling back to "—" when absent', () => {
