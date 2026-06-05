@@ -154,8 +154,8 @@ vite.config.ts.timestamp-*
 # Others
 .zed
 
-# Superpowers
-#superpowers/
+# Local planning/design docs (superpowers plans + specs) — never committed
+/docs/
 
 # LLM stuff
 .claude/workflows
