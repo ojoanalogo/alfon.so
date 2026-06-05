@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
@@ -25,7 +25,7 @@ export interface WindowProps {
   onClose: () => void;
   onMinimize: () => void;
   onToggleMaximize: () => void;
-  onGeometryChange: (geometry: Partial<WindowGeometry>) => void;
+  onGeometryChange: (geometry: Partial<WindowGeometry>, intent: 'user' | 'auto') => void;
   minWidth?: number;
   defaultWidth: number;
   defaultHeight?: number;
@@ -76,45 +76,43 @@ export default function Window({
     canAnimateMaximize,
   );
 
+  const reportUser = useCallback(
+    (geometry: Partial<WindowGeometry>) => onGeometryChange(geometry, 'user'),
+    [onGeometryChange],
+  );
+  const reportAuto = useCallback(
+    (geometry: Partial<WindowGeometry>) => onGeometryChange(geometry, 'auto'),
+    [onGeometryChange],
+  );
+
   const layoutWidth = useWindowWidthSync({
     state,
     defaultWidth,
     minWidth,
     center,
-    onGeometryChange,
+    onGeometryChange: reportAuto,
   });
 
-  const { markUserPositioned, displayX, displayY } = useWindowCenterLayout({
+  useWindowCenterLayout({
     rootRef,
     enabled: center && state.open && !state.minimized && !state.maximized,
-    x: state.x,
-    y: state.y,
     width: layoutWidth,
-    onGeometryChange,
+    userSized: state.userSized,
+    onGeometryChange: reportAuto,
   });
 
-  const posX = center ? displayX : state.x;
-  const posY = center ? displayY : state.y;
+  const posX = state.x;
+  const posY = state.y;
 
-  const gestureState = useMemo(() => {
-    if (center) {
-      return { ...state, x: displayX, y: displayY, width: layoutWidth };
-    }
-    return { ...state, width: layoutWidth };
-  }, [state, layoutWidth, center, displayX, displayY]);
+  const gestureState = useMemo(() => ({ ...state, width: layoutWidth }), [state, layoutWidth]);
 
   const { startMove, startResize } = useWindowGestures({
     state: gestureState,
     minWidth,
     rootRef,
     onFocus,
-    onGeometryChange,
+    onGeometryChange: reportUser,
   });
-
-  function handleMoveStart(event: React.PointerEvent) {
-    markUserPositioned();
-    startMove(event);
-  }
 
   const variants = useWindowVariants(rootRef, state.id, Boolean(prefersReduced));
 
@@ -159,7 +157,7 @@ export default function Window({
           <WindowTitlebar
             title={title}
             titleContent={titleContent}
-            onMoveStart={handleMoveStart}
+            onMoveStart={startMove}
             onDoubleClick={onToggleMaximize}
           />
         </div>

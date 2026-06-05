@@ -40,9 +40,11 @@ export function useWindowCenterLayout({
     const el = rootRef.current;
     if (!el) return;
 
+    let active = true;
     let raf2 = 0;
 
     function syncPosition() {
+      if (!active) return;
       // Never fight an in-progress drag in the window between grab and the first
       // move committing userSized.
       if (document.body.classList.contains(STATE_CLASS.windowGesturing)) return;
@@ -75,6 +77,7 @@ export function useWindowCenterLayout({
     window.addEventListener('resize', syncPosition);
 
     return () => {
+      active = false;
       cancelAnimationFrame(raf1);
       cancelAnimationFrame(raf2);
       observer.disconnect();
@@ -83,5 +86,6 @@ export function useWindowCenterLayout({
       // re-report even if it resolves to a prior value.
       lastSentRef.current = null;
     };
+  // `width` is a dep: a painted-width change re-runs the effect to re-measure before the ResizeObserver may have fired.
   }, [enabled, rootRef, width, userSized]);
 }

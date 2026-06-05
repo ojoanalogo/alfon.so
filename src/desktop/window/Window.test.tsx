@@ -217,7 +217,7 @@ describe('Window - width sync', () => {
       defaultWidth: 600,
       onGeometryChange,
     });
-    expect(onGeometryChange).toHaveBeenCalledWith({ width: 600 });
+    expect(onGeometryChange).toHaveBeenCalledWith({ width: 600 }, 'auto');
   });
 
   it('does not correct width when the window is user-sized', () => {
@@ -238,7 +238,7 @@ describe('Window - width sync', () => {
       center: true,
       onGeometryChange,
     });
-    expect(onGeometryChange).not.toHaveBeenCalledWith({ width: 600 });
+    expect(onGeometryChange).not.toHaveBeenCalledWith({ width: 600 }, 'auto');
   });
 });
 

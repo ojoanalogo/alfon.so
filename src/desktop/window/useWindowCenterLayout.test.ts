@@ -94,6 +94,7 @@ describe('useWindowCenterLayout - centered corrector', () => {
   });
 
   it('does not re-report when the rAF passes resolve to the same box', async () => {
+    // The hook's own rAFs have already resolved at mount (jsdom flushes them), so this asserts no EXTRA report fires on further frames.
     const { onGeometryChange } = renderCenter({ el: elWithRect(600, 400) });
     expect(onGeometryChange.mock.calls.length).toBe(1);
     await act(async () => {
