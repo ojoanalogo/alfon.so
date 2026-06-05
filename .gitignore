@@ -162,3 +162,9 @@ vite.config.ts.timestamp-*
 # Vitest browser-mode artifacts
 .vitest-attachments/
 test/browser/__screenshots__/
+
+# Playwright e2e artifacts
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

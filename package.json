@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:browser": "vitest run --config vitest.browser.config.ts",
+    "test:e2e": "playwright test",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
     "wallpapers:optimize": "node scripts/optimize-wallpapers.mjs"
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@astrojs/check": "0.9.9",
     "@eslint/js": "9.39.4",
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/typography": "0.5.19",
     "@tailwindcss/vite": "4.3.0",
     "@testing-library/dom": "10.4.0",
