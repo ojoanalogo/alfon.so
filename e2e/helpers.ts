@@ -4,6 +4,11 @@ import { expect, type Page, type Locator } from '@playwright/test';
 export async function gotoDesktop(page: Page) {
   await page.goto('/');
   await page.waitForSelector('[data-window-id="about"]');
+  // The boot overlay sits above the whole desktop and intercepts pointer events
+  // until it unmounts. Playwright's actionable clicks auto-wait for it to clear,
+  // but raw `page.mouse` gestures fire into whatever is on top — so block until
+  // it's gone, making the desktop genuinely interactive for both.
+  await page.waitForSelector('.desktop-boot-overlay', { state: 'detached' });
   // The centered `about` window is placed (not at the top-left seed) only after
   // hydration + the mount-sync/centering pass — a reliable "ready" signal.
   await page.waitForFunction(() => {
