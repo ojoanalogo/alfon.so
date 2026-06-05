@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { EDGE_MARGIN } from '@desktop/lib/layoutConstants';
 
 export interface ContextMenuItem {
   label: string;
@@ -15,8 +16,6 @@ interface ContextMenuProps {
   onClose: () => void;
 }
 
-const VIEWPORT_MARGIN = 8;
-
 export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState({ x, y });
@@ -26,11 +25,11 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
     const node = menuRef.current;
     if (!node) return;
     const rect = node.getBoundingClientRect();
-    const maxX = window.innerWidth - rect.width - VIEWPORT_MARGIN;
-    const maxY = window.innerHeight - rect.height - VIEWPORT_MARGIN;
+    const maxX = window.innerWidth - rect.width - EDGE_MARGIN;
+    const maxY = window.innerHeight - rect.height - EDGE_MARGIN;
     setPos({
-      x: Math.max(VIEWPORT_MARGIN, Math.min(x, maxX)),
-      y: Math.max(VIEWPORT_MARGIN, Math.min(y, maxY)),
+      x: Math.max(EDGE_MARGIN, Math.min(x, maxX)),
+      y: Math.max(EDGE_MARGIN, Math.min(y, maxY)),
     });
   }, [x, y, items]);
 
@@ -95,6 +94,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
       ref={menuRef}
       className="fixed z-[1000] min-w-[9rem] border border-[color:var(--color-hairline-strong)] bg-[rgb(255_255_255/0.96)] p-1 font-[ui-monospace,monospace] text-[0.6875rem] text-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.8),2px_3px_0_rgb(0_0_0/0.12)] backdrop-blur-[8px] dark:bg-[rgb(24_24_27/0.96)] dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.06),2px_3px_0_rgb(0_0_0/0.35)]"
       role="menu"
+      tabIndex={-1}
       aria-label="Menú contextual"
       style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
       onKeyDown={handleMenuKeyDown}

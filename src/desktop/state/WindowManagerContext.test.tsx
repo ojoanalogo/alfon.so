@@ -70,7 +70,6 @@ describe('WindowManagerProvider', () => {
 
     const api = result.current;
     expect(typeof api.open).toBe('function');
-    expect(typeof api.applyDefaultOpenLayout).toBe('function');
     expect(typeof api.close).toBe('function');
     expect(typeof api.minimize).toBe('function');
     expect(typeof api.toggleMaximize).toBe('function');

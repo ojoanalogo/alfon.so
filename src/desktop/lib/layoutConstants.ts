@@ -16,6 +16,10 @@ export function minWidthForDef(def: WindowDef): number {
 }
 
 export function isMobileViewport(width?: number): boolean {
+  // An explicit width is authoritative — honor it even during SSR, where a
+  // pure-width caller (e.g. createInitialState's fallback) must not be told
+  // "desktop" just because `window` is absent.
+  if (width != null) return width < MOBILE_BREAKPOINT_PX;
   if (typeof window === 'undefined') return false;
-  return (width ?? window.innerWidth) < MOBILE_BREAKPOINT_PX;
+  return window.innerWidth < MOBILE_BREAKPOINT_PX;
 }

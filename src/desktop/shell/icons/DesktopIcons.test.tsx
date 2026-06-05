@@ -166,6 +166,18 @@ describe('DesktopIcons', () => {
     expect(onOpenWindow).toHaveBeenCalledWith('win-a');
   });
 
+  it('opens the window on Enter (keyboard activation)', () => {
+    const onOpenWindow = vi.fn();
+    const { container } = renderIcons({
+      icons: [makeIcon({ id: 'a', label: 'Alpha', windowId: 'win-a' })],
+      onOpenWindow,
+    });
+    const button = container.querySelector('button.desktop-icon') as HTMLButtonElement;
+    fireEvent.keyDown(button, { key: 'Enter' });
+    expect(onOpenWindow).toHaveBeenCalledTimes(1);
+    expect(onOpenWindow).toHaveBeenCalledWith('win-a');
+  });
+
   it('does not open the window on a single click', () => {
     const onOpenWindow = vi.fn();
     const { container } = renderIcons({

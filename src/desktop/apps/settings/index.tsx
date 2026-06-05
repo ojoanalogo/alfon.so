@@ -1,9 +1,22 @@
+import { lazy, Suspense } from 'react';
 import { defineApp, type SettingsSection } from '@desktop/wrappers';
 import SettingsBody from './SettingsBody';
-import AppearanceSection from './AppearanceSection';
+import AppLoading from '../AppLoading';
+
+// Split the appearance UI (color swatches, wallpaper grid, theme control) out of
+// the initial island bundle; it loads when the settings window first opens.
+const AppearanceSection = lazy(() => import('./AppearanceSection'));
 
 const SETTINGS_SECTIONS: SettingsSection[] = [
-  { id: 'apariencia', title: 'Apariencia', render: () => <AppearanceSection /> },
+  {
+    id: 'apariencia',
+    title: 'Apariencia',
+    render: () => (
+      <Suspense fallback={<AppLoading />}>
+        <AppearanceSection />
+      </Suspense>
+    ),
+  },
 ];
 
 export default defineApp({

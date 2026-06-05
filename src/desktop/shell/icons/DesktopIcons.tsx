@@ -5,6 +5,7 @@ import { useResolvedIconLabelTone } from '../../lib/useResolvedIconLabelTone';
 import { type DesktopIconsState, type IconPosition } from '../../state/useDesktopIcons';
 import { iconGlyphDragTransform } from './iconDragTransform';
 import { useDesktopIconDrag } from './useDesktopIconDrag';
+import { STATE_CLASS } from '../../lib/stateClasses';
 
 interface DesktopIconsProps {
   state: DesktopIconsState;
@@ -113,6 +114,16 @@ export default function DesktopIcons({
     selectOnly(icon.id);
     lastTap.current = { id: icon.id, time: now };
     if (isDouble) activate(icon);
+  }
+
+  function handleIconKeyDown(event: React.KeyboardEvent, icon: DesktopIcon) {
+    // Enter opens the focused icon (preventDefault suppresses the synthesized
+    // click so it doesn't also run the double-click selection path).
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      selectOnly(icon.id);
+      activate(icon);
+    }
   }
 
   function handleIconContextMenu(event: React.MouseEvent, icon: DesktopIcon) {
@@ -234,8 +245,8 @@ export default function DesktopIcons({
               type="button"
               className={[
                 'desktop-icon',
-                isSelected(icon.id) && 'is-selected',
-                isDragging && 'is-dragging',
+                isSelected(icon.id) && STATE_CLASS.selected,
+                isDragging && STATE_CLASS.iconDragging,
               ]
                 .filter(Boolean)
                 .join(' ')}
@@ -248,6 +259,7 @@ export default function DesktopIcons({
               aria-pressed={isSelected(icon.id)}
               onPointerDown={(event) => handleIconPointerDown(event, icon)}
               onClick={(event) => handleIconClick(event, icon)}
+              onKeyDown={(event) => handleIconKeyDown(event, icon)}
               onContextMenu={(event) => handleIconContextMenu(event, icon)}
             >
               <span className="desktop-icon__body">

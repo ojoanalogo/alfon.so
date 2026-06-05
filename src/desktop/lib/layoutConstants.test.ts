@@ -38,6 +38,12 @@ describe('isMobileViewport', () => {
     vi.stubGlobal('window', undefined);
     expect(isMobileViewport()).toBe(false);
   });
+
+  it('honors an explicit width during SSR (no window) instead of assuming desktop', () => {
+    vi.stubGlobal('window', undefined);
+    expect(isMobileViewport(390)).toBe(true);
+    expect(isMobileViewport(1024)).toBe(false);
+  });
 });
 
 describe('minWidthForDef', () => {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
-import { EDGE_MARGIN, TASKBAR_HEIGHT } from '../lib/layoutConstants';
+import { clampBoxToWorkArea } from '../lib/geometry';
 
 const DIALOG_BTN =
   'cursor-pointer border px-[0.625rem] py-1 font-[inherit] text-[0.6875rem] hover:border-[color:var(--color-highlight-border)] hover:text-primary dark:bg-[rgb(0_0_0/0.25)]';
@@ -24,12 +24,7 @@ export function clampDialogPosition(
   viewportWidth: number,
   viewportHeight: number,
 ): DialogPosition {
-  const maxX = Math.max(EDGE_MARGIN, viewportWidth - width - EDGE_MARGIN);
-  const maxY = Math.max(EDGE_MARGIN, viewportHeight - TASKBAR_HEIGHT - height - EDGE_MARGIN);
-  return {
-    x: Math.min(Math.max(x, EDGE_MARGIN), maxX),
-    y: Math.min(Math.max(y, EDGE_MARGIN), maxY),
-  };
+  return clampBoxToWorkArea(x, y, width, height, viewportWidth, viewportHeight);
 }
 
 interface DragState {
@@ -84,14 +79,18 @@ export default function Dialog({
     return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [onClose]);
 
-  // Focus the first actionable control on mount.
+  // Focus the first actionable control on mount, and return focus to whatever was
+  // focused before (the triggering control) when the dialog closes.
   useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     const node = dialogRef.current;
-    if (!node) return;
-    const focusable = node.querySelector<HTMLElement>(
+    const focusable = node?.querySelector<HTMLElement>(
       'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     focusable?.focus();
+    return () => {
+      if (previouslyFocused?.isConnected) previouslyFocused.focus();
+    };
   }, []);
 
   // Global drag listeners live for the component's lifetime and read the active

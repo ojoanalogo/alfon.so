@@ -1,4 +1,5 @@
-import { MIN_HEIGHT, TASKBAR_HEIGHT, EDGE_MARGIN } from './layoutConstants';
+import { MIN_HEIGHT, TASKBAR_HEIGHT } from './layoutConstants';
+import { clampBoxToWorkArea } from './geometry';
 
 /** Max px a window center may shift from the viewport center. */
 export const JITTER_X = 140;
@@ -42,11 +43,14 @@ export function positionNearCenter(
   const centerX = (viewportWidth - windowWidth) / 2;
   const centerY = (workHeight - height) / 2;
 
-  const maxX = Math.max(EDGE_MARGIN, viewportWidth - windowWidth - EDGE_MARGIN);
-  const maxY = Math.max(EDGE_MARGIN, workHeight - height - EDGE_MARGIN);
+  const clamped = clampBoxToWorkArea(
+    centerX + jitterX,
+    centerY + jitterY,
+    windowWidth,
+    height,
+    viewportWidth,
+    viewportHeight,
+  );
 
-  const x = Math.round(Math.max(EDGE_MARGIN, Math.min(maxX, centerX + jitterX)));
-  const y = Math.round(Math.max(EDGE_MARGIN, Math.min(maxY, centerY + jitterY)));
-
-  return { x, y };
+  return { x: Math.round(clamped.x), y: Math.round(clamped.y) };
 }

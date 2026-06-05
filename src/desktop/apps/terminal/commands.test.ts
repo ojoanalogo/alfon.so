@@ -45,6 +45,7 @@ describe('runTerminalCommand', () => {
     expect(lines.some((l) => l.includes('about'))).toBe(true);
     expect(lines.some((l) => l.includes('neofetch'))).toBe(true);
     expect(lines.some((l) => l.includes('clear'))).toBe(true);
+    expect(lines.some((l) => l.includes('whoami'))).toBe(true);
   });
 
   it('about prints the site info', () => {

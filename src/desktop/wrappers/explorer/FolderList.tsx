@@ -53,6 +53,9 @@ function FolderListRow({ item, onOpen }: { item: ListItem; onOpen?: (id: string)
 
 export default function FolderList({ items, onOpen, className, showHeader }: FolderListProps) {
   return (
+    // role="list" is intentional: WebKit drops list semantics when list-style is
+    // removed, so VoiceOver wouldn't announce this as a list without it.
+    // eslint-disable-next-line jsx-a11y/no-redundant-roles
     <ul
       className={['folder-list m-0 list-none p-0 text-[0.6875rem]', className]
         .filter(Boolean)

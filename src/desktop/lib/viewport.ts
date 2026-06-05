@@ -1,5 +1,6 @@
 import type { WindowDef, WindowGeometry } from '../types';
 import { positionNearCenter } from './windowPlacement';
+import { centerInWorkArea } from './geometry';
 import {
   minWidthForDef,
   isMobileViewport,
@@ -48,7 +49,6 @@ export function resolveWindowGeometry(
   viewportHeight: number,
   measuredHeight?: number,
   measuredWidth?: number,
-  options?: { freshRandom?: boolean },
 ): WindowGeometry {
   if (isMobileViewport(viewportWidth)) {
     const mobile = mobileWindowGeometry(viewportWidth, viewportHeight);
@@ -67,20 +67,12 @@ export function resolveWindowGeometry(
 
   if (def.center) {
     const height = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
-    const x = Math.max(EDGE_MARGIN, (viewportWidth - width) / 2);
-    const y = Math.max(EDGE_MARGIN, (viewportHeight - TASKBAR_HEIGHT - height) / 2);
+    const { x, y } = centerInWorkArea(viewportWidth, viewportHeight, width, height);
     return { x, y, width, height: def.defaultHeight ?? null };
   }
 
   const height = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
-  const { x, y } = positionNearCenter(
-    viewportWidth,
-    viewportHeight,
-    width,
-    height,
-    def.id,
-    options?.freshRandom,
-  );
+  const { x, y } = positionNearCenter(viewportWidth, viewportHeight, width, height, def.id);
   return { x, y, width, height: def.defaultHeight ?? null };
 }
 
@@ -89,9 +81,8 @@ export function resolveDefaultOpenGeometry(
   def: WindowDef,
   viewportWidth: number,
   viewportHeight: number,
-  options?: { freshRandom?: boolean },
 ): WindowGeometry {
-  return resolveWindowGeometry(def, viewportWidth, viewportHeight, undefined, undefined, options);
+  return resolveWindowGeometry(def, viewportWidth, viewportHeight);
 }
 
 /**

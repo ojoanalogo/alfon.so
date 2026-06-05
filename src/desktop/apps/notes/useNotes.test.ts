@@ -20,6 +20,11 @@ describe('useNotes', () => {
     expect(result.current.notes).toEqual([]);
   });
 
+  it('does not write storage on mount before any edit', () => {
+    renderHook(() => useNotes());
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+  });
+
   it('hydrates initial notes from storage', () => {
     const seeded: Note[] = [
       { id: 'a', title: 'Seed', content: 'hello', updatedAt: '2026-01-01T00:00:00.000Z' },

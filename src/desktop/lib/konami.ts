@@ -22,24 +22,41 @@ function matchesKey(key: string, expected: string): boolean {
 }
 
 /**
+ * KMP "failure function": fail[i] is the length of the longest proper prefix of
+ * `seq[0..i]` that is also a suffix. It lets the matcher rewind to the longest
+ * still-valid partial match on a mismatch instead of discarding all progress.
+ */
+function buildFailure(seq: readonly string[]): number[] {
+  const fail = new Array<number>(seq.length).fill(0);
+  let len = 0;
+  for (let i = 1; i < seq.length; i++) {
+    while (len > 0 && !matchesKey(seq[i]!, seq[len]!)) len = fail[len - 1]!;
+    if (matchesKey(seq[i]!, seq[len]!)) len += 1;
+    fail[i] = len;
+  }
+  return fail;
+}
+
+/**
  * Stateful matcher for the Konami sequence. `push` feeds one key and returns
  * `true` exactly on the keystroke that completes the sequence (then resets).
- * A wrong key resets the progress, but restarts at 1 when that key is itself
- * the first key of the sequence.
+ * On a mismatch it rewinds (KMP) to the longest prefix of the sequence that is
+ * still satisfied by the keys seen so far, so a stray repeated key (e.g. an
+ * extra leading ArrowUp) doesn't force a full restart.
  */
 export function createKonamiMatcher() {
+  const fail = buildFailure(KONAMI_SEQUENCE);
   let index = 0;
   return {
     push(key: string): boolean {
-      if (matchesKey(key, KONAMI_SEQUENCE[index]!)) {
-        index += 1;
-        if (index === KONAMI_SEQUENCE.length) {
-          index = 0;
-          return true;
-        }
-        return false;
+      while (index > 0 && !matchesKey(key, KONAMI_SEQUENCE[index]!)) {
+        index = fail[index - 1]!;
       }
-      index = matchesKey(key, KONAMI_SEQUENCE[0]!) ? 1 : 0;
+      if (matchesKey(key, KONAMI_SEQUENCE[index]!)) index += 1;
+      if (index === KONAMI_SEQUENCE.length) {
+        index = 0;
+        return true;
+      }
       return false;
     },
   };

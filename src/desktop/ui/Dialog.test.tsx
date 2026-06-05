@@ -73,6 +73,20 @@ describe('Dialog', () => {
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Cerrar' }));
   });
 
+  it('returns focus to the triggering control when it closes', () => {
+    const trigger = document.createElement('button');
+    document.body.appendChild(trigger);
+    trigger.focus();
+    expect(document.activeElement).toBe(trigger);
+
+    const { unmount } = setup();
+    expect(document.activeElement).not.toBe(trigger);
+
+    unmount();
+    expect(document.activeElement).toBe(trigger);
+    trigger.remove();
+  });
+
   it('fires onConfirm then onClose when the confirm button is clicked', () => {
     const { onConfirm, onClose } = setup();
     fireEvent.click(screen.getByRole('button', { name: 'Eliminar' }));

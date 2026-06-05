@@ -10,7 +10,7 @@ export function useResponsiveLayout(
   defs: WindowDef[],
   viewport: { width: number; height: number },
 ): { openWindow: (id: string) => void; fitWindowToMobile: (id: string) => void } {
-  const { setGeometry, setGeometries, relayoutToViewport, applyDefaultOpenLayout } = wm;
+  const { setGeometry, setGeometries, relayoutToViewport } = wm;
   const [layoutEpoch, setLayoutEpoch] = useState(0);
 
   // Read window state inside the relayout effect without making it a dependency:
@@ -49,18 +49,17 @@ export function useResponsiveLayout(
 
   const openWindow = useCallback(
     (id: string) => {
+      // `wm.open` already resolves the declared default geometry on a fresh open
+      // (and preserves a minimized window's geometry on restore), so no second
+      // layout pass is needed here. Mobile still overrides to a full-bleed fit.
       flushSync(() => {
         wm.open(id);
       });
       if (isMobileViewport()) {
         fitWindowToMobile(id);
-        return;
       }
-      flushSync(() => {
-        applyDefaultOpenLayout(id);
-      });
     },
-    [wm, fitWindowToMobile, applyDefaultOpenLayout],
+    [wm, fitWindowToMobile],
   );
 
   // Clamp window geometry to the current viewport (desktop centering or mobile fit).

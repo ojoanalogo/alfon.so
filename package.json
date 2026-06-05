@@ -24,9 +24,9 @@
     "@astrojs/sitemap": "3.7.3",
     "astro": "6.4.2",
     "dayjs": "1.11.19",
-    "framer-motion": "^12.40.0",
-    "lucide-react": "^1.17.0",
-    "marked": "^18.0.4",
+    "framer-motion": "12.40.0",
+    "lucide-react": "1.17.0",
+    "marked": "18.0.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "reading-time": "1.5.0",
@@ -52,14 +52,18 @@
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "17.6.0",
-    "jsdom": "^29.1.1",
+    "jsdom": "29.1.1",
     "prettier": "3.8.3",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "0.8.0",
     "tailwindcss": "4.2.2",
     "typescript": "5.9.3",
     "typescript-eslint": "8.60.0",
-    "vitest": "^4.1.8"
+    "vitest": "4.1.8"
   },
-  "packageManager": "pnpm@11.3.0"
+  "packageManager": "pnpm@11.3.0",
+  "engines": {
+    "node": ">=24.16",
+    "pnpm": ">=11"
+  }
 }

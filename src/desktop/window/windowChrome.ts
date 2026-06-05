@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { resolveWindowHeightStyle } from '../lib/viewport';
+import { STATE_CLASS } from '../lib/stateClasses';
 
 export type WindowStatus = 'open' | 'closed' | 'minimized';
 
@@ -76,10 +77,10 @@ export function resolveWindowChrome({
 
   const className = [
     'desktop-window',
-    sized && 'is-sized',
+    sized && STATE_CLASS.windowSized,
     maximized && 'desktop-window--expanded',
     maximizeTransition && 'desktop-window--maximize-transition',
-    focused && 'is-focused',
+    focused && STATE_CLASS.windowFocused,
     windowClassName,
   ]
     .filter(Boolean)

@@ -7,6 +7,7 @@ import {
   ICON_DRAG_RAMP_OUT_MS,
 } from './iconDragTransform';
 import { isPointerOverTrash } from './trashDrop';
+import { STATE_CLASS } from '../../lib/stateClasses';
 
 const DRAG_THRESHOLD = 2;
 const BEND_SMOOTH = 0.45;
@@ -195,7 +196,7 @@ export function useDesktopIconDrag({
           const origin = pos[drag.id];
           if (origin) drag.origins = { [drag.id]: origin };
         }
-        document.body.classList.add('is-window-gesturing');
+        document.body.classList.add(STATE_CLASS.windowGesturing);
         publishVisual(0, 0, 0, new Set(Object.keys(drag.origins)));
         scheduleFrame();
       }
@@ -208,13 +209,13 @@ export function useDesktopIconDrag({
       const overTrash = isPointerOverTrash(event.clientX, event.clientY, trash.current);
       if (overTrash !== overTrashRef.current) {
         overTrashRef.current = overTrash;
-        document.body.classList.toggle('is-trash-drop-target', overTrash);
+        document.body.classList.toggle(STATE_CLASS.trashDropTarget, overTrash);
       }
     }
 
     /** Single end-of-drag reset shared by every termination path. */
     function teardown() {
-      document.body.classList.remove('is-window-gesturing', 'is-trash-drop-target');
+      document.body.classList.remove(STATE_CLASS.windowGesturing, STATE_CLASS.trashDropTarget);
       overTrashRef.current = false;
       dragRef.current = null;
     }
@@ -265,6 +266,9 @@ export function useDesktopIconDrag({
       window.removeEventListener('pointerup', endDrag);
       window.removeEventListener('pointercancel', endDrag);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      // If we unmount mid-drag, no pointerup runs teardown — clear the gesture
+      // classes here so they don't stay stuck on <body> for the session.
+      if (dragRef.current) teardown();
     };
   }, []);
 

@@ -116,6 +116,26 @@ describe('useWindowManager - open', () => {
     expect(result.current.windows.a.open).toBe(true);
   });
 
+  it('preserves custom geometry when restoring a minimized window', () => {
+    const { result } = renderManager();
+    act(() => result.current.open('a'));
+    // User resizes/moves the window (sets userSized via the gesture class).
+    document.body.classList.add('is-window-gesturing');
+    act(() => result.current.setGeometry('a', { x: 250, y: 180, width: 720 }));
+    document.body.classList.remove('is-window-gesturing');
+    expect(result.current.windows.a.userSized).toBe(true);
+
+    act(() => result.current.minimize('a'));
+    act(() => result.current.open('a'));
+
+    // Restoring from minimized must NOT reset to default geometry: a minimized
+    // window was never closed, so its size/position and userSized are preserved.
+    expect(result.current.windows.a.userSized).toBe(true);
+    expect(result.current.windows.a.x).toBe(250);
+    expect(result.current.windows.a.y).toBe(180);
+    expect(result.current.windows.a.width).toBe(720);
+  });
+
   it('is a no-op for unknown ids (no entry created)', () => {
     const { result } = renderManager();
     act(() => result.current.open('missing'));
@@ -243,6 +263,16 @@ describe('useWindowManager - focus / unfocus', () => {
     expect(result.current.focusedId).toBe('a');
     act(() => result.current.unfocus());
     expect(result.current.focusedId).toBeNull();
+  });
+
+  it('is a no-op when refocusing the already-top focused window', () => {
+    const { result } = renderManager();
+    act(() => result.current.focus('a'));
+    const snapshot = result.current.windows.a;
+    // Re-focusing the window that is already focused and top-most must not bump
+    // z or write state (every pointer-down on the focused window calls focus).
+    act(() => result.current.focus('a'));
+    expect(result.current.windows.a).toBe(snapshot);
   });
 });
 
@@ -400,8 +430,8 @@ describe('useWindowManager - relayoutToViewport', () => {
   });
 });
 
-describe('useWindowManager - applyDefaultOpenLayout', () => {
-  it('resets an open window to its declared default width and clears userSized', () => {
+describe('useWindowManager - open applies default geometry', () => {
+  it('resets an open-from-closed window to its declared default width and clears userSized', () => {
     const { result } = renderManager();
     act(() => result.current.open('a'));
     document.body.classList.add('is-window-gesturing');
@@ -409,13 +439,14 @@ describe('useWindowManager - applyDefaultOpenLayout', () => {
     document.body.classList.remove('is-window-gesturing');
     expect(result.current.windows.a.userSized).toBe(true);
 
-    act(() => result.current.applyDefaultOpenLayout('a'));
+    act(() => result.current.close('a'));
+    act(() => result.current.open('a'));
     // defaultWidth 600 fits the 1024 viewport, so width returns to 600.
     expect(result.current.windows.a.width).toBe(600);
     expect(result.current.windows.a.userSized).toBe(false);
   });
 
-  it('sizes a centered window without moving it', () => {
+  it('sizes a centered window from defaults without moving it across a close+reopen', () => {
     const centered = makeWindowDef({
       id: 'c',
       center: true,
@@ -430,25 +461,11 @@ describe('useWindowManager - applyDefaultOpenLayout', () => {
     act(() => result.current.setGeometry('c', { width: 680 }));
     document.body.classList.remove('is-window-gesturing');
 
-    act(() => result.current.applyDefaultOpenLayout('c'));
+    act(() => result.current.close('c'));
+    act(() => result.current.open('c'));
     expect(result.current.windows.c.width).toBe(500); // reset to default
     expect(result.current.windows.c.userSized).toBe(false);
-    expect(result.current.windows.c.x).toBe(x); // unchanged — centered
+    expect(result.current.windows.c.x).toBe(x); // unchanged — centered defs keep x/y
     expect(result.current.windows.c.y).toBe(y);
-  });
-
-  it('is a no-op for a closed window (state identity preserved)', () => {
-    const { result } = renderManager();
-    const before = result.current.windows; // 'a' is closed
-    act(() => result.current.applyDefaultOpenLayout('a'));
-    expect(result.current.windows).toBe(before);
-  });
-
-  it('is a no-op for unknown ids', () => {
-    const { result } = renderManager();
-    act(() => result.current.open('a'));
-    const before = result.current.windows;
-    act(() => result.current.applyDefaultOpenLayout('nope'));
-    expect(result.current.windows).toBe(before);
   });
 });

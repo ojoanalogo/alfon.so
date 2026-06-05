@@ -23,16 +23,23 @@ describe('createKonamiMatcher', () => {
     expect(feed(matcher, [...KONAMI_SEQUENCE])).toBe(true);
   });
 
-  it('restarts the count at 1 when a mismatching key equals the first key', () => {
+  it('keeps the valid partial match when a mismatching key equals an earlier key', () => {
     const matcher = createKonamiMatcher();
     matcher.push('ArrowUp'); // index 1
     matcher.push('ArrowUp'); // index 2, expected next is 'ArrowDown'
-    // 'ArrowUp' mismatches the expected 'ArrowDown', but equals sequence[0],
-    // so progress restarts at index 1 rather than 0.
+    // 'ArrowUp' mismatches the expected 'ArrowDown'; KMP rewinds to the longest
+    // still-valid prefix (the two leading ArrowUps), so progress is preserved
+    // rather than discarded — feeding the sequence from index 1 onward completes.
     matcher.push('ArrowUp');
-    // index is now 1; feeding the sequence from index 1 onward completes it.
     const rest = KONAMI_SEQUENCE.slice(1);
     expect(feed(matcher, [...rest])).toBe(true);
+  });
+
+  it('resyncs after an extra leading key instead of hard-resetting', () => {
+    const matcher = createKonamiMatcher();
+    // One fat-fingered extra ArrowUp before the real code: the trailing 10 keys
+    // are the exact sequence, so a KMP resync should still complete it.
+    expect(feed(matcher, ['ArrowUp', ...KONAMI_SEQUENCE])).toBe(true);
   });
 
   it('matches b/a case-insensitively', () => {

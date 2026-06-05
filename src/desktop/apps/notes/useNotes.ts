@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { loadNotes, saveNotes } from './storage';
 import type { Note } from './types';
 
@@ -15,7 +15,14 @@ function createEmptyNote(): Note {
 export function useNotes() {
   const [notes, setNotes] = useState<Note[]>(() => loadNotes());
 
+  // Persist on change, but skip the mount run — the initial value came straight
+  // from storage, so writing it back rewrites storage on every app open for no reason.
+  const didMountRef = useRef(false);
   useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
     saveNotes(notes);
   }, [notes]);
 

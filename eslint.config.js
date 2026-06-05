@@ -4,6 +4,7 @@ import tseslint from 'typescript-eslint';
 import astro from 'eslint-plugin-astro';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 
@@ -56,6 +57,15 @@ export default defineConfig(
     rules: {
       ...reactHooks.configs.recommended.rules,
     },
+  },
+
+  // Accessibility for the React island. The Astro a11y config below registers
+  // the `jsx-a11y` plugin globally but only lints .astro templates; reapply the
+  // recommended rules to .tsx so the ~18-app desktop is covered too. Rules only
+  // (no `plugins` key) to avoid redefining the plugin Astro already registered.
+  {
+    files: reactFiles,
+    rules: { ...jsxA11y.flatConfigs.recommended.rules },
   },
 
   // Astro — recommended rules plus Astro-aware jsx-a11y.

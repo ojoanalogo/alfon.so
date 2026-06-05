@@ -1,55 +1,76 @@
-# Astro Starter Kit: Basics
+# alfon.so — devfolio
 
-```
-npm create astro@latest -- --template basics
-```
+My personal website ([alfon.so](https://alfon.so)), built as a tiny **desktop-OS**
+in the browser: draggable windows, a taskbar, a start menu, desktop icons, and a
+handful of mini-apps (terminal, notes, file explorers, a web browser, and a few
+canvas games). On small screens it falls back to a plain, content-first mobile view.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+Built with **Astro 6** + **React 19** + **Tailwind v4**, shipped as a single React
+island so the desktop never loads on mobile.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Stack
 
-![basics](https://user-images.githubusercontent.com/4677417/186188965-73453154-fdec-4d6b-9c34-cb35c248ae5b.png)
+- **Astro 6** — static site, routing, SEO/head, and the blog content collection.
+- **React 19** — the desktop island (windows, apps, games), hydrated via
+  `client:media` only on wider viewports.
+- **Tailwind v4** — inline utilities + shared token strings (`src/styles/tokens.ts`)
+  + a small `@layer components` set in `src/styles/` for what utilities can't express.
+- **framer-motion** for window/menu animation, **marked** for in-app markdown,
+  **sharp** for build-time image optimization.
 
+## Getting started
 
-## 🚀 Project Structure
+Requires Node `>=24.16` (see `.nvmrc`) and **pnpm** (`corepack enable` will pick up
+the pinned version from `package.json`).
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+pnpm install
+pnpm dev        # local dev server at http://localhost:4321
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Commands
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+| Command                     | What it does                                      |
+| :-------------------------- | :------------------------------------------------ |
+| `pnpm dev`                  | Start the dev server (`localhost:4321`)           |
+| `pnpm build`                | Production build to `./dist/`                      |
+| `pnpm preview`              | Preview the production build locally              |
+| `pnpm test`                 | Run the Vitest suite                              |
+| `pnpm test:watch`           | Vitest in watch mode                              |
+| `pnpm lint`                 | ESLint over `src`                                 |
+| `pnpm check`                | `astro check` (TypeScript diagnostics)            |
+| `pnpm format`               | Prettier-format `src`                             |
+| `pnpm wallpapers:optimize`  | Re-optimize the source wallpapers in `src/assets` |
 
-Any static assets, like images, can be placed in the `public/` directory.
+CI runs `lint`, `check`, `test`, and `build` on every push.
 
-## 🧞 Commands
+## Project layout
 
-All commands are run from the root of the project, from a terminal:
+```
+src/
+├── pages/            Astro routes (home desktop, blog)
+├── layouts/          Base + post layouts
+├── components/       Astro UI + site chrome
+├── content/          Blog content collection (Markdown)
+├── lib/              Blog + theme helpers
+├── styles/           tokens.ts + global.css + component CSS partials
+└── desktop/          The React desktop island
+    ├── state/        Window manager, icons, theme, wallpaper
+    ├── window/       Window chrome + geometry/gestures
+    ├── shell/        Icons grid, taskbar, start menu, boot overlay
+    ├── apps/         The mini-apps + the single registry.ts
+    ├── wrappers/     The defineApp / browserApp / explorerApp authoring kit
+    └── lib/          Leaf helpers (layout constants, viewport math, …)
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:3000`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+### Adding a desktop app
 
-## 👀 Want to learn more?
+Append one `defineApp` / `browserApp` / `explorerApp` call to `src/desktop/apps/registry.ts`.
+The runtime derives window defs, desktop icons, taskbar metadata, the start menu,
+and the terminal's `ls` from that one list — there's no second place to register.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Testing
+
+Unit tests run under **Vitest** + jsdom and cover pure logic, hooks, and component
+behavior (see `vitest.config.ts`). Astro virtual modules (`astro:content`,
+`astro:assets`) are stubbed in `test/stubs`. Tests live next to the code they cover.

@@ -24,13 +24,13 @@ importers:
         specifier: 1.11.19
         version: 1.11.19
       framer-motion:
-        specifier: ^12.40.0
+        specifier: 12.40.0
         version: 12.40.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       lucide-react:
-        specifier: ^1.17.0
+        specifier: 1.17.0
         version: 1.17.0(react@19.2.4)
       marked:
-        specifier: ^18.0.4
+        specifier: 18.0.4
         version: 18.0.4
       react:
         specifier: 19.2.4
@@ -103,7 +103,7 @@ importers:
         specifier: 17.6.0
         version: 17.6.0
       jsdom:
-        specifier: ^29.1.1
+        specifier: 29.1.1
         version: 29.1.1
       prettier:
         specifier: 3.8.3
@@ -124,7 +124,7 @@ importers:
         specifier: 8.60.0
         version: 8.60.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)
       vitest:
-        specifier: ^4.1.8
+        specifier: 4.1.8
         version: 4.1.8(@types/node@24.10.9)(jsdom@29.1.1)(vite@7.3.3(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
 
 packages:

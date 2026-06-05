@@ -6,6 +6,7 @@ import {
   effectiveMinWidth,
 } from '../lib/viewport';
 import { isMobileViewport, MIN_WIDTH, MIN_HEIGHT } from '../lib/layoutConstants';
+import { STATE_CLASS } from '../lib/stateClasses';
 
 function createInitialState(
   defs: WindowDef[],
@@ -89,8 +90,6 @@ export interface WindowManager {
   order: string[];
   focusedId: string | null;
   open: (id: string) => void;
-  /** Apply declared default width/height when opening on desktop. */
-  applyDefaultOpenLayout: (id: string, options?: { freshRandom?: boolean }) => void;
   close: (id: string) => void;
   minimize: (id: string) => void;
   toggleMaximize: (id: string) => void;
@@ -134,14 +133,27 @@ export function useWindowManager(
     setWindows((prev) => mergeWindowUiState(createInitialState(defs, vw, vh), prev));
   }, [defs]);
 
+  // Refs let bringToFront read the latest focus/z without re-creating the
+  // callback (it's wired into every window's pointer-down).
+  const focusedIdRef = useRef(focusedId);
+  focusedIdRef.current = focusedId;
+  const windowsRef = useRef(windows);
+  windowsRef.current = windows;
+
   const bringToFront = useCallback((id: string) => {
-    topZ.current += 1;
-    const z = topZ.current;
-    setWindows((prev) => {
-      const target = prev[id];
-      if (!target) return prev;
-      return { ...prev, [id]: { ...target, zIndex: z } };
-    });
+    const target = windowsRef.current[id];
+    // Already the focused, top-most window — pointer-downs on it are common, so
+    // skip the z bump + state write that would otherwise force a no-op re-render.
+    const alreadyTop = !!target && focusedIdRef.current === id && target.zIndex === topZ.current;
+    if (target && !alreadyTop) {
+      topZ.current += 1;
+      const z = topZ.current;
+      setWindows((prev) => {
+        const next = prev[id];
+        if (!next) return prev;
+        return { ...prev, [id]: { ...next, zIndex: z } };
+      });
+    }
     setFocusedId(id);
   }, []);
 
@@ -152,32 +164,9 @@ export function useWindowManager(
     [bringToFront],
   );
 
-  const applyDefaultOpenLayout = useCallback(
-    (id: string, options?: { freshRandom?: boolean }) => {
-      const def = defs.find((entry) => entry.id === id);
-      if (!def || typeof window === 'undefined' || isMobileViewport()) return;
-
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const geo = resolveDefaultOpenGeometry(def, vw, vh, options);
-
-      setWindows((prev) => {
-        const target = prev[id];
-        if (!target?.open) return prev;
-        const next = applyDefaultGeometry(target, geo, def);
-        if (geometryUnchanged(next, target) && target.userSized === false) {
-          return prev;
-        }
-        return { ...prev, [id]: next };
-      });
-    },
-    [defs],
-  );
-
-  // `open` flips the closed→open transition (resetting userSized + default size);
-  // `applyDefaultOpenLayout` runs right after in `openWindow` and owns final x/y
-  // placement (it also handles re-snapping an *already*-open window). Both resolve
-  // the same deterministic geometry, so the second pass is a no-op for a fresh open.
+  // `open` fully places a window on the closed→open transition: it resets
+  // userSized and resolves the declared default geometry. Restoring a minimized
+  // (already-open) window deliberately preserves its current geometry.
   const open = useCallback(
     (id: string) => {
       const def = defs.find((entry) => entry.id === id);
@@ -248,7 +237,7 @@ export function useWindowManager(
       const next: Partial<WindowGeometry> & { userSized?: boolean } = { ...geometry };
       if (next.width != null) next.width = Math.max(minW, next.width);
       if (next.height != null) next.height = Math.max(MIN_HEIGHT, next.height);
-      if (document.body.classList.contains('is-window-gesturing')) {
+      if (document.body.classList.contains(STATE_CLASS.windowGesturing)) {
         next.userSized = true;
       }
       const changed =
@@ -327,7 +316,6 @@ export function useWindowManager(
     order,
     focusedId,
     open,
-    applyDefaultOpenLayout,
     close,
     minimize,
     toggleMaximize,

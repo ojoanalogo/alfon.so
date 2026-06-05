@@ -117,6 +117,24 @@ describe('useDesktopIcons - selection', () => {
     act(() => result.current.clearSelection());
     expect(result.current.selected).toBe(before);
   });
+
+  it('selectOnly keeps the same Set reference when already the sole selection', () => {
+    const { result } = renderHook(() => useDesktopIcons(makeIcons('a', 'b')));
+
+    act(() => result.current.selectOnly('a'));
+    const before = result.current.selected;
+    act(() => result.current.selectOnly('a'));
+    expect(result.current.selected).toBe(before);
+  });
+
+  it('setSelection keeps the same Set reference when the ids are unchanged', () => {
+    const { result } = renderHook(() => useDesktopIcons(makeIcons('a', 'b', 'c')));
+
+    act(() => result.current.setSelection(['a', 'c']));
+    const before = result.current.selected;
+    act(() => result.current.setSelection(['a', 'c']));
+    expect(result.current.selected).toBe(before);
+  });
 });
 
 describe('useDesktopIcons - moveIcons (clamped)', () => {
@@ -222,6 +240,25 @@ describe('useDesktopIcons - restoreIcons', () => {
     act(() => result.current.deleteIcons(['a']));
     act(() => result.current.restoreIcons([]));
     expect(result.current.trashedCount).toBe(1);
+  });
+
+  it('keeps a trashed icon position across a resize so restore lands it back', async () => {
+    const { result } = renderHook(() => useDesktopIcons(makeIcons('a', 'b')));
+
+    act(() => result.current.moveIcons({ a: { x: 100, y: 100 } }, 50, 60));
+    expect(result.current.positions.a).toEqual({ x: 150, y: 160 });
+
+    act(() => result.current.deleteIcons(['a']));
+    // A resize fires while 'a' sits in the trash: its position must be retained,
+    // not dropped (a relayout over visible-only icons would lose it).
+    await act(async () => {
+      window.dispatchEvent(new Event('resize'));
+      await new Promise((r) => requestAnimationFrame(() => r(null)));
+    });
+    expect(result.current.positions.a).toEqual({ x: 150, y: 160 });
+
+    act(() => result.current.restoreIcons(['a']));
+    expect(result.current.positions.a).toEqual({ x: 150, y: 160 });
   });
 });
 

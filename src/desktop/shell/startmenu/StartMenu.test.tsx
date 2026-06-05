@@ -200,6 +200,23 @@ describe('StartMenu', () => {
     expect(document.activeElement).toBe(firstButton);
   });
 
+  it('moves focus between menuitems with ArrowDown / ArrowUp', () => {
+    setup({ apps: [makeIcon({ label: 'First App' })] });
+
+    const items = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="menuitem"]'));
+    expect(items.length).toBeGreaterThan(1);
+    expect(document.activeElement).toBe(items[0]);
+
+    fireEvent.keyDown(items[0], { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(items[1]);
+
+    fireEvent.keyDown(items[1], { key: 'ArrowUp' });
+    expect(document.activeElement).toBe(items[0]);
+
+    fireEvent.keyDown(items[0], { key: 'End' });
+    expect(document.activeElement).toBe(items[items.length - 1]);
+  });
+
   it('renders no app buttons when apps is empty but still renders links section', () => {
     const { container } = setup({ apps: [] });
 

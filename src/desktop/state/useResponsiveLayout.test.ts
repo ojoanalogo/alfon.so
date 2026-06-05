@@ -34,7 +34,6 @@ function makeWm(windows: Record<string, WindowState> = {}): WindowManager {
     order: Object.keys(windows),
     focusedId: null,
     open: vi.fn(),
-    applyDefaultOpenLayout: vi.fn(),
     close: noop,
     minimize: noop,
     toggleMaximize: noop,
@@ -195,9 +194,7 @@ describe('useResponsiveLayout - fitWindowToMobile', () => {
 });
 
 describe('useResponsiveLayout - openWindow', () => {
-  it('opens the window then applies the default desktop layout', () => {
-    // defaultHeight set so the layout effect's `clearingSizedHeight` branch
-    // (which would re-bump the epoch each pass against a static stub) stays off.
+  it('opens the window via wm.open without a second desktop layout pass', () => {
     const defs: WindowDef[] = [makeWindowDef({ id: 'a', defaultHeight: 400 })];
     const wm = makeWm({ a: makeWindowState({ id: 'a', open: false }) });
     const { result } = renderHook(() =>
@@ -208,13 +205,13 @@ describe('useResponsiveLayout - openWindow', () => {
       result.current.openWindow('a');
     });
 
+    // wm.open fully places a fresh open, so the desktop path does no extra work
+    // and never falls back to the per-id mobile fit.
     expect(wm.open).toHaveBeenCalledWith('a');
-    expect(wm.applyDefaultOpenLayout).toHaveBeenCalledWith('a');
-    // Desktop path never falls back to the per-id mobile fit.
     expect(wm.setGeometry).not.toHaveBeenCalled();
   });
 
-  it('opens then fits to mobile (skipping default layout) on a mobile viewport', () => {
+  it('opens then fits to mobile on a mobile viewport', () => {
     setViewport(MOBILE_VW, MOBILE_VH);
     const defs: WindowDef[] = [makeWindowDef({ id: 'a' })];
     const wm = makeWm({ a: makeWindowState({ id: 'a', open: false }) });
@@ -228,7 +225,6 @@ describe('useResponsiveLayout - openWindow', () => {
 
     expect(wm.open).toHaveBeenCalledWith('a');
     expect(wm.setGeometry).toHaveBeenCalledWith('a', expect.objectContaining({ x: EDGE_MARGIN }));
-    expect(wm.applyDefaultOpenLayout).not.toHaveBeenCalled();
   });
 });
 

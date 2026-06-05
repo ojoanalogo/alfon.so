@@ -1,5 +1,6 @@
 import ThemeSegmentedControl from './ThemeSegmentedControl';
 import { useWallpaper } from '@desktop/state/WallpaperContext';
+import { STATE_CLASS } from '@desktop/lib/stateClasses';
 import { SETTINGS_GROUP, SettingsRow } from './ui';
 
 const SWATCH_INNER =
@@ -23,7 +24,7 @@ function ColorSwatch({
       type="button"
       className={[
         'settings-color-swatch relative h-7 w-7 cursor-pointer rounded-full border-0 bg-transparent p-0',
-        selected && 'is-selected',
+        selected && STATE_CLASS.selected,
       ]
         .filter(Boolean)
         .join(' ')}
@@ -93,6 +94,9 @@ export default function AppearanceSection() {
         </p>
       ) : (
         <div className={`${SETTINGS_GROUP} p-[0.375rem]`}>
+          {/* role="list" is intentional: WebKit drops list semantics when
+              list-style is removed, so VoiceOver needs it to announce a list. */}
+          {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
           <ul
             className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-2 p-0"
             role="list"

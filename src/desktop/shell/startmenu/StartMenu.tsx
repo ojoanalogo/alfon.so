@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { NAV_LINKS, SITE_TITLE, SOCIAL_LINKS, type DesktopIcon, type NavLink } from '@/config';
-import { TASKBAR_HEIGHT } from '@desktop/lib/layoutConstants';
+import { TASKBAR_HEIGHT, EDGE_MARGIN } from '@desktop/lib/layoutConstants';
 
 export interface StartMenuProps {
   anchorRef: RefObject<HTMLElement | null>;
@@ -11,8 +11,6 @@ export interface StartMenuProps {
   onOpenWindow: (id: string) => void;
   onCloseAllWindows: () => void;
 }
-
-const VIEWPORT_MARGIN = 8;
 
 const MENU_SECTION = 'px-[0.375rem]';
 const MENU_SECTION_TITLE =
@@ -51,8 +49,8 @@ export default function StartMenu({
     let left = rect.left;
     if (menu) {
       const menuWidth = menu.offsetWidth;
-      const maxLeft = window.innerWidth - menuWidth - VIEWPORT_MARGIN;
-      left = Math.max(VIEWPORT_MARGIN, Math.min(left, maxLeft));
+      const maxLeft = window.innerWidth - menuWidth - EDGE_MARGIN;
+      left = Math.max(EDGE_MARGIN, Math.min(left, maxLeft));
     }
     setPosition({ left, bottom: window.innerHeight - rect.top + 4 });
   }, [anchorRef]);
@@ -93,6 +91,26 @@ export default function StartMenu({
     onClose();
   }
 
+  // Roving focus between menuitems, as the `role="menu"` contract promises.
+  function handleMenuKeyDown(event: React.KeyboardEvent) {
+    const keys = ['ArrowDown', 'ArrowUp', 'Home', 'End'];
+    if (!keys.includes(event.key)) return;
+    const menu = menuRef.current;
+    if (!menu) return;
+    const items = Array.from(
+      menu.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not([disabled])'),
+    );
+    if (items.length === 0) return;
+    event.preventDefault();
+    const current = items.indexOf(document.activeElement as HTMLButtonElement);
+    let next: number;
+    if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = items.length - 1;
+    else if (event.key === 'ArrowDown') next = current < 0 ? 0 : (current + 1) % items.length;
+    else next = current <= 0 ? items.length - 1 : current - 1;
+    items[next].focus();
+  }
+
   // Mirrors the window "genie" minimize: the menu collapses into / springs out of
   // the taskbar button (its bottom-left corner) with the same easing curve.
   const variants: Variants = {
@@ -125,6 +143,7 @@ export default function StartMenu({
       initial="collapsed"
       animate="open"
       exit="collapsed"
+      onKeyDown={handleMenuKeyDown}
       onContextMenu={(event) => event.preventDefault()}
     >
       <header className="flex items-center gap-[0.625rem] border-b border-[rgb(113_113_122/0.3)] bg-[linear-gradient(180deg,rgb(113_113_122/0.16)_0%,rgb(113_113_122/0.06)_100%)] px-3 py-[0.625rem] dark:bg-[linear-gradient(180deg,rgb(161_161_170/0.12)_0%,rgb(24_24_27/0.4)_100%)]">

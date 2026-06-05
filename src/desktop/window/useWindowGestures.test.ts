@@ -235,6 +235,20 @@ describe('useWindowGestures - pointerup / pointercancel end the gesture', () => 
   });
 });
 
+describe('useWindowGestures - unmount during a gesture', () => {
+  it('clears the body gesturing class if the window unmounts mid-gesture', () => {
+    const { hook } = setup({ state: { x: 0, y: 0 } });
+    act(() => {
+      hook.result.current.startMove(fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }));
+    });
+    expect(document.body.classList.contains('is-window-gesturing')).toBe(true);
+    hook.unmount();
+    // A stuck class is session-global (it forces every geometry change to mark
+    // userSized and stops centered windows self-centering), so cleanup must clear it.
+    expect(document.body.classList.contains('is-window-gesturing')).toBe(false);
+  });
+});
+
 describe('useWindowGestures - startResize gating', () => {
   it('does nothing for non-left button', () => {
     const { hook, onFocus } = setup();

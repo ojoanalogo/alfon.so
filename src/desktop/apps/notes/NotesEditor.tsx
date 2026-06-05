@@ -110,6 +110,9 @@ export default function NotesEditor({
             placeholder="Escribe markdown aquí…"
             className="notes-editor__textarea min-h-0 flex-1 resize-none bg-transparent px-3 py-2 text-sm leading-relaxed text-secondary outline-none"
             spellCheck
+            // Deliberate: opening/selecting a note should land the caret in the
+            // editor, the expected behavior for a focused single-document app.
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
           />
         </>

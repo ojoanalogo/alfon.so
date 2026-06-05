@@ -4,18 +4,18 @@ import { useAxisControls } from '../useAxisControls';
 import { useGameControls } from '../useGameControls';
 import { useGameLoop } from '../useGameLoop';
 
-const WIDTH = 320;
+export const WIDTH = 320;
 const HEIGHT = 280;
 const PADDLE_W = 56;
 const PADDLE_H = 8;
-const BALL = 7;
+export const BALL = 7;
 const BRICK_ROWS = 5;
 const BRICK_COLS = 8;
-const BRICK_W = 36;
-const BRICK_H = 12;
-const BRICK_GAP = 4;
-const BRICK_OFFSET_X = 8;
-const BRICK_OFFSET_Y = 28;
+export const BRICK_W = 36;
+export const BRICK_H = 12;
+export const BRICK_GAP = 4;
+export const BRICK_OFFSET_X = 8;
+export const BRICK_OFFSET_Y = 28;
 const TICK_MS = 16;
 
 const BRICK_COLORS = ['#f87171', '#fb923c', '#facc15', '#4ade80', '#38bdf8'];
@@ -36,7 +36,7 @@ function createBricks(): boolean[][] {
   return Array.from({ length: BRICK_ROWS }, () => Array.from({ length: BRICK_COLS }, () => true));
 }
 
-function initialState(): GameState {
+export function initialState(): GameState {
   return {
     paddleX: WIDTH / 2 - PADDLE_W / 2,
     ballX: WIDTH / 2,
@@ -95,7 +95,7 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   }
 }
 
-function stepGame(prev: GameState, move: number): GameState {
+export function stepGame(prev: GameState, move: number): GameState {
   if (prev.gameOver || prev.won) return prev;
 
   const paddleX = Math.max(0, Math.min(WIDTH - PADDLE_W, prev.paddleX + move));
@@ -104,8 +104,19 @@ function stepGame(prev: GameState, move: number): GameState {
   ballX += ballVx;
   ballY += ballVy;
 
-  if (ballX <= BALL / 2 || ballX >= WIDTH - BALL / 2) ballVx *= -1;
-  if (ballY <= BALL / 2) ballVy *= -1;
+  // Reflect off walls direction-deterministically and clamp back inside, so a
+  // frame that overshoots the edge can't flip velocity every tick (sticky-wall jitter).
+  if (ballX <= BALL / 2) {
+    ballX = BALL / 2;
+    ballVx = Math.abs(ballVx);
+  } else if (ballX >= WIDTH - BALL / 2) {
+    ballX = WIDTH - BALL / 2;
+    ballVx = -Math.abs(ballVx);
+  }
+  if (ballY <= BALL / 2) {
+    ballY = BALL / 2;
+    ballVy = Math.abs(ballVy);
+  }
 
   const paddleTop = HEIGHT - PADDLE_H - 10;
   if (
@@ -121,6 +132,10 @@ function stepGame(prev: GameState, move: number): GameState {
   }
 
   bricks = bricks.map((row) => [...row]);
+  // Destroy every brick the ball overlaps this tick, but reflect vertical velocity
+  // exactly once. Flipping per-brick let an even number of hits cancel out, so the
+  // ball tunnelled straight through clusters while still scoring.
+  let brickHit = false;
   for (let row = 0; row < BRICK_ROWS; row++) {
     for (let col = 0; col < BRICK_COLS; col++) {
       if (!bricks[row][col]) continue;
@@ -134,10 +149,11 @@ function stepGame(prev: GameState, move: number): GameState {
       ) {
         bricks[row][col] = false;
         score += 10;
-        ballVy *= -1;
+        brickHit = true;
       }
     }
   }
+  if (brickHit) ballVy *= -1;
 
   if (ballY > HEIGHT) {
     return { ...prev, paddleX, gameOver: true };

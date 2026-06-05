@@ -4,11 +4,11 @@ import { useAxisControls } from '../useAxisControls';
 import { useGameControls } from '../useGameControls';
 import { useGameLoop } from '../useGameLoop';
 
-const WIDTH = 320;
+export const WIDTH = 320;
 const HEIGHT = 240;
 const PADDLE_W = 64;
 const PADDLE_H = 10;
-const BALL = 8;
+export const BALL = 8;
 const TICK_MS = 16;
 
 type GameState = {
@@ -21,7 +21,7 @@ type GameState = {
   gameOver: boolean;
 };
 
-function initialState(): GameState {
+export function initialState(): GameState {
   return {
     paddleX: WIDTH / 2 - PADDLE_W / 2,
     ballX: WIDTH / 2,
@@ -73,7 +73,7 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   }
 }
 
-function stepGame(prev: GameState, move: number): GameState {
+export function stepGame(prev: GameState, move: number): GameState {
   if (prev.gameOver) return prev;
 
   const paddleX = Math.max(0, Math.min(WIDTH - PADDLE_W, prev.paddleX + move));
@@ -82,8 +82,19 @@ function stepGame(prev: GameState, move: number): GameState {
   ballX += ballVx;
   ballY += ballVy;
 
-  if (ballX <= BALL / 2 || ballX >= WIDTH - BALL / 2) ballVx *= -1;
-  if (ballY <= BALL / 2) ballVy *= -1;
+  // Reflect off walls direction-deterministically and clamp back inside, so a
+  // frame that overshoots the edge can't flip velocity every tick (sticky-wall jitter).
+  if (ballX <= BALL / 2) {
+    ballX = BALL / 2;
+    ballVx = Math.abs(ballVx);
+  } else if (ballX >= WIDTH - BALL / 2) {
+    ballX = WIDTH - BALL / 2;
+    ballVx = -Math.abs(ballVx);
+  }
+  if (ballY <= BALL / 2) {
+    ballY = BALL / 2;
+    ballVy = Math.abs(ballVy);
+  }
 
   const paddleTop = HEIGHT - PADDLE_H - 8;
   if (

@@ -164,6 +164,24 @@ describe('useDesktopIconDrag', () => {
     expect(deps.moveIcons).toHaveBeenCalledWith(origins, 30, 40);
   });
 
+  it('clears the body gesture classes if it unmounts mid-drag', () => {
+    const deps = makeDeps();
+    const { result, unmount } = renderHook(() => useDesktopIconDrag(deps));
+
+    act(() => {
+      result.current.startDrag(makeReactPointerEvent({ clientX: 0, clientY: 0 }), 'a', {
+        a: { x: 10, y: 10 },
+      });
+    });
+    dispatchPointer('pointermove', { clientX: 30, clientY: 40 });
+    expect(document.body.classList.contains('is-window-gesturing')).toBe(true);
+
+    // No pointerup arrives before unmount; cleanup must not leave the class stuck.
+    unmount();
+    expect(document.body.classList.contains('is-window-gesturing')).toBe(false);
+    expect(document.body.classList.contains('is-trash-drop-target')).toBe(false);
+  });
+
   it('ignores pointermove with a mismatched pointerId', () => {
     const deps = makeDeps();
     const { result } = renderHook(() => useDesktopIconDrag(deps));

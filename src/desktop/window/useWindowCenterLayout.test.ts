@@ -167,8 +167,9 @@ describe('useWindowCenterLayout - user positioning', () => {
     expect(result.current.displayY).toBe(321);
   });
 
-  it('stops reporting geometry after the user positions the window', async () => {
-    const onGeometryChange = vi.fn();
+  it('commits the displayed position on lock, then stops reporting', async () => {
+    const onGeometryChange =
+      vi.fn<(geometry: { x?: number; y?: number; width?: number }) => void>();
     const ref = createRef<HTMLElement>();
     (ref as { current: HTMLElement | null }).current = elWithRect(600, 400);
     const { result } = renderHook(() =>
@@ -182,18 +183,49 @@ describe('useWindowCenterLayout - user positioning', () => {
       }),
     );
 
-    const before = onGeometryChange.mock.calls.length;
     act(() => {
       result.current.markUserPositioned();
     });
 
+    // Locking commits the currently displayed (centered) position once, so a
+    // later switch to props x/y can't jump to a stale seed.
+    const committed = onGeometryChange.mock.calls.at(-1)![0];
+    expect(committed.x).toBe(Math.round((VW - 600) / 2));
+    expect(committed.y).toBe(Math.round((VH - TASKBAR_HEIGHT - 400) / 2));
+
+    const afterLock = onGeometryChange.mock.calls.length;
     // Fire a resize: syncPosition should early-return because userPositioned.
     await act(async () => {
       window.dispatchEvent(new Event('resize'));
       await new Promise((r) => requestAnimationFrame(() => r(null)));
     });
 
-    expect(onGeometryChange.mock.calls.length).toBe(before);
+    expect(onGeometryChange.mock.calls.length).toBe(afterLock);
+  });
+
+  it('does not re-commit on a second grab once locked (stale displayPos guard)', () => {
+    const onGeometryChange = vi.fn();
+    const ref = createRef<HTMLElement>();
+    (ref as { current: HTMLElement | null }).current = elWithRect(600, 400);
+    const { result, rerender } = renderHook(
+      ({ x, y }: { x: number; y: number }) =>
+        useWindowCenterLayout({ rootRef: ref, enabled: true, x, y, width: 600, onGeometryChange }),
+      { initialProps: { x: 0, y: 0 } },
+    );
+
+    act(() => {
+      result.current.markUserPositioned();
+    });
+    const afterFirst = onGeometryChange.mock.calls.length;
+
+    // The manager moves the window (props change) while it's locked; displayPos
+    // is now frozen/stale. A second grab must NOT commit that stale value back,
+    // which would yank the window to the wrong spot.
+    rerender({ x: 999, y: 888 });
+    act(() => {
+      result.current.markUserPositioned();
+    });
+    expect(onGeometryChange.mock.calls.length).toBe(afterFirst);
   });
 });
 

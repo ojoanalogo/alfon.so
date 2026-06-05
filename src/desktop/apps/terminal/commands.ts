@@ -72,6 +72,7 @@ function helpLines(): string[] {
     '  cat FILE     leer un archivo',
     '  neofetch     info del sistema',
     '  fetch        alias de neofetch',
+    '  whoami       usuario actual',
     '  clear        limpiar pantalla',
     '  help         esta ayuda',
   ];

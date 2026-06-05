@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
 import { MIN_HEIGHT, TASKBAR_HEIGHT } from '../lib/layoutConstants';
+import { STATE_CLASS } from '../lib/stateClasses';
 
 interface DragGesture {
   type: 'move' | 'resize';
@@ -28,11 +29,18 @@ export function useWindowGestures({
   onGeometryChange,
 }: UseWindowGesturesOptions) {
   const gesture = useRef<DragGesture | null>(null);
+  // Read the live callback/minWidth from a ref so the global pointer listeners
+  // can keep `[]` deps — that way the effect cleanup runs only on real unmount,
+  // letting us clear a stuck gesture without tearing down an in-flight drag when
+  // these props change mid-gesture.
+  const paramsRef = useRef({ minWidth, onGeometryChange });
+  paramsRef.current = { minWidth, onGeometryChange };
 
   useEffect(() => {
     function handleMove(event: PointerEvent) {
       const active = gesture.current;
       if (!active || event.pointerId !== active.pointerId) return;
+      const { minWidth, onGeometryChange } = paramsRef.current;
 
       const dx = event.clientX - active.startX;
       const dy = event.clientY - active.startY;
@@ -47,7 +55,8 @@ export function useWindowGestures({
         return;
       }
 
-      const dir = active.direction!;
+      if (!active.direction) return;
+      const dir = active.direction;
       let { x, y, width } = origin;
       let height = active.startHeight;
       const contentSized = origin.height == null;
@@ -86,7 +95,7 @@ export function useWindowGestures({
       const active = gesture.current;
       if (!active || event.pointerId !== active.pointerId) return;
       gesture.current = null;
-      document.body.classList.remove('is-window-gesturing');
+      document.body.classList.remove(STATE_CLASS.windowGesturing);
     }
 
     window.addEventListener('pointermove', handleMove);
@@ -96,8 +105,15 @@ export function useWindowGestures({
       window.removeEventListener('pointermove', handleMove);
       window.removeEventListener('pointerup', handleUp);
       window.removeEventListener('pointercancel', handleUp);
+      // If the window unmounts mid-gesture (e.g. closed via the taskbar), the
+      // pointerup that would clear this class never arrives — clear it here so it
+      // doesn't stay stuck on <body> for the rest of the session.
+      if (gesture.current) {
+        gesture.current = null;
+        document.body.classList.remove(STATE_CLASS.windowGesturing);
+      }
     };
-  }, [onGeometryChange, minWidth]);
+  }, []);
 
   function measuredHeight(): number {
     if (state.height != null) return state.height;
@@ -122,7 +138,7 @@ export function useWindowGestures({
       origin: { x: state.x, y: state.y, width: state.width, height: state.height },
       startHeight: measuredHeight(),
     };
-    document.body.classList.add('is-window-gesturing');
+    document.body.classList.add(STATE_CLASS.windowGesturing);
     event.preventDefault();
   }
 
@@ -139,7 +155,7 @@ export function useWindowGestures({
       origin: { x: state.x, y: state.y, width, height: state.height },
       startHeight: measuredHeight(),
     };
-    document.body.classList.add('is-window-gesturing');
+    document.body.classList.add(STATE_CLASS.windowGesturing);
     event.preventDefault();
     event.stopPropagation();
   }
