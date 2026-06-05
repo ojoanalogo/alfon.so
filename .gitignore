@@ -168,3 +168,6 @@ test/browser/__screenshots__/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Coverage output
+/coverage/
