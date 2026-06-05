@@ -120,9 +120,7 @@ describe('useWindowManager - open', () => {
     const { result } = renderManager();
     act(() => result.current.open('a'));
     // User resizes/moves the window (sets userSized via the gesture class).
-    document.body.classList.add('is-window-gesturing');
-    act(() => result.current.setGeometry('a', { x: 250, y: 180, width: 720 }));
-    document.body.classList.remove('is-window-gesturing');
+    act(() => result.current.setUserGeometry('a', { x: 250, y: 180, width: 720 }));
     expect(result.current.windows.a.userSized).toBe(true);
 
     act(() => result.current.minimize('a'));
@@ -148,10 +146,8 @@ describe('useWindowManager - open', () => {
     const { result } = renderManager();
     // Mark as user-sized first by opening, gesturing, and resizing.
     act(() => result.current.open('a'));
-    document.body.classList.add('is-window-gesturing');
-    act(() => result.current.setGeometry('a', { width: 700 }));
+    act(() => result.current.setUserGeometry('a', { width: 700 }));
     expect(result.current.windows.a.userSized).toBe(true);
-    document.body.classList.remove('is-window-gesturing');
 
     act(() => result.current.close('a'));
     act(() => result.current.open('a'));
@@ -276,75 +272,72 @@ describe('useWindowManager - focus / unfocus', () => {
   });
 });
 
-describe('useWindowManager - setGeometry', () => {
-  it('applies a position patch', () => {
+describe('useWindowManager - correctLayout (auto placement)', () => {
+  it('applies a position patch without marking userSized', () => {
     const { result } = renderManager();
-    act(() => result.current.setGeometry('a', { x: 123, y: 45 }));
+    act(() => result.current.correctLayout('a', { x: 123, y: 45 }));
     expect(result.current.windows.a.x).toBe(123);
     expect(result.current.windows.a.y).toBe(45);
+    expect(result.current.windows.a.userSized).toBeUndefined();
   });
 
   it('clamps width to the effective min width', () => {
     const { result } = renderManager();
-    act(() => result.current.setGeometry('a', { width: 50 }));
-    // effectiveMinWidth at vw=1024 returns MIN_WIDTH (400).
+    act(() => result.current.correctLayout('a', { width: 50 }));
     expect(result.current.windows.a.width).toBe(400);
   });
 
   it('clamps height to MIN_HEIGHT', () => {
     const { result } = renderManager();
-    act(() => result.current.setGeometry('a', { height: 10 }));
+    act(() => result.current.correctLayout('a', { height: 10 }));
     expect(result.current.windows.a.height).toBe(140);
-  });
-
-  it('does NOT set userSized when not gesturing', () => {
-    const { result } = renderManager();
-    act(() => result.current.setGeometry('a', { x: 200 }));
-    expect(result.current.windows.a.userSized).toBeUndefined();
-  });
-
-  it('sets userSized when the body is in a gesture', () => {
-    const { result } = renderManager();
-    document.body.classList.add('is-window-gesturing');
-    act(() => result.current.setGeometry('a', { x: 200 }));
-    expect(result.current.windows.a.userSized).toBe(true);
   });
 
   it('is a no-op when the patch does not change anything', () => {
     const { result } = renderManager();
-    act(() => result.current.setGeometry('a', { x: 300 }));
+    act(() => result.current.correctLayout('a', { x: 300 }));
     const snapshot = result.current.windows.a;
-    act(() => result.current.setGeometry('a', { x: 300 }));
-    // Same object reference => state did not update.
+    act(() => result.current.correctLayout('a', { x: 300 }));
     expect(result.current.windows.a).toBe(snapshot);
   });
 
-  it('still updates (sets userSized) for an unchanged geometry while gesturing', () => {
+  it('is a no-op for unknown ids', () => {
     const { result } = renderManager();
-    act(() => result.current.setGeometry('a', { x: 300 }));
+    act(() => result.current.correctLayout('missing', { x: 1 }));
+    expect(result.current.windows.missing).toBeUndefined();
+  });
+});
+
+describe('useWindowManager - setUserGeometry (user move/resize)', () => {
+  it('applies the patch and marks the window userSized', () => {
+    const { result } = renderManager();
+    act(() => result.current.setUserGeometry('a', { x: 200 }));
+    expect(result.current.windows.a.x).toBe(200);
+    expect(result.current.windows.a.userSized).toBe(true);
+  });
+
+  it('still updates (sets userSized) for an unchanged geometry', () => {
+    const { result } = renderManager();
+    act(() => result.current.correctLayout('a', { x: 300 }));
     const snapshot = result.current.windows.a;
     expect(snapshot.userSized).toBeUndefined();
-    document.body.classList.add('is-window-gesturing');
-    act(() => result.current.setGeometry('a', { x: 300 }));
+    act(() => result.current.setUserGeometry('a', { x: 300 }));
     expect(result.current.windows.a.userSized).toBe(true);
     expect(result.current.windows.a).not.toBe(snapshot);
   });
 
   it('is a no-op for unknown ids', () => {
     const { result } = renderManager();
-    act(() => result.current.setGeometry('missing', { x: 1 }));
+    act(() => result.current.setUserGeometry('missing', { x: 1 }));
     expect(result.current.windows.missing).toBeUndefined();
   });
 });
 
-describe('useWindowManager - setGeometries (batch)', () => {
+describe('useWindowManager - correctLayouts (batch auto)', () => {
   it('applies multiple patches in one update', () => {
     const { result } = renderManager();
     act(() =>
-      result.current.setGeometries({
-        a: { x: 10, y: 20 },
-        b: { x: 30, y: 40 },
-      }),
+      result.current.correctLayouts({ a: { x: 10, y: 20 }, b: { x: 30, y: 40 } }),
     );
     expect(result.current.windows.a.x).toBe(10);
     expect(result.current.windows.a.y).toBe(20);
@@ -354,12 +347,7 @@ describe('useWindowManager - setGeometries (batch)', () => {
 
   it('clamps each patch independently', () => {
     const { result } = renderManager();
-    act(() =>
-      result.current.setGeometries({
-        a: { width: 10 },
-        b: { height: 5 },
-      }),
-    );
+    act(() => result.current.correctLayouts({ a: { width: 10 }, b: { height: 5 } }));
     expect(result.current.windows.a.width).toBe(400);
     expect(result.current.windows.b.height).toBe(140);
   });
@@ -368,9 +356,9 @@ describe('useWindowManager - setGeometries (batch)', () => {
     const { result } = renderManager();
     const before = result.current.windows;
     act(() =>
-      result.current.setGeometries({
+      result.current.correctLayouts({
         missing: { x: 1 },
-        a: { x: before.a.x, y: before.a.y }, // unchanged
+        a: { x: before.a.x, y: before.a.y },
       }),
     );
     expect(result.current.windows).toBe(before);
@@ -434,9 +422,7 @@ describe('useWindowManager - open applies default geometry', () => {
   it('resets an open-from-closed window to its declared default width and clears userSized', () => {
     const { result } = renderManager();
     act(() => result.current.open('a'));
-    document.body.classList.add('is-window-gesturing');
-    act(() => result.current.setGeometry('a', { width: 720 }));
-    document.body.classList.remove('is-window-gesturing');
+    act(() => result.current.setUserGeometry('a', { width: 720 }));
     expect(result.current.windows.a.userSized).toBe(true);
 
     act(() => result.current.close('a'));
@@ -457,9 +443,7 @@ describe('useWindowManager - open applies default geometry', () => {
     act(() => result.current.open('c'));
     const { x, y } = result.current.windows.c;
 
-    document.body.classList.add('is-window-gesturing');
-    act(() => result.current.setGeometry('c', { width: 680 }));
-    document.body.classList.remove('is-window-gesturing');
+    act(() => result.current.setUserGeometry('c', { width: 680 }));
 
     act(() => result.current.close('c'));
     act(() => result.current.open('c'));

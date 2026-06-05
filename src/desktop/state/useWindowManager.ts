@@ -6,7 +6,6 @@ import {
   effectiveMinWidth,
 } from '../lib/viewport';
 import { isMobileViewport, MIN_WIDTH, MIN_HEIGHT } from '../lib/layoutConstants';
-import { STATE_CLASS } from '../lib/stateClasses';
 
 function createInitialState(
   defs: WindowDef[],
@@ -95,13 +94,16 @@ export interface WindowManager {
   toggleMaximize: (id: string) => void;
   focus: (id: string) => void;
   unfocus: () => void;
-  setGeometry: (id: string, geometry: Partial<WindowGeometry>) => void;
-  /** Apply many geometry patches in one state update (layout passes). */
-  setGeometries: (updates: Record<string, Partial<WindowGeometry>>) => void;
+  /** Apply a user-driven move/resize; marks the window user-placed. */
+  setUserGeometry: (id: string, geometry: Partial<WindowGeometry>) => void;
+  /** Apply an automatic placement/correction; never marks the window user-placed. */
+  correctLayout: (id: string, geometry: Partial<WindowGeometry>) => void;
+  /** Batch automatic correction in one state update (layout passes). */
+  correctLayouts: (updates: Record<string, Partial<WindowGeometry>>) => void;
   /**
    * Recompute default geometry for closed windows from the live viewport. Open
    * windows are left alone — centered ones are owned by `useWindowCenterLayout`,
-   * which measures their real box and reports back through `setGeometry`.
+   * which measures their real box and reports back through `correctLayout`.
    */
   relayoutToViewport: (viewportWidth: number, viewportHeight: number) => void;
 }
@@ -230,6 +232,7 @@ export function useWindowManager(
       id: string,
       geometry: Partial<WindowGeometry>,
       target: WindowState,
+      markUserSized: boolean,
     ): Partial<WindowGeometry> | null => {
       const def = defs.find((entry) => entry.id === id);
       const vw = typeof window !== 'undefined' ? window.innerWidth : viewportWidth;
@@ -237,9 +240,7 @@ export function useWindowManager(
       const next: Partial<WindowGeometry> & { userSized?: boolean } = { ...geometry };
       if (next.width != null) next.width = Math.max(minW, next.width);
       if (next.height != null) next.height = Math.max(MIN_HEIGHT, next.height);
-      if (document.body.classList.contains(STATE_CLASS.windowGesturing)) {
-        next.userSized = true;
-      }
+      if (markUserSized) next.userSized = true;
       const changed =
         next.userSized === true && target.userSized !== true
           ? true
@@ -251,12 +252,12 @@ export function useWindowManager(
     [defs, viewportWidth],
   );
 
-  const setGeometry = useCallback(
-    (id: string, geometry: Partial<WindowGeometry>) => {
+  const applyPatch = useCallback(
+    (id: string, geometry: Partial<WindowGeometry>, markUserSized: boolean) => {
       setWindows((prev) => {
         const target = prev[id];
         if (!target) return prev;
-        const next = normalizeGeometryPatch(id, geometry, target);
+        const next = normalizeGeometryPatch(id, geometry, target, markUserSized);
         if (!next) return prev;
         return { ...prev, [id]: { ...target, ...next } };
       });
@@ -264,14 +265,24 @@ export function useWindowManager(
     [normalizeGeometryPatch],
   );
 
-  const setGeometries = useCallback(
+  const setUserGeometry = useCallback(
+    (id: string, geometry: Partial<WindowGeometry>) => applyPatch(id, geometry, true),
+    [applyPatch],
+  );
+
+  const correctLayout = useCallback(
+    (id: string, geometry: Partial<WindowGeometry>) => applyPatch(id, geometry, false),
+    [applyPatch],
+  );
+
+  const correctLayouts = useCallback(
     (updates: Record<string, Partial<WindowGeometry>>) => {
       setWindows((prev) => {
         let nextState: Record<string, WindowState> | null = null;
         for (const [id, geometry] of Object.entries(updates)) {
           const target = (nextState ?? prev)[id];
           if (!target) continue;
-          const patch = normalizeGeometryPatch(id, geometry, target);
+          const patch = normalizeGeometryPatch(id, geometry, target, false);
           if (!patch) continue;
           if (!nextState) nextState = { ...prev };
           nextState[id] = { ...target, ...patch };
@@ -321,8 +332,9 @@ export function useWindowManager(
     toggleMaximize,
     focus,
     unfocus,
-    setGeometry,
-    setGeometries,
+    setUserGeometry,
+    correctLayout,
+    correctLayouts,
     relayoutToViewport,
   };
 }
