@@ -29,9 +29,10 @@ function createInitialState(
 }
 
 /** Keep open/focus UI while replacing layout derived from the viewport. */
-function mergeWindowUiState(
+export function mergeWindowUiState(
   fresh: Record<string, WindowState>,
   prev: Record<string, WindowState>,
+  centeredIds: ReadonlySet<string>,
 ): Record<string, WindowState> {
   const merged = { ...fresh };
   for (const id of Object.keys(merged)) {
@@ -45,8 +46,15 @@ function mergeWindowUiState(
       zIndex: previous.zIndex,
       userSized: previous.userSized,
     };
-    // Only keep custom geometry after move/resize; centered/default layout comes from fresh.
-    if (previous.userSized && previous.open && !previous.minimized && !previous.maximized) {
+    // Keep custom geometry after a user move/resize, AND keep a centered window's
+    // measured frame (the center hook owns it — never reseed it from the
+    // MIN_HEIGHT placeholder).
+    const keepGeometry =
+      (previous.userSized || centeredIds.has(id)) &&
+      previous.open &&
+      !previous.minimized &&
+      !previous.maximized;
+    if (keepGeometry) {
       merged[id] = {
         ...merged[id],
         x: previous.x,
@@ -114,6 +122,10 @@ export function useWindowManager(
   viewportHeight: number,
 ): WindowManager {
   const order = useMemo(() => defs.map((def) => def.id), [defs]);
+  const centeredIds = useMemo(
+    () => new Set(defs.filter((def) => def.center).map((def) => def.id)),
+    [defs],
+  );
   const [windows, setWindows] = useState<Record<string, WindowState>>(() =>
     createInitialState(defs, viewportWidth, viewportHeight),
   );
@@ -132,8 +144,8 @@ export function useWindowManager(
     syncedToWindowViewport.current = true;
     const vw = window.innerWidth > 0 ? window.innerWidth : viewportWidth;
     const vh = window.innerHeight > 0 ? window.innerHeight : viewportHeight;
-    setWindows((prev) => mergeWindowUiState(createInitialState(defs, vw, vh), prev));
-  }, [defs]);
+    setWindows((prev) => mergeWindowUiState(createInitialState(defs, vw, vh), prev, centeredIds));
+  }, [defs, centeredIds]);
 
   // Refs let bringToFront read the latest focus/z without re-creating the
   // callback (it's wired into every window's pointer-down).

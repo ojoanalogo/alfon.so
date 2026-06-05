@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { makeWindowDef } from '@test/factories';
-import { useWindowManager } from './useWindowManager';
+import { makeWindowDef, makeWindowState } from '@test/factories';
+import { useWindowManager, mergeWindowUiState } from './useWindowManager';
 import type { WindowDef } from '../types';
 
 // jsdom defaults window.innerWidth to 1024 (desktop, not mobile). We rely on
@@ -451,5 +451,58 @@ describe('useWindowManager - open applies default geometry', () => {
     expect(result.current.windows.c.userSized).toBe(false);
     expect(result.current.windows.c.x).toBe(x); // unchanged — centered defs keep x/y
     expect(result.current.windows.c.y).toBe(y);
+  });
+});
+
+describe('mergeWindowUiState', () => {
+  // `fresh` is what createInitialState produces — a MIN_HEIGHT placeholder for
+  // content-sized centered windows. `prev` holds the center hook's corrected
+  // frame (auto layout, so userSized is unset).
+  function fresh() {
+    return {
+      c: makeWindowState({ id: 'c', open: true, x: 9, y: 999, width: 500, height: null }),
+      p: makeWindowState({ id: 'p', open: true, x: 9, y: 999, width: 600, height: 400 }),
+    };
+  }
+  function prev() {
+    return {
+      c: makeWindowState({ id: 'c', open: true, x: 262, y: 184, width: 500, height: null }),
+      p: makeWindowState({ id: 'p', open: true, x: 111, y: 222, width: 600, height: 400 }),
+    };
+  }
+
+  it('keeps a centered window\'s frame but reseeds a non-centered, non-userSized one', () => {
+    const merged = mergeWindowUiState(fresh(), prev(), new Set(['c']));
+    expect(merged.c.x).toBe(262); // centered: corrected frame preserved
+    expect(merged.c.y).toBe(184);
+    expect(merged.p.x).toBe(9); // non-centered, not userSized: takes fresh
+    expect(merged.p.y).toBe(999);
+  });
+
+  it('reseeds a centered window omitted from centeredIds', () => {
+    const merged = mergeWindowUiState(fresh(), prev(), new Set());
+    expect(merged.c.y).toBe(999); // not preserved -> fresh placeholder
+  });
+
+  it('keeps a userSized window regardless of centeredIds', () => {
+    const f = { u: makeWindowState({ id: 'u', open: true, x: 9, y: 999 }) };
+    const p = { u: makeWindowState({ id: 'u', open: true, x: 50, y: 60, userSized: true }) };
+    const merged = mergeWindowUiState(f, p, new Set());
+    expect(merged.u.x).toBe(50);
+    expect(merged.u.y).toBe(60);
+  });
+
+  it('keeps fresh ui geometry for a closed centered window', () => {
+    const f = { c: makeWindowState({ id: 'c', open: false, x: 9, y: 999 }) };
+    const p = { c: makeWindowState({ id: 'c', open: false, x: 262, y: 184 }) };
+    const merged = mergeWindowUiState(f, p, new Set(['c']));
+    expect(merged.c.y).toBe(999); // not open -> not preserved
+  });
+
+  it('reseeds a centered window that is minimized', () => {
+    const f = { c: makeWindowState({ id: 'c', open: true, minimized: true, x: 9, y: 999 }) };
+    const p = { c: makeWindowState({ id: 'c', open: true, minimized: true, x: 262, y: 184 }) };
+    const merged = mergeWindowUiState(f, p, new Set(['c']));
+    expect(merged.c.y).toBe(999);
   });
 });
