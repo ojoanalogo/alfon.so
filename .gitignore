@@ -159,3 +159,6 @@ vite.config.ts.timestamp-*
 
 # LLM stuff
 .claude/workflows
+# Vitest browser-mode artifacts
+.vitest-attachments/
+test/browser/__screenshots__/

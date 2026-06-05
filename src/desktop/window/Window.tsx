@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useMotionValue, useReducedMotion } from 'framer-motion';
 import type { ResizeDirection, WindowGeometry, WindowState } from '../types';
 import { MIN_WIDTH } from '../lib/layoutConstants';
 import WindowControls from './WindowControls';
@@ -104,6 +104,21 @@ export default function Window({
   const posX = state.x;
   const posY = state.y;
 
+  // framer-motion freezes plain `style` updates for animatable props (left/top/
+  // width) — it applies the mount value and ignores later re-render changes.
+  // Windows mount at the SSR/mobile seed, so without this they'd stay stuck at
+  // that position. Drive position through motion values, which framer tracks and
+  // writes to the DOM reactively.
+  const mvLeft = useMotionValue(posX);
+  const mvTop = useMotionValue(posY);
+  const mvWidth = useMotionValue(layoutWidth);
+  useLayoutEffect(() => {
+    if (displayMaximized) return;
+    mvLeft.set(posX);
+    mvTop.set(posY);
+    mvWidth.set(layoutWidth);
+  }, [posX, posY, layoutWidth, displayMaximized, mvLeft, mvTop, mvWidth]);
+
   const gestureState = useMemo(() => ({ ...state, width: layoutWidth }), [state, layoutWidth]);
 
   const { startMove, startResize } = useWindowGestures({
@@ -144,7 +159,7 @@ export default function Window({
       animate={status}
       aria-hidden={!interactive}
       inert={!interactive}
-      style={style}
+      style={displayMaximized ? style : { ...style, left: mvLeft, top: mvTop, width: mvWidth }}
       onPointerDown={() => onFocus()}
     >
       <div className={CARD_CLASS}>
