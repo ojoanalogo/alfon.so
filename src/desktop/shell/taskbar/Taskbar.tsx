@@ -122,6 +122,8 @@ export default function Taskbar({
                 type="button"
                 className={className}
                 data-taskbar-window={win.id}
+                data-focused={isWinFocused}
+                data-minimized={win.minimized}
                 title={item.tooltip ?? item.label}
                 onClick={() => onSelect(win.id)}
                 onContextMenu={(event) => openWindowMenu(event, win)}

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeProvider } from '@desktop/state/ThemeContext';
+import { stubMatchMedia } from '@test/helpers';
 import ThemeSegmentedControl from './ThemeSegmentedControl';
 
 function renderControl() {
@@ -14,19 +15,7 @@ function renderControl() {
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.className = '';
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  );
+  stubMatchMedia();
 });
 
 afterEach(() => {

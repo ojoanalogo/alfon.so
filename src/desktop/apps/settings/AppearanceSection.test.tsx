@@ -4,6 +4,7 @@ import { ThemeProvider } from '@desktop/state/ThemeContext';
 import { WallpaperProvider } from '@desktop/state/WallpaperContext';
 import { DESKTOP_COLORS } from '@desktop/lib/desktopColors';
 import type { WallpaperOption } from '@desktop/types';
+import { stubMatchMedia } from '@test/helpers';
 import AppearanceSection from './AppearanceSection';
 
 const WALLPAPERS: WallpaperOption[] = [
@@ -25,19 +26,7 @@ function renderSection(wallpapers: WallpaperOption[] = WALLPAPERS) {
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.className = '';
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  );
+  stubMatchMedia();
 });
 
 afterEach(() => {

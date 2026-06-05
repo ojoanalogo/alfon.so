@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import ThemeToggle from './ThemeToggle';
 import { ThemeProvider } from '../state/ThemeContext';
+import { stubMatchMedia } from '@test/helpers';
 
 function renderToggle(props?: { className?: string }) {
   return render(
@@ -20,19 +21,7 @@ beforeEach(() => {
   document.documentElement.className = '';
   delete document.documentElement.dataset.themePreference;
   // jsdom has no matchMedia; stub it so `system` resolves to light (no dark match).
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  );
+  stubMatchMedia();
 });
 
 afterEach(() => {
@@ -108,19 +97,7 @@ describe('ThemeToggle', () => {
   });
 
   it('uses the dark system label when system resolves to dark', () => {
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn((query: string) => ({
-        matches: true,
-        media: query,
-        onchange: null,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    );
+    stubMatchMedia(true);
     renderToggle();
     const btn = getButton();
     expect(btn.getAttribute('aria-label')).toBe(

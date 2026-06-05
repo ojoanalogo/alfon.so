@@ -1,6 +1,7 @@
 import { renderHook, act, render } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeProvider, useTheme } from './ThemeContext';
+import { stubMatchMedia } from '@test/helpers';
 
 function wrapper({ children }: { children: React.ReactNode }) {
   return <ThemeProvider>{children}</ThemeProvider>;
@@ -11,19 +12,7 @@ beforeEach(() => {
   document.documentElement.className = '';
   delete document.documentElement.dataset.themePreference;
   // jsdom has no matchMedia; stub it to "light" (does not match dark).
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  );
+  stubMatchMedia();
 });
 
 afterEach(() => {
@@ -63,19 +52,7 @@ describe('ThemeProvider + useTheme', () => {
   });
 
   it('resolves system preference to dark when the OS prefers dark', () => {
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn((query: string) => ({
-        matches: true,
-        media: query,
-        onchange: null,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    );
+    stubMatchMedia(true);
     const { result } = renderHook(() => useTheme(), { wrapper });
     expect(result.current.preference).toBe('system');
     expect(result.current.theme).toBe('dark');

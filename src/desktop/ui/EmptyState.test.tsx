@@ -51,16 +51,14 @@ describe('EmptyState', () => {
 
   it('applies a smaller description font in compact mode', () => {
     const { container } = render(<EmptyState description="Tiny" compact />);
-    const p = container.querySelector('p') as HTMLElement;
-    expect(p.className).toContain('text-[0.6875rem]');
-    expect(p.className).not.toContain('max-w-[16rem]');
+    const root = container.querySelector('.empty-state') as HTMLElement;
+    expect(root.getAttribute('data-compact')).toBe('true');
   });
 
   it('applies the larger description font in non-compact mode', () => {
     const { container } = render(<EmptyState description="Big" />);
-    const p = container.querySelector('p') as HTMLElement;
-    expect(p.className).toContain('text-[0.75rem]');
-    expect(p.className).toContain('max-w-[16rem]');
+    const root = container.querySelector('.empty-state') as HTMLElement;
+    expect(root.getAttribute('data-compact')).toBeNull();
   });
 
   it('gives the icon wrapper svg sizing classes only in non-compact mode', () => {

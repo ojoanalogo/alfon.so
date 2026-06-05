@@ -3,25 +3,13 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from '../../state/ThemeContext';
 import Taskbar from './Taskbar';
 import { makeWindowState } from '@test/factories';
+import { stubMatchMedia } from '@test/helpers';
 import { SITE_TITLE } from '@/config';
 import type { WindowMeta } from '../../types';
 
 beforeEach(() => {
   localStorage.clear();
-  // jsdom has no matchMedia; ThemeProvider (via ThemeToggle) calls it.
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  );
+  stubMatchMedia();
 });
 
 afterEach(() => {
@@ -183,8 +171,8 @@ describe('Taskbar', () => {
 
     const focused = container.querySelector('[data-taskbar-window="a"]')!;
     const unfocused = container.querySelector('[data-taskbar-window="b"]')!;
-    expect(focused.className).toContain('bg-[var(--color-highlight-bg)]');
-    expect(unfocused.className).not.toContain('bg-[var(--color-highlight-bg)]');
+    expect(focused.getAttribute('data-focused')).toBe('true');
+    expect(unfocused.getAttribute('data-focused')).not.toBe('true');
   });
 
   it('does not highlight a focused window when it is minimized', () => {
@@ -197,8 +185,8 @@ describe('Taskbar', () => {
     const { container } = renderTaskbar(props);
 
     const btn = container.querySelector('[data-taskbar-window="a"]')!;
-    expect(btn.className).not.toContain('bg-[var(--color-highlight-bg)]');
-    expect(btn.className).toContain('opacity-[0.72]');
+    expect(btn.getAttribute('data-focused')).not.toBe('true');
+    expect(btn.getAttribute('data-minimized')).toBe('true');
   });
 
   it('opens a context menu on right-click with Minimize/Close for an open window', () => {

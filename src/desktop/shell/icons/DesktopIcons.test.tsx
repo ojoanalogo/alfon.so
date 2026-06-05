@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useEffect, useRef, type RefObject } from 'react';
 import DesktopIcons from './DesktopIcons';
@@ -7,6 +7,7 @@ import { ThemeProvider } from '../../state/ThemeContext';
 import { WallpaperProvider } from '../../state/WallpaperContext';
 import { type DesktopIcon } from '@/config';
 import type { WallpaperOption } from '../../types';
+import { stubMatchMedia } from '@test/helpers';
 
 const WALLPAPERS: WallpaperOption[] = [];
 
@@ -69,19 +70,11 @@ describe('DesktopIcons', () => {
   beforeEach(() => {
     localStorage.clear();
     // ThemeProvider (wrapping WallpaperProvider) calls matchMedia, absent in jsdom.
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn((query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    );
+    stubMatchMedia();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('renders one button per visible icon', () => {

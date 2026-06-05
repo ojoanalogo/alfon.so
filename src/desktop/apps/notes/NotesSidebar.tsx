@@ -85,6 +85,7 @@ export default function NotesSidebar({
                   ]
                     .filter(Boolean)
                     .join(' ')}
+                  aria-current={active ? 'true' : undefined}
                   onClick={() => onSelect(note.id)}
                 >
                   <span className="flex items-center gap-1.5 truncate text-[0.6875rem] font-medium text-primary">

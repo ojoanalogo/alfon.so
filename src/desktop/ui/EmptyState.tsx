@@ -27,6 +27,7 @@ export default function EmptyState({
       ]
         .filter(Boolean)
         .join(' ')}
+      data-compact={compact || undefined}
     >
       {icon && (
         <div className={compact ? 'text-muted' : 'text-muted [&_svg]:h-10 [&_svg]:w-10'}>

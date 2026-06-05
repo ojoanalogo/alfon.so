@@ -4,6 +4,7 @@ import { WallpaperProvider, useWallpaper } from './WallpaperContext';
 import { ThemeProvider } from './ThemeContext';
 import { DESKTOP_COLORS } from '../lib/desktopColors';
 import type { WallpaperOption } from '../types';
+import { stubMatchMedia } from '@test/helpers';
 
 const WALLPAPERS: WallpaperOption[] = [
   { id: '1', label: 'One', src: '/wp/1.jpg', thumbSrc: '/wp/1-thumb.jpg' },
@@ -24,19 +25,7 @@ function makeWrapper(wallpapers: WallpaperOption[] = WALLPAPERS) {
 beforeEach(() => {
   localStorage.clear();
   // ThemeProvider (wrapping WallpaperProvider) calls matchMedia, absent in jsdom.
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  );
+  stubMatchMedia();
 });
 
 afterEach(() => {

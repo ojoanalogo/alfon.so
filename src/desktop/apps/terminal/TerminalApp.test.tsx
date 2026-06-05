@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { makeBlogPost } from '@test/factories';
+import { stubMatchMedia } from '@test/helpers';
 import TerminalApp from './TerminalApp';
 import { ThemeProvider } from '../../state/ThemeContext';
 import { TERMINAL_PROMPT } from './commands';
@@ -36,19 +37,7 @@ beforeEach(() => {
   document.documentElement.className = '';
   delete document.documentElement.dataset.themePreference;
   // jsdom has no matchMedia; ThemeProvider/useTheme reads it via the theme runtime.
-  vi.stubGlobal(
-    'matchMedia',
-    vi.fn((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  );
+  stubMatchMedia();
 });
 
 afterEach(() => {

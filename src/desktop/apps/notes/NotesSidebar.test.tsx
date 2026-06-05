@@ -81,8 +81,8 @@ describe('NotesSidebar', () => {
     const notes = [makeNote({ id: 'a', title: 'Alpha' }), makeNote({ id: 'b', title: 'Beta' })];
     const { container } = setup({ notes, activeId: 'b' });
     const items = container.querySelectorAll('.notes-sidebar__item');
-    expect(items[0].className.includes('bg-[var(--color-highlight-bg)]')).toBe(false);
-    expect(items[1].className.includes('bg-[var(--color-highlight-bg)]')).toBe(true);
+    expect(items[0].getAttribute('aria-current')).toBeNull();
+    expect(items[1].getAttribute('aria-current')).toBe('true');
   });
 
   it('reflects the query prop in the search input', () => {
