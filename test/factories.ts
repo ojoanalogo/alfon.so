@@ -2,7 +2,17 @@
 //   import { makeWindowDef, makeAppContext } from '@test/factories';
 import { vi } from 'vitest';
 import type { AppContext, WindowChromeProps } from '@desktop/wrappers';
-import type { BlogPostSummary, WindowDef, WindowState } from '@desktop/types';
+import type { BlogPostSummary, WallpaperOption, WindowDef, WindowState } from '@desktop/types';
+
+export function makeWallpaperOption(overrides: Partial<WallpaperOption> = {}): WallpaperOption {
+  return {
+    id: 'wp-1',
+    label: 'Wallpaper 1',
+    src: '/wallpapers/wp-1.jpg',
+    thumbSrc: '/wallpapers/wp-1-thumb.jpg',
+    ...overrides,
+  };
+}
 
 export function makeWindowDef(overrides: Partial<WindowDef> = {}): WindowDef {
   return {
