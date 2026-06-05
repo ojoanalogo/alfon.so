@@ -33,7 +33,7 @@ function makeParams(overrides: Partial<Parameters<typeof useAppContext>[0]> = {}
     browsers,
     trash,
     desktopIconUrls,
-    setGeometry: vi.fn(),
+    correctLayout: vi.fn(),
     ...overrides,
   };
 }
@@ -84,11 +84,11 @@ describe('useAppContext', () => {
 
   it('onOpenLink navigates the browser, sets geometry, and opens the browser window', () => {
     const openWindow = vi.fn();
-    const setGeometry = vi.fn();
+    const correctLayout = vi.fn();
     const navigate = vi.fn((_id: string, url: string) => url);
     const params = makeParams({
       openWindow,
-      setGeometry,
+      correctLayout,
       browsers: { ...makeParams().browsers, navigate },
     });
     const { result } = renderHook(() => useAppContext(params));
@@ -96,17 +96,17 @@ describe('useAppContext', () => {
     act(() => result.current.onOpenLink('https://example.com'));
 
     expect(navigate).toHaveBeenCalledWith(BROWSER_APP_ID, 'https://example.com');
-    expect(setGeometry).toHaveBeenCalledWith(BROWSER_APP_ID, { height: 520 });
+    expect(correctLayout).toHaveBeenCalledWith(BROWSER_APP_ID, { height: 520 });
     expect(openWindow).toHaveBeenCalledWith(BROWSER_APP_ID);
   });
 
   it('onOpenLink bails out (no geometry / no open) when navigate returns falsy', () => {
     const openWindow = vi.fn();
-    const setGeometry = vi.fn();
+    const correctLayout = vi.fn();
     const navigate = vi.fn(() => null);
     const params = makeParams({
       openWindow,
-      setGeometry,
+      correctLayout,
       browsers: { ...makeParams().browsers, navigate },
     });
     const { result } = renderHook(() => useAppContext(params));
@@ -114,7 +114,7 @@ describe('useAppContext', () => {
     act(() => result.current.onOpenLink('not-a-url'));
 
     expect(navigate).toHaveBeenCalledWith(BROWSER_APP_ID, 'not-a-url');
-    expect(setGeometry).not.toHaveBeenCalled();
+    expect(correctLayout).not.toHaveBeenCalled();
     expect(openWindow).not.toHaveBeenCalled();
   });
 

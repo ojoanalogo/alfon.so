@@ -75,8 +75,9 @@ describe('WindowManagerProvider', () => {
     expect(typeof api.toggleMaximize).toBe('function');
     expect(typeof api.focus).toBe('function');
     expect(typeof api.unfocus).toBe('function');
-    expect(typeof api.setGeometry).toBe('function');
-    expect(typeof api.setGeometries).toBe('function');
+    expect(typeof api.setUserGeometry).toBe('function');
+    expect(typeof api.correctLayout).toBe('function');
+    expect(typeof api.correctLayouts).toBe('function');
     expect(typeof api.relayoutToViewport).toBe('function');
   });
 
@@ -168,11 +169,11 @@ describe('WindowManagerProvider', () => {
     expect(result.current.focusedId).toBeNull();
   });
 
-  it('setGeometry() patches a window through context', () => {
+  it('setUserGeometry() patches a window through context', () => {
     const { result } = renderHook(() => useWindowManagerContext(), { wrapper: makeWrapper() });
 
     act(() => {
-      result.current.setGeometry('a', { x: 123, y: 45 });
+      result.current.setUserGeometry('a', { x: 123, y: 45 });
     });
 
     expect(result.current.windows.a.x).toBe(123);
@@ -186,7 +187,7 @@ describe('WindowManagerProvider', () => {
     // stable (useCallback) so re-reading the same consumer returns the same fns.
     const openA = first.result.current.open;
     act(() => {
-      first.result.current.setGeometry('a', { x: 10 });
+      first.result.current.setUserGeometry('a', { x: 10 });
     });
     expect(first.result.current.open).toBe(openA);
   });

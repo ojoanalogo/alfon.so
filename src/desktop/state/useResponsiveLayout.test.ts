@@ -39,8 +39,9 @@ function makeWm(windows: Record<string, WindowState> = {}): WindowManager {
     toggleMaximize: noop,
     focus: noop,
     unfocus: noop,
-    setGeometry: vi.fn(),
-    setGeometries: vi.fn(),
+    setUserGeometry: vi.fn(),
+    correctLayout: vi.fn(),
+    correctLayouts: vi.fn(),
     relayoutToViewport: vi.fn(),
   } as unknown as WindowManager;
 }
@@ -74,8 +75,8 @@ describe('useResponsiveLayout - mobile geometry', () => {
 
     renderHook(() => useResponsiveLayout(wm, defs, { width: MOBILE_VW, height: MOBILE_VH }));
 
-    expect(wm.setGeometries).toHaveBeenCalled();
-    const updates = (wm.setGeometries as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0];
+    expect(wm.correctLayouts).toHaveBeenCalled();
+    const updates = (wm.correctLayouts as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0];
     expect(updates.a).toEqual({
       x: EDGE_MARGIN,
       y: EDGE_MARGIN,
@@ -92,7 +93,7 @@ describe('useResponsiveLayout - mobile geometry', () => {
     renderHook(() => useResponsiveLayout(wm, defs, { width: MOBILE_VW, height: MOBILE_VH }));
 
     // No open and no defaultOpen window -> nothing to update.
-    expect(wm.setGeometries).not.toHaveBeenCalled();
+    expect(wm.correctLayouts).not.toHaveBeenCalled();
   });
 
   it('applies mobile geometry to defaultOpen windows even when state is closed', () => {
@@ -102,8 +103,8 @@ describe('useResponsiveLayout - mobile geometry', () => {
 
     renderHook(() => useResponsiveLayout(wm, defs, { width: MOBILE_VW, height: MOBILE_VH }));
 
-    expect(wm.setGeometries).toHaveBeenCalled();
-    const updates = (wm.setGeometries as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0];
+    expect(wm.correctLayouts).toHaveBeenCalled();
+    const updates = (wm.correctLayouts as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0];
     expect(updates.a.width).toBe(MOBILE_VW - EDGE_MARGIN * 2);
   });
 
@@ -114,7 +115,7 @@ describe('useResponsiveLayout - mobile geometry', () => {
     renderHook(() => useResponsiveLayout(wm, defs, { width: DESKTOP_VW, height: DESKTOP_VH }));
 
     expect(wm.relayoutToViewport).toHaveBeenCalledWith(DESKTOP_VW, DESKTOP_VH);
-    expect(wm.setGeometries).not.toHaveBeenCalled();
+    expect(wm.correctLayouts).not.toHaveBeenCalled();
   });
 });
 
@@ -184,7 +185,7 @@ describe('useResponsiveLayout - fitWindowToMobile', () => {
       result.current.fitWindowToMobile('a');
     });
 
-    expect(wm.setGeometry).toHaveBeenCalledWith('a', {
+    expect(wm.correctLayout).toHaveBeenCalledWith('a', {
       x: EDGE_MARGIN,
       y: EDGE_MARGIN,
       width: MOBILE_VW - EDGE_MARGIN * 2,
@@ -208,7 +209,7 @@ describe('useResponsiveLayout - openWindow', () => {
     // wm.open fully places a fresh open, so the desktop path does no extra work
     // and never falls back to the per-id mobile fit.
     expect(wm.open).toHaveBeenCalledWith('a');
-    expect(wm.setGeometry).not.toHaveBeenCalled();
+    expect(wm.correctLayout).not.toHaveBeenCalled();
   });
 
   it('opens then fits to mobile on a mobile viewport', () => {
@@ -224,7 +225,7 @@ describe('useResponsiveLayout - openWindow', () => {
     });
 
     expect(wm.open).toHaveBeenCalledWith('a');
-    expect(wm.setGeometry).toHaveBeenCalledWith('a', expect.objectContaining({ x: EDGE_MARGIN }));
+    expect(wm.correctLayout).toHaveBeenCalledWith('a', expect.objectContaining({ x: EDGE_MARGIN }));
   });
 });
 
@@ -237,6 +238,6 @@ describe('useResponsiveLayout - viewport guard', () => {
     renderHook(() => useResponsiveLayout(wm, defs, { width: 0, height: 0 }));
 
     expect(wm.relayoutToViewport).not.toHaveBeenCalled();
-    expect(wm.setGeometries).not.toHaveBeenCalled();
+    expect(wm.correctLayouts).not.toHaveBeenCalled();
   });
 });

@@ -10,7 +10,7 @@ export function useResponsiveLayout(
   defs: WindowDef[],
   viewport: { width: number; height: number },
 ): { openWindow: (id: string) => void; fitWindowToMobile: (id: string) => void } {
-  const { setGeometry, setGeometries, relayoutToViewport } = wm;
+  const { correctLayout, correctLayouts, relayoutToViewport } = wm;
   const [layoutEpoch, setLayoutEpoch] = useState(0);
 
   // Read window state inside the relayout effect without making it a dependency:
@@ -42,9 +42,9 @@ export function useResponsiveLayout(
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const mobile = mobileWindowGeometry(vw, vh);
-      setGeometry(id, mobile);
+      correctLayout(id, mobile);
     },
-    [setGeometry],
+    [correctLayout],
   );
 
   const openWindow = useCallback(
@@ -86,7 +86,7 @@ export function useResponsiveLayout(
           }
         });
         if (Object.keys(updates).length > 0) {
-          setGeometries(updates);
+          correctLayouts(updates);
         }
         return;
       }
@@ -100,7 +100,7 @@ export function useResponsiveLayout(
     // Re-run once after the first paint when innerWidth/Height are reliable.
     const frame = requestAnimationFrame(applyLayout);
     return () => cancelAnimationFrame(frame);
-  }, [defs, setGeometries, relayoutToViewport, viewport.width, viewport.height, layoutEpoch]);
+  }, [defs, correctLayouts, relayoutToViewport, viewport.width, viewport.height, layoutEpoch]);
 
   return { openWindow, fitWindowToMobile };
 }

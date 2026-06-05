@@ -36,7 +36,7 @@ export default function DesktopShell({
   viewport,
 }: DesktopShellProps) {
   const wm = useWindowManagerContext();
-  const { setGeometry, unfocus } = wm;
+  const { unfocus } = wm;
   const browsers = useBrowserHistories();
 
   const { openWindow, fitWindowToMobile } = useResponsiveLayout(wm, defs, viewport);
@@ -73,7 +73,7 @@ export default function DesktopShell({
     browsers,
     trash,
     desktopIconUrls,
-    setGeometry,
+    correctLayout: wm.correctLayout,
   });
 
   const meta = useTaskbarMeta(apps, desktopIconUrls);
@@ -125,8 +125,10 @@ export default function DesktopShell({
             onClose: () => wm.close(app.id),
             onMinimize: () => wm.minimize(app.id),
             onToggleMaximize: () => wm.toggleMaximize(app.id),
-            onGeometryChange: (geometry: Partial<WindowGeometry>) =>
-              wm.setGeometry(app.id, geometry),
+            onGeometryChange: (geometry: Partial<WindowGeometry>, intent: 'user' | 'auto') =>
+              intent === 'user'
+                ? wm.setUserGeometry(app.id, geometry)
+                : wm.correctLayout(app.id, geometry),
           };
           return <Fragment key={app.id}>{app.render(appContext, win)}</Fragment>;
         })}

@@ -11,7 +11,7 @@ interface UseAppContextParams {
   browsers: BrowserHistories;
   trash: TrashController;
   desktopIconUrls: DesktopIconUrls;
-  setGeometry: (id: string, geometry: Partial<WindowGeometry>) => void;
+  correctLayout: (id: string, geometry: Partial<WindowGeometry>) => void;
 }
 
 export function useAppContext({
@@ -20,16 +20,16 @@ export function useAppContext({
   browsers,
   trash,
   desktopIconUrls,
-  setGeometry,
+  correctLayout,
 }: UseAppContextParams): AppContext {
   const handleOpenLink = useCallback(
     (url: string) => {
       const normalized = browsers.navigate(BROWSER_APP_ID, url);
       if (!normalized) return;
-      setGeometry(BROWSER_APP_ID, { height: 520 });
+      correctLayout(BROWSER_APP_ID, { height: 520 });
       openWindow(BROWSER_APP_ID);
     },
-    [browsers, openWindow, setGeometry],
+    [browsers, openWindow, correctLayout],
   );
 
   return useMemo<AppContext>(
