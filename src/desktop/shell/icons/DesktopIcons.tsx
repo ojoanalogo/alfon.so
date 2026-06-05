@@ -255,6 +255,7 @@ export default function DesktopIcons({
                 top: `${pos.y}px`,
               }}
               title={icon.tooltip}
+              data-icon-id={icon.id}
               aria-label={icon.tooltip ?? icon.label}
               aria-pressed={isSelected(icon.id)}
               onPointerDown={(event) => handleIconPointerDown(event, icon)}

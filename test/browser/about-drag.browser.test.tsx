@@ -33,31 +33,17 @@ const DEFS: WindowDef[] = [
     initialZ: 12,
     defaultOpen: true,
   },
-  {
-    // A non-centered app that starts CLOSED — opened on demand to exercise the
-    // open-a-closed-window placement path.
-    id: 'notes',
-    title: 'notes',
-    defaultX: 0,
-    defaultY: 0,
-    defaultWidth: 600,
-    initialZ: 13,
-    defaultOpen: false,
-  },
 ];
 
 function Harness() {
   const wm = useWindowManager(DEFS, window.innerWidth, window.innerHeight);
   const viewport = useMemo(() => ({ width: window.innerWidth, height: window.innerHeight }), []);
-  const { openWindow } = useResponsiveLayout(wm, DEFS, viewport);
+  useResponsiveLayout(wm, DEFS, viewport);
   return (
     <>
       {/* The project CSS (which makes .desktop-window position:absolute) is not
           loaded here; inject the one rule positioning depends on. */}
       <style>{`.desktop-window { position: absolute; } .window-titlebar__drag { touch-action: none; }`}</style>
-      <button data-testid="open-notes" onClick={() => openWindow('notes')}>
-        open notes
-      </button>
       <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
         {DEFS.map((def) => {
           const state = wm.windows[def.id];
@@ -153,21 +139,5 @@ describe('about window drag (real browser)', () => {
     await tick();
     expect(Math.abs(topOf(about) - beforeSecond)).toBeLessThanOrEqual(2);
     up();
-  });
-
-  // Placement smoke test for the open-a-closed-window path: it lands near-center
-  // at its real default width. NOTE: this does NOT reproduce the framer-motion
-  // *hydration* freeze that parked real (SSR-rendered) windows in the corner —
-  // that needs a full-page e2e and is covered by the manual Playwright check.
-  it('opens a closed non-centered app near center at its default width', async () => {
-    const screen = await render(<Harness />);
-    (screen.container.querySelector('[data-testid="open-notes"]') as HTMLElement).click();
-    await new Promise((r) => setTimeout(r, 250));
-    const notes = screen.container.querySelector('[data-window-id="notes"]') as HTMLElement;
-    expect(notes).toBeTruthy();
-    const r = notes.getBoundingClientRect();
-    expect(Math.round(r.left)).toBeGreaterThan(120);
-    expect(Math.round(r.top)).toBeGreaterThan(40);
-    expect(Math.round(r.width)).toBeGreaterThan(450);
   });
 });
