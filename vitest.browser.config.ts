@@ -30,7 +30,10 @@ export default defineConfig({
       enabled: true,
       provider: playwright(),
       headless: true,
-      instances: [{ browser: 'chromium' }],
+      // Desktop viewport — the windowing logic is desktop-only below 40rem, so
+      // these tests must run wide enough to exercise centered/near-center placement.
+      viewport: { width: 1280, height: 800 },
+      instances: [{ browser: 'chromium', viewport: { width: 1280, height: 800 } }],
     },
   },
 });
