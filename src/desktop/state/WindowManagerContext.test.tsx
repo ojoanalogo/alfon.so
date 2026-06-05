@@ -4,21 +4,13 @@ import type { ReactNode } from 'react';
 import { makeWindowDef } from '@test/factories';
 import { WindowManagerProvider, useWindowManagerContext } from './WindowManagerContext';
 import type { WindowDef } from '../types';
+import { setViewport } from '@test/helpers';
 
 // jsdom defaults window.innerWidth to 1024 (desktop, not mobile). The underlying
 // useWindowManager re-syncs initial state from window.innerWidth/innerHeight in a
 // mount useLayoutEffect, so we pin the viewport for determinism.
 const VW = 1024;
 const VH = 768;
-
-function setViewport(width: number, height: number) {
-  Object.defineProperty(window, 'innerWidth', { value: width, configurable: true, writable: true });
-  Object.defineProperty(window, 'innerHeight', {
-    value: height,
-    configurable: true,
-    writable: true,
-  });
-}
 
 function defs(): WindowDef[] {
   return [

@@ -1,23 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useViewportSize } from './useViewportSize';
-
-/**
- * Helper: override window.innerWidth / innerHeight for the duration of a test.
- * jsdom exposes these as configurable accessors via Object.defineProperty.
- */
-function setViewport(width: number, height: number) {
-  Object.defineProperty(window, 'innerWidth', {
-    configurable: true,
-    writable: true,
-    value: width,
-  });
-  Object.defineProperty(window, 'innerHeight', {
-    configurable: true,
-    writable: true,
-    value: height,
-  });
-}
+import { setViewport } from '@test/helpers';
 
 describe('useViewportSize', () => {
   // jsdom default innerWidth is 1024; capture originals to restore.

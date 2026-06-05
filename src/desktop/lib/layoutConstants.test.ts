@@ -5,23 +5,11 @@ import {
   MIN_WIDTH,
   MOBILE_BREAKPOINT_PX,
 } from './layoutConstants';
-import type { WindowDef } from '../types';
+import { makeWindowDef } from '@test/factories';
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
-
-function makeDef(overrides: Partial<WindowDef> = {}): WindowDef {
-  return {
-    id: 'test',
-    title: 'Test',
-    defaultX: 0,
-    defaultY: 0,
-    defaultWidth: 600,
-    initialZ: 10,
-    ...overrides,
-  };
-}
 
 describe('isMobileViewport', () => {
   it('is true below the breakpoint', () => {
@@ -48,10 +36,10 @@ describe('isMobileViewport', () => {
 
 describe('minWidthForDef', () => {
   it('uses the def minWidth when present', () => {
-    expect(minWidthForDef(makeDef({ minWidth: 480 }))).toBe(480);
+    expect(minWidthForDef(makeWindowDef({ minWidth: 480 }))).toBe(480);
   });
 
   it('falls back to the global MIN_WIDTH', () => {
-    expect(minWidthForDef(makeDef())).toBe(MIN_WIDTH);
+    expect(minWidthForDef(makeWindowDef())).toBe(MIN_WIDTH);
   });
 });

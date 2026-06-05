@@ -5,16 +5,8 @@ import DesktopWallpaper from './Wallpaper';
 import { WallpaperProvider } from '../state/WallpaperContext';
 import { ThemeProvider } from '../state/ThemeContext';
 import type { WallpaperOption } from '../types';
-
-function makeWallpaper(overrides: Partial<WallpaperOption> = {}): WallpaperOption {
-  return {
-    id: 'wp-1',
-    label: 'Wallpaper 1',
-    src: '/wallpapers/wp-1.jpg',
-    thumbSrc: '/wallpapers/wp-1-thumb.jpg',
-    ...overrides,
-  };
-}
+import { makeWallpaperOption } from '@test/factories';
+import { stubMatchMedia } from '@test/helpers';
 
 function renderWallpaper(wallpapers: WallpaperOption[]) {
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -29,19 +21,7 @@ describe('DesktopWallpaper', () => {
   beforeEach(() => {
     localStorage.clear();
     // ThemeProvider (wrapping WallpaperProvider) calls matchMedia, absent in jsdom.
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn((query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    );
+    stubMatchMedia();
   });
 
   afterEach(() => {
@@ -72,14 +52,14 @@ describe('DesktopWallpaper', () => {
     // localStorage points at a wallpaper, but the Image() never fires onload in
     // jsdom, so status stays "loading" and the <img> must not appear.
     localStorage.setItem('devfolio.wallpaper', 'wp-1');
-    const { container } = renderWallpaper([makeWallpaper()]);
+    const { container } = renderWallpaper([makeWallpaperOption()]);
 
     expect(container.querySelector('img')).toBeNull();
   });
 
   it('renders the wallpaper image once the image has loaded (status ready)', async () => {
     // Drive the Image load synchronously so status flips to "ready".
-    const wallpaper = makeWallpaper({ id: 'wp-1', src: '/wallpapers/wp-1.jpg' });
+    const wallpaper = makeWallpaperOption({ id: 'wp-1', src: '/wallpapers/wp-1.jpg' });
 
     class FakeImage {
       onload: (() => void) | null = null;
@@ -114,7 +94,7 @@ describe('DesktopWallpaper', () => {
   it('does not render an image when a wallpaper id is stored but unavailable', () => {
     // Stored id is not in the provided wallpaper list -> resolves to no wallpaper.
     localStorage.setItem('devfolio.wallpaper', 'missing');
-    const { container } = renderWallpaper([makeWallpaper({ id: 'wp-1' })]);
+    const { container } = renderWallpaper([makeWallpaperOption({ id: 'wp-1' })]);
 
     expect(container.querySelector('img')).toBeNull();
     const background = container.firstElementChild as HTMLElement;
@@ -125,7 +105,7 @@ describe('DesktopWallpaper', () => {
     // Selecting a color clears the wallpaper, so the background uses the literal hex.
     localStorage.setItem('devfolio.wallpaper', '');
     localStorage.setItem('devfolio.desktop-color', 'blue');
-    const { container } = renderWallpaper([makeWallpaper()]);
+    const { container } = renderWallpaper([makeWallpaperOption()]);
 
     const background = container.firstElementChild as HTMLElement;
     expect(background.style.backgroundColor).toBe('rgb(96, 165, 250)');

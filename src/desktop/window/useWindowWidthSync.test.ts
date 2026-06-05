@@ -1,12 +1,9 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { makeWindowState } from '@test/factories';
+import { setViewportWidth, flushFrame } from '@test/helpers';
 import { useWindowWidthSync } from './useWindowWidthSync';
 import type { WindowState } from '../types';
-
-function setViewportWidth(width: number) {
-  Object.defineProperty(window, 'innerWidth', { value: width, configurable: true, writable: true });
-}
 
 afterEach(() => {
   setViewportWidth(1024); // restore the jsdom default for other tests
@@ -77,7 +74,7 @@ describe('useWindowWidthSync', () => {
     setViewportWidth(800);
     await act(async () => {
       window.dispatchEvent(new Event('resize'));
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
+      await flushFrame();
     });
 
     // clampWidth(1000, 400, 800) = min(1000, 800 - 16) = 784

@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { DesktopIcon } from '@/config';
+import { flushFrame } from '@test/helpers';
 import { EDGE_MARGIN, TASKBAR_HEIGHT } from '../lib/layoutConstants';
 import { useDesktopIcons } from './useDesktopIcons';
 
@@ -253,7 +254,7 @@ describe('useDesktopIcons - restoreIcons', () => {
     // not dropped (a relayout over visible-only icons would lose it).
     await act(async () => {
       window.dispatchEvent(new Event('resize'));
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
+      await flushFrame();
     });
     expect(result.current.positions.a).toEqual({ x: 150, y: 160 });
 

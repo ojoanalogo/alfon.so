@@ -493,6 +493,48 @@ describe('useWindowGestures - resize math per direction', () => {
       height: 340,
     });
   });
+
+  it('northeast: east grows width and north shrinks height, shifting y down', () => {
+    const { hook, onGeometryChange } = setup({
+      state: { x: 0, y: 200, width: 600, height: 400 },
+    });
+    act(() => {
+      hook.result.current.startResize(
+        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
+        'ne',
+      );
+    });
+    dispatchMove(1, 40, 60); // dx=40, dy=60
+    // e: width = max(400, 600 + 40) = 640, x unchanged = 0
+    // n: proposed = max(MIN_HEIGHT, 400 - 60) = 340, y = 200 + (400 - 340) = 260
+    expect(onGeometryChange).toHaveBeenLastCalledWith({
+      x: 0,
+      y: 260,
+      width: 640,
+      height: 340,
+    });
+  });
+
+  it('southwest: south grows height and west shifts x, shrinking width', () => {
+    const { hook, onGeometryChange } = setup({
+      state: { x: 100, y: 0, width: 600, height: 400 },
+    });
+    act(() => {
+      hook.result.current.startResize(
+        fakePointerEvent({ pointerId: 1, clientX: 0, clientY: 0 }),
+        'sw',
+      );
+    });
+    dispatchMove(1, 40, 60); // dx=40, dy=60
+    // w: proposed = max(400, 600 - 40) = 560, x = 100 + (600 - 560) = 140
+    // s: height = max(MIN_HEIGHT, 400 + 60) = 460, y unchanged = 0
+    expect(onGeometryChange).toHaveBeenLastCalledWith({
+      x: 140,
+      y: 0,
+      width: 560,
+      height: 460,
+    });
+  });
 });
 
 describe('useWindowGestures - content-sized height (origin.height == null)', () => {

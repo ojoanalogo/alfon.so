@@ -3,20 +3,12 @@ import { renderHook, act } from '@testing-library/react';
 import { createRef } from 'react';
 import { useWindowCenterLayout } from './useWindowCenterLayout';
 import { TASKBAR_HEIGHT, EDGE_MARGIN } from '../lib/layoutConstants';
+import { setViewport, flushFrame } from '@test/helpers';
 
 // jsdom: getBoundingClientRect returns all-zeros by default, so we mock it per
 // element. window.innerWidth defaults to 1024; we pin both dims for determinism.
 const VW = 1024;
 const VH = 768;
-
-function setViewport(width: number, height: number) {
-  Object.defineProperty(window, 'innerWidth', { value: width, configurable: true, writable: true });
-  Object.defineProperty(window, 'innerHeight', {
-    value: height,
-    configurable: true,
-    writable: true,
-  });
-}
 
 /** Build a detached element whose measured box is fixed at the given size. */
 function elWithRect(width: number, height: number): HTMLElement {
@@ -36,18 +28,8 @@ function elWithRect(width: number, height: number): HTMLElement {
   return el;
 }
 
-// jsdom does not implement ResizeObserver; the hook constructs one. A no-op
-// stub lets the effect mount without changing observable behavior (we drive
-// updates via rAF / resize events directly).
-class ResizeObserverStub {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-
 beforeEach(() => {
   vi.useRealTimers();
-  (globalThis as { ResizeObserver?: unknown }).ResizeObserver = ResizeObserverStub;
   setViewport(VW, VH);
   document.body.className = '';
   document.body.innerHTML = '';
@@ -79,7 +61,6 @@ function renderCenter(args: Args = {}) {
 describe('useWindowCenterLayout - centered corrector', () => {
   it('reports the centered frame for an enabled, not-user-sized window', () => {
     const { onGeometryChange } = renderCenter({ el: elWithRect(600, 400) });
-    expect(onGeometryChange).toHaveBeenCalled();
     const geo = onGeometryChange.mock.calls[0][0];
     expect(geo.x).toBe(Math.round(Math.max(EDGE_MARGIN, (VW - 600) / 2)));
     expect(geo.y).toBe(Math.round(Math.max(EDGE_MARGIN, (VH - TASKBAR_HEIGHT - 400) / 2)));
@@ -98,8 +79,8 @@ describe('useWindowCenterLayout - centered corrector', () => {
     const { onGeometryChange } = renderCenter({ el: elWithRect(600, 400) });
     expect(onGeometryChange.mock.calls.length).toBe(1);
     await act(async () => {
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
+      await flushFrame();
+      await flushFrame();
     });
     expect(onGeometryChange.mock.calls.length).toBe(1);
   });

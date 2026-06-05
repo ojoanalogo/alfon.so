@@ -2,19 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, act } from '@testing-library/react';
 import type { ComponentType, ReactNode } from 'react';
 import type { WallpaperOption } from '../types';
+import { makeWallpaperOption } from '@test/factories';
+import { stubMatchMedia } from '@test/helpers';
 
 const BOOT_MIN_MS = 400;
 const BOOT_EXIT_MS = 120;
-
-function makeWallpaper(overrides: Partial<WallpaperOption> = {}): WallpaperOption {
-  return {
-    id: 'wp-1',
-    label: 'Wallpaper 1',
-    src: '/wallpapers/wp-1.jpg',
-    thumbSrc: '/wallpapers/wp-1-thumb.jpg',
-    ...overrides,
-  };
-}
 
 interface BootModuleGraph {
   BootOverlay: ComponentType;
@@ -58,19 +50,7 @@ describe('DesktopBootOverlay', () => {
     localStorage.clear();
     vi.useFakeTimers();
     // ThemeProvider (wrapping WallpaperProvider) calls matchMedia, absent in jsdom.
-    vi.stubGlobal(
-      'matchMedia',
-      vi.fn((query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    );
+    stubMatchMedia();
   });
 
   afterEach(() => {
@@ -83,7 +63,7 @@ describe('DesktopBootOverlay', () => {
     // A stored wallpaper that never finishes loading keeps bootContentReady false.
     localStorage.setItem('devfolio.wallpaper', 'wp-1');
     const graph = await loadBootModuleGraph();
-    const { container } = renderBoot(graph, [makeWallpaper()]);
+    const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
     const overlay = container.querySelector('.desktop-boot-overlay');
     expect(overlay).toBeTruthy();
@@ -94,7 +74,7 @@ describe('DesktopBootOverlay', () => {
   it('exposes loading accessibility state while booting', async () => {
     localStorage.setItem('devfolio.wallpaper', 'wp-1');
     const graph = await loadBootModuleGraph();
-    const { container } = renderBoot(graph, [makeWallpaper()]);
+    const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
     const overlay = container.querySelector('.desktop-boot-overlay') as HTMLElement;
     expect(overlay.getAttribute('aria-busy')).toBe('true');
@@ -109,7 +89,7 @@ describe('DesktopBootOverlay', () => {
   it('does not add the exiting class while still loading', async () => {
     localStorage.setItem('devfolio.wallpaper', 'wp-1');
     const graph = await loadBootModuleGraph();
-    const { container } = renderBoot(graph, [makeWallpaper()]);
+    const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
     expect(container.querySelector('.desktop-boot-overlay--exiting')).toBeNull();
   });
@@ -170,7 +150,7 @@ describe('DesktopBootOverlay', () => {
     first.unmount();
 
     // A brand-new mount of the same module should skip the boot screen entirely.
-    const second = renderBoot(graph, [makeWallpaper()]);
+    const second = renderBoot(graph, [makeWallpaperOption()]);
     expect(second.container.querySelector('.desktop-boot-overlay')).toBeNull();
     expect(second.container.firstChild).toBeNull();
   });
@@ -179,7 +159,7 @@ describe('DesktopBootOverlay', () => {
     // Stored wallpaper that never loads -> overlay should remain past BOOT_MIN_MS.
     localStorage.setItem('devfolio.wallpaper', 'wp-1');
     const graph = await loadBootModuleGraph();
-    const { container } = renderBoot(graph, [makeWallpaper()]);
+    const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
     await act(async () => {
       vi.advanceTimersByTime(BOOT_MIN_MS * 5);
@@ -212,7 +192,7 @@ describe('DesktopBootOverlay', () => {
     vi.stubGlobal('Image', FakeImage);
 
     const graph = await loadBootModuleGraph();
-    const { container } = renderBoot(graph, [makeWallpaper()]);
+    const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
     // Past the minimum boot window but content still loading → still on screen.
     await act(async () => {

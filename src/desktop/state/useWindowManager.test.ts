@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { makeWindowDef, makeWindowState } from '@test/factories';
+import { setViewport } from '@test/helpers';
 import { useWindowManager, mergeWindowUiState } from './useWindowManager';
+import { MIN_WIDTH, MIN_HEIGHT } from '../lib/layoutConstants';
+import { JITTER_X } from '../lib/windowPlacement';
 import type { WindowDef } from '../types';
 
 // jsdom defaults window.innerWidth to 1024 (desktop, not mobile). We rely on
@@ -10,15 +13,6 @@ import type { WindowDef } from '../types';
 
 const VW = 1024;
 const VH = 768;
-
-function setViewport(width: number, height: number) {
-  Object.defineProperty(window, 'innerWidth', { value: width, configurable: true, writable: true });
-  Object.defineProperty(window, 'innerHeight', {
-    value: height,
-    configurable: true,
-    writable: true,
-  });
-}
 
 function defs(extra: Partial<WindowDef>[] = []): WindowDef[] {
   return [
@@ -154,6 +148,16 @@ describe('useWindowManager - open', () => {
     // Re-opening from closed resets userSized to false.
     expect(result.current.windows.a.userSized).toBe(false);
   });
+
+  it('skips desktop geometry seeding on mobile viewport', () => {
+    // At 390px (mobile) the wasClosed branch that calls applyDefaultGeometry is
+    // skipped; the window opens but userSized is not set (nothing seeded it).
+    setViewport(390, 800);
+    const { result } = renderManager();
+    act(() => result.current.open('a'));
+    expect(result.current.windows.a.open).toBe(true);
+    expect(result.current.windows.a.userSized).toBeFalsy();
+  });
 });
 
 describe('useWindowManager - close', () => {
@@ -265,10 +269,13 @@ describe('useWindowManager - focus / unfocus', () => {
     const { result } = renderManager();
     act(() => result.current.focus('a'));
     const snapshot = result.current.windows.a;
+    const zBeforeSecondFocus = result.current.windows.a.zIndex;
     // Re-focusing the window that is already focused and top-most must not bump
     // z or write state (every pointer-down on the focused window calls focus).
     act(() => result.current.focus('a'));
     expect(result.current.windows.a).toBe(snapshot);
+    expect(result.current.focusedId).toBe('a');
+    expect(result.current.windows.a.zIndex).toBe(zBeforeSecondFocus);
   });
 });
 
@@ -284,13 +291,13 @@ describe('useWindowManager - correctLayout (auto placement)', () => {
   it('clamps width to the effective min width', () => {
     const { result } = renderManager();
     act(() => result.current.correctLayout('a', { width: 50 }));
-    expect(result.current.windows.a.width).toBe(400);
+    expect(result.current.windows.a.width).toBe(MIN_WIDTH);
   });
 
   it('clamps height to MIN_HEIGHT', () => {
     const { result } = renderManager();
     act(() => result.current.correctLayout('a', { height: 10 }));
-    expect(result.current.windows.a.height).toBe(140);
+    expect(result.current.windows.a.height).toBe(MIN_HEIGHT);
   });
 
   it('is a no-op when the patch does not change anything', () => {
@@ -305,6 +312,13 @@ describe('useWindowManager - correctLayout (auto placement)', () => {
     const { result } = renderManager();
     act(() => result.current.correctLayout('missing', { x: 1 }));
     expect(result.current.windows.missing).toBeUndefined();
+  });
+
+  it('clamps to per-app minWidth when it exceeds the global MIN_WIDTH', () => {
+    // effectiveMinWidth at 1024px viewport: min(600, max(400, 1024-16)) = 600
+    const { result } = renderManager(defs([{ id: 'c', minWidth: 600, defaultWidth: 700 }]));
+    act(() => result.current.correctLayout('c', { width: 300 }));
+    expect(result.current.windows.c.width).toBe(600);
   });
 });
 
@@ -348,8 +362,8 @@ describe('useWindowManager - correctLayouts (batch auto)', () => {
   it('clamps each patch independently', () => {
     const { result } = renderManager();
     act(() => result.current.correctLayouts({ a: { width: 10 }, b: { height: 5 } }));
-    expect(result.current.windows.a.width).toBe(400);
-    expect(result.current.windows.b.height).toBe(140);
+    expect(result.current.windows.a.width).toBe(MIN_WIDTH);
+    expect(result.current.windows.b.height).toBe(MIN_HEIGHT);
   });
 
   it('skips unknown ids and no-op patches without changing state identity', () => {
@@ -369,13 +383,13 @@ describe('useWindowManager - correctLayouts (batch auto)', () => {
 describe('useWindowManager - relayoutToViewport', () => {
   it('recomputes geometry for closed windows from a new viewport', () => {
     const { result } = renderManager();
-    // window 'a' is closed; relayout should reposition it.
-    const before = { ...result.current.windows.a };
+    // window 'a' has defaultWidth 600; at a 1600px viewport it should fit at full width.
     act(() => result.current.relayoutToViewport(1600, 900));
     const after = result.current.windows.a;
-    // Position should be recomputed (near-center placement differs for the new vw).
-    const moved = after.x !== before.x || after.y !== before.y || after.width !== before.width;
-    expect(moved).toBe(true);
+    // Width should equal the app default (fits 1600px viewport).
+    expect(after.width).toBe(600);
+    // x should be near-center: within JITTER_X of true center.
+    expect(Math.abs(after.x - (1600 - 600) / 2)).toBeLessThanOrEqual(JITTER_X);
   });
 
   it('leaves open windows untouched', () => {
@@ -504,5 +518,12 @@ describe('mergeWindowUiState', () => {
     const p = { c: makeWindowState({ id: 'c', open: true, minimized: true, x: 262, y: 184 }) };
     const merged = mergeWindowUiState(f, p, new Set(['c']));
     expect(merged.c.y).toBe(999);
+  });
+
+  it('reseeds a centered window that is maximized (keepGeometry requires !maximized)', () => {
+    const f = { c: makeWindowState({ id: 'c', open: true, maximized: true, x: 9, y: 999, width: 500, height: null }) };
+    const p = { c: makeWindowState({ id: 'c', open: true, maximized: true, x: 262, y: 184, width: 500, height: null }) };
+    const merged = mergeWindowUiState(f, p, new Set(['c']));
+    expect(merged.c.y).toBe(999); // maximized -> keepGeometry is false -> takes fresh
   });
 });

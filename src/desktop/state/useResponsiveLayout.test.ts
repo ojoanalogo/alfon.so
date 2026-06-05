@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { makeWindowDef, makeWindowState } from '@test/factories';
+import { setViewport, flushFrame } from '@test/helpers';
 import { useResponsiveLayout } from './useResponsiveLayout';
 import type { WindowManager } from './useWindowManager';
 import type { WindowDef, WindowState } from '../types';
@@ -12,15 +13,6 @@ const DESKTOP_VW = 1024;
 const DESKTOP_VH = 768;
 const MOBILE_VW = 390;
 const MOBILE_VH = 800;
-
-function setViewport(width: number, height: number) {
-  Object.defineProperty(window, 'innerWidth', { value: width, configurable: true, writable: true });
-  Object.defineProperty(window, 'innerHeight', {
-    value: height,
-    configurable: true,
-    writable: true,
-  });
-}
 
 /**
  * Minimal WindowManager stub: useResponsiveLayout only destructures four
@@ -44,10 +36,6 @@ function makeWm(windows: Record<string, WindowState> = {}): WindowManager {
     correctLayouts: vi.fn(),
     relayoutToViewport: vi.fn(),
   } as unknown as WindowManager;
-}
-
-function flushFrame() {
-  return new Promise((r) => requestAnimationFrame(() => r(null)));
 }
 
 beforeEach(() => {
@@ -105,7 +93,12 @@ describe('useResponsiveLayout - mobile geometry', () => {
 
     expect(wm.correctLayouts).toHaveBeenCalled();
     const updates = (wm.correctLayouts as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0];
-    expect(updates.a.width).toBe(MOBILE_VW - EDGE_MARGIN * 2);
+    expect(updates.a).toEqual({
+      x: EDGE_MARGIN,
+      y: EDGE_MARGIN,
+      width: MOBILE_VW - EDGE_MARGIN * 2,
+      height: MOBILE_VH - TASKBAR_HEIGHT - EDGE_MARGIN * 2,
+    });
   });
 
   it('uses relayoutToViewport (not mobile fit) on a desktop viewport', () => {
