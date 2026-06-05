@@ -1,54 +1,51 @@
-import { useLayoutEffect, useRef, useState, type RefObject } from 'react';
+import { useLayoutEffect, useRef, type RefObject } from 'react';
 import { centerInWorkArea } from '../lib/geometry';
 import { STATE_CLASS } from '../lib/stateClasses';
 
 interface WindowCenterLayoutOptions {
   rootRef: RefObject<HTMLElement | null>;
+  /** center && open && !minimized && !maximized */
   enabled: boolean;
-  x: number;
-  y: number;
+  /** Painted width; a change re-measures the centered box. */
   width: number;
+  /** Once the user has moved/resized the window, stop centering it. */
+  userSized?: boolean;
+  /** Auto-layout reporter (routes to the manager's correctLayout). */
   onGeometryChange: (geometry: { x?: number; y?: number; width?: number }) => void;
 }
 
 /**
- * Keeps center-flagged windows aligned to the viewport using the rendered box,
- * not estimates from state (content-sized height must come from the DOM).
+ * Centering as a placement policy: while a center-flagged window is auto-placed
+ * (`enabled && !userSized`), measure its rendered box and write the centered
+ * frame back through `onGeometryChange`. It owns no render-time position state —
+ * the window renders from `state.x/y` like every other window. Once the user
+ * moves/resizes it (`userSized`), this goes silent; on reopen the manager clears
+ * `userSized` and the effect resumes.
  */
 export function useWindowCenterLayout({
   rootRef,
   enabled,
-  x,
-  y,
   width,
+  userSized,
   onGeometryChange,
 }: WindowCenterLayoutOptions) {
-  const userPositioned = useRef(false);
-  const [userLocked, setUserLocked] = useState(false);
-  const [displayPos, setDisplayPos] = useState({ x, y });
   const onGeometryChangeRef = useRef(onGeometryChange);
   onGeometryChangeRef.current = onGeometryChange;
-  // Last geometry pushed upstream. The settle triggers (rAF passes, fonts.ready,
-  // ResizeObserver) often resolve to the same box; only report real changes.
+  // The settle triggers (rAF passes, fonts.ready, ResizeObserver) often resolve
+  // to the same box; only report real changes.
   const lastSentRef = useRef<{ x: number; y: number; width: number } | null>(null);
 
   useLayoutEffect(() => {
-    if (!userLocked) {
-      setDisplayPos({ x, y });
-    }
-  }, [x, y, userLocked]);
-
-  useLayoutEffect(() => {
-    if (!enabled || userPositioned.current || typeof window === 'undefined') return;
+    if (!enabled || userSized || typeof window === 'undefined') return;
     const el = rootRef.current;
     if (!el) return;
 
     let raf2 = 0;
 
     function syncPosition() {
-      if (userPositioned.current || document.body.classList.contains(STATE_CLASS.windowGesturing)) {
-        return;
-      }
+      // Never fight an in-progress drag in the window between grab and the first
+      // move committing userSized.
+      if (document.body.classList.contains(STATE_CLASS.windowGesturing)) return;
 
       const node = rootRef.current;
       if (!node) return;
@@ -60,10 +57,6 @@ export function useWindowCenterLayout({
       const nextX = Math.round(center.x);
       const nextY = Math.round(center.y);
       const roundedWidth = Math.round(rect.width);
-
-      setDisplayPos((prev) =>
-        prev.x === nextX && prev.y === nextY ? prev : { x: nextX, y: nextY },
-      );
 
       const last = lastSentRef.current;
       if (!last || last.x !== nextX || last.y !== nextY || last.width !== roundedWidth) {
@@ -86,34 +79,9 @@ export function useWindowCenterLayout({
       cancelAnimationFrame(raf2);
       observer.disconnect();
       window.removeEventListener('resize', syncPosition);
-      // Drop the cached last-sent box so a re-enable (e.g. after maximize/minimize)
-      // can re-report a corrected position even if it resolves to a prior value.
+      // Drop the cached box so a resume (e.g. reopen clearing userSized) can
+      // re-report even if it resolves to a prior value.
       lastSentRef.current = null;
     };
-  }, [enabled, rootRef, width]);
-
-  function markUserPositioned() {
-    // For a centered window whose displayed (measured-centered) position has
-    // drifted from the stored geometry, commit the displayed position before
-    // locking. Otherwise displayX/Y switch from the measured `displayPos` to the
-    // props `x`/`y` — a stale seed (the manager reseeds centered windows from a
-    // MIN_HEIGHT placeholder the settle dedupe leaves uncorrected) — and the
-    // window jumps on grab. Skip when not centered or already in sync, so a plain
-    // window's drag never gets an extra (possibly one-frame-stale) report.
-    // Only on the FIRST lock of a centered window: commit the currently displayed
-    // (live measured-centered) position into stored geometry, so switching the
-    // rendered source from `displayPos` to props x/y doesn't jump off a stale
-    // seed. Once locked, `displayPos` stops updating and goes stale, so we must
-    // never commit it again on a re-grab — guard with `!userLocked`.
-    if (enabled && !userLocked && (displayPos.x !== x || displayPos.y !== y)) {
-      onGeometryChangeRef.current({ x: displayPos.x, y: displayPos.y });
-    }
-    userPositioned.current = true;
-    setUserLocked(true);
-  }
-
-  const displayX = userLocked ? x : displayPos.x;
-  const displayY = userLocked ? y : displayPos.y;
-
-  return { markUserPositioned, displayX, displayY };
+  }, [enabled, rootRef, width, userSized]);
 }

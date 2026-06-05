@@ -36,36 +36,6 @@ function elWithRect(width: number, height: number): HTMLElement {
   return el;
 }
 
-interface Args {
-  el?: HTMLElement | null;
-  enabled?: boolean;
-  x?: number;
-  y?: number;
-  width?: number;
-  onGeometryChange?: Mock<(geometry: { x?: number; y?: number; width?: number }) => void>;
-}
-
-function renderCenter(args: Args = {}) {
-  const onGeometryChange =
-    args.onGeometryChange ??
-    vi.fn<(geometry: { x?: number; y?: number; width?: number }) => void>();
-  const ref = createRef<HTMLElement>();
-  // createRef.current is read-only typed; assign through Object to set the node.
-  (ref as { current: HTMLElement | null }).current =
-    args.el === undefined ? elWithRect(600, 400) : args.el;
-  const utils = renderHook(() =>
-    useWindowCenterLayout({
-      rootRef: ref,
-      enabled: args.enabled ?? true,
-      x: args.x ?? 0,
-      y: args.y ?? 0,
-      width: args.width ?? 600,
-      onGeometryChange,
-    }),
-  );
-  return { ...utils, onGeometryChange, ref };
-}
-
 // jsdom does not implement ResizeObserver; the hook constructs one. A no-op
 // stub lets the effect mount without changing observable behavior (we drive
 // updates via rAF / resize events directly).
@@ -83,57 +53,66 @@ beforeEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('useWindowCenterLayout - centered geometry', () => {
-  it('reports a centered position via onGeometryChange for a centered window', () => {
-    const { onGeometryChange } = renderCenter({ el: elWithRect(600, 400) });
+interface Args {
+  el?: HTMLElement | null;
+  enabled?: boolean;
+  userSized?: boolean;
+  width?: number;
+  onGeometryChange?: Mock<(geometry: { x?: number; y?: number; width?: number }) => void>;
+}
 
+function renderCenter(args: Args = {}) {
+  const onGeometryChange =
+    args.onGeometryChange ??
+    vi.fn<(geometry: { x?: number; y?: number; width?: number }) => void>();
+  const ref = createRef<HTMLElement>();
+  (ref as { current: HTMLElement | null }).current =
+    args.el === undefined ? elWithRect(600, 400) : args.el;
+  const utils = renderHook(
+    ({ enabled, userSized, width }: { enabled: boolean; userSized?: boolean; width: number }) =>
+      useWindowCenterLayout({ rootRef: ref, enabled, userSized, width, onGeometryChange }),
+    { initialProps: { enabled: args.enabled ?? true, userSized: args.userSized, width: args.width ?? 600 } },
+  );
+  return { ...utils, onGeometryChange, ref };
+}
+
+describe('useWindowCenterLayout - centered corrector', () => {
+  it('reports the centered frame for an enabled, not-user-sized window', () => {
+    const { onGeometryChange } = renderCenter({ el: elWithRect(600, 400) });
     expect(onGeometryChange).toHaveBeenCalled();
     const geo = onGeometryChange.mock.calls[0][0];
-    // Center math mirrors the hook: (vw - w) / 2, (vh - taskbar - h) / 2.
     expect(geo.x).toBe(Math.round(Math.max(EDGE_MARGIN, (VW - 600) / 2)));
     expect(geo.y).toBe(Math.round(Math.max(EDGE_MARGIN, (VH - TASKBAR_HEIGHT - 400) / 2)));
     expect(geo.width).toBe(600);
   });
 
-  it('exposes the centered position through displayX/displayY', () => {
-    const { result } = renderCenter({ el: elWithRect(600, 400) });
-    expect(result.current.displayX).toBe(Math.round((VW - 600) / 2));
-    expect(result.current.displayY).toBe(Math.round((VH - TASKBAR_HEIGHT - 400) / 2));
-  });
-
-  it('clamps to EDGE_MARGIN when the window is wider/taller than the viewport', () => {
+  it('clamps to EDGE_MARGIN when wider/taller than the viewport', () => {
     const { onGeometryChange } = renderCenter({ el: elWithRect(VW + 400, VH + 400) });
     const geo = onGeometryChange.mock.calls[0][0];
     expect(geo.x).toBe(EDGE_MARGIN);
     expect(geo.y).toBe(EDGE_MARGIN);
   });
-});
 
-describe('useWindowCenterLayout - idempotence', () => {
-  it('does not re-report when the synchronous rAF passes resolve to the same box', async () => {
+  it('does not re-report when the rAF passes resolve to the same box', async () => {
     const { onGeometryChange } = renderCenter({ el: elWithRect(600, 400) });
-    const callsAfterMount = onGeometryChange.mock.calls.length;
-    expect(callsAfterMount).toBe(1);
-
-    // Let the queued rAF passes (raf1, raf2) run; the box is unchanged so they
-    // must not push a duplicate geometry upstream.
+    expect(onGeometryChange.mock.calls.length).toBe(1);
     await act(async () => {
       await new Promise((r) => requestAnimationFrame(() => r(null)));
       await new Promise((r) => requestAnimationFrame(() => r(null)));
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
     });
-
-    expect(onGeometryChange.mock.calls.length).toBe(callsAfterMount);
+    expect(onGeometryChange.mock.calls.length).toBe(1);
   });
 });
 
 describe('useWindowCenterLayout - guards', () => {
   it('does nothing when disabled', () => {
-    const { onGeometryChange, result } = renderCenter({ el: elWithRect(600, 400), enabled: false });
+    const { onGeometryChange } = renderCenter({ enabled: false });
     expect(onGeometryChange).not.toHaveBeenCalled();
-    // displayX/Y fall back to the passed x/y when not locked and disabled.
-    expect(result.current.displayX).toBe(0);
-    expect(result.current.displayY).toBe(0);
+  });
+
+  it('does nothing once the window is user-sized', () => {
+    const { onGeometryChange } = renderCenter({ userSized: true });
+    expect(onGeometryChange).not.toHaveBeenCalled();
   });
 
   it('does nothing when the ref has no node', () => {
@@ -153,98 +132,13 @@ describe('useWindowCenterLayout - guards', () => {
   });
 });
 
-describe('useWindowCenterLayout - user positioning', () => {
-  it('locks displayX/displayY to the props once markUserPositioned is called', () => {
-    const { result, rerender } = renderHookWithProps();
-
-    act(() => {
-      result.current.markUserPositioned();
-    });
-
-    // After locking, displayX/Y track the incoming x/y, not the centered box.
-    rerender({ x: 123, y: 321 });
-    expect(result.current.displayX).toBe(123);
-    expect(result.current.displayY).toBe(321);
-  });
-
-  it('commits the displayed position on lock, then stops reporting', async () => {
-    const onGeometryChange =
-      vi.fn<(geometry: { x?: number; y?: number; width?: number }) => void>();
-    const ref = createRef<HTMLElement>();
-    (ref as { current: HTMLElement | null }).current = elWithRect(600, 400);
-    const { result } = renderHook(() =>
-      useWindowCenterLayout({
-        rootRef: ref,
-        enabled: true,
-        x: 0,
-        y: 0,
-        width: 600,
-        onGeometryChange,
-      }),
-    );
-
-    act(() => {
-      result.current.markUserPositioned();
-    });
-
-    // Locking commits the currently displayed (centered) position once, so a
-    // later switch to props x/y can't jump to a stale seed.
-    const committed = onGeometryChange.mock.calls.at(-1)![0];
-    expect(committed.x).toBe(Math.round((VW - 600) / 2));
-    expect(committed.y).toBe(Math.round((VH - TASKBAR_HEIGHT - 400) / 2));
-
-    const afterLock = onGeometryChange.mock.calls.length;
-    // Fire a resize: syncPosition should early-return because userPositioned.
-    await act(async () => {
-      window.dispatchEvent(new Event('resize'));
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
-    });
-
-    expect(onGeometryChange.mock.calls.length).toBe(afterLock);
-  });
-
-  it('does not re-commit on a second grab once locked (stale displayPos guard)', () => {
-    const onGeometryChange = vi.fn();
-    const ref = createRef<HTMLElement>();
-    (ref as { current: HTMLElement | null }).current = elWithRect(600, 400);
-    const { result, rerender } = renderHook(
-      ({ x, y }: { x: number; y: number }) =>
-        useWindowCenterLayout({ rootRef: ref, enabled: true, x, y, width: 600, onGeometryChange }),
-      { initialProps: { x: 0, y: 0 } },
-    );
-
-    act(() => {
-      result.current.markUserPositioned();
-    });
-    const afterFirst = onGeometryChange.mock.calls.length;
-
-    // The manager moves the window (props change) while it's locked; displayPos
-    // is now frozen/stale. A second grab must NOT commit that stale value back,
-    // which would yank the window to the wrong spot.
-    rerender({ x: 999, y: 888 });
-    act(() => {
-      result.current.markUserPositioned();
-    });
-    expect(onGeometryChange.mock.calls.length).toBe(afterFirst);
+describe('useWindowCenterLayout - re-centers when user-sizing clears', () => {
+  it('resumes reporting the centered frame when userSized goes back to false (reopen)', () => {
+    const { onGeometryChange, rerender } = renderCenter({ userSized: true });
+    expect(onGeometryChange).not.toHaveBeenCalled();
+    rerender({ enabled: true, userSized: false, width: 600 });
+    const geo = onGeometryChange.mock.calls.at(-1)![0];
+    expect(geo.x).toBe(Math.round(Math.max(EDGE_MARGIN, (VW - 600) / 2)));
+    expect(geo.y).toBe(Math.round(Math.max(EDGE_MARGIN, (VH - TASKBAR_HEIGHT - 400) / 2)));
   });
 });
-
-// Helper for the lock test: needs a stable element across rerenders and the
-// ability to vary x/y props.
-function renderHookWithProps() {
-  const onGeometryChange = vi.fn();
-  const ref = createRef<HTMLElement>();
-  (ref as { current: HTMLElement | null }).current = elWithRect(600, 400);
-  return renderHook(
-    ({ x, y }: { x: number; y: number }) =>
-      useWindowCenterLayout({
-        rootRef: ref,
-        enabled: true,
-        x,
-        y,
-        width: 600,
-        onGeometryChange,
-      }),
-    { initialProps: { x: 0, y: 0 } },
-  );
-}
