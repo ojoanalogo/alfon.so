@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { POST_DATE_MIN_WIDTH, postDateFormatter, postLongDateFormatter } from './postFormatting';
+import {
+  formatReadingTime,
+  POST_DATE_MIN_WIDTH,
+  postDateFormatter,
+  postLongDateFormatter,
+} from './postFormatting';
 
 describe('postFormatting', () => {
   describe('POST_DATE_MIN_WIDTH', () => {
@@ -55,6 +60,17 @@ describe('postFormatting', () => {
       expect(postLongDateFormatter.format(d).length).toBeGreaterThan(
         postDateFormatter.format(d).length,
       );
+    });
+  });
+
+  describe('formatReadingTime', () => {
+    it('formats reading time in Spanish', () => {
+      expect(formatReadingTime(1)).toBe('1 min de lectura');
+      expect(formatReadingTime(2.1)).toBe('3 min de lectura');
+    });
+
+    it('uses one minute as the minimum display value', () => {
+      expect(formatReadingTime(0.2)).toBe('1 min de lectura');
     });
   });
 });

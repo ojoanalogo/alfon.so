@@ -1,13 +1,12 @@
 ---
-import { Picture } from 'astro:assets';
+import { getImage, Picture } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import dayjs from 'dayjs';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
 import Card from '../components/ui/Card.astro';
 import BaseLayout from './BaseLayout.astro';
 import Tag from '../components/ui/Tag.astro';
 import Divider from '../components/ui/Divider.astro';
 import { PROSE_CLASS_RESPONSIVE } from '../styles/proseConfig';
+import { postLongDateFormatter } from '../config/postFormatting';
 
 export interface Props {
   title: string;
@@ -21,11 +20,19 @@ export interface Props {
 
 const { title, description, publishDate, updatedDate, heroImage, readingTime, tags } = Astro.props;
 
-dayjs.extend(localizedFormat);
-const displayDate = dayjs(publishDate).format('LL');
+const displayDate = postLongDateFormatter.format(publishDate);
+const socialImage = heroImage
+  ? (await getImage({ src: heroImage, width: 1200, format: 'jpg' })).src
+  : undefined;
 ---
 
-<BaseLayout title={title} description={description} image={heroImage} navbarActiveItemID="blog">
+<BaseLayout
+  title={title}
+  description={description}
+  image={socialImage}
+  article
+  navbarActiveItemID="blog"
+>
   <Card class="md:p-8">
     {
       heroImage && (

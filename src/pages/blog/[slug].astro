@@ -4,6 +4,7 @@ import readingTime from 'reading-time';
 import type { BlogSchema } from '../../content.config';
 import PostLayout from '../../layouts/PostLayout.astro';
 import { getPublishedPosts } from '../../lib/blog';
+import { formatReadingTime } from '../../config/postFormatting';
 
 export async function getStaticPaths() {
   const postEntries = await getPublishedPosts();
@@ -22,6 +23,7 @@ const post: BlogSchema = entry.data;
 const { Content } = await render(entry);
 
 const stats = readingTime(entry.body || '');
+const readingTimeText = formatReadingTime(stats.minutes);
 ---
 
 <PostLayout
@@ -30,7 +32,7 @@ const stats = readingTime(entry.body || '');
   publishDate={post.publishDate}
   updatedDate={post.updatedDate}
   heroImage={post.heroImage}
-  readingTime={stats.text}
+  readingTime={readingTimeText}
   tags={post.tags}
 >
   <Content />
