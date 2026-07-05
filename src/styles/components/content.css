@@ -4,6 +4,18 @@
     flex: 1;
   }
 
+  .window-titlebar__title {
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    color: var(--color-titlebar-text);
+  }
+
+  @media (width < 40rem) {
+    .window-titlebar__title {
+      font-size: 0.625rem;
+    }
+  }
+
   /* --- Card body — padding is contextual (explorer/settings/sized reset) --- */
   .card-body {
     position: relative;

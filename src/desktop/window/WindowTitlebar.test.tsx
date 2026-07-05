@@ -32,8 +32,8 @@ describe('WindowTitlebar', () => {
     expect(screen.getByText('Custom Content')).toBeTruthy();
     // The default title span should not be rendered.
     expect(screen.queryByText('Plain Title')).toBeNull();
-    // The default muted title span is replaced.
-    expect(container.querySelector('.text-muted')).toBeNull();
+    // The default title span is replaced.
+    expect(container.querySelector('.window-titlebar__title')).toBeNull();
   });
 
   it('calls onMoveStart on pointer down over the drag region', () => {
@@ -65,7 +65,7 @@ describe('WindowTitlebar', () => {
       <WindowTitlebar title="" onMoveStart={vi.fn()} onDoubleClick={vi.fn()} />,
     );
 
-    const span = container.querySelector('.text-muted');
+    const span = container.querySelector('.window-titlebar__title');
     expect(span).toBeTruthy();
     expect(span?.textContent).toBe('');
   });

@@ -42,7 +42,7 @@ export default function BrowserChrome({
   return (
     <div className="flex w-full min-w-0 flex-1 items-center gap-[0.375rem] leading-none">
       {!hideTitle && (
-        <span className="shrink-0 text-[0.6875rem] leading-[1.2] text-muted lowercase max-sm:hidden">
+        <span className="window-titlebar__title shrink-0 lowercase max-sm:hidden">
           {title}
         </span>
       )}
