@@ -64,13 +64,15 @@ describe('AppearanceSection', () => {
     expect(thumbs).toContain('/wp/4-thumb.jpg');
   });
 
-  it('marks the default-stored wallpaper (id 4) as pressed', () => {
+  it('marks the default fill color as pressed when no preference is stored', () => {
     renderSection();
 
-    const four = screen.getByRole('button', { name: 'Cuatro' });
-    expect(four.getAttribute('aria-pressed')).toBe('true');
-    const seven = screen.getByRole('button', { name: 'Siete' });
-    expect(seven.getAttribute('aria-pressed')).toBe('false');
+    expect(screen.getByRole('button', { name: 'Automático' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
+    expect(screen.getByRole('button', { name: 'Cuatro' }).getAttribute('aria-pressed')).toBe(
+      'false',
+    );
   });
 
   it('clicking a wallpaper selects it and persists the id', () => {
@@ -107,8 +109,24 @@ describe('AppearanceSection', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Uno' }));
 
     expect(localStorage.getItem('devfolio.wallpaper')).toBe('1');
+    expect(localStorage.getItem('devfolio.desktop-color')).toBe('blue');
     expect(screen.getByRole('button', { name: 'Uno' }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('button', { name: 'Azul' }).getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('restores a stored fill color when returning from a wallpaper', () => {
+    localStorage.setItem('devfolio.desktop-color', 'mint');
+    localStorage.setItem('devfolio.wallpaper', '4');
+    renderSection();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Menta' }));
+
+    expect(localStorage.getItem('devfolio.desktop-color')).toBe('mint');
+    expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
+    expect(screen.getByRole('button', { name: 'Menta' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Cuatro' }).getAttribute('aria-pressed')).toBe(
+      'false',
+    );
   });
 
   it('the theme control toggles the document theme via setTheme', () => {

@@ -47,10 +47,10 @@ type WallpaperPreference = 'unset' | 'color' | string;
 
 function readWallpaperPreference(): WallpaperPreference {
   try {
-    if (!localStorage.getItem(WALLPAPER_STORAGE_KEY)) return 'unset';
     const stored = localStorage.getItem(WALLPAPER_STORAGE_KEY);
+    if (stored === null) return 'unset';
     if (stored === '') return 'color';
-    return stored ?? 'unset';
+    return stored;
   } catch {
     return 'unset';
   }
@@ -211,11 +211,12 @@ export function WallpaperProvider({
       if (id !== null && !wallpapers.some((wallpaper) => wallpaper.id === id)) return;
       setWallpaperId(id);
       persistWallpaperId(id);
+      persistBackgroundColorId(backgroundColorId);
       if (!id) {
         setLoadedWallpaper(null);
       }
     },
-    [wallpapers],
+    [wallpapers, backgroundColorId],
   );
 
   const setBackgroundColor = useCallback((id: string) => {

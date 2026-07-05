@@ -93,6 +93,31 @@ describe('WallpaperProvider + useWallpaper', () => {
     expect(result.current.wallpaperId).toBe('1');
     expect(result.current.activeWallpaper?.id).toBe('1');
     expect(localStorage.getItem('devfolio.wallpaper')).toBe('1');
+    expect(localStorage.getItem('devfolio.desktop-color')).toBe('default');
+  });
+
+  it('persists the current fill color when selecting a wallpaper', () => {
+    const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
+
+    act(() => {
+      result.current.setBackgroundColor('mint');
+    });
+    act(() => {
+      result.current.setWallpaper('4');
+    });
+
+    expect(localStorage.getItem('devfolio.wallpaper')).toBe('4');
+    expect(localStorage.getItem('devfolio.desktop-color')).toBe('mint');
+    expect(result.current.backgroundColorId).toBe('mint');
+  });
+
+  it('restores a stored fill color alongside an active wallpaper preference', () => {
+    localStorage.setItem('devfolio.desktop-color', 'mint');
+    localStorage.setItem('devfolio.wallpaper', '7');
+    const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
+
+    expect(result.current.wallpaperId).toBe('7');
+    expect(result.current.backgroundColorId).toBe('mint');
   });
 
   it('setWallpaper(null) clears the wallpaper and persists empty string', () => {
