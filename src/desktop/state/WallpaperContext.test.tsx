@@ -4,14 +4,12 @@ import { WallpaperProvider, useWallpaper } from './WallpaperContext';
 import { ThemeProvider } from './ThemeContext';
 import { DESKTOP_COLORS } from '../lib/desktopColors';
 import type { WallpaperOption } from '../types';
-import { DEFAULT_WALLPAPER_ID } from '@/config/wallpapers';
 import { stubMatchMedia } from '@test/helpers';
 
 const WALLPAPERS: WallpaperOption[] = [
-  { id: '1', label: 'One', src: '/wp/1.jpg', thumbSrc: '/wp/1-thumb.jpg' },
-  { id: '4', label: 'Four', src: '/wp/4.jpg', thumbSrc: '/wp/4-thumb.jpg' },
-  { id: '7', label: 'Seven', src: '/wp/7.jpg', thumbSrc: '/wp/7-thumb.jpg' },
-  { id: DEFAULT_WALLPAPER_ID, label: 'Default', src: '/wp/11.jpg', thumbSrc: '/wp/11-thumb.jpg' },
+  { id: '01', label: 'Imagen 01', src: '/wp/01.jpg', thumbSrc: '/wp/01-thumb.jpg' },
+  { id: '03', label: 'Imagen 03', src: '/wp/03.jpg', thumbSrc: '/wp/03-thumb.jpg' },
+  { id: '05', label: 'Imagen 05', src: '/wp/05.jpg', thumbSrc: '/wp/05-thumb.jpg' },
 ];
 
 function makeWrapper(wallpapers: WallpaperOption[] = WALLPAPERS) {
@@ -57,17 +55,19 @@ describe('WallpaperProvider + useWallpaper', () => {
   });
 
   it('reads a stored wallpaper id', () => {
-    localStorage.setItem('devfolio.wallpaper', '7');
+    localStorage.setItem('devfolio.wallpaper', '03');
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
-    expect(result.current.wallpaperId).toBe('7');
-    expect(result.current.activeWallpaper?.id).toBe('7');
+    expect(result.current.wallpaperId).toBe('03');
+    expect(result.current.activeWallpaper?.id).toBe('03');
   });
 
-  it('normalizes an unknown stored wallpaper id to the fallback default', () => {
-    localStorage.setItem('devfolio.wallpaper', 'nope');
+  it('clears an unknown stored wallpaper preference to plain background', () => {
+    localStorage.setItem('devfolio.wallpaper', '06');
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
-    expect(result.current.wallpaperId).toBe(DEFAULT_WALLPAPER_ID);
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe(DEFAULT_WALLPAPER_ID);
+    expect(result.current.wallpaperId).toBeNull();
+    expect(result.current.activeWallpaper).toBeNull();
+    expect(result.current.backgroundColorId).toBe('default');
+    expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
   });
 
   it('reads a stored valid background color', () => {
@@ -87,12 +87,12 @@ describe('WallpaperProvider + useWallpaper', () => {
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
 
     act(() => {
-      result.current.setWallpaper('1');
+      result.current.setWallpaper('01');
     });
 
-    expect(result.current.wallpaperId).toBe('1');
-    expect(result.current.activeWallpaper?.id).toBe('1');
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('1');
+    expect(result.current.wallpaperId).toBe('01');
+    expect(result.current.activeWallpaper?.id).toBe('01');
+    expect(localStorage.getItem('devfolio.wallpaper')).toBe('01');
     expect(localStorage.getItem('devfolio.desktop-color')).toBe('default');
   });
 
@@ -103,20 +103,20 @@ describe('WallpaperProvider + useWallpaper', () => {
       result.current.setBackgroundColor('mint');
     });
     act(() => {
-      result.current.setWallpaper('4');
+      result.current.setWallpaper('03');
     });
 
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('4');
+    expect(localStorage.getItem('devfolio.wallpaper')).toBe('03');
     expect(localStorage.getItem('devfolio.desktop-color')).toBe('mint');
     expect(result.current.backgroundColorId).toBe('mint');
   });
 
   it('restores a stored fill color alongside an active wallpaper preference', () => {
     localStorage.setItem('devfolio.desktop-color', 'mint');
-    localStorage.setItem('devfolio.wallpaper', '7');
+    localStorage.setItem('devfolio.wallpaper', '03');
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
 
-    expect(result.current.wallpaperId).toBe('7');
+    expect(result.current.wallpaperId).toBe('03');
     expect(result.current.backgroundColorId).toBe('mint');
   });
 
@@ -124,7 +124,7 @@ describe('WallpaperProvider + useWallpaper', () => {
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
 
     act(() => {
-      result.current.setWallpaper('4');
+      result.current.setWallpaper('03');
     });
     act(() => {
       result.current.setWallpaper(null);
@@ -149,7 +149,7 @@ describe('WallpaperProvider + useWallpaper', () => {
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
 
     act(() => {
-      result.current.setWallpaper('4');
+      result.current.setWallpaper('03');
     });
     act(() => {
       result.current.setBackgroundColor('purple');
@@ -206,7 +206,7 @@ describe('WallpaperProvider + useWallpaper', () => {
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
 
     act(() => {
-      result.current.setWallpaper('4');
+      result.current.setWallpaper('03');
     });
     expect(result.current.status).toBe('loading');
 

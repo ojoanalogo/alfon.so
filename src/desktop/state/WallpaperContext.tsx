@@ -93,11 +93,8 @@ function resolveStoredPreferences(wallpapers: WallpaperOption[]) {
     nextWallpaperId = null;
   } else {
     nextWallpaperId = resolveWallpaperId(wallpaperPreference, availableIds);
-    if (nextWallpaperId !== wallpaperPreference && nextWallpaperId) {
+    if (nextWallpaperId !== wallpaperPreference) {
       persistWallpaperId(nextWallpaperId);
-    }
-    if (!nextWallpaperId) {
-      persistWallpaperId(null);
     }
   }
 

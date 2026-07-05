@@ -8,9 +8,9 @@ import { stubMatchMedia } from '@test/helpers';
 import AppearanceSection from './AppearanceSection';
 
 const WALLPAPERS: WallpaperOption[] = [
-  { id: '1', label: 'Uno', src: '/wp/1.jpg', thumbSrc: '/wp/1-thumb.jpg' },
-  { id: '4', label: 'Cuatro', src: '/wp/4.jpg', thumbSrc: '/wp/4-thumb.jpg' },
-  { id: '7', label: 'Siete', src: '/wp/7.jpg', thumbSrc: '/wp/7-thumb.jpg' },
+  { id: '01', label: 'Imagen 01', src: '/wp/01.jpg', thumbSrc: '/wp/01-thumb.jpg' },
+  { id: '03', label: 'Imagen 03', src: '/wp/03.jpg', thumbSrc: '/wp/03-thumb.jpg' },
+  { id: '05', label: 'Imagen 05', src: '/wp/05.jpg', thumbSrc: '/wp/05-thumb.jpg' },
 ];
 
 function renderSection(wallpapers: WallpaperOption[] = WALLPAPERS) {
@@ -61,7 +61,7 @@ describe('AppearanceSection', () => {
     const thumbs = Array.from(container.querySelectorAll('img')).map((img) =>
       img.getAttribute('src'),
     );
-    expect(thumbs).toContain('/wp/4-thumb.jpg');
+    expect(thumbs).toContain('/wp/03-thumb.jpg');
   });
 
   it('marks the default fill color as pressed when no preference is stored', () => {
@@ -70,7 +70,7 @@ describe('AppearanceSection', () => {
     expect(screen.getByRole('button', { name: 'Automático' }).getAttribute('aria-pressed')).toBe(
       'true',
     );
-    expect(screen.getByRole('button', { name: 'Cuatro' }).getAttribute('aria-pressed')).toBe(
+    expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
       'false',
     );
   });
@@ -78,11 +78,13 @@ describe('AppearanceSection', () => {
   it('clicking a wallpaper selects it and persists the id', () => {
     renderSection();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Siete' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Imagen 03' }));
 
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('7');
-    expect(screen.getByRole('button', { name: 'Siete' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: 'Cuatro' }).getAttribute('aria-pressed')).toBe(
+    expect(localStorage.getItem('devfolio.wallpaper')).toBe('03');
+    expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
+    expect(screen.getByRole('button', { name: 'Imagen 05' }).getAttribute('aria-pressed')).toBe(
       'false',
     );
   });
@@ -92,12 +94,10 @@ describe('AppearanceSection', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Azul' }));
 
-    // setBackgroundColor clears the wallpaper preference.
     expect(localStorage.getItem('devfolio.desktop-color')).toBe('blue');
     expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
     expect(screen.getByRole('button', { name: 'Azul' }).getAttribute('aria-pressed')).toBe('true');
-    // No wallpaper is selected anymore.
-    expect(screen.getByRole('button', { name: 'Cuatro' }).getAttribute('aria-pressed')).toBe(
+    expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
       'false',
     );
   });
@@ -106,17 +106,19 @@ describe('AppearanceSection', () => {
     renderSection();
 
     fireEvent.click(screen.getByRole('button', { name: 'Azul' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Uno' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Imagen 01' }));
 
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('1');
+    expect(localStorage.getItem('devfolio.wallpaper')).toBe('01');
     expect(localStorage.getItem('devfolio.desktop-color')).toBe('blue');
-    expect(screen.getByRole('button', { name: 'Uno' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Imagen 01' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
     expect(screen.getByRole('button', { name: 'Azul' }).getAttribute('aria-pressed')).toBe('false');
   });
 
   it('restores a stored fill color when returning from a wallpaper', () => {
     localStorage.setItem('devfolio.desktop-color', 'mint');
-    localStorage.setItem('devfolio.wallpaper', '4');
+    localStorage.setItem('devfolio.wallpaper', '03');
     renderSection();
 
     fireEvent.click(screen.getByRole('button', { name: 'Menta' }));
@@ -124,7 +126,7 @@ describe('AppearanceSection', () => {
     expect(localStorage.getItem('devfolio.desktop-color')).toBe('mint');
     expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
     expect(screen.getByRole('button', { name: 'Menta' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: 'Cuatro' }).getAttribute('aria-pressed')).toBe(
+    expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
       'false',
     );
   });
@@ -141,8 +143,7 @@ describe('AppearanceSection', () => {
     renderSection([]);
 
     expect(screen.getByText(/No hay fondos/)).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Cuatro' })).toBeNull();
-    // Color swatches still render.
+    expect(screen.queryByRole('button', { name: 'Imagen 03' })).toBeNull();
     expect(screen.getByRole('button', { name: 'Azul' })).toBeTruthy();
   });
 });

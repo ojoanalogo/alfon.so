@@ -1,35 +1,19 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_WALLPAPER_ID, resolveWallpaperId, defaultWallpaperId } from './wallpapers';
-
-describe('defaultWallpaperId', () => {
-  it('returns the default id when it is available', () => {
-    expect(defaultWallpaperId(new Set(['1', '7', DEFAULT_WALLPAPER_ID]))).toBe(DEFAULT_WALLPAPER_ID);
-  });
-
-  it('falls back to the numerically smallest id when the default is missing', () => {
-    expect(defaultWallpaperId(new Set(['7', '2', '5']))).toBe('2');
-    // Numeric sort, not lexicographic ('10' > '2').
-    expect(defaultWallpaperId(new Set(['10', '2', '30']))).toBe('2');
-  });
-
-  it('returns null for an empty set', () => {
-    expect(defaultWallpaperId(new Set())).toBeNull();
-  });
-});
+import { resolveWallpaperId } from './wallpapers';
 
 describe('resolveWallpaperId', () => {
-  const ids = new Set(['1', '4', '7', DEFAULT_WALLPAPER_ID]);
+  const ids = new Set(['01', '03', '05']);
 
   it('returns the stored id when it is available', () => {
-    expect(resolveWallpaperId('7', ids)).toBe('7');
+    expect(resolveWallpaperId('03', ids)).toBe('03');
   });
 
-  it('falls back when the stored id is unknown', () => {
-    expect(resolveWallpaperId('99', ids)).toBe(DEFAULT_WALLPAPER_ID);
-    expect(resolveWallpaperId('99', new Set(['7', '2', '5']))).toBe('2');
+  it('returns null when the stored id is unknown', () => {
+    expect(resolveWallpaperId('99', ids)).toBeNull();
+    expect(resolveWallpaperId('06', ids)).toBeNull();
   });
 
   it('returns null when nothing is available', () => {
-    expect(resolveWallpaperId('99', new Set())).toBeNull();
+    expect(resolveWallpaperId('03', new Set())).toBeNull();
   });
 });
