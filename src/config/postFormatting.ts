@@ -16,3 +16,8 @@ export const postLongDateFormatter = new Intl.DateTimeFormat('es-MX', {
   month: 'long',
   year: 'numeric',
 });
+
+export function formatReadingTime(minutes: number): string {
+  const rounded = Math.max(1, Math.ceil(minutes));
+  return `${rounded} min de lectura`;
+}

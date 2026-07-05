@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
-import DesktopApp from '@/desktop/DesktopApp';
+import DesktopClientGate from '@/desktop/DesktopClientGate';
 import AboutContent from '@/desktop/apps/about/AboutContent';
 import Card from '../components/ui/Card.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -52,8 +52,8 @@ const wallpapers: WallpaperOption[] = (
     </Card>
   </section>
 
-  <div class="relative hidden h-[calc(100dvh-2.5rem)] w-full overflow-hidden sm:block">
-    <DesktopApp
+  <div class="relative hidden h-dvh w-full overflow-hidden sm:block">
+    <DesktopClientGate
       client:media="(min-width: 40rem)"
       posts={posts}
       wallpapers={wallpapers}

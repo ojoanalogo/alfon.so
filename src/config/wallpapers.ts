@@ -1,4 +1,4 @@
-export const DEFAULT_WALLPAPER_ID = '4';
+export const DEFAULT_WALLPAPER_ID = '11';
 
 export function resolveWallpaperId(storedId: string, availableIds: Set<string>): string | null {
   if (availableIds.has(storedId)) return storedId;

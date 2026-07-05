@@ -4,6 +4,7 @@ import { marked } from 'marked';
 import readingTime from 'reading-time';
 import { getCollection, render } from 'astro:content';
 import type { BlogPostSummary } from '@/desktop/types';
+import { formatReadingTime } from '@/config/postFormatting';
 
 /**
  * Published posts only. Drafts (`published: false` in frontmatter) are hidden
@@ -53,7 +54,7 @@ export async function prepareBlogPost(
     slug: entry.id,
     publishDate: new Date(entry.data.publishDate).toISOString(),
     description: entry.data.description,
-    readingTime: stats.text,
+    readingTime: formatReadingTime(stats.minutes),
     tags: entry.data.tags ?? [],
     heroImageSrc,
     heroImageAlt: entry.data.title,

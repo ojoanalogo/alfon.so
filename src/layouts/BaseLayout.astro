@@ -9,6 +9,7 @@ const {
   image,
   title = SITE_TITLE,
   description = SITE_DESCRIPTION,
+  article = false,
   desktop = false,
   navbarActiveItemID,
 } = Astro.props;
@@ -20,17 +21,21 @@ const {
   class="bg-background text-secondary selection:bg-zinc-900/20 selection:text-primary dark:selection:bg-white/15"
 >
   <head>
-    <BaseHead title={title} description={description} image={image} />
+    <BaseHead title={title} description={description} image={image} article={article} />
     <script is:inline>
       (function () {
-        const theme = localStorage.getItem('theme');
-        const preference = theme === 'light' || theme === 'dark' ? theme : 'system';
-        document.documentElement.dataset.themePreference = preference;
-        if (
-          theme === 'dark' ||
-          (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        ) {
-          document.documentElement.classList.add('dark');
+        try {
+          const theme = localStorage.getItem('theme');
+          const preference = theme === 'light' || theme === 'dark' ? theme : 'system';
+          document.documentElement.dataset.themePreference = preference;
+          if (
+            theme === 'dark' ||
+            (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          ) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch {
+          document.documentElement.dataset.themePreference = 'system';
         }
       })();
     </script>

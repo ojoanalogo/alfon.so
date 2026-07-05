@@ -20,7 +20,7 @@ import {
   type IconLabelTone,
 } from '../lib/iconLabelTone';
 import type { WallpaperOption } from '../types';
-import { defaultWallpaperId, resolveWallpaperId } from '@/config/wallpapers';
+import { resolveWallpaperId } from '@/config/wallpapers';
 
 const WALLPAPER_STORAGE_KEY = 'devfolio.wallpaper';
 const COLOR_STORAGE_KEY = 'devfolio.desktop-color';
@@ -89,9 +89,7 @@ function resolveStoredPreferences(wallpapers: WallpaperOption[]) {
   const wallpaperPreference = readWallpaperPreference();
 
   let nextWallpaperId: string | null;
-  if (wallpaperPreference === 'unset') {
-    nextWallpaperId = defaultWallpaperId(availableIds);
-  } else if (wallpaperPreference === 'color') {
+  if (wallpaperPreference === 'unset' || wallpaperPreference === 'color') {
     nextWallpaperId = null;
   } else {
     nextWallpaperId = resolveWallpaperId(wallpaperPreference, availableIds);

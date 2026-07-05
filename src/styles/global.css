@@ -39,10 +39,10 @@
     --color-highlight-bg: rgb(113 113 122 / 0.2);
     --color-highlight-bg-strong: rgb(82 82 91 / 0.3);
     --color-highlight-border: rgb(82 82 91 / 0.62);
-    /* Desktop icon selection — accent green (#3f9f6b / about icon), same in dark site theme. */
-    --desktop-highlight-bg: rgb(63 159 107 / 0.18);
-    --desktop-highlight-bg-strong: rgb(63 159 107 / 0.32);
-    --desktop-highlight-border: rgb(42 107 71 / 0.62);
+    /* Desktop icon selection — accent blue, same in dark site theme. */
+    --desktop-highlight-bg: rgb(59 130 246 / 0.18);
+    --desktop-highlight-bg-strong: rgb(59 130 246 / 0.32);
+    --desktop-highlight-border: rgb(37 99 235 / 0.62);
     /* Theme-invariant zinc-500 hairlines (same in light and dark). */
     --color-hairline: rgb(113 113 122 / 0.35);
     --color-hairline-strong: rgb(113 113 122 / 0.45);

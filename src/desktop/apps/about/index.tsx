@@ -1,8 +1,5 @@
-import { lazy, Suspense } from 'react';
 import { defineApp } from '@desktop/wrappers';
-import AppLoading from '../AppLoading';
-
-const AboutContent = lazy(() => import('./AboutContent'));
+import AboutContent from './AboutContent';
 
 export default defineApp({
   id: 'about',
@@ -19,9 +16,5 @@ export default defineApp({
   },
   desktopIcon: { label: 'about', tooltip: 'Mi info' },
   taskbarTooltip: 'about.html',
-  body: (ctx) => (
-    <Suspense fallback={<AppLoading />}>
-      <AboutContent posts={ctx.posts} onOpenPost={ctx.onOpenPost} />
-    </Suspense>
-  ),
+  body: (ctx) => <AboutContent posts={ctx.posts} onOpenPost={ctx.onOpenPost} />,
 });

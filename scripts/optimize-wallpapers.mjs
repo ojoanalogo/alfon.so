@@ -4,11 +4,8 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const WALLPAPERS_DIR = path.resolve(__dirname, '../src/assets/wallpapers');
+const WALLPAPERS_DIR = path.resolve(__dirname, '../src/assets/wallpapers/space');
 const TEMP_DIR = path.resolve(WALLPAPERS_DIR, '.optimize-tmp');
-
-/** First entry becomes 1.jpg (default desktop wallpaper). */
-const PRIMARY_SOURCE = 'jp96pwl191o71.jpg';
 
 const MAX_WIDTH = 1920;
 const JPEG_QUALITY = 82;
@@ -21,18 +18,6 @@ async function listSources() {
     .filter((entry) => entry.isFile() && IMAGE_PATTERN.test(entry.name))
     .map((entry) => entry.name)
     .sort((left, right) => left.localeCompare(right, 'en'));
-}
-
-function orderSources(files) {
-  const primary = files.find((file) => file === PRIMARY_SOURCE);
-  const rest = files.filter((file) => file !== PRIMARY_SOURCE).sort((a, b) => a.localeCompare(b, 'en'));
-
-  if (!primary) {
-    console.warn(`Primary wallpaper "${PRIMARY_SOURCE}" not found; using alphabetical order.`);
-    return files;
-  }
-
-  return [primary, ...rest];
 }
 
 async function optimizeToJpeg(sourcePath, targetPath) {
@@ -52,13 +37,12 @@ async function main() {
     return;
   }
 
-  const ordered = orderSources(sources);
   await rm(TEMP_DIR, { recursive: true, force: true });
   await mkdir(TEMP_DIR, { recursive: true });
 
   const manifest = [];
 
-  for (const [index, fileName] of ordered.entries()) {
+  for (const [index, fileName] of sources.entries()) {
     const id = String(index + 1);
     const sourcePath = path.join(WALLPAPERS_DIR, fileName);
     const targetName = `${id}.jpg`;
