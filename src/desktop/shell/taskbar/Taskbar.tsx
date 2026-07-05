@@ -68,7 +68,7 @@ export default function Taskbar({
 
   return (
     <footer
-      className="fixed right-0 bottom-0 left-0 z-[100] flex h-[2.5rem] items-center justify-between gap-[0.75rem] border-t border-[color:var(--color-hairline)] bg-[rgb(255_255_255/0.76)] px-[0.75rem] font-[ui-monospace,monospace] text-[0.75rem] backdrop-blur-[8px] max-sm:gap-[0.375rem] max-sm:px-[0.5rem] dark:bg-[rgb(9_9_11/0.86)]"
+      className="fixed right-0 bottom-0 left-0 z-[100] flex h-[2.5rem] items-center justify-between gap-[0.75rem] border-t border-[color:var(--color-hairline)] bg-[rgb(255_255_255/0.65)] px-[0.75rem] font-[ui-monospace,monospace] text-[0.75rem] backdrop-blur-[12px] max-sm:gap-[0.375rem] max-sm:px-[0.5rem] dark:bg-[rgb(9_9_11/0.75)]"
       aria-label="Barra de tareas"
     >
       <div className="flex min-w-0 flex-1 items-center gap-[0.75rem] max-sm:gap-[0.375rem]">
