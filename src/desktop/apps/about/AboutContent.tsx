@@ -1,9 +1,33 @@
+import {
+  BriefcaseIcon,
+  CameraIcon,
+  CodeIcon,
+  EnvelopeSimpleIcon,
+  MapPinIcon,
+  NewspaperIcon,
+  RocketLaunchIcon,
+  ShareNetworkIcon,
+  SparkleIcon,
+  UsersThreeIcon,
+  type Icon,
+} from '@phosphor-icons/react';
 import { Divider, ExternalLink, InfoRow, PostListItem, SocialMediaIcons } from '@desktop/ui/parts';
 import { SITE } from '@desktop/lib/siteContent';
 import type { BlogPostSummary } from '../../types';
 import { TECH_STACK } from '../projects/data';
 
 const ABOUT_LINK_CLASS = 'text-link hover:underline focus:outline-none';
+
+function AboutIcon({ icon: IconComponent }: { icon: Icon }) {
+  return (
+    <IconComponent
+      size={14}
+      weight="regular"
+      className="shrink-0 text-zinc-700 dark:text-zinc-400"
+      aria-hidden
+    />
+  );
+}
 
 /** How many recent posts to surface in the About card. */
 const MAX_ABOUT_POSTS = 3;
@@ -45,9 +69,11 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
 
       <Divider className="mb-2" />
 
-      <InfoRow label="ubicación">{person.country} 🇲🇽</InfoRow>
+      <InfoRow label="ubicación" icon={<AboutIcon icon={MapPinIcon} />}>
+        {person.country} 🇲🇽
+      </InfoRow>
 
-      <InfoRow label="trabajo">
+      <InfoRow label="trabajo" icon={<AboutIcon icon={BriefcaseIcon} />}>
         {person.role} @{' '}
         <ExternalLink
           href={SITE.work.url}
@@ -58,7 +84,7 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
         </ExternalLink>
       </InfoRow>
 
-      <InfoRow label="hobby">
+      <InfoRow label="hobby" icon={<AboutIcon icon={CameraIcon} />}>
         fotografía @{' '}
         <ExternalLink
           href={SITE.hobby.url}
@@ -69,7 +95,7 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
         </ExternalLink>
       </InfoRow>
 
-      <InfoRow label="comunidad">
+      <InfoRow label="comunidad" icon={<AboutIcon icon={UsersThreeIcon} />}>
         {SITE.community.label} @{' '}
         <ExternalLink
           href={SITE.community.url}
@@ -80,7 +106,7 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
         </ExternalLink>
       </InfoRow>
 
-      <InfoRow label="proyecto actual">
+      <InfoRow label="proyecto actual" icon={<AboutIcon icon={RocketLaunchIcon} />}>
         <ExternalLink
           href={SITE.currentProject.url}
           label="Visitar SofIA - Asistente de finanzas con IA"
@@ -91,9 +117,11 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
         - {SITE.currentProject.description}
       </InfoRow>
 
-      <InfoRow label="intereses">{SITE.interests}</InfoRow>
+      <InfoRow label="intereses" icon={<AboutIcon icon={SparkleIcon} />}>
+        {SITE.interests}
+      </InfoRow>
 
-      <InfoRow label="contacto">
+      <InfoRow label="contacto" icon={<AboutIcon icon={EnvelopeSimpleIcon} />}>
         <a
           className={ABOUT_LINK_CLASS}
           href={`mailto:${person.email}`}
@@ -103,13 +131,16 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
         </a>
       </InfoRow>
 
-      <InfoRow label="social">
+      <InfoRow label="social" icon={<AboutIcon icon={ShareNetworkIcon} />}>
         <SocialMediaIcons />
       </InfoRow>
 
       <div className="pt-2">
         <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-0">
-          <span className="shrink-0 text-muted sm:w-36">tech stack</span>
+          <span className="flex shrink-0 items-center gap-1.5 text-muted sm:w-36">
+            <AboutIcon icon={CodeIcon} />
+            <span>tech stack</span>
+          </span>
           <div className="flex flex-wrap gap-2" role="list" aria-label="Tech stack">
             {Object.keys(TECH_STACK).map((lang) => (
               <span
@@ -128,7 +159,10 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
         <>
           <Divider className="my-2" />
           <div className="flex flex-col gap-1.5">
-            <span className="text-muted">últimos posts</span>
+            <span className="flex items-center gap-1.5 text-muted">
+              <AboutIcon icon={NewspaperIcon} />
+              últimos posts
+            </span>
             <ul className="m-0 flex list-none flex-col gap-1 p-0" aria-label="Últimos posts">
               {latestPosts.map((post) => (
                 <PostListItem

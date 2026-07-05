@@ -2,10 +2,21 @@ import type { ReactNode } from 'react';
 import { SOCIAL_LINKS, type SocialPlatform } from '@/config';
 import { postDateFormatter } from '@/config/postFormatting';
 
-export function InfoRow({ label, children }: { label: string; children: ReactNode }) {
+export function InfoRow({
+  label,
+  icon,
+  children,
+}: {
+  label: string;
+  icon?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-0">
-      <span className="shrink-0 text-muted sm:w-36">{label}</span>
+      <span className="flex shrink-0 items-center gap-1.5 text-muted sm:w-36">
+        {icon}
+        <span>{label}</span>
+      </span>
       <span className="text-secondary">{children}</span>
     </div>
   );
