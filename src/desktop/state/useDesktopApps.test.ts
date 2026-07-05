@@ -86,16 +86,15 @@ describe('useDesktopApps', () => {
     expect(defIds).toContain('post:hello');
   });
 
-  it('gives each def a title, default placement, and a z-index', () => {
+  it('gives each def default placement and a z-index', () => {
     const { result } = renderHook(() => useDesktopApps([]));
     const def = result.current.defs.find((d) => d.id === 'terminal');
 
     expect(def).toBeTruthy();
-    expect(typeof def!.title).toBe('string');
-    expect(def!.title.length).toBeGreaterThan(0);
     expect(def!.defaultX).toBe(0);
     expect(def!.defaultY).toBe(0);
     expect(typeof def!.initialZ).toBe('number');
+    expect('title' in def!).toBe(false);
   });
 
   it('memoizes apps and defs across rerenders with the same posts array', () => {

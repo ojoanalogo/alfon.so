@@ -1,6 +1,7 @@
+# savePrefix: exact versions for future pnpm add/install changes.
+# minimumReleaseAge: wait 1 day before accepting newly published packages.
 # blockExoticSubdeps: no git/tarball transitive deps.
-# Release-age: Dependabot waits 7 days before opening update PRs (dependabot.yml).
-# pnpm enforces 1 day on install and re-validates the lockfile in CI.
+savePrefix: ''
 blockExoticSubdeps: true
 minimumReleaseAge: 1440 # 1 day in minutes
 minimumReleaseAgeStrict: true
@@ -10,6 +11,3 @@ allowBuilds:
   esbuild: true
   protobufjs: true
   sharp: true
-onlyBuiltDependencies:
-  - esbuild
-  - sharp

@@ -1,9 +1,9 @@
-import paper from '../../../assets/icons/paper.png?url';
-import notes from '../../../assets/icons/notes.png?url';
-import folder from '../../../assets/icons/folder.png?url';
-import photos from '../../../assets/icons/photos-folder.png?url';
-import settings from '../../../assets/icons/settings.png?url';
-import video from '../../../assets/icons/video.png?url';
+import paper from '../../assets/icons/paper.png?url';
+import notes from '../../assets/icons/notes.png?url';
+import folder from '../../assets/icons/folder.png?url';
+import photos from '../../assets/icons/photos-folder.png?url';
+import settings from '../../assets/icons/settings.png?url';
+import video from '../../assets/icons/video.png?url';
 
 export interface TrashJunkItem {
   id: string;
@@ -14,7 +14,7 @@ export interface TrashJunkItem {
   /**
    * Registry id of the app this file opens on double-click; when set, the
    * list/grid icon is taken from that app instead of `iconSrc`. Resolved via
-   * `findApp` at runtime (an unknown id renders an inert, disabled item).
+   * `AppContext.findApp` at runtime (an unknown id renders an inert, disabled item).
    */
   appId?: string;
   /** Folders show "—" for size in the list view, unless `size` is set. */
@@ -28,8 +28,20 @@ export const TRASH_JUNK: TrashJunkItem[] = [
   { id: 'area51', name: 'area51.pdf', kind: 'PDF', iconSrc: paper },
   { id: 'ovnis', name: 'ovnis.pdf', kind: 'PDF', iconSrc: paper },
   { id: 'happy', name: 'no_abrir.mp4', kind: 'Video', iconSrc: video, appId: 'happy' },
-  { id: 'cv', name: 'mi_cv_final_FINAL_v7.doc', kind: 'Documento', iconSrc: paper },
-  { id: 'cv-copy', name: 'mi_cv_final_FINAL_v7 (copia).doc', kind: 'Documento', iconSrc: paper },
+  {
+    id: 'cv',
+    name: 'mi_cv_final_FINAL_v7.doc',
+    kind: 'Documento',
+    iconSrc: paper,
+    appId: 'cv',
+  },
+  {
+    id: 'cv-copy',
+    name: 'mi_cv_final_FINAL_v7 (copia).doc',
+    kind: 'Documento',
+    iconSrc: paper,
+    appId: 'cv',
+  },
   {
     id: 'node_modules',
     name: 'node_modules',
@@ -51,3 +63,8 @@ export const TRASH_JUNK: TrashJunkItem[] = [
   { id: 'todo', name: 'hacer_algo_productivo.md', kind: 'Markdown', iconSrc: notes },
   { id: 'readme', name: 'leer_esto.txt', kind: 'Texto', iconSrc: paper },
 ];
+
+/** Taskbar labels for apps opened from papelera junk (bare filename vs window title). */
+export const TRASH_JUNK_TASKBAR_NAMES = new Map(
+  TRASH_JUNK.flatMap((entry) => (entry.appId ? [[entry.appId, entry.name] as const] : [])),
+);

@@ -7,6 +7,8 @@ import type { BrowserHistories } from './browser/useBrowserHistories';
 
 export type { AppGeometry };
 
+export type NoteViewMode = 'preview' | 'edit';
+
 export interface TrashItem {
   id: string;
   label: string;
@@ -32,10 +34,14 @@ export interface AppContext {
   onOpenApp: (id: string) => void;
   /** Open a URL in the main browser window. */
   onOpenLink: (url: string) => void;
+  /** Open a note in the notes app (may open the window separately). */
+  onOpenNote: (noteId: string, mode?: NoteViewMode) => void;
   /** Per-browser-app navigation state. */
   browsers: BrowserHistories;
   trash: TrashController;
   iconUrls: Record<string, string>;
+  /** Look up a runtime app definition by id (includes dynamic post apps). */
+  findApp: (id: string) => AppDefinition | undefined;
 }
 
 /**

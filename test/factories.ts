@@ -17,7 +17,6 @@ export function makeWallpaperOption(overrides: Partial<WallpaperOption> = {}): W
 export function makeWindowDef(overrides: Partial<WindowDef> = {}): WindowDef {
   return {
     id: 'test',
-    title: 'Test',
     defaultX: 0,
     defaultY: 0,
     defaultWidth: 600,
@@ -78,6 +77,8 @@ export function makeAppContext(overrides: Partial<AppContext> = {}): AppContext 
     onOpenPost: vi.fn(),
     onOpenApp: vi.fn(),
     onOpenLink: vi.fn(),
+    onOpenNote: vi.fn(),
+    findApp: vi.fn(() => undefined),
     browsers: {
       get: vi.fn(() => ({ url: null }) as never),
       navigate: vi.fn(() => null),

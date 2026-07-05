@@ -14,7 +14,7 @@ import Papelera from './shell/trash/Papelera';
 import { useDesktopIcons } from './state/useDesktopIcons';
 import { useResponsiveLayout } from './state/useResponsiveLayout';
 import { useTrashController } from './state/useTrashController';
-import { useAppContext } from './state/useAppContext';
+import { NoteOpenBridgeProvider, useDesktopAppContextValue } from './state/useAppContext';
 import { useKonamiCode } from './state/useKonamiCode';
 import { useTaskbarMeta } from './state/useTaskbarMeta';
 import { isMobileViewport, minWidthForDef } from './lib/layoutConstants';
@@ -56,10 +56,7 @@ export default function DesktopShell({
     () => resolveDesktopShellIcons(apps, desktopIconUrls),
     [apps, desktopIconUrls],
   );
-  const startMenuApps = useMemo(
-    () => desktopIcons.filter((icon) => Boolean(icon.windowId)),
-    [desktopIcons],
-  );
+  const startMenuApps = desktopIcons;
 
   const icons = useDesktopIcons(desktopIcons);
   const trashRef = useRef<HTMLButtonElement>(null);
@@ -67,7 +64,8 @@ export default function DesktopShell({
 
   const trash = useTrashController(icons, openWindow);
 
-  const appContext = useAppContext({
+  const { appContext, noteOpenBridge } = useDesktopAppContextValue({
+    apps,
     posts,
     openWindow,
     browsers,
@@ -96,7 +94,7 @@ export default function DesktopShell({
   }, [defs, wm]);
 
   return (
-    <>
+    <NoteOpenBridgeProvider bridge={noteOpenBridge}>
       <Wallpaper />
       <BootOverlay />
 
@@ -155,6 +153,6 @@ export default function DesktopShell({
         trashRef={trashRef}
         suppressNextClickRef={suppressTrashClickRef}
       />
-    </>
+    </NoteOpenBridgeProvider>
   );
 }

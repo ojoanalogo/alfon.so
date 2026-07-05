@@ -11,7 +11,7 @@ export default gameApp({
   geometry: { defaultX: 220, defaultY: 96, defaultWidth: 360, defaultHeight: 420, initialZ: 15 },
   desktopIcon: false,
   taskbarTooltip: 'Snake',
-  bodyClassName: 'snake-window__body',
+  bodyClassName: 'game-window__body',
   body: ({ active }) => (
     <Suspense fallback={<AppLoading />}>
       <SnakeGame active={active} />

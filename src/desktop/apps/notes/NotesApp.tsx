@@ -1,13 +1,26 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNoteOpenBridge } from '../../state/useAppContext';
 import NotesSidebar from './NotesSidebar';
 import NotesEditor, { type NoteViewMode } from './NotesEditor';
 import { useNotes } from './useNotes';
 
 export default function NotesApp() {
+  const { consumePendingNoteOpen, subscribePendingNoteOpen } = useNoteOpenBridge();
   const { notes, createNote, updateNote, deleteNote } = useNotes();
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [mode, setMode] = useState<NoteViewMode>('preview');
+  const [initialPending] = useState(() => consumePendingNoteOpen());
+  const [activeId, setActiveId] = useState<string | null>(initialPending?.noteId ?? null);
+  const [mode, setMode] = useState<NoteViewMode>(initialPending?.mode ?? 'preview');
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    return subscribePendingNoteOpen(() => {
+      const pending = consumePendingNoteOpen();
+      if (!pending) return;
+      setActiveId(pending.noteId);
+      setMode(pending.mode);
+      setQuery('');
+    });
+  }, [consumePendingNoteOpen, subscribePendingNoteOpen]);
 
   const filteredNotes = useMemo(() => {
     const q = query.trim().toLowerCase();

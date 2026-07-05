@@ -20,6 +20,12 @@ export const PROJECTS: ProjectEntry[] = [
     icon: '💻',
   },
   {
+    title: 'atlas-tech',
+    description: 'directorio de startups y tecnología en la región de Sinaloa.',
+    link: 'https://atlas-sinaloa.tech',
+    icon: '🗺️',
+  },
+  {
     title: 'hilitos',
     description: 'marketplaces para pequeños emprendedores, como Etsy.',
     link: 'https://hilitos.app',

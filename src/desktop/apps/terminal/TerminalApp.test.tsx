@@ -133,10 +133,10 @@ describe('TerminalApp', () => {
     expect(screen.getByText('escribe "help" para ver los comandos disponibles.')).toBeTruthy();
   });
 
-  it('cat blog.sql renders post titles from the posts prop', () => {
+  it('cat blog renders post titles from the posts prop', () => {
     renderTerminal({ posts: [makeBlogPost({ title: 'My First Post' })] });
 
-    typeCommand('cat blog.sql');
+    typeCommand('cat blog');
     submit();
 
     // Leading whitespace is normalized away by default; match the inner text.

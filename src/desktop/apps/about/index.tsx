@@ -1,6 +1,8 @@
-import { createElement } from 'react';
+import { lazy, Suspense } from 'react';
 import { defineApp } from '@desktop/wrappers';
-import AboutContent from './AboutContent';
+import AppLoading from '../AppLoading';
+
+const AboutContent = lazy(() => import('./AboutContent'));
 
 export default defineApp({
   id: 'about',
@@ -17,5 +19,9 @@ export default defineApp({
   },
   desktopIcon: { label: 'about', tooltip: 'Mi info' },
   taskbarTooltip: 'about.html',
-  body: (ctx) => createElement(AboutContent, { posts: ctx.posts, onOpenPost: ctx.onOpenPost }),
+  body: (ctx) => (
+    <Suspense fallback={<AppLoading />}>
+      <AboutContent posts={ctx.posts} onOpenPost={ctx.onOpenPost} />
+    </Suspense>
+  ),
 });

@@ -14,7 +14,12 @@ export default defineApp({
   bodyClassName: 'terminal-window__body',
   body: (ctx, win) => (
     <Suspense fallback={<AppLoading />}>
-      <TerminalApp posts={ctx.posts} focused={win?.focused ?? false} />
+      <TerminalApp
+        posts={ctx.posts}
+        focused={win?.focused ?? false}
+        onOpenApp={ctx.onOpenApp}
+        onOpenNote={ctx.onOpenNote}
+      />
     </Suspense>
   ),
 });

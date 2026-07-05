@@ -1,36 +1,42 @@
 import { SOCIAL_LINKS } from '@/config';
 import type { ThemeMode } from '@/lib/theme';
 import type { BlogPostSummary } from '../../types';
-import { APPS } from '../registry';
+import {
+  terminalAboutCommandLines,
+  terminalCatAboutLines,
+  terminalCatPhotosLines,
+  terminalCatStartupLines,
+} from '@desktop/lib/siteContent';
+import { desktopAppLabel, desktopAppLabels, desktopVisibleApps } from '../appIcons';
+import { findNoteByFileName, noteFileNames } from '../notes/paths';
+import { loadNotes } from '../notes/storage';
+import { APPS, type AppId } from '../registry';
 import { PROJECTS } from '../projects/data';
-import { TRASH_JUNK } from '../trash/junk';
+import { TRASH_JUNK } from '@desktop/lib/trashJunk';
 
 export const TERMINAL_PROMPT = 'guest@alfon.so:~$';
 
 export const TERMINAL_MOTD = ['escribe "help" para ver los comandos disponibles.', ''];
 
-const CAT_FILES: Record<string, string[]> = {
-  'about.txt': [
-    '👋 hola soy alfonso reyes',
-    'ingeniero backend / fotógrafo · méxico 🌮',
-    '',
-    'bienvenido a mi pequeño rincón en internet.',
-    'trabajo: monopolio.com.mx · hobby: ojoanalogo.com',
-    'contacto: hola@alfon.so',
-  ],
-  'blog.sql': ['-- SELECT title FROM blog ORDER BY publish_date DESC;'],
-  'photos.jpg': [
-    'photos.jpg → https://ojoanalogo.com',
-    '(abre desde el icono del escritorio o el menú inicio)',
-  ],
-  'startup.sh': [
-    '#!/bin/bash',
-    'echo "molecula.digital — productos digitales"',
-    '# abre https://molecula.digital',
-  ],
-  proyectos: PROJECTS.map(
+const CAT_BY_APP_ID: Partial<Record<AppId, string[]>> = {
+  about: terminalCatAboutLines(),
+  photos: terminalCatPhotosLines(),
+  startup: terminalCatStartupLines(),
+  projects: PROJECTS.map(
     (project) => `drwxr-xr-x  ${`${project.title}/`.padEnd(12)}${project.description}`,
   ),
+  contacto: ['correo: hola@alfon.so', '(abre el icono contacto en el escritorio)'],
+  cv: ['mi_cv_final_FINAL_v7.doc — currículum', '(abre el icono cv en el escritorio)'],
+  settings: ['ajustes del escritorio — tema, fondo, etc.', '(abre settings desde el escritorio)'],
+  games: [
+    'juegos/ — snake, pong, breakout, plane, minesweeper',
+    '(abre el folder juegos/ en el escritorio)',
+  ],
+  notes: ['notas locales — ~/notes/', '(abre la app Notas o cat un archivo .md)'],
+  terminal: ['terminal.sh — estás aquí 🙂', 'escribe "help" para ver comandos'],
+};
+
+const TRASH_CAT_CONTENT: Record<string, string[]> = {
   'no_abrir.mp4': [
     'no_abrir.mp4 — archivo multimedia',
     '⚠️  te dijeron que NO lo abrieras.',
@@ -40,7 +46,12 @@ const CAT_FILES: Record<string, string[]> = {
 
 export type TerminalBlock = { kind: 'command'; text: string } | { kind: 'output'; lines: string[] };
 
-export type TerminalCommandResult = { blocks: TerminalBlock[] } | { clear: true } | null;
+export type TerminalCommandAction = { type: 'openNote'; noteId: string };
+
+export type TerminalCommandResult =
+  | { blocks: TerminalBlock[]; action?: TerminalCommandAction }
+  | { clear: true }
+  | null;
 
 export interface TerminalCommandContext {
   posts: BlogPostSummary[];
@@ -79,15 +90,7 @@ function helpLines(): string[] {
 }
 
 function aboutLines(): string[] {
-  return [
-    'alfon.so — portafolio personal',
-    'ingeniero backend @ monopolio.com.mx',
-    'fotógrafo @ ojoanalogo.com',
-    'cursor ambassador · méxico 🌮',
-    '',
-    'proyecto actual: sofia (sofinanzas.mx) 💸',
-    'email: hola@alfon.so',
-  ];
+  return terminalAboutCommandLines();
 }
 
 function socialLines(): string[] {
@@ -102,18 +105,26 @@ function chunkRows(items: string[], perRow: number): string[] {
   return rows;
 }
 
-/** Desktop filenames derived from the registry, so `ls` can't go stale. */
-function desktopFileNames(): string[] {
-  return APPS.filter((app) => app.desktopIcon !== false).map((app) => {
-    const cfg = typeof app.desktopIcon === 'object' && app.desktopIcon ? app.desktopIcon : {};
-    return cfg.label ?? (typeof app.title === 'string' ? app.title : app.id);
-  });
+function findDesktopAppByLabel(label: string, ctx: TerminalCommandContext) {
+  return desktopVisibleApps(APPS, { posts: ctx.posts }).find(
+    (app) => desktopAppLabel(app) === label,
+  );
 }
 
-function lsLines(): string[] {
+function notesLines(): string[] {
+  const files = noteFileNames(loadNotes());
+  if (files.length === 0) {
+    return ['~/notes:', '  (vacío — crea notas en la app Notas)'];
+  }
+  return ['~/notes:', ...chunkRows(files, 3)];
+}
+
+function lsLines(ctx: TerminalCommandContext): string[] {
   return [
     'Escritorio:',
-    ...chunkRows(desktopFileNames(), 3),
+    ...chunkRows(desktopAppLabels(APPS, { posts: ctx.posts }), 3),
+    '',
+    ...notesLines(),
     '',
     'Papelera:',
     ...chunkRows(
@@ -121,6 +132,13 @@ function lsLines(): string[] {
       3,
     ),
   ];
+}
+
+function notePreviewLines(content: string): string[] {
+  const lines = content.split('\n');
+  const preview = lines.slice(0, 12);
+  if (lines.length > 12) preview.push('...');
+  return preview;
 }
 
 function blogSqlLines(posts: BlogPostSummary[]): string[] {
@@ -152,25 +170,49 @@ export function runTerminalCommand(
     case 'social':
       return { blocks: [commandBlock, { kind: 'output', lines: socialLines() }] };
     case 'ls':
-      return { blocks: [commandBlock, { kind: 'output', lines: lsLines() }] };
+      return { blocks: [commandBlock, { kind: 'output', lines: lsLines(ctx) }] };
     case 'cat': {
       if (!arg) {
         return {
           blocks: [
             commandBlock,
-            { kind: 'output', lines: ['cat: falta archivo', 'prueba: cat about.txt'] },
+            { kind: 'output', lines: ['cat: falta archivo', 'prueba: cat about'] },
           ],
         };
       }
       const name = arg.replace(/^~\/Desktop\//, '').replace(/^~\//, '');
-      if (name === 'blog.sql') {
-        return {
-          blocks: [commandBlock, { kind: 'output', lines: blogSqlLines(ctx.posts) }],
-        };
+      const desktopApp = findDesktopAppByLabel(name, ctx);
+      if (desktopApp) {
+        const lines =
+          desktopApp.id === 'blog'
+            ? blogSqlLines(ctx.posts)
+            : CAT_BY_APP_ID[desktopApp.id as AppId];
+        if (lines) {
+          return { blocks: [commandBlock, { kind: 'output', lines }] };
+        }
       }
-      const content = CAT_FILES[name];
-      if (content) {
-        return { blocks: [commandBlock, { kind: 'output', lines: content }] };
+      const trashContent = TRASH_CAT_CONTENT[name];
+      if (trashContent) {
+        return { blocks: [commandBlock, { kind: 'output', lines: trashContent }] };
+      }
+      const notes = loadNotes();
+      const note = findNoteByFileName(notes, name);
+      if (note) {
+        return {
+          blocks: [
+            commandBlock,
+            {
+              kind: 'output',
+              lines: [
+                `# ${note.title}`,
+                ...notePreviewLines(note.content),
+                '',
+                '→ abriendo en Notas…',
+              ],
+            },
+          ],
+          action: { type: 'openNote', noteId: note.id },
+        };
       }
       return {
         blocks: [

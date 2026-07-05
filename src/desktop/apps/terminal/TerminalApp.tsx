@@ -6,6 +6,8 @@ import { runTerminalCommand, TERMINAL_MOTD, TERMINAL_PROMPT, type TerminalBlock 
 interface TerminalAppProps {
   posts: BlogPostSummary[];
   focused?: boolean;
+  onOpenApp?: (id: string) => void;
+  onOpenNote?: (noteId: string, mode?: 'preview' | 'edit') => void;
 }
 
 function TerminalLine({ line }: { line: string }) {
@@ -35,7 +37,12 @@ function TerminalBlockView({ block }: { block: TerminalBlock }) {
   );
 }
 
-export default function TerminalApp({ posts, focused = false }: TerminalAppProps) {
+export default function TerminalApp({
+  posts,
+  focused = false,
+  onOpenApp,
+  onOpenNote,
+}: TerminalAppProps) {
   const { theme } = useTheme();
   const [blocks, setBlocks] = useState<TerminalBlock[]>([]);
   const [draft, setDraft] = useState('');
@@ -75,6 +82,10 @@ export default function TerminalApp({ posts, focused = false }: TerminalAppProps
       setBlocks([]);
     } else {
       setBlocks((prev) => [...prev, ...result.blocks, { kind: 'output', lines: [''] }]);
+      if (result.action?.type === 'openNote') {
+        onOpenNote?.(result.action.noteId, 'edit');
+        onOpenApp?.('notes');
+      }
     }
 
     focusInput();

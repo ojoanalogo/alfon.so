@@ -1,4 +1,5 @@
 import { Divider, ExternalLink, InfoRow, PostListItem, SocialMediaIcons } from '@desktop/ui/parts';
+import { SITE } from '@desktop/lib/siteContent';
 import type { BlogPostSummary } from '../../types';
 import { TECH_STACK } from '../projects/data';
 
@@ -16,92 +17,89 @@ interface AboutContentProps {
 
 export default function AboutContent({ posts = [], onOpenPost }: AboutContentProps) {
   const latestPosts = posts.slice(0, MAX_ABOUT_POSTS);
+  const person = SITE.person;
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 text-xs sm:space-y-2">
       <div className="mb-4 flex items-center gap-3">
-        {/* Profile photo placeholder — swap the emoji for an <img> when the photo is ready */}
         <div
           className="flex size-16 shrink-0 items-center justify-center rounded-lg bg-stone-300/70 text-3xl dark:bg-gray-500/10"
           role="img"
-          aria-label="Foto de perfil de alfonso reyes"
+          aria-label={`Foto de perfil de ${person.displayName}`}
         >
           🧑‍💻
         </div>
         <div className="flex flex-col gap-1">
           <h1 id="about-heading" className="text-lg">
-            👋 ¡hola! soy <span className="font-semibold text-primary">alfonso reyes</span>
+            👋 ¡hola! soy <span className="font-semibold text-primary">{person.displayName}</span>
           </h1>
-          <p className="text-xs text-muted">ingeniero backend · fotógrafo</p>
+          <p className="text-xs text-muted">
+            {person.role} · {person.photographer}
+          </p>
         </div>
       </div>
 
       <div className="mb-4 rounded-lg bg-stone-300/70 p-3 dark:bg-gray-500/10">
-        <p className="leading-relaxed text-primary">
-          bienvenido a mi pequeño rincón en internet, aquí encontrarás mis pensamientos (pocos), mis
-          proyectos y mi blog.
-        </p>
+        <p className="leading-relaxed text-primary">{SITE.welcome.aboutCard}</p>
       </div>
 
       <Divider className="mb-2" />
 
-      <InfoRow label="ubicación">méxico 🇲🇽</InfoRow>
+      <InfoRow label="ubicación">{person.country} 🇲🇽</InfoRow>
 
       <InfoRow label="trabajo">
-        ingeniero backend @{' '}
+        {person.role} @{' '}
         <ExternalLink
-          href="https://monopolio.com.mx"
-          label="Visitar sitio web monopolio.com.mx"
+          href={SITE.work.url}
+          label={`Visitar sitio web ${SITE.work.host}`}
           className={ABOUT_LINK_CLASS}
         >
-          monopolio.com.mx
+          {SITE.work.host}
         </ExternalLink>
       </InfoRow>
 
       <InfoRow label="hobby">
         fotografía @{' '}
         <ExternalLink
-          href="https://ojoanalogo.com"
-          label="Visitar portafolio de fotografía ojoanalogo.com"
+          href={SITE.hobby.url}
+          label={`Visitar portafolio de fotografía ${SITE.hobby.host}`}
           className={ABOUT_LINK_CLASS}
         >
-          ojoanalogo.com
+          {SITE.hobby.host}
         </ExternalLink>
       </InfoRow>
 
       <InfoRow label="comunidad">
-        cursor ambassador @{' '}
+        {SITE.community.label} @{' '}
         <ExternalLink
-          href="https://cursor.com/ambassadors"
+          href={SITE.community.url}
           label="Cursor Ambassador Program"
           className={ABOUT_LINK_CLASS}
         >
-          cursor.com/ambassadors
+          {SITE.community.path}
         </ExternalLink>
       </InfoRow>
 
       <InfoRow label="proyecto actual">
         <ExternalLink
-          href="https://sofinanzas.mx"
+          href={SITE.currentProject.url}
           label="Visitar SofIA - Asistente de finanzas con IA"
           className={ABOUT_LINK_CLASS}
         >
-          sofia
+          {SITE.currentProject.name}
         </ExternalLink>{' '}
-        - asistente de finanzas personales para todos 💸
+        - {SITE.currentProject.description}
       </InfoRow>
 
-      <InfoRow label="intereses">
-        programación · startups · ciencia ficción · películas · fotografía
-      </InfoRow>
+      <InfoRow label="intereses">{SITE.interests}</InfoRow>
 
       <InfoRow label="contacto">
         <a
           className={ABOUT_LINK_CLASS}
-          href="mailto:hola@alfon.so"
-          aria-label="Enviar email a hola@alfon.so"
+          href={`mailto:${person.email}`}
+          aria-label={`Enviar email a ${person.email}`}
         >
-          hola@alfon.so
+          {person.email}
         </a>
       </InfoRow>
 

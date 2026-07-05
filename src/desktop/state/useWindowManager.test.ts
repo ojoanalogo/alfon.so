@@ -16,8 +16,8 @@ const VH = 768;
 
 function defs(extra: Partial<WindowDef>[] = []): WindowDef[] {
   return [
-    makeWindowDef({ id: 'a', title: 'A', initialZ: 10, defaultWidth: 600, defaultHeight: 400 }),
-    makeWindowDef({ id: 'b', title: 'B', initialZ: 20, defaultWidth: 500, defaultHeight: 300 }),
+    makeWindowDef({ id: 'a', initialZ: 10, defaultWidth: 600, defaultHeight: 400 }),
+    makeWindowDef({ id: 'b', initialZ: 20, defaultWidth: 500, defaultHeight: 300 }),
     ...extra.map((o) => makeWindowDef(o)),
   ];
 }

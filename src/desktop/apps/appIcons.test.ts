@@ -62,7 +62,7 @@ describe('appsToIconDefinitions', () => {
   });
 
   it('sorts by DESKTOP_ICON_ORDER regardless of input order', () => {
-    // DESKTOP_ICON_ORDER: about, blog, photos, startup, projects, settings, games, notes, terminal
+    // DESKTOP_ICON_ORDER: about, blog, photos, startup, projects, cv, contacto, settings, games, notes, terminal
     const apps = [
       makeApp({ id: 'terminal' }),
       makeApp({ id: 'about' }),

@@ -211,7 +211,7 @@
     background: rgb(255 255 255 / 0.06);
   }
 
-  .snake-window__body {
+  .game-window__body {
     display: flex;
     min-height: 0;
     flex: 1;
@@ -227,7 +227,71 @@
     image-rendering: pixelated;
   }
 
-  .desktop-window.is-sized > .desktop-window__card > .card-body.snake-window__body {
+  .minesweeper-window__body {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .minesweeper__board {
+    display: inline-grid;
+    gap: 1px;
+  }
+
+  .mines-cell--hidden {
+    background: #9ca3af;
+    border-top: 2px solid #f3f4f6;
+    border-left: 2px solid #f3f4f6;
+    border-bottom: 2px solid #4b5563;
+    border-right: 2px solid #4b5563;
+  }
+
+  .mines-cell--hidden:hover:not(:disabled) {
+    background: #b6bdc9;
+  }
+
+  .mines-cell--hidden:active:not(:disabled) {
+    border-top-color: #4b5563;
+    border-left-color: #4b5563;
+    border-bottom-color: #f3f4f6;
+    border-right-color: #f3f4f6;
+  }
+
+  .mines-cell--flagged {
+    background: #c4a574;
+  }
+
+  .mines-cell--revealed {
+    background: #d1d5db;
+    border: 1px solid #9ca3af;
+    box-shadow: inset 1px 1px 2px rgb(0 0 0 / 0.18);
+    cursor: default;
+  }
+
+  .mines-cell--empty {
+    background-color: #c4c9d1;
+    background-image: radial-gradient(circle, rgb(107 114 128 / 0.45) 1px, transparent 1px);
+    background-size: 5px 5px;
+    background-position: center;
+  }
+
+  .mines-cell--number {
+    background: #d1d5db;
+  }
+
+  .mines-cell--mine {
+    box-shadow: inset 0 0 0 1px rgb(127 29 29 / 0.35);
+  }
+
+  .mines-cell:disabled {
+    cursor: default;
+    opacity: 1;
+  }
+
+  .desktop-window.is-sized > .desktop-window__card > .card-body.game-window__body {
     display: flex;
     min-height: 0;
     flex: 1;

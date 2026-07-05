@@ -11,7 +11,7 @@ export default gameApp({
   geometry: { defaultX: 240, defaultY: 100, defaultWidth: 360, defaultHeight: 380, initialZ: 15 },
   desktopIcon: false,
   taskbarTooltip: 'Pong',
-  bodyClassName: 'snake-window__body',
+  bodyClassName: 'game-window__body',
   body: ({ active }) => (
     <Suspense fallback={<AppLoading />}>
       <PongGame active={active} />

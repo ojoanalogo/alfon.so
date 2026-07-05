@@ -1,9 +1,21 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
+import {
+  NoteOpenBridgeProvider,
+  createNoteOpenBridge,
+} from '../../state/useAppContext';
 import NotesApp from './NotesApp';
 import type { Note } from './types';
 
 const STORAGE_KEY = 'devfolio:notes';
+
+function renderNotesApp(bridge = createNoteOpenBridge()) {
+  return render(
+    <NoteOpenBridgeProvider bridge={bridge}>
+      <NotesApp />
+    </NoteOpenBridgeProvider>,
+  );
+}
 
 function seed(notes: Note[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
@@ -25,7 +37,7 @@ describe('NotesApp', () => {
   });
 
   it('renders the sidebar and the editor empty state when nothing is selected', () => {
-    const { container } = render(<NotesApp />);
+    const { container } = renderNotesApp();
     expect(container.querySelector('.notes-sidebar')).toBeTruthy();
     // no active note -> editor shows the empty prompt
     expect(
@@ -38,14 +50,14 @@ describe('NotesApp', () => {
       makeNote({ id: 'a', title: 'Persisted A' }),
       makeNote({ id: 'b', title: 'Persisted B' }),
     ]);
-    render(<NotesApp />);
+    renderNotesApp();
     expect(screen.getByText('Persisted A')).toBeTruthy();
     expect(screen.getByText('Persisted B')).toBeTruthy();
   });
 
   it('selecting a note shows it in the editor preview', () => {
     seed([makeNote({ id: 'a', title: 'Choose me', content: '# Selected\n\ntext' })]);
-    render(<NotesApp />);
+    renderNotesApp();
     fireEvent.click(screen.getByText('Choose me'));
     // preview heading (h1 inside the editor) shows the title
     const heading = document.querySelector('.notes-editor__preview h1');
@@ -53,7 +65,7 @@ describe('NotesApp', () => {
   });
 
   it('creating a note adds it to the list, selects it, and opens edit mode', () => {
-    const { container } = render(<NotesApp />);
+    const { container } = renderNotesApp();
     // "Nueva nota" is the sidebar create button
     fireEvent.click(screen.getByText('Nueva nota'));
     // editor switches to edit mode -> textarea is present
@@ -64,7 +76,7 @@ describe('NotesApp', () => {
   });
 
   it('typing in the new note title updates the sidebar entry and persists', () => {
-    const { container } = render(<NotesApp />);
+    const { container } = renderNotesApp();
     fireEvent.click(screen.getByText('Nueva nota'));
 
     const title = container.querySelector('.notes-editor__title') as HTMLInputElement;
@@ -79,7 +91,7 @@ describe('NotesApp', () => {
   });
 
   it('typing markdown content shows up in the rendered preview after switching modes', () => {
-    const { container } = render(<NotesApp />);
+    const { container } = renderNotesApp();
     fireEvent.click(screen.getByText('Nueva nota'));
 
     const textarea = container.querySelector('.notes-editor__textarea') as HTMLTextAreaElement;
@@ -98,7 +110,7 @@ describe('NotesApp', () => {
       makeNote({ id: 'a', title: 'Groceries', content: 'milk and eggs' }),
       makeNote({ id: 'b', title: 'Work', content: 'finish the report' }),
     ]);
-    const { container } = render(<NotesApp />);
+    const { container } = renderNotesApp();
 
     const search = container.querySelector('input[type="search"]') as HTMLInputElement;
 
@@ -119,7 +131,7 @@ describe('NotesApp', () => {
 
   it('deleting the active note removes it and returns the editor to its empty state', () => {
     seed([makeNote({ id: 'a', title: 'Delete me', content: 'bye' })]);
-    render(<NotesApp />);
+    renderNotesApp();
 
     fireEvent.click(screen.getByText('Delete me'));
     // toolbar delete opens the modal
@@ -136,9 +148,19 @@ describe('NotesApp', () => {
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')).toEqual([]);
   });
 
+  it('opens a pending note from the bridge in edit mode', () => {
+    seed([makeNote({ id: 'a', title: 'From terminal', content: 'opened via cat' })]);
+    const bridge = createNoteOpenBridge();
+    bridge.onOpenNote('a', 'edit');
+    const { container } = renderNotesApp(bridge);
+
+    expect(container.querySelector('.notes-editor__textarea')).toBeTruthy();
+    expect(screen.getByText('From terminal')).toBeTruthy();
+  });
+
   it('creating a note clears an active search query', () => {
     seed([makeNote({ id: 'a', title: 'Existing', content: 'x' })]);
-    const { container } = render(<NotesApp />);
+    const { container } = renderNotesApp();
 
     const search = container.querySelector('input[type="search"]') as HTMLInputElement;
     fireEvent.change(search, { target: { value: 'nomatch' } });

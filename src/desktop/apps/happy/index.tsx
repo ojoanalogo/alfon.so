@@ -1,5 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { defineApp } from '@desktop/wrappers';
-import HappyContent from './HappyContent';
+import AppLoading from '../AppLoading';
+
+const HappyContent = lazy(() => import('./HappyContent'));
 
 export default defineApp({
   id: 'happy',
@@ -7,5 +10,9 @@ export default defineApp({
   iconKey: 'video',
   geometry: { defaultX: 280, defaultY: 84, defaultWidth: 600, initialZ: 16 },
   desktopIcon: false,
-  body: () => <HappyContent />,
+  body: () => (
+    <Suspense fallback={<AppLoading />}>
+      <HappyContent />
+    </Suspense>
+  ),
 });

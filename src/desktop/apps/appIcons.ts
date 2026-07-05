@@ -2,7 +2,7 @@ import type { DesktopIconDefinition } from '@/config';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';
 import { formatWindowTitle } from '@desktop/lib/formatWindowTitle';
 import { resolveDesktopIcons, resolveIconUrl } from '@desktop/lib/desktopIcons';
-import { appLabel, type AppDefinition } from '@desktop/wrappers';
+import { appLabel, type AppContext, type AppDefinition } from '@desktop/wrappers';
 import type { AppId } from './registry';
 
 /** Left-column stack order (independent of APPS / start menu order). */
@@ -12,6 +12,8 @@ const DESKTOP_ICON_ORDER: AppId[] = [
   'photos',
   'startup',
   'projects',
+  'cv',
+  'contacto',
   'settings',
   'games',
   'notes',
@@ -23,6 +25,43 @@ function desktopIconSortIndex(id: string): number {
   return index === -1 ? DESKTOP_ICON_ORDER.length : index;
 }
 
+/** Desktop label as shown in terminal `ls` (registry label, else title, else id). */
+export function desktopAppLabel(app: AppDefinition): string {
+  const cfg = typeof app.desktopIcon === 'object' && app.desktopIcon ? app.desktopIcon : {};
+  return cfg.label ?? (typeof app.title === 'string' ? app.title : app.id);
+}
+
+export function isDesktopIconApp(app: AppDefinition): boolean {
+  return app.desktopIcon !== false;
+}
+
+type DesktopVisibilityCtx = Pick<AppContext, 'posts'>;
+
+/** Icon-bearing apps sorted like the desktop column (no `availableWhen` — caller filters). */
+export function desktopIconApps(apps: readonly AppDefinition[]): AppDefinition[] {
+  return apps.filter(isDesktopIconApp).sort(
+    (a, b) => desktopIconSortIndex(a.id) - desktopIconSortIndex(b.id),
+  );
+}
+
+/** Icon-bearing apps visible on the desktop, sorted like the icon column. */
+export function desktopVisibleApps(
+  apps: readonly AppDefinition[],
+  ctx: DesktopVisibilityCtx = { posts: [] },
+): AppDefinition[] {
+  return apps
+    .filter((app) => isDesktopIconApp(app) && (app.availableWhen?.(ctx) ?? true))
+    .sort((a, b) => desktopIconSortIndex(a.id) - desktopIconSortIndex(b.id));
+}
+
+/** Desktop labels for terminal `ls`, matching icon order and `availableWhen`. */
+export function desktopAppLabels(
+  apps: readonly AppDefinition[],
+  ctx: DesktopVisibilityCtx = { posts: [] },
+): string[] {
+  return desktopVisibleApps(apps, ctx).map(desktopAppLabel);
+}
+
 /** Resolve an app's icon URL, preferring a co-located `iconUrl` over `iconKey`. */
 export function appIconSrc(app: AppDefinition, urls: DesktopIconUrls): string {
   return app.iconUrl ?? (app.iconKey ? resolveIconUrl(urls, app.iconKey) : '');
@@ -30,7 +69,7 @@ export function appIconSrc(app: AppDefinition, urls: DesktopIconUrls): string {
 
 /** Derive desktop icon definitions from the app registry. */
 export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIconDefinition[] {
-  const iconApps = apps.filter((app) => app.desktopIcon !== false);
+  const iconApps = desktopIconApps(apps);
 
   if (import.meta.env.DEV) {
     // Any icon-bearing app missing from DESKTOP_ICON_ORDER would silently sort
@@ -47,9 +86,7 @@ export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIc
     }
   }
 
-  return iconApps
-    .sort((a, b) => desktopIconSortIndex(a.id) - desktopIconSortIndex(b.id))
-    .map((app) => {
+  return iconApps.map((app) => {
       const cfg = typeof app.desktopIcon === 'object' && app.desktopIcon ? app.desktopIcon : {};
       return {
         id: app.id,

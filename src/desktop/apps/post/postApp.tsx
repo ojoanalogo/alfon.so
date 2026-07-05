@@ -1,8 +1,10 @@
-import { createElement } from 'react';
+import { lazy, Suspense } from 'react';
 import { defineApp, type AppDefinition } from '@desktop/wrappers';
 import type { BlogPostSummary } from '../../types';
 import { postWindowId, postSlugFromWindowId } from '../../lib/appIds';
-import PostContent from './PostContent';
+import AppLoading from '../AppLoading';
+
+const PostContent = lazy(() => import('./PostContent'));
 
 /** One `AppDefinition` per blog post (dynamic window + taskbar entry). */
 export function createPostApps(posts: BlogPostSummary[]): AppDefinition[] {
@@ -17,7 +19,11 @@ export function createPostApps(posts: BlogPostSummary[]): AppDefinition[] {
       },
       desktopIcon: false,
       taskbarTooltip: post.title,
-      body: () => createElement(PostContent, { post }),
+      body: () => (
+        <Suspense fallback={<AppLoading />}>
+          <PostContent post={post} />
+        </Suspense>
+      ),
     }),
   );
 }

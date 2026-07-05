@@ -15,7 +15,6 @@ import type { WindowDef, WindowGeometry } from '@desktop/types';
 const DEFS: WindowDef[] = [
   {
     id: 'about',
-    title: 'about',
     defaultX: 0,
     defaultY: 0,
     defaultWidth: 560,
@@ -26,7 +25,6 @@ const DEFS: WindowDef[] = [
   },
   {
     id: 'term',
-    title: 'term',
     defaultX: 0,
     defaultY: 0,
     defaultWidth: 600,
@@ -51,7 +49,7 @@ function Harness() {
             <Window
               key={def.id}
               state={state}
-              title={def.title}
+              title={def.id}
               focused={wm.focusedId === def.id}
               minWidth={def.minWidth ?? 400}
               defaultWidth={def.defaultWidth}

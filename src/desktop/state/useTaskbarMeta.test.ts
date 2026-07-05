@@ -93,11 +93,11 @@ describe('useTaskbarMeta', () => {
   });
 
   it('does NOT apply the trash-junk override to non-junk app ids', () => {
-    const apps = [makeApp({ id: 'cv', title: 'My CV', iconUrl: '/c.png' })];
+    const apps = [makeApp({ id: 'notes', title: 'My Notes', iconUrl: '/n.png' })];
     const { result } = renderHook(() => useTaskbarMeta(apps, {}));
 
-    // 'cv' is a TRASH_JUNK entry but has no appId, so it is not in the override map.
-    expect(result.current.cv.label).toBe('My CV');
+    // Only TRASH_JUNK entries with `appId` override the taskbar label.
+    expect(result.current.notes.label).toBe('My Notes');
   });
 
   it('builds meta for multiple apps and keys each by its id', () => {

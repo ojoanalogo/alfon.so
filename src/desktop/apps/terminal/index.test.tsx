@@ -11,7 +11,8 @@ describe('terminal app definition', () => {
   it('renders the terminal body once the window is open', async () => {
     const win = makeWindowChromeProps({ state: makeWindowState({ id: 'terminal', open: true }) });
     render(<ThemeProvider>{terminalApp.render(makeAppContext(), win)}</ThemeProvider>);
-    expect(await screen.findByText(/escribe "help"/i)).toBeTruthy();
+    // Lazy load pulls in TerminalApp → commands → registry; allow extra time under CI load.
+    expect(await screen.findByText(/escribe "help"/i, {}, { timeout: 3000 })).toBeTruthy();
   });
 
   it('does not render the body while the window has never been opened', () => {

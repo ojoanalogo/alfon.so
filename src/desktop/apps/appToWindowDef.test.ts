@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AppContext, AppDefinition } from '@desktop/wrappers';
+import type { AppDefinition } from '@desktop/wrappers';
 import type { AppGeometry } from '@desktop/types';
 import { appToWindowDef } from './appToWindowDef';
 
@@ -15,25 +15,9 @@ function makeAppDefinition(overrides: Partial<AppDefinition> = {}): AppDefinitio
 }
 
 describe('appToWindowDef', () => {
-  it('propagates id and formats the title (first letter uppercased)', () => {
+  it('propagates id', () => {
     const win = appToWindowDef(makeAppDefinition({ id: 'finder', title: 'finder' }));
     expect(win.id).toBe('finder');
-    expect(win.title).toBe('Finder');
-  });
-
-  it('uses app.id (not the function) when title is a function, then formats it', () => {
-    const app = makeAppDefinition({
-      id: 'terminal',
-      title: (_ctx: AppContext) => 'Dynamic Title',
-    });
-    const win = appToWindowDef(app);
-    // Falls back to id 'terminal', then formats to 'Terminal'.
-    expect(win.title).toBe('Terminal');
-  });
-
-  it('leaves an already-capitalized string title unchanged', () => {
-    const win = appToWindowDef(makeAppDefinition({ title: 'Notes' }));
-    expect(win.title).toBe('Notes');
   });
 
   it('forces defaultX and defaultY to 0 even when geometry provides values', () => {
@@ -68,7 +52,6 @@ describe('appToWindowDef', () => {
   });
 
   it('uses the derived value when geometry.initialZ is 0 (falsy but defined)', () => {
-    // initialZ ?? ... : 0 is defined, so nullish coalescing keeps 0.
     const win = appToWindowDef(
       makeAppDefinition({ geometry: { defaultWidth: 600, initialZ: 0 } }),
       4,
@@ -108,11 +91,11 @@ describe('appToWindowDef', () => {
     const win = appToWindowDef(makeAppDefinition());
     expect(win).toMatchObject({
       id: 'finder',
-      title: 'Finder',
       defaultX: 0,
       defaultY: 0,
       defaultWidth: 600,
       initialZ: 10,
     });
+    expect('title' in win).toBe(false);
   });
 });

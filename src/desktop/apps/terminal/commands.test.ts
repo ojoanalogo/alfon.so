@@ -1,6 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { SOCIAL_LINKS } from '@/config';
 import { makeBlogPost } from '@test/factories';
+import { desktopAppLabel, desktopAppLabels, desktopVisibleApps } from '../appIcons';
+import { APPS } from '../registry';
+import { saveNotes } from '../notes/storage';
+import type { Note } from '../notes/types';
 import {
   runTerminalCommand,
   type TerminalCommandContext,
@@ -63,33 +67,76 @@ describe('runTerminalCommand', () => {
     }
   });
 
-  it('ls shows desktop and trash sections', () => {
+  it('ls shows desktop, notes, and trash sections', () => {
     const lines = outputLines(runTerminalCommand('ls', ctx()));
     expect(lines).toContain('Escritorio:');
+    expect(lines).toContain('~/notes:');
     expect(lines).toContain('Papelera:');
     // node_modules is a known trash entry
     expect(lines.some((l) => l.includes('node_modules'))).toBe(true);
   });
 
-  it('cat about.txt reads a known file', () => {
-    const lines = outputLines(runTerminalCommand('cat about.txt', ctx()));
+  describe('notes sync', () => {
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('lists saved notes under ~/notes in ls', () => {
+      const notes: Note[] = [
+        {
+          id: 'n1',
+          title: 'Lista de compras',
+          content: 'leche',
+          updatedAt: '2026-06-02T00:00:00.000Z',
+        },
+      ];
+      saveNotes(notes);
+      const lines = outputLines(runTerminalCommand('ls', ctx()));
+      expect(lines.some((l) => l.includes('lista-de-compras.md'))).toBe(true);
+    });
+
+    it('cat notes/foo.md previews content and requests opening the note', () => {
+      const notes: Note[] = [
+        {
+          id: 'note-1',
+          title: 'Ideas',
+          content: 'hacer minesweeper',
+          updatedAt: '2026-06-02T00:00:00.000Z',
+        },
+      ];
+      saveNotes(notes);
+      const result = runTerminalCommand('cat notes/ideas.md', ctx());
+      const b = blocks(result);
+      const out = b.find((block) => block.kind === 'output');
+      expect(out && out.kind === 'output' && out.lines.some((l) => l.includes('hacer minesweeper'))).toBe(
+        true,
+      );
+      expect(result && 'action' in result && result.action).toEqual({
+        type: 'openNote',
+        noteId: 'note-1',
+      });
+    });
+  });
+
+  it('cat about reads a known desktop file', () => {
+    const lines = outputLines(runTerminalCommand('cat about', ctx()));
     expect(lines.some((l) => l.includes('alfonso reyes'))).toBe(true);
     expect(lines.some((l) => l.includes('hola@alfon.so'))).toBe(true);
   });
 
   it('cat strips ~/Desktop/ and ~/ path prefixes', () => {
-    const a = outputLines(runTerminalCommand('cat ~/Desktop/about.txt', ctx()));
-    const b = outputLines(runTerminalCommand('cat ~/about.txt', ctx()));
+    const a = outputLines(runTerminalCommand('cat ~/Desktop/about', ctx()));
+    const b = outputLines(runTerminalCommand('cat ~/about', ctx()));
     expect(a.some((l) => l.includes('alfonso reyes'))).toBe(true);
     expect(b.some((l) => l.includes('alfonso reyes'))).toBe(true);
   });
 
-  it('cat blog.sql lists posts from ctx and a row count', () => {
+  it('cat blog lists posts from ctx and a row count', () => {
     const posts = [
       makeBlogPost({ title: 'First Post' }),
       makeBlogPost({ title: "O'Brien's Notes" }),
     ];
-    const lines = outputLines(runTerminalCommand('cat blog.sql', ctx({ posts })));
+    const lines = outputLines(runTerminalCommand('cat blog', ctx({ posts })));
     expect(lines[0]).toBe('-- SELECT title FROM blog ORDER BY publish_date DESC;');
     expect(lines).toContain("  'First Post',");
     // single quotes are SQL-escaped by doubling
@@ -97,16 +144,63 @@ describe('runTerminalCommand', () => {
     expect(lines).toContain('-- 2 row(s)');
   });
 
-  it('cat blog.sql shows (empty) when there are no posts', () => {
-    const lines = outputLines(runTerminalCommand('cat blog.sql', ctx({ posts: [] })));
-    expect(lines).toContain('-- (empty)');
-    expect(lines.some((l) => l.includes('row(s)'))).toBe(false);
+  it('cat blog is unavailable when there are no posts', () => {
+    const lines = outputLines(runTerminalCommand('cat blog', ctx({ posts: [] })));
+    expect(lines[0]).toBe('cat: blog: no such file');
+  });
+
+  it('cat projects lists project entries', () => {
+    const lines = outputLines(runTerminalCommand('cat projects', ctx()));
+    expect(lines.some((l) => l.startsWith('drwxr-xr-x'))).toBe(true);
+  });
+
+  it('cat no_abrir.mp4 reads trash-only junk', () => {
+    const lines = outputLines(runTerminalCommand('cat no_abrir.mp4', ctx()));
+    expect(lines.some((l) => l.includes('NO lo abrieras'))).toBe(true);
+  });
+
+  it('ls omits blog when there are no posts', () => {
+    const lines = outputLines(runTerminalCommand('ls', ctx({ posts: [] })));
+    const desktopRow = lines.find((l) => l.includes('blog'));
+    expect(desktopRow).toBeUndefined();
+  });
+
+  it('ls desktop order matches DESKTOP_ICON_ORDER', () => {
+    const posts = [makeBlogPost()];
+    const lines = outputLines(runTerminalCommand('ls', ctx({ posts })));
+    const escIdx = lines.indexOf('Escritorio:');
+    const notesIdx = lines.indexOf('~/notes:');
+    const desktopSection = lines.slice(escIdx + 1, notesIdx - 1).filter((l) => l.trim().length > 0);
+    const namesInLs = desktopSection.join('   ').split(/\s{3,}/).map((s) => s.trim()).filter(Boolean);
+    expect(namesInLs).toEqual(desktopAppLabels(APPS, { posts }));
+  });
+
+  it('cat reaches every visible desktop app via its ls label', () => {
+    const posts = [makeBlogPost()];
+    const visible = desktopVisibleApps(APPS, { posts });
+    for (const app of visible) {
+      const label = desktopAppLabel(app);
+      const lines = outputLines(runTerminalCommand(`cat ${label}`, ctx({ posts })));
+      expect(lines.length).toBeGreaterThan(0);
+      expect(lines.some((l) => l.includes('no such file'))).toBe(false);
+    }
+  });
+
+  it('cat contacto, cv, settings, games, notes, and terminal', () => {
+    expect(outputLines(runTerminalCommand('cat contacto', ctx())).some((l) => l.includes('hola@alfon.so'))).toBe(
+      true,
+    );
+    expect(outputLines(runTerminalCommand('cat cv', ctx())).some((l) => l.includes('currículum'))).toBe(true);
+    expect(outputLines(runTerminalCommand('cat settings', ctx())).some((l) => l.includes('ajustes'))).toBe(true);
+    expect(outputLines(runTerminalCommand('cat games', ctx())).some((l) => l.includes('minesweeper'))).toBe(true);
+    expect(outputLines(runTerminalCommand('cat notes', ctx())).some((l) => l.includes('~/notes'))).toBe(true);
+    expect(outputLines(runTerminalCommand('cat terminal', ctx())).some((l) => l.includes('help'))).toBe(true);
   });
 
   it('cat with no argument prompts for a file', () => {
     const lines = outputLines(runTerminalCommand('cat', ctx()));
     expect(lines).toContain('cat: falta archivo');
-    expect(lines.some((l) => l.includes('cat about.txt'))).toBe(true);
+    expect(lines.some((l) => l.includes('cat about'))).toBe(true);
   });
 
   it('cat on a missing file returns a no-such-file error', () => {

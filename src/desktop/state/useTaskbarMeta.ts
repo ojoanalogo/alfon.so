@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { formatWindowTitle } from '@desktop/lib/formatWindowTitle';
-import { TRASH_JUNK } from '../apps/trash/junk';
+import { TRASH_JUNK_TASKBAR_NAMES } from '@desktop/lib/trashJunk';
 import { appIconSrc } from '../apps/appIcons';
 import type { AppDefinition } from '@desktop/wrappers';
 import type { WindowMeta } from '../types';
@@ -11,15 +11,11 @@ export function useTaskbarMeta(
   desktopIconUrls: DesktopIconUrls,
 ): Record<string, WindowMeta> {
   return useMemo<Record<string, WindowMeta>>(() => {
-    // Trash-junk apps (e.g. happy) show their bare filename in the taskbar
-    // rather than the flavored window title.
-    const trashNames = new Map(
-      TRASH_JUNK.flatMap((entry) => (entry.appId ? [[entry.appId, entry.name] as const] : [])),
-    );
     const base: Record<string, WindowMeta> = {};
     for (const app of apps) {
       const rawLabel =
-        trashNames.get(app.id) ?? (typeof app.title === 'string' ? app.title : app.id);
+        TRASH_JUNK_TASKBAR_NAMES.get(app.id) ??
+        (typeof app.title === 'string' ? app.title : app.id);
       const label = formatWindowTitle(rawLabel);
       base[app.id] = {
         iconSrc: appIconSrc(app, desktopIconUrls),

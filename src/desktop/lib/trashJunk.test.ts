@@ -1,0 +1,99 @@
+import { describe, it, expect } from 'vitest';
+import { TRASH_JUNK, TRASH_JUNK_TASKBAR_NAMES, type TrashJunkItem } from './trashJunk';
+
+describe('TRASH_JUNK', () => {
+  it('is a non-empty array', () => {
+    expect(Array.isArray(TRASH_JUNK)).toBe(true);
+    expect(TRASH_JUNK.length).toBeGreaterThan(0);
+  });
+
+  it('every item has required string fields id, name, kind, iconSrc', () => {
+    for (const item of TRASH_JUNK) {
+      expect(typeof item.id).toBe('string');
+      expect(item.id.trim().length).toBeGreaterThan(0);
+      expect(typeof item.name).toBe('string');
+      expect(item.name.trim().length).toBeGreaterThan(0);
+      expect(typeof item.kind).toBe('string');
+      expect(item.kind.trim().length).toBeGreaterThan(0);
+      expect(typeof item.iconSrc).toBe('string');
+      expect(item.iconSrc.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('has unique ids', () => {
+    const ids = TRASH_JUNK.map((i) => i.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('has unique names', () => {
+    const names = TRASH_JUNK.map((i) => i.name);
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  it('optional appId, when present, is a non-empty string', () => {
+    for (const item of TRASH_JUNK) {
+      if (item.appId === undefined) continue;
+      expect(typeof item.appId).toBe('string');
+      expect(item.appId.trim().length).toBeGreaterThan(0);
+    }
+  });
+
+  it('optional isFolder, when present, is a boolean', () => {
+    for (const item of TRASH_JUNK) {
+      if (item.isFolder === undefined) continue;
+      expect(typeof item.isFolder).toBe('boolean');
+    }
+  });
+
+  it('optional size, when present, is a non-empty string', () => {
+    for (const item of TRASH_JUNK) {
+      if (item.size === undefined) continue;
+      expect(typeof item.size).toBe('string');
+      expect(item.size.trim().length).toBeGreaterThan(0);
+    }
+  });
+
+  it('does not carry any unexpected keys on items', () => {
+    const allowed = new Set<keyof TrashJunkItem>([
+      'id',
+      'name',
+      'kind',
+      'iconSrc',
+      'appId',
+      'isFolder',
+      'size',
+    ]);
+    for (const item of TRASH_JUNK) {
+      for (const key of Object.keys(item)) {
+        expect(allowed.has(key as keyof TrashJunkItem)).toBe(true);
+      }
+    }
+  });
+
+  it('wires happy as the app-opening junk entry; area51/ovnis are present but inert', () => {
+    const byId = new Map(TRASH_JUNK.map((i) => [i.id, i]));
+
+    expect(byId.get('happy')?.appId).toBe('happy');
+
+    for (const id of ['area51', 'ovnis']) {
+      const item = byId.get(id);
+      expect(item).toBeTruthy();
+      expect(item?.appId).toBeUndefined();
+    }
+  });
+
+  it('folder items can show "—" for size; only some override it explicitly', () => {
+    const folders = TRASH_JUNK.filter((i) => i.isFolder);
+    expect(folders.length).toBeGreaterThan(0);
+    const nodeModules = folders.find((i) => i.id === 'node_modules');
+    expect(nodeModules?.size).toBe('1 PB');
+  });
+});
+
+describe('TRASH_JUNK_TASKBAR_NAMES', () => {
+  it('maps app-opening junk entries to their bare filenames', () => {
+    expect(TRASH_JUNK_TASKBAR_NAMES.get('happy')).toBe('no_abrir.mp4');
+    // Last junk entry with the same appId wins (cv-copy follows cv).
+    expect(TRASH_JUNK_TASKBAR_NAMES.get('cv')).toBe('mi_cv_final_FINAL_v7 (copia).doc');
+  });
+});

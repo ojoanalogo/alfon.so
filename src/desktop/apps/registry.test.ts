@@ -57,7 +57,9 @@ describe('APPS registry', () => {
     }
   });
 
-  it('keeps terminal first so it anchors the start menu / icon order', () => {
+  it('lists terminal first in APPS for initialZ fallback ordering', () => {
+    // appToWindowDef(app, index) uses BASE_Z + index when geometry.initialZ is omitted;
+    // terminal is first so its default stack index is lowest.
     expect(APPS[0].id).toBe('terminal');
   });
 });
