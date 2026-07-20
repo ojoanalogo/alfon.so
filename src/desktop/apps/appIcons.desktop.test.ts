@@ -39,8 +39,11 @@ describe('desktopVisibleApps', () => {
     const apps = [blog, about];
 
     expect(desktopVisibleApps(apps, { posts: [] }).map((a) => a.id)).toEqual(['about']);
-    expect(desktopVisibleApps(apps, { posts: [{ title: 't', slug: 's', publishDate: '', html: '' }] })
-      .map((a) => a.id)).toEqual(['about', 'blog']);
+    expect(
+      desktopVisibleApps(apps, {
+        posts: [{ title: 't', slug: 's', publishDate: '', html: '' }],
+      }).map((a) => a.id),
+    ).toEqual(['about', 'blog']);
   });
 
   it('sorts by DESKTOP_ICON_ORDER', () => {

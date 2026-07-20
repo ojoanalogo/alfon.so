@@ -1,4 +1,5 @@
 # Ignore generated/build output and lockfiles
 dist/
 .astro/
+node_modules/
 pnpm-lock.yaml

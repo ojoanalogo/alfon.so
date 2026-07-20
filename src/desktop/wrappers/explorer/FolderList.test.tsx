@@ -71,7 +71,9 @@ describe('FolderList', () => {
   });
 
   it('generates a deterministic fake size for a non-folder item without an explicit size', () => {
-    render(<FolderList items={[item({ id: 'doc', label: 'Doc', kind: 'PDF' })]} onOpen={vi.fn()} />);
+    render(
+      <FolderList items={[item({ id: 'doc', label: 'Doc', kind: 'PDF' })]} onOpen={vi.fn()} />,
+    );
     expect(screen.getByText(fakeFileSize('doc'))).toBeTruthy();
   });
 

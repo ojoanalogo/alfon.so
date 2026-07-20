@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BlogPostSummary } from '../../types';
-import { useTheme } from '../../state/ThemeContext';
 import { runTerminalCommand, TERMINAL_MOTD, TERMINAL_PROMPT, type TerminalBlock } from './commands';
 
 interface TerminalAppProps {
@@ -16,9 +15,9 @@ function TerminalLine({ line }: { line: string }) {
 
 function TerminalCommandLine({ command }: { command: string }) {
   return (
-    <div className="flex flex-wrap gap-[0.375rem] [word-break:break-word] whitespace-pre-wrap">
-      <span className="shrink-0 text-accent">{TERMINAL_PROMPT}</span>
-      <span className="min-w-0 flex-1">{command}</span>
+    <div className="flex flex-wrap gap-[0.5rem] [word-break:break-word] whitespace-pre-wrap">
+      <span className="shrink-0 text-[#4ade80]">{TERMINAL_PROMPT}</span>
+      <span className="min-w-0 flex-1 text-[#e4e4e7]">{command}</span>
     </div>
   );
 }
@@ -29,11 +28,11 @@ function TerminalBlockView({ block }: { block: TerminalBlock }) {
   }
 
   return (
-    <>
+    <div className="text-[#a1a1aa]">
       {block.lines.map((line, index) => (
         <TerminalLine key={index} line={line} />
       ))}
-    </>
+    </div>
   );
 }
 
@@ -43,7 +42,6 @@ export default function TerminalApp({
   onOpenApp,
   onOpenNote,
 }: TerminalAppProps) {
-  const { theme } = useTheme();
   const [blocks, setBlocks] = useState<TerminalBlock[]>([]);
   const [draft, setDraft] = useState('');
   const [history, setHistory] = useState<string[]>([]);
@@ -51,6 +49,14 @@ export default function TerminalApp({
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // macOS-style session banner, fixed for the lifetime of the mount.
+  const [loginLine] = useState(() => {
+    const now = new Date();
+    const pad = (value: number) => String(value).padStart(2, '0');
+    const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    return `Last login: ${now.toDateString()} ${time} on ttys000`;
+  });
 
   const focusInput = useCallback(() => {
     inputRef.current?.focus({ preventScroll: true });
@@ -70,7 +76,7 @@ export default function TerminalApp({
     const trimmed = draft.trim();
     if (!trimmed) return;
 
-    const result = runTerminalCommand(trimmed, { posts, theme });
+    const result = runTerminalCommand(trimmed, { posts });
 
     setHistory((prev) => [...prev, trimmed]);
     setHistoryIndex(-1);
@@ -92,6 +98,18 @@ export default function TerminalApp({
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    // Readline shortcuts: ^L clears the scrollback, ^U clears the line.
+    if (event.ctrlKey && event.key.toLowerCase() === 'l') {
+      event.preventDefault();
+      setBlocks([]);
+      return;
+    }
+    if (event.ctrlKey && event.key.toLowerCase() === 'u') {
+      event.preventDefault();
+      setDraft('');
+      return;
+    }
+
     if (event.key === 'ArrowUp') {
       event.preventDefault();
       if (history.length === 0) return;
@@ -117,52 +135,53 @@ export default function TerminalApp({
 
   return (
     <div
-      className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#141414] font-[ui-monospace,monospace] text-[0.6875rem] leading-[1.45] text-[#d4d4d8]"
+      className="flex min-h-0 flex-1 flex-col bg-[#0c0c0e] font-[ui-monospace,SFMono-Regular,Menlo,Monaco,monospace] text-[0.75rem] leading-[1.55] text-[#e4e4e7] selection:bg-[#3f3f46]"
       onPointerDown={focusInput}
       role="region"
       aria-label="Terminal"
     >
+      {/* One continuous scrollback: banner, history and the live prompt all
+          scroll together, like a real iTerm session. */}
       <div
         ref={scrollRef}
-        className="min-h-0 flex-[1_1_auto] overflow-x-hidden overflow-y-auto overscroll-contain px-3 pt-3 pb-2"
+        className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-3 py-2.5"
       >
-        <div className="mb-1" aria-hidden="true">
+        <div className="mb-1 text-[#5b5b64]" aria-hidden="true">
+          <TerminalLine line={loginLine} />
           {TERMINAL_MOTD.map((line, index) => (
             <TerminalLine key={index} line={line} />
           ))}
         </div>
 
-        <div className="min-h-0">
-          {blocks.map((block, index) => (
-            <TerminalBlockView key={index} block={block} />
-          ))}
-        </div>
-      </div>
+        {blocks.map((block, index) => (
+          <TerminalBlockView key={index} block={block} />
+        ))}
 
-      <form
-        className="flex shrink-0 items-center gap-[0.375rem] border-t border-t-[rgb(63_63_70/0.6)] bg-[#141414] px-3 py-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          submitCommand();
-        }}
-      >
-        <label className="shrink-0 text-accent" htmlFor="terminal-input">
-          {TERMINAL_PROMPT}
-        </label>
-        <input
-          id="terminal-input"
-          ref={inputRef}
-          type="text"
-          className="min-w-0 flex-1 border-0 bg-transparent p-0 font-[inherit] text-[length:inherit] leading-[inherit] text-[color:inherit] outline-none"
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          onKeyDown={handleKeyDown}
-          spellCheck={false}
-          autoComplete="off"
-          autoCapitalize="off"
-          aria-label="Comando de terminal"
-        />
-      </form>
+        <form
+          className="flex items-baseline gap-[0.5rem]"
+          onSubmit={(event) => {
+            event.preventDefault();
+            submitCommand();
+          }}
+        >
+          <label className="shrink-0 text-[#4ade80]" htmlFor="terminal-input">
+            {TERMINAL_PROMPT}
+          </label>
+          <input
+            id="terminal-input"
+            ref={inputRef}
+            type="text"
+            className="min-w-0 flex-1 border-0 bg-transparent p-0 font-[inherit] text-[length:inherit] leading-[inherit] text-[#e4e4e7] caret-[#4ade80] outline-none"
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={handleKeyDown}
+            spellCheck={false}
+            autoComplete="off"
+            autoCapitalize="off"
+            aria-label="Comando de terminal"
+          />
+        </form>
+      </div>
     </div>
   );
 }

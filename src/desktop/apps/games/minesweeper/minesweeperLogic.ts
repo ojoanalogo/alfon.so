@@ -83,7 +83,11 @@ function placeMines(board: Board, safeRow: number, safeCol: number, rng: () => n
   return next;
 }
 
-export function createBoard(safeRow: number, safeCol: number, rng: () => number = Math.random): Board {
+export function createBoard(
+  safeRow: number,
+  safeCol: number,
+  rng: () => number = Math.random,
+): Board {
   return placeMines(createEmptyBoard(), safeRow, safeCol, rng);
 }
 
@@ -119,7 +123,12 @@ export function isWon(board: Board): boolean {
   return true;
 }
 
-export function revealCell(board: Board | null, row: number, col: number, rng: () => number = Math.random): RevealResult {
+export function revealCell(
+  board: Board | null,
+  row: number,
+  col: number,
+  rng: () => number = Math.random,
+): RevealResult {
   const active = board ?? createBoard(row, col, rng);
   const cell = active[row][col];
   if (cell.state === 'flagged' || cell.state === 'revealed') {
@@ -150,5 +159,8 @@ export function toggleFlag(board: Board, row: number, col: number): Board {
 }
 
 export function countFlags(board: Board): number {
-  return board.reduce((total, row) => total + row.filter((cell) => cell.state === 'flagged').length, 0);
+  return board.reduce(
+    (total, row) => total + row.filter((cell) => cell.state === 'flagged').length,
+    0,
+  );
 }

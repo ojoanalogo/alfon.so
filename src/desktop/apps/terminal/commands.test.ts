@@ -12,7 +12,7 @@ import {
 } from './commands';
 
 function ctx(overrides: Partial<TerminalCommandContext> = {}): TerminalCommandContext {
-  return { posts: [], theme: 'dark', ...overrides };
+  return { posts: [], ...overrides };
 }
 
 /** Narrow a result to the block list (asserting it's not a clear/null result). */
@@ -47,9 +47,10 @@ describe('runTerminalCommand', () => {
     const lines = outputLines(runTerminalCommand('help', ctx()));
     expect(lines[0]).toBe('Comandos disponibles:');
     expect(lines.some((l) => l.includes('about'))).toBe(true);
-    expect(lines.some((l) => l.includes('neofetch'))).toBe(true);
+    expect(lines.some((l) => l.includes('ls'))).toBe(true);
     expect(lines.some((l) => l.includes('clear'))).toBe(true);
     expect(lines.some((l) => l.includes('whoami'))).toBe(true);
+    expect(lines.some((l) => l.includes('neofetch'))).toBe(false);
   });
 
   it('about prints the site info', () => {
@@ -67,13 +68,15 @@ describe('runTerminalCommand', () => {
     }
   });
 
-  it('ls shows desktop, notes, and trash sections', () => {
+  it('ls shows Desktop/, notes/, and .Trash/ like a unix listing', () => {
     const lines = outputLines(runTerminalCommand('ls', ctx()));
-    expect(lines).toContain('Escritorio:');
-    expect(lines).toContain('~/notes:');
-    expect(lines).toContain('Papelera:');
-    // node_modules is a known trash entry
-    expect(lines.some((l) => l.includes('node_modules'))).toBe(true);
+    expect(lines).toContain('Desktop/');
+    expect(lines).toContain('notes/');
+    expect(lines).toContain('.Trash/');
+    // node_modules/ is a known trash directory entry (ls -F)
+    expect(lines.some((l) => l.includes('node_modules/'))).toBe(true);
+    // directory apps get a trailing slash
+    expect(lines.some((l) => l.includes('games/'))).toBe(true);
   });
 
   describe('notes sync', () => {
@@ -81,7 +84,7 @@ describe('runTerminalCommand', () => {
       localStorage.clear();
     });
 
-    it('lists saved notes under ~/notes in ls', () => {
+    it('lists saved notes under notes/ in ls', () => {
       const notes: Note[] = [
         {
           id: 'n1',
@@ -108,9 +111,9 @@ describe('runTerminalCommand', () => {
       const result = runTerminalCommand('cat notes/ideas.md', ctx());
       const b = blocks(result);
       const out = b.find((block) => block.kind === 'output');
-      expect(out && out.kind === 'output' && out.lines.some((l) => l.includes('hacer minesweeper'))).toBe(
-        true,
-      );
+      expect(
+        out && out.kind === 'output' && out.lines.some((l) => l.includes('hacer minesweeper')),
+      ).toBe(true);
       expect(result && 'action' in result && result.action).toEqual({
         type: 'openNote',
         noteId: 'note-1',
@@ -168,10 +171,17 @@ describe('runTerminalCommand', () => {
   it('ls desktop order matches DESKTOP_ICON_ORDER', () => {
     const posts = [makeBlogPost()];
     const lines = outputLines(runTerminalCommand('ls', ctx({ posts })));
-    const escIdx = lines.indexOf('Escritorio:');
-    const notesIdx = lines.indexOf('~/notes:');
-    const desktopSection = lines.slice(escIdx + 1, notesIdx - 1).filter((l) => l.trim().length > 0);
-    const namesInLs = desktopSection.join('   ').split(/\s{3,}/).map((s) => s.trim()).filter(Boolean);
+    const desktopIdx = lines.indexOf('Desktop/');
+    const notesIdx = lines.indexOf('notes/');
+    const desktopSection = lines
+      .slice(desktopIdx + 1, notesIdx - 1)
+      .filter((l) => l.trim().length > 0);
+    const namesInLs = desktopSection
+      .join('  ')
+      .split(/\s{2,}/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => s.replace(/\/$/, ''));
     expect(namesInLs).toEqual(desktopAppLabels(APPS, { posts }));
   });
 
@@ -187,14 +197,26 @@ describe('runTerminalCommand', () => {
   });
 
   it('cat contacto, cv, settings, games, notes, and terminal', () => {
-    expect(outputLines(runTerminalCommand('cat contacto', ctx())).some((l) => l.includes('hola@alfon.so'))).toBe(
-      true,
-    );
-    expect(outputLines(runTerminalCommand('cat cv', ctx())).some((l) => l.includes('currículum'))).toBe(true);
-    expect(outputLines(runTerminalCommand('cat settings', ctx())).some((l) => l.includes('ajustes'))).toBe(true);
-    expect(outputLines(runTerminalCommand('cat games', ctx())).some((l) => l.includes('minesweeper'))).toBe(true);
-    expect(outputLines(runTerminalCommand('cat notes', ctx())).some((l) => l.includes('~/notes'))).toBe(true);
-    expect(outputLines(runTerminalCommand('cat terminal', ctx())).some((l) => l.includes('help'))).toBe(true);
+    expect(
+      outputLines(runTerminalCommand('cat contacto', ctx())).some((l) =>
+        l.includes('hola@alfon.so'),
+      ),
+    ).toBe(true);
+    expect(
+      outputLines(runTerminalCommand('cat cv', ctx())).some((l) => l.includes('currículum')),
+    ).toBe(true);
+    expect(
+      outputLines(runTerminalCommand('cat settings', ctx())).some((l) => l.includes('ajustes')),
+    ).toBe(true);
+    expect(
+      outputLines(runTerminalCommand('cat games', ctx())).some((l) => l.includes('minesweeper')),
+    ).toBe(true);
+    expect(
+      outputLines(runTerminalCommand('cat notes', ctx())).some((l) => l.includes('~/notes')),
+    ).toBe(true);
+    expect(
+      outputLines(runTerminalCommand('cat terminal', ctx())).some((l) => l.includes('help')),
+    ).toBe(true);
   });
 
   it('cat with no argument prompts for a file', () => {
@@ -207,20 +229,6 @@ describe('runTerminalCommand', () => {
     const lines = outputLines(runTerminalCommand('cat nope.txt', ctx()));
     expect(lines[0]).toBe('cat: nope.txt: no such file');
     expect(lines.some((l) => l.includes('ls'))).toBe(true);
-  });
-
-  it('neofetch includes the theme from ctx', () => {
-    const lines = outputLines(runTerminalCommand('neofetch', ctx({ theme: 'light' })));
-    expect(lines.some((l) => l.includes('Theme: light'))).toBe(true);
-    expect(lines.some((l) => l.includes('guest@alfon.so'))).toBe(true);
-  });
-
-  it('fetch is an alias of neofetch and reflects the theme', () => {
-    const dark = outputLines(runTerminalCommand('fetch', ctx({ theme: 'dark' })));
-    expect(dark.some((l) => l.includes('Theme: dark'))).toBe(true);
-    // same shape as neofetch
-    const neo = outputLines(runTerminalCommand('neofetch', ctx({ theme: 'dark' })));
-    expect(dark).toEqual(neo);
   });
 
   it('clear returns a clear result with no blocks', () => {
@@ -242,5 +250,12 @@ describe('runTerminalCommand', () => {
     const lines = outputLines(runTerminalCommand('FooBar', ctx()));
     expect(lines[0]).toBe('foobar: command not found');
     expect(lines.some((l) => l.includes('help'))).toBe(true);
+  });
+
+  it('neofetch and fetch are removed', () => {
+    expect(outputLines(runTerminalCommand('neofetch', ctx()))[0]).toBe(
+      'neofetch: command not found',
+    );
+    expect(outputLines(runTerminalCommand('fetch', ctx()))[0]).toBe('fetch: command not found');
   });
 });

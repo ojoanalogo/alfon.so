@@ -1,9 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import {
-  NoteOpenBridgeProvider,
-  createNoteOpenBridge,
-} from '../../state/useAppContext';
+import { NoteOpenBridgeProvider, createNoteOpenBridge } from '../../state/useAppContext';
 import NotesApp from './NotesApp';
 import type { Note } from './types';
 

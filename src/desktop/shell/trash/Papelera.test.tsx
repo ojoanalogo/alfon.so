@@ -12,8 +12,7 @@ vi.mock('../../lib/useResolvedIconLabelTone', () => ({
 import Papelera from './Papelera';
 
 const ICON_URLS = {
-  trash: '/icons/trash.svg',
-  'trash-full': '/icons/trash-full.svg',
+  trash: '/icons/trash.png',
 };
 
 function setup(overrides: Partial<Parameters<typeof Papelera>[0]> = {}) {
@@ -47,32 +46,22 @@ describe('Papelera', () => {
     expect(screen.getByText('Papelera')).toBeTruthy();
   });
 
-  it('shows the empty trash icon when there are no trashed items', () => {
-    const { container } = setup({ trashedCount: 0 });
-    const img = container.querySelector('img');
-    expect(img).toBeTruthy();
-    expect(img?.getAttribute('src')).toBe('/icons/trash.svg');
-  });
+  it('always shows the trash icon regardless of trashed count', () => {
+    const empty = setup({ trashedCount: 0 });
+    expect(empty.container.querySelector('img')?.getAttribute('src')).toBe('/icons/trash.png');
+    empty.unmount();
 
-  it('shows the full trash icon when there is at least one trashed item', () => {
-    const { container } = setup({ trashedCount: 1 });
-    const img = container.querySelector('img');
-    expect(img?.getAttribute('src')).toBe('/icons/trash-full.svg');
-  });
-
-  it('keeps showing the full icon for larger trashed counts', () => {
-    const { container } = setup({ trashedCount: 5 });
-    const img = container.querySelector('img');
-    expect(img?.getAttribute('src')).toBe('/icons/trash-full.svg');
+    const full = setup({ trashedCount: 5 });
+    expect(full.container.querySelector('img')?.getAttribute('src')).toBe('/icons/trash.png');
   });
 
   it('resolves icon urls through the provided iconUrls map', () => {
     const { container } = setup({
       trashedCount: 1,
-      iconUrls: { trash: '/a.svg', 'trash-full': '/custom-full.svg' },
+      iconUrls: { trash: '/custom-trash.png' },
     });
     const img = container.querySelector('img');
-    expect(img?.getAttribute('src')).toBe('/custom-full.svg');
+    expect(img?.getAttribute('src')).toBe('/custom-trash.png');
   });
 
   it('invokes onOpen when the trigger is clicked', () => {

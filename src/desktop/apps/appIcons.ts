@@ -12,12 +12,12 @@ const DESKTOP_ICON_ORDER: AppId[] = [
   'photos',
   'startup',
   'projects',
-  'cv',
   'contacto',
   'settings',
   'games',
   'notes',
   'terminal',
+  'cv',
 ];
 
 function desktopIconSortIndex(id: string): number {
@@ -39,9 +39,9 @@ type DesktopVisibilityCtx = Pick<AppContext, 'posts'>;
 
 /** Icon-bearing apps sorted like the desktop column (no `availableWhen` — caller filters). */
 export function desktopIconApps(apps: readonly AppDefinition[]): AppDefinition[] {
-  return apps.filter(isDesktopIconApp).sort(
-    (a, b) => desktopIconSortIndex(a.id) - desktopIconSortIndex(b.id),
-  );
+  return apps
+    .filter(isDesktopIconApp)
+    .sort((a, b) => desktopIconSortIndex(a.id) - desktopIconSortIndex(b.id));
 }
 
 /** Icon-bearing apps visible on the desktop, sorted like the icon column. */
@@ -87,17 +87,17 @@ export function appsToIconDefinitions(apps: readonly AppDefinition[]): DesktopIc
   }
 
   return iconApps.map((app) => {
-      const cfg = typeof app.desktopIcon === 'object' && app.desktopIcon ? app.desktopIcon : {};
-      return {
-        id: app.id,
-        label: formatWindowTitle(cfg.label ?? appLabel(app)),
-        iconKey: app.iconKey,
-        iconUrl: app.iconUrl,
-        windowId: app.id,
-        defaultOpen: app.geometry.defaultOpen,
-        tooltip: cfg.tooltip ?? (typeof app.title === 'string' ? app.title : app.id),
-      };
-    });
+    const cfg = typeof app.desktopIcon === 'object' && app.desktopIcon ? app.desktopIcon : {};
+    return {
+      id: app.id,
+      label: formatWindowTitle(cfg.label ?? appLabel(app)),
+      iconKey: app.iconKey,
+      iconUrl: app.iconUrl,
+      windowId: app.id,
+      defaultOpen: app.geometry.defaultOpen,
+      tooltip: cfg.tooltip ?? (typeof app.title === 'string' ? app.title : app.id),
+    };
+  });
 }
 
 /** Ordered, URL-resolved desktop icon list derived from the app registry. */

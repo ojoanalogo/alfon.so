@@ -1,16 +1,16 @@
 import about from '../../assets/icons/paper.png?url';
 import blog from '../../assets/icons/book-pencil.png?url';
 import notes from '../../assets/icons/notes.png?url';
-import games from '../../assets/icons/games.png?url';
-import photos from '../../assets/icons/photos-folder.png?url';
+import games from '../../assets/icons/controller.png?url';
+import photos from '../../assets/icons/photos.png?url';
 import projects from '../../assets/icons/open-folder.png?url';
 import settings from '../../assets/icons/settings.png?url';
-import startup from '../../assets/icons/rocket.png?url';
+import startup from '../../assets/icons/dna.png?url';
 import terminal from '../../assets/icons/terminal.png?url';
 import video from '../../assets/icons/video.png?url';
-// Trashcan keeps the original SVG icons.
-import trashFull from '../../assets/icons/trash-full.svg?url';
-import trash from '../../assets/icons/trash.svg?url';
+import trash from '../../assets/icons/trash.png?url';
+import contacto from '../../assets/icons/mail2.png?url';
+import cv from '../../assets/icons/paper.png?url';
 import type { DesktopIconDefinition, DesktopIcon } from '@/config';
 
 export const DESKTOP_ICON_URLS = {
@@ -23,9 +23,10 @@ export const DESKTOP_ICON_URLS = {
   settings,
   startup,
   terminal,
-  'trash-full': trashFull,
   trash,
   video,
+  contacto,
+  cv,
 } as const;
 
 export type IconKey = keyof typeof DESKTOP_ICON_URLS;

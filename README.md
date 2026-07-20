@@ -14,7 +14,7 @@ island so the desktop never loads on mobile.
 - **React 19** — the desktop island (windows, apps, games), hydrated via
   `client:media` only on wider viewports.
 - **Tailwind v4** — inline utilities + shared token strings (`src/styles/tokens.ts`)
-  + a small `@layer components` set in `src/styles/` for what utilities can't express.
+  - a small `@layer components` set in `src/styles/` for what utilities can't express.
 - **framer-motion** for window/menu animation, **marked** for in-app markdown,
   **sharp** for build-time image optimization.
 
@@ -30,19 +30,23 @@ pnpm dev        # local dev server at http://localhost:4321
 
 ## Commands
 
-| Command                     | What it does                                      |
-| :-------------------------- | :------------------------------------------------ |
-| `pnpm dev`                  | Start the dev server (`localhost:4321`)           |
-| `pnpm build`                | Production build to `./dist/`                      |
-| `pnpm preview`              | Preview the production build locally              |
-| `pnpm test`                 | Run the Vitest suite                              |
-| `pnpm test:watch`           | Vitest in watch mode                              |
-| `pnpm lint`                 | ESLint over `src`                                 |
-| `pnpm check`                | `astro check` (TypeScript diagnostics)            |
-| `pnpm format`               | Prettier-format `src`                             |
-| `pnpm wallpapers:optimize`  | Re-optimize the source wallpapers in `src/assets` |
+| Command                    | What it does                                      |
+| :------------------------- | :------------------------------------------------ |
+| `pnpm dev`                 | Start the dev server (`localhost:4321`)           |
+| `pnpm build`               | Production build to `./dist/`                     |
+| `pnpm preview`             | Preview the production build locally              |
+| `pnpm test`                | Run the Vitest suite                              |
+| `pnpm test:watch`          | Vitest in watch mode                              |
+| `pnpm lint`                | ESLint over source, tests, scripts, and configs   |
+| `pnpm check`               | `astro check` (TypeScript diagnostics)            |
+| `pnpm format`              | Prettier-format the repo                          |
+| `pnpm format:check`        | Verify Prettier formatting (CI)                   |
+| `pnpm commit`              | Interactive Conventional Commit via Commitizen    |
+| `pnpm wallpapers:optimize` | Re-optimize the source wallpapers in `src/assets` |
 
-CI runs `lint`, `check`, `test`, and `build` on every push.
+CI runs `lint`, `format:check`, `check`, `test`, and `build` on every push.
+
+Git hooks (via Husky) run `lint-staged` on commit and validate commit messages with Commitlint. Use `pnpm commit` for guided Conventional Commits (`feat:`, `fix:`, `refactor:`, etc.).
 
 ## Project layout
 

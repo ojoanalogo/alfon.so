@@ -27,7 +27,9 @@ test('maximize fills the screen; restore returns to the prior position', async (
 
   await btn.click();
   // Poll for the SETTLED maximized frame (x→0 only after the 0.32s transition).
-  await expect.poll(async () => Math.round((await winBox(page, 'terminal')).x)).toBeLessThanOrEqual(2);
+  await expect
+    .poll(async () => Math.round((await winBox(page, 'terminal')).x))
+    .toBeLessThanOrEqual(2);
   const max = await winBox(page, 'terminal');
   expect(max.width).toBeGreaterThan(1000); // full-bleed
   expect(max.y).toBeLessThanOrEqual(2);

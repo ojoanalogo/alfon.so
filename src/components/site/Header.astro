@@ -35,7 +35,7 @@ const { navbarActiveItemID, class: className } = Astro.props;
           <ThemeToggle class="sm:hidden" />
         </div>
         <div
-          class="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto text-xs [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-4 [&::-webkit-scrollbar]:hidden"
+          class="flex min-w-0 [scrollbar-width:none] flex-nowrap items-center gap-2 overflow-x-auto text-xs [-ms-overflow-style:none] sm:gap-4 [&::-webkit-scrollbar]:hidden"
         >
           {
             NAV_LINKS.map((link) => {

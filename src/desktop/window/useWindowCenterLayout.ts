@@ -55,7 +55,12 @@ export function useWindowCenterLayout({
       const rect = node.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
 
-      const center = centerInWorkArea(window.innerWidth, window.innerHeight, rect.width, rect.height);
+      const center = centerInWorkArea(
+        window.innerWidth,
+        window.innerHeight,
+        rect.width,
+        rect.height,
+      );
       const nextX = Math.round(center.x);
       const nextY = Math.round(center.y);
       const roundedWidth = Math.round(rect.width);
@@ -86,6 +91,6 @@ export function useWindowCenterLayout({
       // re-report even if it resolves to a prior value.
       lastSentRef.current = null;
     };
-  // `width` is a dep: a painted-width change re-runs the effect to re-measure before the ResizeObserver may have fired.
+    // `width` is a dep: a painted-width change re-runs the effect to re-measure before the ResizeObserver may have fired.
   }, [enabled, rootRef, width, userSized]);
 }

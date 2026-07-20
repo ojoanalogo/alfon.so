@@ -350,9 +350,7 @@ describe('useWindowManager - setUserGeometry (user move/resize)', () => {
 describe('useWindowManager - correctLayouts (batch auto)', () => {
   it('applies multiple patches in one update', () => {
     const { result } = renderManager();
-    act(() =>
-      result.current.correctLayouts({ a: { x: 10, y: 20 }, b: { x: 30, y: 40 } }),
-    );
+    act(() => result.current.correctLayouts({ a: { x: 10, y: 20 }, b: { x: 30, y: 40 } }));
     expect(result.current.windows.a.x).toBe(10);
     expect(result.current.windows.a.y).toBe(20);
     expect(result.current.windows.b.x).toBe(30);
@@ -485,7 +483,7 @@ describe('mergeWindowUiState', () => {
     };
   }
 
-  it('keeps a centered window\'s frame but reseeds a non-centered, non-userSized one', () => {
+  it("keeps a centered window's frame but reseeds a non-centered, non-userSized one", () => {
     const merged = mergeWindowUiState(fresh(), prev(), new Set(['c']));
     expect(merged.c.x).toBe(262); // centered: corrected frame preserved
     expect(merged.c.y).toBe(184);
@@ -521,8 +519,28 @@ describe('mergeWindowUiState', () => {
   });
 
   it('reseeds a centered window that is maximized (keepGeometry requires !maximized)', () => {
-    const f = { c: makeWindowState({ id: 'c', open: true, maximized: true, x: 9, y: 999, width: 500, height: null }) };
-    const p = { c: makeWindowState({ id: 'c', open: true, maximized: true, x: 262, y: 184, width: 500, height: null }) };
+    const f = {
+      c: makeWindowState({
+        id: 'c',
+        open: true,
+        maximized: true,
+        x: 9,
+        y: 999,
+        width: 500,
+        height: null,
+      }),
+    };
+    const p = {
+      c: makeWindowState({
+        id: 'c',
+        open: true,
+        maximized: true,
+        x: 262,
+        y: 184,
+        width: 500,
+        height: null,
+      }),
+    };
     const merged = mergeWindowUiState(f, p, new Set(['c']));
     expect(merged.c.y).toBe(999); // maximized -> keepGeometry is false -> takes fresh
   });

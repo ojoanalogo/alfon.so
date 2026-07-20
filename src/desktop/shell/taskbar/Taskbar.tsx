@@ -88,15 +88,7 @@ export default function Taskbar({
           title="Menú de inicio"
           onClick={toggleStartMenu}
         >
-          <span
-            className={`w-[0.75rem] shrink-0 text-center text-[0.6875rem] leading-none max-sm:text-[1.125rem] ${startOpen ? 'text-primary' : 'text-muted'}`}
-            aria-hidden="true"
-          >
-            ▣
-          </span>
-          <span className="text-[0.6875rem] leading-none whitespace-nowrap max-sm:hidden">
-            {SITE_TITLE}
-          </span>
+          <span className="text-[0.6875rem] leading-none whitespace-nowrap">{SITE_TITLE}</span>
         </button>
 
         <div

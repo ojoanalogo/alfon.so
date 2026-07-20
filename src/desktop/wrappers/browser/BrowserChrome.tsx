@@ -42,9 +42,7 @@ export default function BrowserChrome({
   return (
     <div className="flex w-full min-w-0 flex-1 items-center gap-[0.375rem] leading-none">
       {!hideTitle && (
-        <span className="window-titlebar__title shrink-0 lowercase max-sm:hidden">
-          {title}
-        </span>
+        <span className="window-titlebar__title shrink-0 lowercase max-sm:hidden">{title}</span>
       )}
       <div
         onPointerDown={(event) => event.stopPropagation()}

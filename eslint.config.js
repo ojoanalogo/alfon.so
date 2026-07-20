@@ -8,13 +8,21 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 
-const scriptFiles = ['src/**/*.{js,mjs,cjs,jsx,ts,tsx}'];
-const reactFiles = ['src/**/*.{jsx,tsx}'];
+const scriptFiles = [
+  'src/**/*.{js,mjs,cjs,jsx,ts,tsx}',
+  'test/**/*.{js,mjs,cjs,jsx,ts,tsx}',
+  'scripts/**/*.{js,mjs,cjs}',
+  'e2e/**/*.{js,mjs,cjs,ts}',
+  'eslint.config.js',
+  'commitlint.config.js',
+  '*.config.{js,mjs,cjs,ts}',
+];
+const reactFiles = ['src/**/*.{jsx,tsx}', 'test/**/*.{jsx,tsx}'];
 
 export default defineConfig(
   // Ignores — build output, Astro generated types, and env.d.ts (not hand-written).
   {
-    ignores: ['dist/', '.astro/', 'src/env.d.ts'],
+    ignores: ['dist/', '.astro/', 'src/env.d.ts', '.claude/'],
   },
 
   // JavaScript — base recommended rules; also applies to .astro frontmatter.

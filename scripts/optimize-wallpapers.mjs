@@ -72,11 +72,9 @@ async function main() {
 
   console.log('Wallpapers optimized and renamed:\n');
   for (const entry of manifest) {
-    console.log(
-      `  ${entry.from} → ${entry.to} (${entry.beforeKb} KB → ${entry.afterKb} KB)`,
-    );
+    console.log(`  ${entry.from} → ${entry.to} (${entry.beforeKb} KB → ${entry.afterKb} KB)`);
   }
-  console.log(`\nDefault wallpaper: 1.jpg (was ${PRIMARY_SOURCE})`);
+  console.log(`\nDefault wallpaper: 1.jpg (was ${manifest[0].from})`);
 }
 
 main().catch((error) => {

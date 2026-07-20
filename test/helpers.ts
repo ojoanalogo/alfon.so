@@ -5,7 +5,11 @@ import { vi } from 'vitest';
 /** Pin jsdom's reported viewport (defaults to 1024x768). */
 export function setViewport(width: number, height: number) {
   Object.defineProperty(window, 'innerWidth', { value: width, configurable: true, writable: true });
-  Object.defineProperty(window, 'innerHeight', { value: height, configurable: true, writable: true });
+  Object.defineProperty(window, 'innerHeight', {
+    value: height,
+    configurable: true,
+    writable: true,
+  });
 }
 
 /** Pin only the viewport width, leaving the current height. */

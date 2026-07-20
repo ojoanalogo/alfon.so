@@ -23,7 +23,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: #c4bfb6;
+  --color-background: #9a948a;
   --color-surface: #ebe6de;
   --color-primary: #18181b;
   --color-secondary: #3f3f46;

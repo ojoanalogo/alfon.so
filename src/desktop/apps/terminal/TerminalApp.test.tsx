@@ -144,17 +144,6 @@ describe('TerminalApp', () => {
     expect(screen.getByText('-- 1 row(s)')).toBeTruthy();
   });
 
-  it('neofetch includes the resolved theme from ThemeProvider', () => {
-    renderTerminal();
-
-    typeCommand('neofetch');
-    submit();
-
-    // matchMedia stub returns no dark match, so the effective theme is "light".
-    // getByText normalizes the inner whitespace runs to single spaces.
-    expect(screen.getByText('████▀ ▀████ Theme: light')).toBeTruthy();
-  });
-
   describe('history navigation', () => {
     it('ArrowUp recalls the most recent command', () => {
       renderTerminal();

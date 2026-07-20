@@ -83,18 +83,31 @@ function topOf(el: Element): number {
 // window-level listeners.
 function down(target: Element, x: number, y: number) {
   target.dispatchEvent(
-    new PointerEvent('pointerdown', { bubbles: true, clientX: x, clientY: y, button: 0, pointerId: 1 }),
+    new PointerEvent('pointerdown', {
+      bubbles: true,
+      clientX: x,
+      clientY: y,
+      button: 0,
+      pointerId: 1,
+    }),
   );
 }
 function move(x: number, y: number) {
   window.dispatchEvent(
-    new PointerEvent('pointermove', { bubbles: true, clientX: x, clientY: y, button: 0, pointerId: 1 }),
+    new PointerEvent('pointermove', {
+      bubbles: true,
+      clientX: x,
+      clientY: y,
+      button: 0,
+      pointerId: 1,
+    }),
   );
 }
 function up() {
   window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0, pointerId: 1 }));
 }
-const tick = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(null))));
+const tick = () =>
+  new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(null))));
 
 describe('about window drag (real browser)', () => {
   it('does not jump when grabbed; tracks the drag delta', async () => {

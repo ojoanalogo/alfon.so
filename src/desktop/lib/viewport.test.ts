@@ -111,7 +111,13 @@ describe('resolveWindowGeometry', () => {
   });
 
   it('uses the measured width when provided (rounded, min-clamped)', () => {
-    const geo = resolveWindowGeometry(makeWindowDef({ defaultWidth: 600 }), 1200, 800, undefined, 523.4);
+    const geo = resolveWindowGeometry(
+      makeWindowDef({ defaultWidth: 600 }),
+      1200,
+      800,
+      undefined,
+      523.4,
+    );
     expect(geo.width).toBe(523);
   });
 

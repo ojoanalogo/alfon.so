@@ -24,8 +24,9 @@ describe('DESKTOP_ICON_URLS', () => {
   it('includes the expected well-known keys', () => {
     expect(DESKTOP_ICON_URLS).toHaveProperty('about');
     expect(DESKTOP_ICON_URLS).toHaveProperty('trash');
-    expect(DESKTOP_ICON_URLS).toHaveProperty('trash-full');
     expect(DESKTOP_ICON_URLS).toHaveProperty('terminal');
+    expect(DESKTOP_ICON_URLS).toHaveProperty('contacto');
+    expect(DESKTOP_ICON_URLS).not.toHaveProperty('trash-full');
   });
 });
 

@@ -53,7 +53,13 @@ function renderCenter(args: Args = {}) {
   const utils = renderHook(
     ({ enabled, userSized, width }: { enabled: boolean; userSized?: boolean; width: number }) =>
       useWindowCenterLayout({ rootRef: ref, enabled, userSized, width, onGeometryChange }),
-    { initialProps: { enabled: args.enabled ?? true, userSized: args.userSized, width: args.width ?? 600 } },
+    {
+      initialProps: {
+        enabled: args.enabled ?? true,
+        userSized: args.userSized,
+        width: args.width ?? 600,
+      },
+    },
   );
   return { ...utils, onGeometryChange, ref };
 }

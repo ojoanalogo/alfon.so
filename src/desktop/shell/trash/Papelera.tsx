@@ -2,9 +2,6 @@ import type { RefObject } from 'react';
 import { useResolvedIconLabelTone } from '../../lib/useResolvedIconLabelTone';
 import { resolveIconUrl } from '@desktop/lib/desktopIcons';
 
-const TRASH_EMPTY_KEY = 'trash';
-const TRASH_FULL_KEY = 'trash-full';
-
 interface PapeleraProps {
   trashedCount: number;
   iconUrls: Record<string, string>;
@@ -14,17 +11,13 @@ interface PapeleraProps {
 }
 
 export default function Papelera({
-  trashedCount,
   iconUrls,
   onOpen,
   trashRef,
   suppressNextClickRef,
 }: PapeleraProps) {
   const iconLabelTone = useResolvedIconLabelTone();
-  const iconSrc =
-    trashedCount > 0
-      ? resolveIconUrl(iconUrls, TRASH_FULL_KEY)
-      : resolveIconUrl(iconUrls, TRASH_EMPTY_KEY);
+  const iconSrc = resolveIconUrl(iconUrls, 'trash');
 
   return (
     <div

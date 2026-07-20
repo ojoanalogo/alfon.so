@@ -1,5 +1,4 @@
 import { SOCIAL_LINKS } from '@/config';
-import type { ThemeMode } from '@/lib/theme';
 import type { BlogPostSummary } from '../../types';
 import {
   terminalAboutCommandLines,
@@ -7,7 +6,7 @@ import {
   terminalCatPhotosLines,
   terminalCatStartupLines,
 } from '@desktop/lib/siteContent';
-import { desktopAppLabel, desktopAppLabels, desktopVisibleApps } from '../appIcons';
+import { desktopAppLabel, desktopVisibleApps } from '../appIcons';
 import { findNoteByFileName, noteFileNames } from '../notes/paths';
 import { loadNotes } from '../notes/storage';
 import { APPS, type AppId } from '../registry';
@@ -17,6 +16,9 @@ import { TRASH_JUNK } from '@desktop/lib/trashJunk';
 export const TERMINAL_PROMPT = 'guest@alfon.so:~$';
 
 export const TERMINAL_MOTD = ['escribe "help" para ver los comandos disponibles.', ''];
+
+/** Desktop entries that behave like directories in `ls -F`. */
+const LS_DIR_APP_IDS = new Set<AppId>(['games', 'notes', 'projects']);
 
 const CAT_BY_APP_ID: Partial<Record<AppId, string[]>> = {
   about: terminalCatAboutLines(),
@@ -55,23 +57,6 @@ export type TerminalCommandResult =
 
 export interface TerminalCommandContext {
   posts: BlogPostSummary[];
-  theme: ThemeMode;
-}
-
-function neofetchLines(theme: ThemeMode): string[] {
-  return [
-    '        ▄▄▄▄▄▄▄        guest@alfon.so',
-    '      ▄████████▄      ─────────────────',
-    '      ██████████      OS: alfon.so (devfolio)',
-    '      ████▀▀████      Host: Astro + React Island',
-    '       ▀▀████▀▀       Kernel: fake-sh 1.0',
-    '     ▄█████████▄      Uptime: since pageload',
-    '   ▄█████████████▄    Shell: terminal.sh',
-    '  ████▀       ▀████   Theme: ' + theme,
-    '                      CPU: 100% café ☕',
-    '                      Memory: ∞ curiosidad',
-    '                      WM: draggable-windows',
-  ];
 }
 
 function helpLines(): string[] {
@@ -79,10 +64,8 @@ function helpLines(): string[] {
     'Comandos disponibles:',
     '  about        info del sitio',
     '  social       enlaces a redes',
-    '  ls           archivos del escritorio (+ papelera)',
+    '  ls           listar archivos',
     '  cat FILE     leer un archivo',
-    '  neofetch     info del sistema',
-    '  fetch        alias de neofetch',
     '  whoami       usuario actual',
     '  clear        limpiar pantalla',
     '  help         esta ayuda',
@@ -97,10 +80,14 @@ function socialLines(): string[] {
   return SOCIAL_LINKS.map((link) => `${link.platform.padEnd(10)} ${link.url}`);
 }
 
-function chunkRows(items: string[], perRow: number): string[] {
+/** Columnar listing like GNU `ls` (fixed column count, padded names). */
+function lsColumns(items: string[], cols = 3): string[] {
+  if (items.length === 0) return [];
+  const width = Math.max(...items.map((item) => item.length));
   const rows: string[] = [];
-  for (let i = 0; i < items.length; i += perRow) {
-    rows.push('  ' + items.slice(i, i + perRow).join('   '));
+  for (let i = 0; i < items.length; i += cols) {
+    const chunk = items.slice(i, i + cols).map((item) => item.padEnd(width + 2));
+    rows.push(chunk.join('').trimEnd());
   }
   return rows;
 }
@@ -111,26 +98,26 @@ function findDesktopAppByLabel(label: string, ctx: TerminalCommandContext) {
   );
 }
 
-function notesLines(): string[] {
-  const files = noteFileNames(loadNotes());
-  if (files.length === 0) {
-    return ['~/notes:', '  (vacío — crea notas en la app Notas)'];
-  }
-  return ['~/notes:', ...chunkRows(files, 3)];
+function lsDesktopNames(ctx: TerminalCommandContext): string[] {
+  return desktopVisibleApps(APPS, { posts: ctx.posts }).map((app) => {
+    const label = desktopAppLabel(app);
+    return LS_DIR_APP_IDS.has(app.id as AppId) ? `${label}/` : label;
+  });
 }
 
 function lsLines(ctx: TerminalCommandContext): string[] {
+  const notes = noteFileNames(loadNotes());
+  const trash = TRASH_JUNK.map((entry) => (entry.isFolder ? `${entry.name}/` : entry.name));
+
   return [
-    'Escritorio:',
-    ...chunkRows(desktopAppLabels(APPS, { posts: ctx.posts }), 3),
+    'Desktop/',
+    ...lsColumns(lsDesktopNames(ctx)),
     '',
-    ...notesLines(),
+    'notes/',
+    ...(notes.length > 0 ? lsColumns(notes) : []),
     '',
-    'Papelera:',
-    ...chunkRows(
-      TRASH_JUNK.map((entry) => entry.name),
-      3,
-    ),
+    '.Trash/',
+    ...lsColumns(trash),
   ];
 }
 
@@ -180,7 +167,10 @@ export function runTerminalCommand(
           ],
         };
       }
-      const name = arg.replace(/^~\/Desktop\//, '').replace(/^~\//, '');
+      const name = arg
+        .replace(/^~\/Desktop\//, '')
+        .replace(/^~\//, '')
+        .replace(/\/$/, '');
       const desktopApp = findDesktopAppByLabel(name, ctx);
       if (desktopApp) {
         const lines =
@@ -224,9 +214,6 @@ export function runTerminalCommand(
         ],
       };
     }
-    case 'neofetch':
-    case 'fetch':
-      return { blocks: [commandBlock, { kind: 'output', lines: neofetchLines(ctx.theme) }] };
     case 'clear':
       return { clear: true };
     case 'whoami':

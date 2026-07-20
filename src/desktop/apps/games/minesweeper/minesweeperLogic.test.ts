@@ -1,13 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  COLS,
-  MINES,
-  ROWS,
-  createBoard,
-  isWon,
-  revealCell,
-  toggleFlag,
-} from './minesweeperLogic';
+import { COLS, MINES, ROWS, createBoard, isWon, revealCell, toggleFlag } from './minesweeperLogic';
 
 describe('minesweeperLogic', () => {
   it('creates a board with the expected mine count away from the first click', () => {

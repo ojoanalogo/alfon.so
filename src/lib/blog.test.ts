@@ -57,7 +57,13 @@ describe('prepareBlogPost', () => {
     return {
       id: 'my-post',
       body,
-      data: { title: 'My Post', publishDate: '2024-05-01', description: 'desc', tags: ['a'], ...data },
+      data: {
+        title: 'My Post',
+        publishDate: '2024-05-01',
+        description: 'desc',
+        tags: ['a'],
+        ...data,
+      },
     } as unknown as BlogEntry;
   }
 
