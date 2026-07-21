@@ -34,10 +34,17 @@ export function readSafeAreaInsets(): SafeAreaInsets {
   };
 }
 
-/** Taskbar content height plus the bottom safe-area inset. */
+/** Taskbar content height plus bottom inset (safe area or landscape pad). */
+export function readTaskbarBottomPad(): number {
+  if (typeof document === 'undefined') return 0;
+  const style = getComputedStyle(document.documentElement);
+  return parseFloat(style.getPropertyValue('--taskbar-bottom-pad')) || 0;
+}
+
 export function taskbarReservedHeight(bottomInset?: number): number {
-  const bottom = bottomInset ?? readSafeAreaInsets().bottom;
-  return TASKBAR_HEIGHT + bottom;
+  const safe = bottomInset ?? readSafeAreaInsets().bottom;
+  const pad = Math.max(safe, readTaskbarBottomPad());
+  return TASKBAR_HEIGHT + pad;
 }
 
 export function minWidthForDef(def: WindowDef): number {

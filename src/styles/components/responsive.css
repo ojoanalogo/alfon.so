@@ -12,7 +12,9 @@
     .desktop-window:not(.desktop-window--expanded):not([inert]) {
       top: calc(8px + env(safe-area-inset-top, 0px)) !important;
       right: calc(8px + env(safe-area-inset-right, 0px)) !important;
-      bottom: calc(2.5rem + 8px + env(safe-area-inset-bottom, 0px)) !important;
+      bottom: calc(
+        2.5rem + 8px + max(var(--taskbar-bottom-pad), env(safe-area-inset-bottom, 0px))
+      ) !important;
       left: calc(8px + env(safe-area-inset-left, 0px)) !important;
       width: auto !important;
       min-width: 0 !important;
@@ -72,6 +74,13 @@
 
     .dark #mobile-nav-panel[data-open='true'] {
       border-top-color: rgb(113 113 122 / 0.2);
+    }
+
+    /* Phone landscape: sit controls just above the bottom pad. */
+    @media (min-width: 40rem) {
+      .desktop-taskbar {
+        align-items: flex-end;
+      }
     }
   }
 
