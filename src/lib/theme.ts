@@ -94,43 +94,90 @@ export function ensureThemeRuntime() {
   themeRuntimeInitialized = true;
 
   attachSystemThemeListener(() => {
-    updateThemeToggleIcons();
+    updateThemeDropdowns();
   });
 
-  window.addEventListener(THEME_CHANGE, updateThemeToggleIcons);
+  window.addEventListener(THEME_CHANGE, updateThemeDropdowns);
 }
 
-export function updateThemeToggleIcons() {
+export function updateThemeDropdowns() {
   const preference = document.documentElement.dataset.themePreference ?? 'system';
   const isDark = document.documentElement.classList.contains('dark');
   const followSystem = preference === 'system';
 
-  document.querySelectorAll('.theme-toggle .system-icon').forEach((icon) => {
-    icon.classList.toggle('hidden', !followSystem);
-  });
-  document.querySelectorAll('.theme-toggle .sun-icon').forEach((icon) => {
-    icon.classList.toggle('hidden', followSystem || isDark);
-  });
-  document.querySelectorAll('.theme-toggle .moon-icon').forEach((icon) => {
-    icon.classList.toggle('hidden', followSystem || !isDark);
+  document.querySelectorAll('[data-theme-dropdown]').forEach((dropdown) => {
+    dropdown.querySelectorAll('.auto-icon').forEach((icon) => {
+      icon.classList.toggle('hidden', !followSystem);
+    });
+    dropdown.querySelectorAll('.sun-icon').forEach((icon) => {
+      icon.classList.toggle('hidden', followSystem || isDark);
+    });
+    dropdown.querySelectorAll('.moon-icon').forEach((icon) => {
+      icon.classList.toggle('hidden', followSystem || !isDark);
+    });
+
+    dropdown.querySelectorAll<HTMLButtonElement>('.theme-dropdown-option').forEach((option) => {
+      const selected = option.dataset.themeValue === preference;
+      option.setAttribute('aria-selected', String(selected));
+      option.classList.toggle('font-semibold', selected);
+      option.classList.toggle('text-primary', selected);
+    });
   });
 }
 
-/** Astro header toggle only — React taskbar uses ThemeContext.onClick. */
-export function setupThemeToggles() {
-  document.querySelectorAll('.theme-toggle').forEach((button) => {
-    if (button.getAttribute('data-theme-bound') === 'true') return;
-    button.setAttribute('data-theme-bound', 'true');
-    button.addEventListener('click', () => {
-      toggleThemePreference();
-      updateThemeToggleIcons();
+function closeThemeDropdowns(except?: Element) {
+  document.querySelectorAll('[data-theme-dropdown]').forEach((dropdown) => {
+    if (dropdown === except) return;
+    const trigger = dropdown.querySelector<HTMLButtonElement>('.theme-dropdown-trigger');
+    const menu = dropdown.querySelector('.theme-dropdown-menu');
+    trigger?.setAttribute('aria-expanded', 'false');
+    menu?.classList.add('hidden');
+  });
+}
+
+let themeDropdownDocumentListenerAttached = false;
+
+/** Astro header dropdown only — React taskbar uses ThemeContext.onClick. */
+export function setupThemeDropdowns() {
+  document.querySelectorAll('[data-theme-dropdown]').forEach((dropdown) => {
+    if (dropdown.getAttribute('data-theme-bound') === 'true') return;
+    dropdown.setAttribute('data-theme-bound', 'true');
+
+    const trigger = dropdown.querySelector<HTMLButtonElement>('.theme-dropdown-trigger');
+    const menu = dropdown.querySelector('.theme-dropdown-menu');
+    if (!trigger || !menu) return;
+
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+      closeThemeDropdowns();
+      trigger.setAttribute('aria-expanded', String(!isOpen));
+      menu.classList.toggle('hidden', isOpen);
+    });
+
+    menu.querySelectorAll<HTMLButtonElement>('.theme-dropdown-option').forEach((option) => {
+      option.addEventListener('click', () => {
+        const value = option.dataset.themeValue;
+        if (value === 'light' || value === 'dark' || value === 'system') {
+          applyThemePreference(value);
+          updateThemeDropdowns();
+        }
+        trigger.setAttribute('aria-expanded', 'false');
+        menu.classList.add('hidden');
+      });
     });
   });
-  updateThemeToggleIcons();
+
+  if (!themeDropdownDocumentListenerAttached) {
+    themeDropdownDocumentListenerAttached = true;
+    document.addEventListener('click', () => closeThemeDropdowns());
+  }
+
+  updateThemeDropdowns();
 }
 
 export function bootstrapThemeUi() {
   ensureThemeRuntime();
   syncThemeFromPreference();
-  setupThemeToggles();
+  setupThemeDropdowns();
 }

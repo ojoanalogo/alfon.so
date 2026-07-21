@@ -8,6 +8,15 @@ interface Props {
 }
 
 const { navbarActiveItemID, class: className } = Astro.props;
+
+const linkClass = (isActive: boolean, withTooltip = false) =>
+  [
+    'rounded-sm px-1 py-0.5 transition-all duration-200',
+    isActive
+      ? 'bg-black/[0.08] font-semibold text-primary dark:bg-white/[0.1]'
+      : 'text-secondary hover:text-accent',
+    withTooltip && 'tooltip relative',
+  ].filter(Boolean);
 ---
 
 <header id="main-header" class:list={['relative z-50 px-2 py-4 md:px-6', className]}>
@@ -18,7 +27,7 @@ const { navbarActiveItemID, class: className } = Astro.props;
       <nav
         id="navigation-menu"
         aria-label="Main menu"
-        class="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+        class="flex flex-col px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
       >
         <div class="flex items-center justify-between gap-2 sm:justify-start">
           <div class="flex items-center gap-2">
@@ -32,11 +41,78 @@ const { navbarActiveItemID, class: className } = Astro.props;
               alfon.so
             </a>
           </div>
-          <ThemeToggle class="sm:hidden" />
+          <div class="flex items-center gap-1 sm:hidden">
+            <ThemeToggle />
+            <button
+              type="button"
+              id="mobile-menu-toggle"
+              class="flex items-center justify-center rounded-sm p-1.5 text-secondary transition-colors duration-200 hover:text-primary"
+              aria-expanded="false"
+              aria-controls="mobile-nav-panel"
+              aria-label="Abrir menú de navegación"
+            >
+              <svg
+                class="h-4 w-4"
+                id="mobile-menu-icon-open"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+              <svg
+                class="hidden h-4 w-4"
+                id="mobile-menu-icon-close"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
         </div>
+
         <div
-          class="flex min-w-0 [scrollbar-width:none] flex-nowrap items-center gap-2 overflow-x-auto text-xs [-ms-overflow-style:none] sm:gap-4 [&::-webkit-scrollbar]:hidden"
+          id="mobile-nav-panel"
+          class="hidden flex-col gap-1 border-t border-gray-400/30 pt-3 sm:hidden dark:border-gray-400/20"
         >
+          {
+            NAV_LINKS.map((link) => {
+              const isActive = Boolean(link.id && link.id === navbarActiveItemID);
+              return (
+                <a
+                  href={link.redirect ? link.redirect : link.url}
+                  target={link.redirect ? '_blank' : '_self'}
+                  id={link.id ? `${link.id}-mobile` : undefined}
+                  aria-current={isActive ? 'page' : undefined}
+                  class:list={[
+                    'rounded-sm px-2 py-1.5 text-xs transition-all duration-200',
+                    isActive
+                      ? 'bg-black/[0.08] font-semibold text-primary dark:bg-white/[0.1]'
+                      : 'text-secondary hover:bg-black/[0.04] hover:text-accent dark:hover:bg-white/[0.05]',
+                  ]}
+                >
+                  {link.title}
+                </a>
+              );
+            })
+          }
+        </div>
+
+        <div class="hidden items-center gap-4 text-xs sm:flex">
           {
             NAV_LINKS.map((link) => {
               const isActive = Boolean(link.id && link.id === navbarActiveItemID);
@@ -46,13 +122,7 @@ const { navbarActiveItemID, class: className } = Astro.props;
                   target={link.redirect ? '_blank' : '_self'}
                   id={link.id}
                   aria-current={isActive ? 'page' : undefined}
-                  class:list={[
-                    'shrink-0 rounded-sm px-1 py-0.5 transition-all duration-200',
-                    isActive
-                      ? 'bg-black/[0.08] font-semibold text-primary dark:bg-white/[0.1]'
-                      : 'text-secondary hover:text-accent',
-                    link.tooltip && 'tooltip relative',
-                  ]}
+                  class:list={linkClass(isActive, Boolean(link.tooltip))}
                   data-tooltip={link.tooltip}
                 >
                   {link.title}
@@ -60,9 +130,51 @@ const { navbarActiveItemID, class: className } = Astro.props;
               );
             })
           }
-          <ThemeToggle class="hidden sm:block" />
+          <ThemeToggle />
         </div>
       </nav>
     </div>
   </div>
 </header>
+
+<script>
+  function setupMobileMenu() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const panel = document.getElementById('mobile-nav-panel');
+    const iconOpen = document.getElementById('mobile-menu-icon-open');
+    const iconClose = document.getElementById('mobile-menu-icon-close');
+    if (!toggle || !panel || !iconOpen || !iconClose) return;
+    if (toggle.dataset.bound === 'true') return;
+    toggle.dataset.bound = 'true';
+
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute(
+        'aria-label',
+        open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación',
+      );
+      panel.classList.toggle('hidden', !open);
+      panel.classList.toggle('flex', open);
+      iconOpen.classList.toggle('hidden', open);
+      iconClose.classList.toggle('hidden', !open);
+    };
+
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      setOpen(!isOpen);
+    });
+
+    panel.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!toggle.contains(event.target as Node) && !panel.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    });
+  }
+
+  setupMobileMenu();
+  document.addEventListener('astro:after-swap', setupMobileMenu);
+</script>
