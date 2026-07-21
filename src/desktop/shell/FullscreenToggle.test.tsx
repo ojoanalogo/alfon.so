@@ -35,15 +35,15 @@ describe('FullscreenToggle', () => {
     expect(btn.className.includes('cursor-pointer')).toBe(true);
   });
 
-  it('shows the expand icon and enter label when not fullscreen', () => {
+  it('shows the fullscreen icon and enter label when not fullscreen', () => {
     const { container } = render(<FullscreenToggle />);
     const btn = getButton();
     expect(btn.getAttribute('aria-label')).toBe('Pantalla completa');
-    expect(container.querySelector('svg.lucide-expand')).toBeTruthy();
-    expect(container.querySelector('svg.lucide-shrink')).toBeNull();
+    expect(container.querySelector('svg.lucide-fullscreen')).toBeTruthy();
+    expect(container.querySelector('svg.lucide-minimize-2')).toBeNull();
   });
 
-  it('shows the shrink icon and exit label when fullscreen', () => {
+  it('shows the minimize icon and exit label when fullscreen', () => {
     Object.defineProperty(document, 'fullscreenElement', {
       configurable: true,
       get: () => document.documentElement,
@@ -51,8 +51,8 @@ describe('FullscreenToggle', () => {
     const { container } = render(<FullscreenToggle />);
     const btn = getButton();
     expect(btn.getAttribute('aria-label')).toBe('Salir de pantalla completa');
-    expect(container.querySelector('svg.lucide-shrink')).toBeTruthy();
-    expect(container.querySelector('svg.lucide-expand')).toBeNull();
+    expect(container.querySelector('svg.lucide-minimize-2')).toBeTruthy();
+    expect(container.querySelector('svg.lucide-fullscreen')).toBeNull();
   });
 
   it('requests fullscreen when clicked while not fullscreen', () => {
@@ -75,7 +75,7 @@ describe('FullscreenToggle', () => {
 
   it('updates the icon when fullscreenchange fires', () => {
     const { container } = render(<FullscreenToggle />);
-    expect(container.querySelector('svg.lucide-expand')).toBeTruthy();
+    expect(container.querySelector('svg.lucide-fullscreen')).toBeTruthy();
 
     Object.defineProperty(document, 'fullscreenElement', {
       configurable: true,
@@ -83,7 +83,7 @@ describe('FullscreenToggle', () => {
     });
     fireEvent(document, new Event('fullscreenchange'));
 
-    expect(container.querySelector('svg.lucide-shrink')).toBeTruthy();
-    expect(container.querySelector('svg.lucide-expand')).toBeNull();
+    expect(container.querySelector('svg.lucide-minimize-2')).toBeTruthy();
+    expect(container.querySelector('svg.lucide-fullscreen')).toBeNull();
   });
 });
