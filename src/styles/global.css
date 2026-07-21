@@ -51,11 +51,11 @@
     --color-control-fill: rgb(255 255 255 / 0.55);
     /* Both surface values, for the settings swatch that shows light+dark at once. */
     --color-surface-light: #ebe6de;
-    --color-surface-dark: #141417;
+    --color-surface-dark: #101013;
 
     @variant dark {
-      --color-background: #141417;
-      --color-surface: #1f1f22;
+      --color-background: #101013;
+      --color-surface: #1b1b1e;
       --color-primary: #f4f4f5;
       --color-secondary: #a1a1aa;
       --color-accent: #d4d4d8;
