@@ -138,41 +138,63 @@ const linkClass = (isActive: boolean, withTooltip = false) =>
 </header>
 
 <script>
-  function setupMobileMenu() {
+  function getMobileMenuElements() {
     const toggle = document.getElementById('mobile-menu-toggle');
     const panel = document.getElementById('mobile-nav-panel');
     const iconOpen = document.getElementById('mobile-menu-icon-open');
     const iconClose = document.getElementById('mobile-menu-icon-close');
-    if (!toggle || !panel || !iconOpen || !iconClose) return;
+    if (!toggle || !panel || !iconOpen || !iconClose) return null;
+    return { toggle, panel, iconOpen, iconClose };
+  }
+
+  function setMobileMenuOpen(open: boolean) {
+    const elements = getMobileMenuElements();
+    if (!elements) return;
+    const { toggle, panel, iconOpen, iconClose } = elements;
+
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute(
+      'aria-label',
+      open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación',
+    );
+    panel.classList.toggle('hidden', !open);
+    panel.classList.toggle('flex', open);
+    iconOpen.classList.toggle('hidden', open);
+    iconClose.classList.toggle('hidden', !open);
+  }
+
+  let mobileMenuDocumentListenerAttached = false;
+
+  function setupMobileMenu() {
+    const elements = getMobileMenuElements();
+    if (!elements) return;
+    const { toggle, panel } = elements;
     if (toggle.dataset.bound === 'true') return;
     toggle.dataset.bound = 'true';
 
-    const setOpen = (open: boolean) => {
-      toggle.setAttribute('aria-expanded', String(open));
-      toggle.setAttribute(
-        'aria-label',
-        open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación',
-      );
-      panel.classList.toggle('hidden', !open);
-      panel.classList.toggle('flex', open);
-      iconOpen.classList.toggle('hidden', open);
-      iconClose.classList.toggle('hidden', !open);
-    };
-
     toggle.addEventListener('click', () => {
       const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-      setOpen(!isOpen);
+      setMobileMenuOpen(!isOpen);
     });
 
     panel.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => setOpen(false));
+      link.addEventListener('click', () => setMobileMenuOpen(false));
     });
 
-    document.addEventListener('click', (event) => {
-      if (!toggle.contains(event.target as Node) && !panel.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    });
+    if (!mobileMenuDocumentListenerAttached) {
+      mobileMenuDocumentListenerAttached = true;
+      document.addEventListener('click', (event) => {
+        const current = getMobileMenuElements();
+        if (!current) return;
+        const { toggle: currentToggle, panel: currentPanel } = current;
+        if (
+          !currentToggle.contains(event.target as Node) &&
+          !currentPanel.contains(event.target as Node)
+        ) {
+          setMobileMenuOpen(false);
+        }
+      });
+    }
   }
 
   setupMobileMenu();
