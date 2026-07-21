@@ -8,10 +8,10 @@ import {
   ensureThemeRuntime,
   getEffectiveTheme,
   getThemePreference,
-  setupThemeToggles,
+  setupThemeDropdowns,
   syncThemeFromPreference,
   toggleThemePreference,
-  updateThemeToggleIcons,
+  updateThemeDropdowns,
 } from './theme';
 
 const THEME_CHANGE = 'devfolio-theme-change';
@@ -300,85 +300,102 @@ describe('attachSystemThemeListener', () => {
   });
 });
 
-describe('updateThemeToggleIcons', () => {
-  function buildToggle() {
+describe('updateThemeDropdowns', () => {
+  function buildDropdown() {
     const root = document.createElement('div');
-    root.className = 'theme-toggle';
-    const system = document.createElement('span');
-    system.className = 'system-icon';
+    root.setAttribute('data-theme-dropdown', '');
+    const auto = document.createElement('span');
+    auto.className = 'auto-icon';
     const sun = document.createElement('span');
     sun.className = 'sun-icon';
     const moon = document.createElement('span');
     moon.className = 'moon-icon';
-    root.append(system, sun, moon);
+    root.append(auto, sun, moon);
     document.body.appendChild(root);
-    return { system, sun, moon };
+    return { auto, sun, moon };
   }
 
-  it('shows the system icon and hides sun/moon when following system', () => {
-    const icons = buildToggle();
+  it('shows the auto icon and hides sun/moon when following system', () => {
+    const icons = buildDropdown();
     document.documentElement.dataset.themePreference = 'system';
-    updateThemeToggleIcons();
-    expect(icons.system.classList.contains('hidden')).toBe(false);
+    updateThemeDropdowns();
+    expect(icons.auto.classList.contains('hidden')).toBe(false);
     expect(icons.sun.classList.contains('hidden')).toBe(true);
     expect(icons.moon.classList.contains('hidden')).toBe(true);
   });
 
   it('shows the sun icon for explicit light', () => {
-    const icons = buildToggle();
+    const icons = buildDropdown();
     document.documentElement.dataset.themePreference = 'light';
     document.documentElement.classList.remove('dark');
-    updateThemeToggleIcons();
-    expect(icons.system.classList.contains('hidden')).toBe(true);
+    updateThemeDropdowns();
+    expect(icons.auto.classList.contains('hidden')).toBe(true);
     expect(icons.sun.classList.contains('hidden')).toBe(false);
     expect(icons.moon.classList.contains('hidden')).toBe(true);
   });
 
   it('shows the moon icon for explicit dark', () => {
-    const icons = buildToggle();
+    const icons = buildDropdown();
     document.documentElement.dataset.themePreference = 'dark';
     document.documentElement.classList.add('dark');
-    updateThemeToggleIcons();
-    expect(icons.system.classList.contains('hidden')).toBe(true);
+    updateThemeDropdowns();
+    expect(icons.auto.classList.contains('hidden')).toBe(true);
     expect(icons.sun.classList.contains('hidden')).toBe(true);
     expect(icons.moon.classList.contains('hidden')).toBe(false);
   });
 
   it('defaults to system when the preference dataset is absent', () => {
-    const icons = buildToggle();
+    const icons = buildDropdown();
     delete document.documentElement.dataset.themePreference;
-    updateThemeToggleIcons();
-    expect(icons.system.classList.contains('hidden')).toBe(false);
+    updateThemeDropdowns();
+    expect(icons.auto.classList.contains('hidden')).toBe(false);
   });
 });
 
-describe('setupThemeToggles', () => {
-  function buildButton() {
-    const button = document.createElement('button');
-    button.className = 'theme-toggle';
-    document.body.appendChild(button);
-    return button;
+describe('setupThemeDropdowns', () => {
+  function buildDropdown() {
+    const root = document.createElement('div');
+    root.setAttribute('data-theme-dropdown', '');
+
+    const trigger = document.createElement('button');
+    trigger.className = 'theme-dropdown-trigger';
+    trigger.setAttribute('aria-expanded', 'false');
+
+    const menu = document.createElement('ul');
+    menu.className = 'theme-dropdown-menu hidden';
+
+    for (const value of ['system', 'light', 'dark'] as const) {
+      const option = document.createElement('button');
+      option.className = 'theme-dropdown-option';
+      option.dataset.themeValue = value;
+      menu.appendChild(option);
+    }
+
+    root.append(trigger, menu);
+    document.body.appendChild(root);
+    return { root, trigger, menu };
   }
 
-  it('binds a click handler that toggles preference and marks the button bound', () => {
-    const button = buildButton();
+  it('binds option clicks that set preference and marks the dropdown bound', () => {
+    const { root } = buildDropdown();
     localStorage.setItem(STORAGE_KEY, 'light');
-    setupThemeToggles();
-    expect(button.getAttribute('data-theme-bound')).toBe('true');
+    setupThemeDropdowns();
+    expect(root.getAttribute('data-theme-bound')).toBe('true');
 
-    button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    const darkOption = root.querySelector<HTMLButtonElement>('[data-theme-value="dark"]')!;
+    darkOption.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(localStorage.getItem(STORAGE_KEY)).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
-  it('does not double-bind an already-bound button', () => {
-    const button = buildButton();
-    button.setAttribute('data-theme-bound', 'true');
+  it('does not double-bind an already-bound dropdown', () => {
+    const { root } = buildDropdown();
+    root.setAttribute('data-theme-bound', 'true');
     localStorage.setItem(STORAGE_KEY, 'light');
-    setupThemeToggles();
+    setupThemeDropdowns();
 
-    button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    // No handler attached, so storage remains untouched.
+    const darkOption = root.querySelector<HTMLButtonElement>('[data-theme-value="dark"]')!;
+    darkOption.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(localStorage.getItem(STORAGE_KEY)).toBe('light');
   });
 });
@@ -393,16 +410,21 @@ describe('ensureThemeRuntime + bootstrapThemeUi', () => {
     }).not.toThrow();
   });
 
-  it('bootstrapThemeUi syncs document state and binds toggles', () => {
+  it('bootstrapThemeUi syncs document state and binds dropdowns', () => {
     stubMatchMedia(true);
-    const button = document.createElement('button');
-    button.className = 'theme-toggle';
-    document.body.appendChild(button);
+    const dropdown = document.createElement('div');
+    dropdown.setAttribute('data-theme-dropdown', '');
+    const trigger = document.createElement('button');
+    trigger.className = 'theme-dropdown-trigger';
+    const menu = document.createElement('ul');
+    menu.className = 'theme-dropdown-menu hidden';
+    dropdown.append(trigger, menu);
+    document.body.appendChild(dropdown);
 
     bootstrapThemeUi();
 
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(document.documentElement.dataset.themePreference).toBe('system');
-    expect(button.getAttribute('data-theme-bound')).toBe('true');
+    expect(dropdown.getAttribute('data-theme-bound')).toBe('true');
   });
 });

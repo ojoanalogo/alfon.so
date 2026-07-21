@@ -44,26 +44,17 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
   const person = SITE.person;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4 text-xs sm:space-y-2">
-      <div className="mb-4 flex items-center gap-3">
-        <div
-          className="flex size-16 shrink-0 items-center justify-center rounded-lg bg-stone-300/70 text-3xl dark:bg-gray-500/10"
-          role="img"
-          aria-label={`Foto de perfil de ${person.displayName}`}
-        >
-          🧑‍💻
-        </div>
-        <div className="flex flex-col gap-1">
-          <h1 id="about-heading" className="text-lg">
-            👋 ¡hola! soy <span className="font-semibold text-primary">{person.displayName}</span>
-          </h1>
-          <p className="text-xs text-muted">
-            {person.role} · {person.photographer}
-          </p>
-        </div>
+    <div className="mx-auto max-w-2xl space-y-3 text-xs sm:space-y-2">
+      <div className="mb-3 flex flex-col gap-1 sm:mb-4">
+        <h1 id="about-heading" className="text-base leading-snug sm:text-lg">
+          👋 ¡hola! soy <span className="font-semibold text-primary">{person.displayName}</span>
+        </h1>
+        <p className="text-xs text-muted">
+          {person.role} · {person.photographer}
+        </p>
       </div>
 
-      <div className="mb-4 rounded-lg bg-stone-300/70 p-3 dark:bg-gray-500/10">
+      <div className="mb-3 rounded-lg bg-stone-300/70 p-3 sm:mb-4 dark:bg-gray-500/10">
         <p className="leading-relaxed text-primary">{SITE.welcome.aboutCard}</p>
       </div>
 

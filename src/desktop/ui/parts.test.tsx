@@ -13,7 +13,7 @@ describe('InfoRow', () => {
 
   it('styles label as muted and value as secondary', () => {
     render(<InfoRow label="Role">Dev</InfoRow>);
-    expect(screen.getByText('Role').className).toContain('text-muted');
+    expect(screen.getByText('Role').parentElement?.className).toContain('text-muted');
     expect(screen.getByText('Dev').className).toContain('text-secondary');
   });
 });

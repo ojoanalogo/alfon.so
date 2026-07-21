@@ -6,58 +6,145 @@ interface Props {
 const { class: className = '' } = Astro.props;
 ---
 
-<button
-  type="button"
-  aria-label="Toggle dark mode"
-  data-tooltip="Cambiar tema"
-  class:list={[
-    'theme-toggle tooltip relative p-1 text-secondary transition-all duration-200 hover:text-primary',
-    className,
-  ]}
->
-  <svg
-    class="system-icon hidden h-4 w-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
+<div class:list={['theme-dropdown relative', className]} data-theme-dropdown>
+  <button
+    type="button"
+    class="theme-dropdown-trigger flex items-center gap-1 rounded-sm p-1 text-secondary transition-colors duration-200 hover:text-primary"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-label="Cambiar tema"
   >
-    <rect width="20" height="14" x="2" y="3" rx="2"></rect>
-    <path stroke-linecap="round" d="M8 21h8"></path>
-    <path stroke-linecap="round" d="M12 17v4"></path>
-  </svg>
-  <svg
-    class="sun-icon hidden h-4 w-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
+    <svg
+      class="auto-icon hidden h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+      <path fill="currentColor" d="M12 3a9 9 0 0 1 0 18z"></path>
+    </svg>
+    <svg
+      class="sun-icon hidden h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+      ></path>
+    </svg>
+    <svg
+      class="moon-icon hidden h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+      ></path>
+    </svg>
+    <svg
+      class="h-3 w-3 opacity-60"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"
+      ></path>
+    </svg>
+  </button>
+  <ul
+    class="theme-dropdown-menu absolute top-full right-0 z-50 mt-1 hidden min-w-[7.5rem] list-none rounded-md border border-gray-400/50 bg-white/95 py-1 text-xs shadow-sm backdrop-blur-lg dark:border-gray-400/30 dark:bg-black/90"
+    role="listbox"
+    aria-label="Opciones de tema"
   >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-    ></path>
-  </svg>
-  <svg
-    class="moon-icon hidden h-4 w-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-    ></path>
-  </svg>
-</button>
+    <li>
+      <button
+        type="button"
+        class="theme-dropdown-option flex w-full items-center gap-2 px-3 py-1.5 text-left text-secondary transition-colors hover:bg-black/[0.06] hover:text-primary dark:hover:bg-white/[0.08]"
+        role="option"
+        aria-selected="false"
+        data-theme-value="system"
+      >
+        <svg
+          class="h-3.5 w-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+          <path fill="currentColor" d="M12 3a9 9 0 0 1 0 18z"></path>
+        </svg>
+        Sistema
+      </button>
+    </li>
+    <li>
+      <button
+        type="button"
+        class="theme-dropdown-option flex w-full items-center gap-2 px-3 py-1.5 text-left text-secondary transition-colors hover:bg-black/[0.06] hover:text-primary dark:hover:bg-white/[0.08]"
+        role="option"
+        aria-selected="false"
+        data-theme-value="light"
+      >
+        <svg
+          class="h-3.5 w-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+          ></path>
+        </svg>
+        Claro
+      </button>
+    </li>
+    <li>
+      <button
+        type="button"
+        class="theme-dropdown-option flex w-full items-center gap-2 px-3 py-1.5 text-left text-secondary transition-colors hover:bg-black/[0.06] hover:text-primary dark:hover:bg-white/[0.08]"
+        role="option"
+        aria-selected="false"
+        data-theme-value="dark"
+      >
+        <svg
+          class="h-3.5 w-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          ></path>
+        </svg>
+        Oscuro
+      </button>
+    </li>
+  </ul>
+</div>
 
 <script>
   import { bootstrapThemeUi } from '@/lib/theme';

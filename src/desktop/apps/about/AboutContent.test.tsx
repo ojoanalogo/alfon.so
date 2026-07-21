@@ -12,13 +12,6 @@ describe('AboutContent', () => {
     expect(heading.textContent).toContain('alfonso reyes');
   });
 
-  it('renders the profile photo placeholder with an accessible label', () => {
-    render(<AboutContent />);
-    // The role=img + accessible name is the contract; the inner glyph is a
-    // transient placeholder and intentionally not asserted.
-    expect(screen.getByRole('img', { name: /foto de perfil/i })).toBeTruthy();
-  });
-
   it('renders the external work/hobby/community links with correct hrefs', () => {
     render(<AboutContent />);
     const expected: Record<string, string> = {
