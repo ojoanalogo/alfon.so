@@ -88,6 +88,8 @@ const linkClass = (isActive: boolean, withTooltip = false) =>
         <div
           id="mobile-nav-panel"
           data-open="false"
+          inert
+          aria-hidden="true"
           class="flex flex-col gap-1 border-t border-gray-400/30 sm:hidden dark:border-gray-400/20"
         >
           {
@@ -159,6 +161,8 @@ const linkClass = (isActive: boolean, withTooltip = false) =>
       open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación',
     );
     panel.dataset.open = String(open);
+    panel.toggleAttribute('inert', !open);
+    panel.setAttribute('aria-hidden', String(!open));
     iconOpen.classList.toggle('hidden', open);
     iconClose.classList.toggle('hidden', !open);
   }
