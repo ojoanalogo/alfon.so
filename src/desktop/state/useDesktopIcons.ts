@@ -1,36 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { DesktopIcon } from '@/config';
-import { isMobileViewport } from '../lib/layoutConstants';
 import { clampBoxToWorkArea } from '../lib/geometry';
+import { BASE_ICON_X, BASE_ICON_Y, iconFootprint, iconGridForViewport } from '../lib/iconGrid';
 
 export interface IconPosition {
   x: number;
   y: number;
-}
-
-/** Default left-column layout, mirroring the original vertical icon stack. */
-const BASE_X = 16;
-const BASE_Y = 16;
-/** Wrap to a new column after this many icons (keeps them inside short viewports). */
-const MAX_ROWS_DESKTOP = 6;
-const ROW_PITCH_DESKTOP = 84;
-const COL_PITCH_DESKTOP = 96;
-/** Approximate icon footprint on desktop, used for viewport clamping. */
-const ICON_WIDTH_DESKTOP = 80;
-const ICON_HEIGHT_DESKTOP = 72;
-
-function iconGridForViewport(): { maxRows: number; rowPitch: number; colPitch: number } {
-  if (isMobileViewport()) {
-    return { maxRows: 4, rowPitch: 100, colPitch: 100 };
-  }
-  return { maxRows: MAX_ROWS_DESKTOP, rowPitch: ROW_PITCH_DESKTOP, colPitch: COL_PITCH_DESKTOP };
-}
-
-function iconFootprint(): { width: number; height: number } {
-  if (isMobileViewport()) {
-    return { width: 96, height: 104 };
-  }
-  return { width: ICON_WIDTH_DESKTOP, height: ICON_HEIGHT_DESKTOP };
 }
 
 function defaultPositions(icons: DesktopIcon[]): Record<string, IconPosition> {
@@ -38,7 +13,7 @@ function defaultPositions(icons: DesktopIcon[]): Record<string, IconPosition> {
   const entries = icons.map((icon, index) => {
     const col = Math.floor(index / maxRows);
     const row = index % maxRows;
-    return [icon.id, { x: BASE_X + col * colPitch, y: BASE_Y + row * rowPitch }] as const;
+    return [icon.id, { x: BASE_ICON_X + col * colPitch, y: BASE_ICON_Y + row * rowPitch }] as const;
   });
   return Object.fromEntries(entries);
 }

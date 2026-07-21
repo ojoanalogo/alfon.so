@@ -4,10 +4,12 @@ import { centerInWorkArea } from './geometry';
 import {
   minWidthForDef,
   isMobileViewport,
+  isCompactLayoutViewport,
   MIN_WIDTH,
   MIN_HEIGHT,
-  TASKBAR_HEIGHT,
   EDGE_MARGIN,
+  readSafeAreaInsets,
+  taskbarReservedHeight,
 } from './layoutConstants';
 
 export function effectiveMinWidth(def: WindowDef, viewportWidth: number): number {
@@ -29,11 +31,12 @@ export function mobileWindowGeometry(
   viewportWidth: number,
   viewportHeight: number,
 ): WindowGeometry {
+  const safe = readSafeAreaInsets();
   return {
-    x: EDGE_MARGIN,
-    y: EDGE_MARGIN,
-    width: viewportWidth - EDGE_MARGIN * 2,
-    height: viewportHeight - TASKBAR_HEIGHT - EDGE_MARGIN * 2,
+    x: EDGE_MARGIN + safe.left,
+    y: EDGE_MARGIN + safe.top,
+    width: viewportWidth - EDGE_MARGIN * 2 - safe.left - safe.right,
+    height: viewportHeight - taskbarReservedHeight(safe.bottom) - EDGE_MARGIN * 2 - safe.top,
   };
 }
 
@@ -50,7 +53,7 @@ export function resolveWindowGeometry(
   measuredHeight?: number,
   measuredWidth?: number,
 ): WindowGeometry {
-  if (isMobileViewport(viewportWidth)) {
+  if (isCompactLayoutViewport(viewportWidth, viewportHeight)) {
     const mobile = mobileWindowGeometry(viewportWidth, viewportHeight);
     return {
       ...mobile,

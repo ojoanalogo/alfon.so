@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   isMobileViewport,
+  isCompactLayoutViewport,
   minWidthForDef,
   MIN_WIDTH,
   MOBILE_BREAKPOINT_PX,
+  COMPACT_HEIGHT_PX,
 } from './layoutConstants';
 import { makeWindowDef } from '@test/factories';
 
@@ -31,6 +33,25 @@ describe('isMobileViewport', () => {
     vi.stubGlobal('window', undefined);
     expect(isMobileViewport(390)).toBe(true);
     expect(isMobileViewport(1024)).toBe(false);
+  });
+});
+
+describe('isCompactLayoutViewport', () => {
+  it('is true below the width breakpoint', () => {
+    expect(isCompactLayoutViewport(MOBILE_BREAKPOINT_PX - 1, 800)).toBe(true);
+  });
+
+  it('is true below the height threshold even when wide', () => {
+    expect(isCompactLayoutViewport(844, COMPACT_HEIGHT_PX - 1)).toBe(true);
+  });
+
+  it('is false on a typical desktop viewport', () => {
+    expect(isCompactLayoutViewport(1024, 768)).toBe(false);
+  });
+
+  it('returns false during SSR when called without dimensions', () => {
+    vi.stubGlobal('window', undefined);
+    expect(isCompactLayoutViewport()).toBe(false);
   });
 });
 
