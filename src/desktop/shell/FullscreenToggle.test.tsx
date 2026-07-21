@@ -35,11 +35,11 @@ describe('FullscreenToggle', () => {
     expect(btn.className.includes('cursor-pointer')).toBe(true);
   });
 
-  it('shows the fullscreen icon and enter label when not fullscreen', () => {
+  it('shows the maximize icon and enter label when not fullscreen', () => {
     const { container } = render(<FullscreenToggle />);
     const btn = getButton();
     expect(btn.getAttribute('aria-label')).toBe('Pantalla completa');
-    expect(container.querySelector('svg.lucide-fullscreen')).toBeTruthy();
+    expect(container.querySelector('svg.lucide-maximize-2')).toBeTruthy();
     expect(container.querySelector('svg.lucide-minimize-2')).toBeNull();
   });
 
@@ -52,7 +52,7 @@ describe('FullscreenToggle', () => {
     const btn = getButton();
     expect(btn.getAttribute('aria-label')).toBe('Salir de pantalla completa');
     expect(container.querySelector('svg.lucide-minimize-2')).toBeTruthy();
-    expect(container.querySelector('svg.lucide-fullscreen')).toBeNull();
+    expect(container.querySelector('svg.lucide-maximize-2')).toBeNull();
   });
 
   it('requests fullscreen when clicked while not fullscreen', () => {
@@ -75,7 +75,7 @@ describe('FullscreenToggle', () => {
 
   it('updates the icon when fullscreenchange fires', () => {
     const { container } = render(<FullscreenToggle />);
-    expect(container.querySelector('svg.lucide-fullscreen')).toBeTruthy();
+    expect(container.querySelector('svg.lucide-maximize-2')).toBeTruthy();
 
     Object.defineProperty(document, 'fullscreenElement', {
       configurable: true,
@@ -84,6 +84,6 @@ describe('FullscreenToggle', () => {
     fireEvent(document, new Event('fullscreenchange'));
 
     expect(container.querySelector('svg.lucide-minimize-2')).toBeTruthy();
-    expect(container.querySelector('svg.lucide-fullscreen')).toBeNull();
+    expect(container.querySelector('svg.lucide-maximize-2')).toBeNull();
   });
 });

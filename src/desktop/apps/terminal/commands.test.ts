@@ -76,7 +76,7 @@ describe('runTerminalCommand', () => {
     // node_modules/ is a known trash directory entry (ls -F)
     expect(lines.some((l) => l.includes('node_modules/'))).toBe(true);
     // directory apps get a trailing slash
-    expect(lines.some((l) => l.includes('games/'))).toBe(true);
+    expect(lines.some((l) => l.includes('juegos/'))).toBe(true);
   });
 
   describe('notes sync', () => {
@@ -121,15 +121,15 @@ describe('runTerminalCommand', () => {
     });
   });
 
-  it('cat about reads a known desktop file', () => {
-    const lines = outputLines(runTerminalCommand('cat about', ctx()));
+  it('cat acerca reads a known desktop file', () => {
+    const lines = outputLines(runTerminalCommand('cat acerca', ctx()));
     expect(lines.some((l) => l.includes('alfonso reyes'))).toBe(true);
     expect(lines.some((l) => l.includes('hola@alfon.so'))).toBe(true);
   });
 
   it('cat strips ~/Desktop/ and ~/ path prefixes', () => {
-    const a = outputLines(runTerminalCommand('cat ~/Desktop/about', ctx()));
-    const b = outputLines(runTerminalCommand('cat ~/about', ctx()));
+    const a = outputLines(runTerminalCommand('cat ~/Desktop/acerca', ctx()));
+    const b = outputLines(runTerminalCommand('cat ~/acerca', ctx()));
     expect(a.some((l) => l.includes('alfonso reyes'))).toBe(true);
     expect(b.some((l) => l.includes('alfonso reyes'))).toBe(true);
   });
@@ -152,8 +152,8 @@ describe('runTerminalCommand', () => {
     expect(lines[0]).toBe('cat: blog: no such file');
   });
 
-  it('cat projects lists project entries', () => {
-    const lines = outputLines(runTerminalCommand('cat projects', ctx()));
+  it('cat proyectos lists project entries', () => {
+    const lines = outputLines(runTerminalCommand('cat proyectos', ctx()));
     expect(lines.some((l) => l.startsWith('drwxr-xr-x'))).toBe(true);
   });
 
@@ -196,23 +196,25 @@ describe('runTerminalCommand', () => {
     }
   });
 
-  it('cat contacto, cv, settings, games, notes, and terminal', () => {
+  it('cat contacto, currículum, ajustes, juegos, notas, and terminal', () => {
     expect(
       outputLines(runTerminalCommand('cat contacto', ctx())).some((l) =>
         l.includes('hola@alfon.so'),
       ),
     ).toBe(true);
     expect(
-      outputLines(runTerminalCommand('cat cv', ctx())).some((l) => l.includes('currículum')),
+      outputLines(runTerminalCommand('cat currículum', ctx())).some((l) =>
+        l.includes('currículum'),
+      ),
     ).toBe(true);
     expect(
-      outputLines(runTerminalCommand('cat settings', ctx())).some((l) => l.includes('ajustes')),
+      outputLines(runTerminalCommand('cat ajustes', ctx())).some((l) => l.includes('ajustes')),
     ).toBe(true);
     expect(
-      outputLines(runTerminalCommand('cat games', ctx())).some((l) => l.includes('minesweeper')),
+      outputLines(runTerminalCommand('cat juegos', ctx())).some((l) => l.includes('minesweeper')),
     ).toBe(true);
     expect(
-      outputLines(runTerminalCommand('cat notes', ctx())).some((l) => l.includes('~/notes')),
+      outputLines(runTerminalCommand('cat notas', ctx())).some((l) => l.includes('~/notes')),
     ).toBe(true);
     expect(
       outputLines(runTerminalCommand('cat terminal', ctx())).some((l) => l.includes('help')),
@@ -222,7 +224,7 @@ describe('runTerminalCommand', () => {
   it('cat with no argument prompts for a file', () => {
     const lines = outputLines(runTerminalCommand('cat', ctx()));
     expect(lines).toContain('cat: falta archivo');
-    expect(lines.some((l) => l.includes('cat about'))).toBe(true);
+    expect(lines.some((l) => l.includes('cat acerca'))).toBe(true);
   });
 
   it('cat on a missing file returns a no-such-file error', () => {

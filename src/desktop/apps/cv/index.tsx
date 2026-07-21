@@ -9,7 +9,7 @@ export default defineApp({
   title: 'mi_cv_final_FINAL_v7.doc',
   iconKey: 'cv',
   geometry: { defaultX: 160, defaultY: 56, defaultWidth: 520, defaultHeight: 480, initialZ: 12 },
-  desktopIcon: { label: 'cv', tooltip: 'Currículum' },
+  desktopIcon: { label: 'currículum', tooltip: 'Currículum' },
   taskbarTooltip: 'CV',
   body: () => (
     <Suspense fallback={<AppLoading />}>

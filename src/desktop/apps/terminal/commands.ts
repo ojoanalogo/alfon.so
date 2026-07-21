@@ -28,8 +28,8 @@ const CAT_BY_APP_ID: Partial<Record<AppId, string[]>> = {
     (project) => `drwxr-xr-x  ${`${project.title}/`.padEnd(12)}${project.description}`,
   ),
   contacto: ['correo: hola@alfon.so', '(abre el icono contacto en el escritorio)'],
-  cv: ['mi_cv_final_FINAL_v7.doc — currículum', '(abre el icono cv en el escritorio)'],
-  settings: ['ajustes del escritorio — tema, fondo, etc.', '(abre settings desde el escritorio)'],
+  cv: ['mi_cv_final_FINAL_v7.doc — currículum', '(abre el icono currículum en el escritorio)'],
+  settings: ['ajustes del escritorio — tema, fondo, etc.', '(abre ajustes desde el escritorio)'],
   games: [
     'juegos/ — snake, pong, breakout, plane, minesweeper',
     '(abre el folder juegos/ en el escritorio)',
@@ -163,7 +163,7 @@ export function runTerminalCommand(
         return {
           blocks: [
             commandBlock,
-            { kind: 'output', lines: ['cat: falta archivo', 'prueba: cat about'] },
+            { kind: 'output', lines: ['cat: falta archivo', 'prueba: cat acerca'] },
           ],
         };
       }

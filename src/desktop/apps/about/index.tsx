@@ -14,7 +14,7 @@ export default defineApp({
     center: true,
     defaultOpen: true,
   },
-  desktopIcon: { label: 'about', tooltip: 'Mi info' },
+  desktopIcon: { label: 'acerca', tooltip: 'Mi info' },
   taskbarTooltip: 'about.html',
   body: (ctx) => <AboutContent posts={ctx.posts} onOpenPost={ctx.onOpenPost} />,
 });
