@@ -6,7 +6,7 @@ import TrashFooter from './TrashFooter';
 
 export default explorerApp({
   id: 'trash',
-  title: '🗑 Papelera',
+  title: 'Papelera',
   iconKey: 'trash',
   items: (ctx) => {
     const junk = TRASH_JUNK.map<ListItem>((entry) => {

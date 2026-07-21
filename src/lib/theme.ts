@@ -126,13 +126,15 @@ export function updateThemeDropdowns() {
 }
 
 function closeThemeDropdowns(except?: Element) {
-  document.querySelectorAll('[data-theme-dropdown]').forEach((dropdown) => {
-    if (dropdown === except) return;
-    const trigger = dropdown.querySelector<HTMLButtonElement>('.theme-dropdown-trigger');
-    const menu = dropdown.querySelector('.theme-dropdown-menu');
-    trigger?.setAttribute('aria-expanded', 'false');
-    menu?.classList.add('hidden');
-  });
+  document
+    .querySelectorAll('[data-theme-dropdown][data-theme-bound="true"]')
+    .forEach((dropdown) => {
+      if (dropdown === except) return;
+      const trigger = dropdown.querySelector<HTMLButtonElement>('.theme-dropdown-trigger');
+      const menu = dropdown.querySelector('.theme-dropdown-menu');
+      trigger?.setAttribute('aria-expanded', 'false');
+      menu?.classList.add('hidden');
+    });
 }
 
 let themeDropdownDocumentListenerAttached = false;

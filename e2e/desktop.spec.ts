@@ -5,19 +5,18 @@ const isDark = (page: import('@playwright/test').Page) =>
   page.evaluate(() => document.documentElement.classList.contains('dark'));
 
 test.describe('theme persistence', () => {
-  test('toggling the theme persists across reload and is applied before hydration', async ({
-    page,
-  }) => {
+  test('selecting a theme from the taskbar dropdown persists across reload', async ({ page }) => {
     await gotoDesktop(page);
     const before = await isDark(page);
 
-    // Three theme toggles share this tooltip: two static pre-hydration buttons
-    // (data-theme-bound, in the site header) and the React desktop one. Target the
-    // React toggle — the only one without the static binding marker.
-    await page.locator('[data-tooltip="Cambiar tema"]:not([data-theme-bound])').click();
+    const themeTrigger = page.locator(
+      '[aria-label="Bandeja del sistema"] [data-tooltip="Cambiar tema"]',
+    );
+    await themeTrigger.click();
+    await page.getByRole('option', { name: before ? 'Claro' : 'Oscuro' }).click();
     const toggled = await isDark(page);
-    expect(toggled).not.toBe(before); // the toggle flipped the theme
-    expect(await page.evaluate(() => localStorage.getItem('theme'))).toBeTruthy(); // manual pref stored
+    expect(toggled).not.toBe(before);
+    expect(await page.evaluate(() => localStorage.getItem('theme'))).toBeTruthy();
 
     // Reload: the inline <head> bootstrap must apply the stored theme during HTML
     // parse — before the React island hydrates — so there is no flash.
