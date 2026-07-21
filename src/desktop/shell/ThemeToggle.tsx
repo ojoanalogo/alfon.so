@@ -10,7 +10,7 @@ const OPTIONS: { value: ThemePreference; label: string; icon: typeof SystemIcon 
 ];
 
 const MENU =
-  'absolute top-full right-0 z-50 mt-1 min-w-[7.5rem] list-none rounded-md border border-gray-400/50 bg-white/95 py-1 text-xs shadow-sm backdrop-blur-lg dark:border-gray-400/30 dark:bg-black/90';
+  'theme-dropdown-menu absolute right-0 bottom-full z-50 mb-1 min-w-[7.5rem] list-none rounded-md border border-gray-400/50 bg-white/95 py-1 text-xs shadow-sm backdrop-blur-lg dark:border-gray-400/30 dark:bg-black/90';
 const OPTION =
   'flex w-full items-center gap-2 px-3 py-1.5 text-left text-secondary transition-colors hover:bg-black/[0.06] hover:text-primary dark:hover:bg-white/[0.08]';
 const OPTION_SELECTED = 'font-semibold text-primary';
@@ -70,7 +70,7 @@ export default function ThemeToggle({ className }: { className?: string }) {
         <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={2} aria-hidden />
       </button>
       <ul
-        className={['theme-dropdown-menu', MENU, open ? '' : 'hidden'].filter(Boolean).join(' ')}
+        className={[MENU, open ? '' : 'hidden'].filter(Boolean).join(' ')}
         role="listbox"
         aria-label="Opciones de tema"
       >
