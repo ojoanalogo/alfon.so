@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import ThemeToggle from './ThemeToggle';
 import { ThemeProvider } from '../state/ThemeContext';
+import { setupThemeDropdowns } from '@/lib/theme';
 import { stubMatchMedia } from '@test/helpers';
 
 function renderToggle(props?: { className?: string }) {
@@ -40,7 +41,7 @@ describe('ThemeToggle', () => {
 
   it('forwards a custom className on the dropdown container', () => {
     const { container } = renderToggle({ className: 'my-custom-class' });
-    const dropdown = container.querySelector('[data-theme-dropdown]');
+    const dropdown = container.querySelector('.theme-dropdown');
     expect(dropdown?.className.includes('my-custom-class')).toBe(true);
     expect(dropdown?.className.includes('theme-dropdown')).toBe(true);
   });
@@ -135,5 +136,16 @@ describe('ThemeToggle', () => {
 
     fireEvent.pointerDown(document.body);
     expect(getTrigger().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('is not closed by Astro setupThemeDropdowns global click handler', () => {
+    setupThemeDropdowns();
+    renderToggle();
+    fireEvent.click(getTrigger());
+    expect(getTrigger().getAttribute('aria-expanded')).toBe('true');
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(getTrigger().getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('option', { name: 'Oscuro' })).toBeTruthy();
   });
 });

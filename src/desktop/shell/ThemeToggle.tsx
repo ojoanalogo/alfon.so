@@ -55,7 +55,6 @@ export default function ThemeToggle({ className }: { className?: string }) {
     <div
       ref={containerRef}
       className={['theme-dropdown relative', className].filter(Boolean).join(' ')}
-      data-theme-dropdown
     >
       <button
         type="button"
