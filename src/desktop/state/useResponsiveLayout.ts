@@ -3,7 +3,7 @@ import { flushSync } from 'react-dom';
 import type { WindowManager } from './useWindowManager';
 import type { WindowDef, WindowGeometry } from '../types';
 import { mobileWindowGeometry } from '../lib/viewport';
-import { isMobileViewport } from '../lib/layoutConstants';
+import { isCompactLayoutViewport } from '../lib/layoutConstants';
 
 export function useResponsiveLayout(
   wm: WindowManager,
@@ -55,7 +55,7 @@ export function useResponsiveLayout(
       flushSync(() => {
         wm.open(id);
       });
-      if (isMobileViewport()) {
+      if (isCompactLayoutViewport()) {
         fitWindowToMobile(id);
       }
     },
@@ -74,7 +74,7 @@ export function useResponsiveLayout(
 
     const vw = rawVw;
     const vh = rawVh;
-    const mobile = isMobileViewport(vw);
+    const mobile = isCompactLayoutViewport(vw, vh);
 
     function applyLayout() {
       if (mobile) {

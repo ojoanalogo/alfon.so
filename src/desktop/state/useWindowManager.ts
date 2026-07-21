@@ -5,7 +5,7 @@ import {
   resolveDefaultOpenGeometry,
   effectiveMinWidth,
 } from '../lib/viewport';
-import { isMobileViewport, MIN_WIDTH, MIN_HEIGHT } from '../lib/layoutConstants';
+import { isCompactLayoutViewport, MIN_WIDTH, MIN_HEIGHT } from '../lib/layoutConstants';
 
 function createInitialState(
   defs: WindowDef[],
@@ -194,7 +194,7 @@ export function useWindowManager(
         const wasClosed = !target.open;
         let next: WindowState = { ...target, open: true, minimized: false };
 
-        if (wasClosed && def && !isMobileViewport(vw)) {
+        if (wasClosed && def && !isCompactLayoutViewport(vw, vh)) {
           const geo = resolveDefaultOpenGeometry(def, vw, vh);
           next = applyDefaultGeometry(next, geo, def);
         }

@@ -17,7 +17,7 @@ import { useTrashController } from './state/useTrashController';
 import { NoteOpenBridgeProvider, useDesktopAppContextValue } from './state/useAppContext';
 import { useKonamiCode } from './state/useKonamiCode';
 import { useTaskbarMeta } from './state/useTaskbarMeta';
-import { isMobileViewport, minWidthForDef } from './lib/layoutConstants';
+import { isCompactLayoutViewport, minWidthForDef } from './lib/layoutConstants';
 import { useMemo, useEffect } from 'react';
 
 interface DesktopShellProps {
@@ -83,7 +83,7 @@ export default function DesktopShell({
       openWindow(id);
     } else {
       wm.focus(id);
-      if (isMobileViewport()) {
+      if (isCompactLayoutViewport()) {
         fitWindowToMobile(id);
       }
     }

@@ -110,6 +110,25 @@ describe('useResponsiveLayout - mobile geometry', () => {
     expect(wm.relayoutToViewport).toHaveBeenCalledWith(DESKTOP_VW, DESKTOP_VH);
     expect(wm.correctLayouts).not.toHaveBeenCalled();
   });
+
+  it('applies compact geometry on a short landscape viewport', () => {
+    const landscapeVw = 844;
+    const landscapeVh = 390;
+    setViewport(landscapeVw, landscapeVh);
+    const defs: WindowDef[] = [makeWindowDef({ id: 'a', defaultHeight: 400 })];
+    const wm = makeWm({ a: makeWindowState({ id: 'a', open: true, minimized: false }) });
+
+    renderHook(() => useResponsiveLayout(wm, defs, { width: landscapeVw, height: landscapeVh }));
+
+    expect(wm.correctLayouts).toHaveBeenCalled();
+    const updates = (wm.correctLayouts as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0];
+    expect(updates.a).toEqual({
+      x: EDGE_MARGIN,
+      y: EDGE_MARGIN,
+      width: landscapeVw - EDGE_MARGIN * 2,
+      height: landscapeVh - TASKBAR_HEIGHT - EDGE_MARGIN * 2,
+    });
+  });
 });
 
 describe('useResponsiveLayout - resize epoch', () => {

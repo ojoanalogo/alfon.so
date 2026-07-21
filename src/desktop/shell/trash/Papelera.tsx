@@ -22,7 +22,7 @@ export default function Papelera({
   return (
     <div
       className={[
-        'pointer-events-none fixed right-4 bottom-[3.25rem] z-[1] max-sm:right-2 max-sm:bottom-12',
+        'pointer-events-none fixed right-[max(1rem,env(safe-area-inset-right,0px))] bottom-[calc(3.25rem+env(safe-area-inset-bottom,0px))] z-[1] max-sm:right-[max(0.5rem,env(safe-area-inset-right,0px))] max-sm:bottom-[calc(3rem+env(safe-area-inset-bottom,0px))]',
         `papelera--labels-${iconLabelTone}`,
       ].join(' ')}
     >

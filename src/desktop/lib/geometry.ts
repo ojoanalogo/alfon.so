@@ -1,4 +1,4 @@
-import { EDGE_MARGIN, TASKBAR_HEIGHT } from './layoutConstants';
+import { EDGE_MARGIN, readSafeAreaInsets, taskbarReservedHeight } from './layoutConstants';
 
 /** Clamp `value` into the inclusive range `[min, max]`. */
 export function clamp(value: number, min: number, max: number): number {
@@ -19,11 +19,17 @@ export function clampBoxToWorkArea(
   viewportWidth: number,
   viewportHeight: number,
 ): { x: number; y: number } {
-  const maxX = Math.max(EDGE_MARGIN, viewportWidth - w - EDGE_MARGIN);
-  const maxY = Math.max(EDGE_MARGIN, viewportHeight - TASKBAR_HEIGHT - h - EDGE_MARGIN);
+  const safe = readSafeAreaInsets();
+  const minX = EDGE_MARGIN + safe.left;
+  const minY = EDGE_MARGIN + safe.top;
+  const maxX = Math.max(minX, viewportWidth - w - EDGE_MARGIN - safe.right);
+  const maxY = Math.max(
+    minY,
+    viewportHeight - taskbarReservedHeight(safe.bottom) - h - EDGE_MARGIN,
+  );
   return {
-    x: clamp(x, EDGE_MARGIN, maxX),
-    y: clamp(y, EDGE_MARGIN, maxY),
+    x: clamp(x, minX, maxX),
+    y: clamp(y, minY, maxY),
   };
 }
 
@@ -38,8 +44,11 @@ export function centerInWorkArea(
   boxW: number,
   boxH: number,
 ): { x: number; y: number } {
+  const safe = readSafeAreaInsets();
+  const workW = viewportWidth - safe.left - safe.right;
+  const workH = viewportHeight - safe.top - taskbarReservedHeight(safe.bottom);
   return {
-    x: Math.max(EDGE_MARGIN, (viewportWidth - boxW) / 2),
-    y: Math.max(EDGE_MARGIN, (viewportHeight - TASKBAR_HEIGHT - boxH) / 2),
+    x: Math.max(EDGE_MARGIN + safe.left, safe.left + (workW - boxW) / 2),
+    y: Math.max(EDGE_MARGIN + safe.top, safe.top + (workH - boxH) / 2),
   };
 }

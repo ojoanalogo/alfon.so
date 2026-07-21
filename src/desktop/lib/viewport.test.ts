@@ -78,6 +78,12 @@ describe('resolveDefaultOpenGeometry', () => {
     expect(geo.x).toBe(EDGE_MARGIN);
     expect(geo.width).toBe(500 - EDGE_MARGIN * 2);
   });
+
+  it('returns a full-bleed compact box on a short landscape viewport', () => {
+    const geo = resolveDefaultOpenGeometry(makeWindowDef({ defaultWidth: 600 }), 844, 390);
+    expect(geo.x).toBe(EDGE_MARGIN);
+    expect(geo.width).toBe(844 - EDGE_MARGIN * 2);
+  });
 });
 
 describe('resolveWindowGeometry', () => {
