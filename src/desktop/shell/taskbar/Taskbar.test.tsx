@@ -46,6 +46,13 @@ function renderTaskbar(props: ReturnType<typeof makeProps>) {
 }
 
 describe('Taskbar', () => {
+  it('renders fullscreen and theme toggles in the system tray', () => {
+    const { container } = renderTaskbar(makeProps());
+    const tray = container.querySelector('[aria-label="Bandeja del sistema"]')!;
+    expect(tray.querySelector('[data-tooltip="Pantalla completa"]')).toBeTruthy();
+    expect(tray.querySelector('[data-tooltip="Cambiar tema"]')).toBeTruthy();
+  });
+
   it('renders no window buttons when there are no open windows', () => {
     const { container } = renderTaskbar(makeProps());
     expect(container.querySelector('[data-taskbar-window]')).toBeNull();

@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { SITE_TITLE } from '@/config';
 import ContextMenu, { type ContextMenuItem } from '../ContextMenu';
 import StartMenu from '../startmenu/StartMenu';
+import FullscreenToggle from '../FullscreenToggle';
 import ThemeToggle from '../ThemeToggle';
 import TaskbarClock from './TaskbarClock';
 import type { DesktopIcon } from '@/config';
@@ -142,6 +143,7 @@ export default function Taskbar({
         className="flex shrink-0 items-center gap-[0.125rem] border-l border-l-[rgb(113_113_122/0.25)] pl-2 max-sm:pl-[0.375rem]"
         aria-label="Bandeja del sistema"
       >
+        <FullscreenToggle className="shrink-0" />
         <ThemeToggle className="shrink-0" />
         <TaskbarClock />
       </div>
