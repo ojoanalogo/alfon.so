@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeProvider } from '@desktop/state/ThemeContext';
 import { WallpaperProvider } from '@desktop/state/WallpaperContext';
+import { WindowTransparencyProvider } from '@desktop/state/WindowTransparencyContext';
 import { DESKTOP_COLORS } from '@desktop/lib/desktopColors';
 import type { WallpaperOption } from '@desktop/types';
 import { stubMatchMedia } from '@test/helpers';
@@ -16,9 +17,11 @@ const WALLPAPERS: WallpaperOption[] = [
 function renderSection(wallpapers: WallpaperOption[] = WALLPAPERS) {
   return render(
     <ThemeProvider>
-      <WallpaperProvider wallpapers={wallpapers}>
-        <AppearanceSection />
-      </WallpaperProvider>
+      <WindowTransparencyProvider>
+        <WallpaperProvider wallpapers={wallpapers}>
+          <AppearanceSection />
+        </WallpaperProvider>
+      </WindowTransparencyProvider>
     </ThemeProvider>,
   );
 }
@@ -26,6 +29,7 @@ function renderSection(wallpapers: WallpaperOption[] = WALLPAPERS) {
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.className = '';
+  delete document.documentElement.dataset.windowTransparency;
   stubMatchMedia();
 });
 
@@ -137,6 +141,26 @@ describe('AppearanceSection', () => {
     fireEvent.click(screen.getByText('Oscuro'));
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(localStorage.getItem('theme')).toBe('dark');
+  });
+
+  it('renders the window transparency toggle enabled by default', () => {
+    renderSection();
+
+    expect(
+      screen.getByRole('switch', { name: 'Transparencia sin foco' }).getAttribute('aria-checked'),
+    ).toBe('true');
+  });
+
+  it('disabling window transparency persists the preference on the document', () => {
+    renderSection();
+
+    fireEvent.click(screen.getByRole('switch', { name: 'Transparencia sin foco' }));
+
+    expect(localStorage.getItem('devfolio.window-transparency')).toBe('false');
+    expect(document.documentElement.dataset.windowTransparency).toBe('false');
+    expect(
+      screen.getByRole('switch', { name: 'Transparencia sin foco' }).getAttribute('aria-checked'),
+    ).toBe('false');
   });
 
   it('shows the empty-state message and no wallpaper list when there are no wallpapers', () => {

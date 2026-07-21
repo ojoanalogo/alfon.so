@@ -1,7 +1,8 @@
 import ThemeSegmentedControl from './ThemeSegmentedControl';
 import { useWallpaper } from '@desktop/state/WallpaperContext';
+import { useWindowTransparency } from '@desktop/state/WindowTransparencyContext';
 import { STATE_CLASS } from '@desktop/lib/stateClasses';
-import { SETTINGS_GROUP, SettingsRow } from './ui';
+import { SETTINGS_GROUP, SettingsRow, SettingsToggle } from './ui';
 
 const SWATCH_INNER =
   'h-full w-full overflow-hidden rounded-[inherit] border border-[rgb(0_0_0/0.12)] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)]';
@@ -59,15 +60,27 @@ export default function AppearanceSection() {
     setBackgroundColor,
     desktopColors,
   } = useWallpaper();
+  const { enabled: windowTransparencyEnabled, setEnabled: setWindowTransparencyEnabled } =
+    useWindowTransparency();
 
   return (
     <>
       <div className={SETTINGS_GROUP}>
         <SettingsRow
           label="Tema"
-          hint="Sistema sigue el modo del SO; el botón fuerza claro u oscuro"
+          hint="Sistema sigue el modo del SO; la bandeja del sistema también ofrece un selector"
         >
           <ThemeSegmentedControl />
+        </SettingsRow>
+        <SettingsRow
+          label="Transparencia sin foco"
+          hint="Las ventanas en segundo plano se vuelven semitransparentes"
+        >
+          <SettingsToggle
+            checked={windowTransparencyEnabled}
+            onChange={setWindowTransparencyEnabled}
+            ariaLabel="Transparencia sin foco"
+          />
         </SettingsRow>
       </div>
 

@@ -48,6 +48,40 @@ export interface SegmentedOption<T extends string> {
 }
 
 /** A single-select pill group (theme, icon size, spacing, sort, label tone…). */
+const TOGGLE_TRACK =
+  'relative inline-flex h-[1.125rem] w-[1.875rem] shrink-0 cursor-pointer rounded-full border border-[color:var(--color-hairline)] bg-[rgb(113_113_122/0.2)] p-[0.125rem] transition-colors';
+const TOGGLE_THUMB =
+  'block h-[0.75rem] w-[0.75rem] rounded-full bg-white shadow-[0_1px_2px_rgb(0_0_0/0.18)] transition-transform dark:bg-[rgb(228_228_231)]';
+const TOGGLE_ON = 'bg-[color:var(--color-highlight-border)]';
+
+/** On/off switch for boolean settings rows. */
+export function SettingsToggle({
+  checked,
+  onChange,
+  ariaLabel,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  ariaLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={ariaLabel}
+      className={`${TOGGLE_TRACK} ${checked ? TOGGLE_ON : ''}`}
+      onClick={() => onChange(!checked)}
+    >
+      <span
+        className={TOGGLE_THUMB}
+        style={{ transform: checked ? 'translateX(0.75rem)' : 'translateX(0)' }}
+        aria-hidden="true"
+      />
+    </button>
+  );
+}
+
 export function SegmentedControl<T extends string>({
   options,
   selected,

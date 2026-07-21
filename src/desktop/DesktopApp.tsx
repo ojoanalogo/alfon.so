@@ -4,6 +4,7 @@ import { useDesktopApps } from './state/useDesktopApps';
 import { WindowManagerProvider } from './state/WindowManagerContext';
 import { WallpaperProvider } from './state/WallpaperContext';
 import { ThemeProvider } from './state/ThemeContext';
+import { WindowTransparencyProvider } from './state/WindowTransparencyContext';
 import DesktopShell from './DesktopShell';
 import type { BlogPostSummary, WallpaperOption } from './types';
 
@@ -23,15 +24,17 @@ export default function DesktopApp({ posts, wallpapers, desktopIconUrls }: Deskt
       viewportHeight={viewport.height}
     >
       <ThemeProvider>
-        <WallpaperProvider wallpapers={wallpapers}>
-          <DesktopShell
-            apps={apps}
-            defs={defs}
-            posts={posts}
-            desktopIconUrls={desktopIconUrls}
-            viewport={viewport}
-          />
-        </WallpaperProvider>
+        <WindowTransparencyProvider>
+          <WallpaperProvider wallpapers={wallpapers}>
+            <DesktopShell
+              apps={apps}
+              defs={defs}
+              posts={posts}
+              desktopIconUrls={desktopIconUrls}
+              viewport={viewport}
+            />
+          </WallpaperProvider>
+        </WindowTransparencyProvider>
       </ThemeProvider>
     </WindowManagerProvider>
   );
