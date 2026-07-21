@@ -75,6 +75,14 @@
     --safe-area-right: env(safe-area-inset-right, 0px);
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-left: env(safe-area-inset-left, 0px);
+    --taskbar-bottom-pad: 0px;
+  }
+
+  /* Phone landscape: breathe room below taskbar controls at the curved edge. */
+  @media (height < 32.5rem) and (min-width: 40rem) {
+    :root {
+      --taskbar-bottom-pad: 10px;
+    }
   }
 
   html {
