@@ -50,7 +50,7 @@ describe('ThemeToggle', () => {
     renderToggle();
     const trigger = getTrigger();
     expect(document.documentElement.dataset.themePreference).toBe('system');
-    expect(trigger.querySelector('svg.lucide-monitor')).toBeTruthy();
+    expect(trigger.querySelector('svg.theme-icon-system')).toBeTruthy();
     expect(trigger.querySelector('svg.lucide-sun')).toBeNull();
     expect(trigger.querySelector('svg.lucide-moon')).toBeNull();
   });
@@ -60,7 +60,7 @@ describe('ThemeToggle', () => {
     renderToggle();
     const trigger = getTrigger();
     expect(trigger.querySelector('svg.lucide-sun')).toBeTruthy();
-    expect(trigger.querySelector('svg.lucide-monitor')).toBeNull();
+    expect(trigger.querySelector('svg.theme-icon-system')).toBeNull();
     expect(trigger.querySelector('svg.lucide-moon')).toBeNull();
   });
 
@@ -70,7 +70,7 @@ describe('ThemeToggle', () => {
     const trigger = getTrigger();
     expect(trigger.querySelector('svg.lucide-moon')).toBeTruthy();
     expect(trigger.querySelector('svg.lucide-sun')).toBeNull();
-    expect(trigger.querySelector('svg.lucide-monitor')).toBeNull();
+    expect(trigger.querySelector('svg.theme-icon-system')).toBeNull();
   });
 
   it('opens the menu with Sistema, Claro, and Oscuro options', () => {
