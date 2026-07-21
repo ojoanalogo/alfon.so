@@ -14,9 +14,12 @@ describe('ThemeIcons', () => {
     expect(container.querySelector('svg')).toBeTruthy();
   });
 
-  it('renders SystemIcon as an svg', () => {
+  it('renders SystemIcon with the mobile header half-circle auto glyph', () => {
     const { container } = render(<SystemIcon />);
-    expect(container.querySelector('svg')).toBeTruthy();
+    const svg = container.querySelector('svg.theme-icon-system');
+    expect(svg).toBeTruthy();
+    expect(svg?.querySelector('circle')).toBeTruthy();
+    expect(svg?.querySelector('path[fill="currentColor"]')).toBeTruthy();
   });
 
   it('applies the default className when none is provided', () => {
