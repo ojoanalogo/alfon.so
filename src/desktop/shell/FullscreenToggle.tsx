@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Expand, Shrink } from 'lucide-react';
+import { Maximize2, Minimize2 } from 'lucide-react';
 
 export default function FullscreenToggle({ className }: { className?: string }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -36,9 +36,9 @@ export default function FullscreenToggle({ className }: { className?: string }) 
         .join(' ')}
     >
       {isFullscreen ? (
-        <Shrink className="h-4 w-4" strokeWidth={2} aria-hidden />
+        <Minimize2 className="h-4 w-4" strokeWidth={2} aria-hidden />
       ) : (
-        <Expand className="h-4 w-4" strokeWidth={2} aria-hidden />
+        <Maximize2 className="h-4 w-4" strokeWidth={2} aria-hidden />
       )}
     </button>
   );

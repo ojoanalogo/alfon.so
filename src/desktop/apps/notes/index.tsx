@@ -9,7 +9,7 @@ export default defineApp({
   title: 'notas',
   iconKey: 'notes',
   geometry: { defaultX: 230, defaultY: 80, defaultWidth: 840, defaultHeight: 440, initialZ: 14 },
-  desktopIcon: { label: 'notes', tooltip: 'Notas' },
+  desktopIcon: { label: 'notas', tooltip: 'Notas' },
   taskbarTooltip: 'Notas',
   bodyClassName: 'notes-window__body',
   body: () => (
