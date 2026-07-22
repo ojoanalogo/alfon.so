@@ -166,7 +166,10 @@ export default function Taskbar({
       {menu && (
         <ContextMenu x={menu.x} y={menu.y} items={menu.items} onClose={() => setMenu(null)} />
       )}
-      <div className="h-[env(safe-area-inset-bottom,0px)] shrink-0" aria-hidden />
+      <div
+        className="desktop-taskbar__safe-area h-[var(--safe-area-bottom)] shrink-0"
+        aria-hidden
+      />
     </footer>
   );
 }

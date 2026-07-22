@@ -78,6 +78,13 @@
     --taskbar-bottom-pad: 0px;
   }
 
+  /* Phone landscape: home indicator is on the sides — no bottom inset. */
+  @media (height < 32.5rem) and (min-width: 40rem) {
+    :root {
+      --safe-area-bottom: 0px;
+    }
+  }
+
   html {
     font-size: 16px;
     color-scheme: light;
