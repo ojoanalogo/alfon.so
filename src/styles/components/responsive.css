@@ -1,6 +1,6 @@
 @layer components {
-  /* --- Compact / narrow viewports (portrait mobile + phone landscape) -------- */
-  @media (width < 40rem), (height < 32.5rem) {
+  /* --- Portrait mobile: full-bleed app windows (phone landscape uses desktop layout) */
+  @media (width < 40rem) {
     .desktop-window {
       width: auto;
       min-width: 0;
@@ -75,12 +75,12 @@
     .dark #mobile-nav-panel[data-open='true'] {
       border-top-color: rgb(113 113 122 / 0.2);
     }
+  }
 
-    /* Phone landscape: sit controls just above the bottom pad. */
-    @media (min-width: 40rem) {
-      .desktop-taskbar {
-        align-items: flex-end;
-      }
+  /* Phone landscape: single-line clock keeps tray controls vertically even. */
+  @media (height < 32.5rem) and (min-width: 40rem) {
+    .taskbar-clock__date {
+      display: none;
     }
   }
 

@@ -10,8 +10,12 @@ export const TASKBAR_HEIGHT = 40;
 export const EDGE_MARGIN = 8;
 /** Matches the `40rem` breakpoint used in global.css. */
 export const MOBILE_BREAKPOINT_PX = 640;
-/** Short viewports (e.g. phone landscape) use the compact full-bleed layout. */
+/** Short viewports (e.g. phone landscape) — used for smaller window caps, not full-bleed. */
 export const COMPACT_HEIGHT_PX = 520;
+/** Max default window width as a fraction of viewport on phone landscape. */
+export const LANDSCAPE_PHONE_WIDTH_FRACTION = 0.65;
+/** Max default window height as a fraction of work area on phone landscape. */
+export const LANDSCAPE_PHONE_HEIGHT_FRACTION = 0.85;
 
 export interface SafeAreaInsets {
   top: number;
@@ -60,10 +64,16 @@ export function isMobileViewport(width?: number): boolean {
   return window.innerWidth < MOBILE_BREAKPOINT_PX;
 }
 
-/** True for narrow or short viewports that need full-bleed window layout. */
-export function isCompactLayoutViewport(width?: number, height?: number): boolean {
-  if (width != null && width < MOBILE_BREAKPOINT_PX) return true;
-  if (height != null && height < COMPACT_HEIGHT_PX) return true;
+/** True for narrow portrait viewports that need full-bleed window layout. */
+export function isCompactLayoutViewport(width?: number, _height?: number): boolean {
+  if (width != null) return width < MOBILE_BREAKPOINT_PX;
   if (typeof window === 'undefined') return false;
-  return window.innerWidth < MOBILE_BREAKPOINT_PX || window.innerHeight < COMPACT_HEIGHT_PX;
+  return window.innerWidth < MOBILE_BREAKPOINT_PX;
+}
+
+/** Wide but short viewports (phone landscape) — desktop chrome, smaller windows. */
+export function isLandscapePhoneViewport(width?: number, height?: number): boolean {
+  const w = width ?? (typeof window !== 'undefined' ? window.innerWidth : 0);
+  const h = height ?? (typeof window !== 'undefined' ? window.innerHeight : 0);
+  return w >= MOBILE_BREAKPOINT_PX && h < COMPACT_HEIGHT_PX;
 }

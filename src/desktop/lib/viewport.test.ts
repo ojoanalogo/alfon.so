@@ -8,7 +8,12 @@ import {
   resolveWindowGeometry,
   resolveWindowHeightStyle,
 } from './viewport';
-import { EDGE_MARGIN, MIN_WIDTH, TASKBAR_HEIGHT } from './layoutConstants';
+import {
+  EDGE_MARGIN,
+  MIN_WIDTH,
+  TASKBAR_HEIGHT,
+  LANDSCAPE_PHONE_WIDTH_FRACTION,
+} from './layoutConstants';
 import { makeWindowDef } from '@test/factories';
 
 describe('effectiveMinWidth', () => {
@@ -79,10 +84,17 @@ describe('resolveDefaultOpenGeometry', () => {
     expect(geo.width).toBe(500 - EDGE_MARGIN * 2);
   });
 
-  it('returns a full-bleed compact box on a short landscape viewport', () => {
-    const geo = resolveDefaultOpenGeometry(makeWindowDef({ defaultWidth: 600 }), 844, 390);
-    expect(geo.x).toBe(EDGE_MARGIN);
-    expect(geo.width).toBe(844 - EDGE_MARGIN * 2);
+  it('returns a capped centered box on a short landscape viewport', () => {
+    const vw = 844;
+    const vh = 390;
+    const geo = resolveDefaultOpenGeometry(
+      makeWindowDef({ defaultWidth: 600, center: true }),
+      vw,
+      vh,
+    );
+    expect(geo.width).toBe(Math.round(vw * LANDSCAPE_PHONE_WIDTH_FRACTION));
+    expect(geo.x).toBeGreaterThan(EDGE_MARGIN);
+    expect(geo.x + geo.width).toBeLessThan(vw - EDGE_MARGIN);
   });
 });
 

@@ -5,9 +5,12 @@ import {
   minWidthForDef,
   isMobileViewport,
   isCompactLayoutViewport,
+  isLandscapePhoneViewport,
   MIN_WIDTH,
   MIN_HEIGHT,
   EDGE_MARGIN,
+  LANDSCAPE_PHONE_WIDTH_FRACTION,
+  LANDSCAPE_PHONE_HEIGHT_FRACTION,
   readSafeAreaInsets,
   taskbarReservedHeight,
 } from './layoutConstants';
@@ -25,6 +28,18 @@ export function effectiveMinWidth(def: WindowDef, viewportWidth: number): number
 export function clampWidth(defaultWidth: number, minWidth: number, viewportWidth: number): number {
   const available = Math.max(240, viewportWidth - EDGE_MARGIN * 2);
   return Math.max(minWidth, Math.min(defaultWidth, available));
+}
+
+/** Cap width for phone-landscape viewports so windows don't span edge-to-edge. */
+export function landscapePhoneWidthCap(viewportWidth: number): number {
+  return Math.round(viewportWidth * LANDSCAPE_PHONE_WIDTH_FRACTION);
+}
+
+/** Cap height for phone-landscape viewports based on the work area. */
+export function landscapePhoneHeightCap(viewportHeight: number): number {
+  const safe = readSafeAreaInsets();
+  const workH = viewportHeight - safe.top - taskbarReservedHeight(safe.bottom) - EDGE_MARGIN * 2;
+  return Math.round(workH * LANDSCAPE_PHONE_HEIGHT_FRACTION);
 }
 
 export function mobileWindowGeometry(
@@ -63,20 +78,40 @@ export function resolveWindowGeometry(
   }
 
   const minW = effectiveMinWidth(def, viewportWidth);
-  const width =
+  let width =
     measuredWidth != null && measuredWidth > 0
       ? Math.max(minW, Math.round(measuredWidth))
       : clampWidth(def.defaultWidth, minW, viewportWidth);
 
+  if (isLandscapePhoneViewport(viewportWidth, viewportHeight)) {
+    width = Math.min(width, landscapePhoneWidthCap(viewportWidth));
+  }
+
+  const heightCap = isLandscapePhoneViewport(viewportWidth, viewportHeight)
+    ? landscapePhoneHeightCap(viewportHeight)
+    : undefined;
+
   if (def.center) {
-    const height = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
+    const rawHeight = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
+    const height =
+      heightCap != null && def.defaultHeight != null ? Math.min(rawHeight, heightCap) : rawHeight;
     const { x, y } = centerInWorkArea(viewportWidth, viewportHeight, width, height);
-    return { x, y, width, height: def.defaultHeight ?? null };
+    const resolvedHeight =
+      def.defaultHeight != null && heightCap != null
+        ? Math.min(def.defaultHeight, heightCap)
+        : (def.defaultHeight ?? null);
+    return { x, y, width, height: resolvedHeight };
   }
 
   const height = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
-  const { x, y } = positionNearCenter(viewportWidth, viewportHeight, width, height, def.id);
-  return { x, y, width, height: def.defaultHeight ?? null };
+  const cappedHeight =
+    heightCap != null && def.defaultHeight != null ? Math.min(height, heightCap) : height;
+  const { x, y } = positionNearCenter(viewportWidth, viewportHeight, width, cappedHeight, def.id);
+  const resolvedHeight =
+    def.defaultHeight != null && heightCap != null
+      ? Math.min(def.defaultHeight, heightCap)
+      : (def.defaultHeight ?? null);
+  return { x, y, width, height: resolvedHeight };
 }
 
 /** Canonical desktop open size from app defaults (ignores stale stored width). */
@@ -110,10 +145,16 @@ export function resolveLayoutWidth(
   state: { width: number; userSized?: boolean },
   minWidth = MIN_WIDTH,
   viewportWidth?: number,
+  viewportHeight?: number,
 ): number {
   if (state.userSized) return state.width;
   const vw =
     viewportWidth ??
     (typeof window !== 'undefined' ? window.innerWidth : defaultWidth + EDGE_MARGIN * 2);
-  return clampWidth(defaultWidth, minWidth, vw);
+  const vh = viewportHeight ?? (typeof window !== 'undefined' ? window.innerHeight : 800);
+  let width = clampWidth(defaultWidth, minWidth, vw);
+  if (isLandscapePhoneViewport(vw, vh)) {
+    width = Math.min(width, landscapePhoneWidthCap(vw));
+  }
+  return width;
 }

@@ -26,7 +26,7 @@ export function useWindowWidthSync({
   // Track the live viewport width so the painted width follows a desktop shrink:
   // resolveLayoutWidth needs a viewport signal in the memo deps, otherwise an
   // open, non-user-sized window keeps a width wider than the shrunken viewport.
-  const { width: viewportWidth } = useViewportSize();
+  const { width: viewportWidth, height: viewportHeight } = useViewportSize();
   const layoutWidth = useMemo(
     () =>
       resolveLayoutWidth(
@@ -34,8 +34,9 @@ export function useWindowWidthSync({
         { width: state.width, userSized: state.userSized },
         minWidth,
         viewportWidth,
+        viewportHeight,
       ),
-    [defaultWidth, state.width, state.userSized, minWidth, viewportWidth],
+    [defaultWidth, state.width, state.userSized, minWidth, viewportWidth, viewportHeight],
   );
 
   useLayoutEffect(() => {

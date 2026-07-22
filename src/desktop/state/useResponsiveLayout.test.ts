@@ -111,7 +111,7 @@ describe('useResponsiveLayout - mobile geometry', () => {
     expect(wm.correctLayouts).not.toHaveBeenCalled();
   });
 
-  it('applies compact geometry on a short landscape viewport', () => {
+  it('uses relayoutToViewport on a short landscape viewport', () => {
     const landscapeVw = 844;
     const landscapeVh = 390;
     setViewport(landscapeVw, landscapeVh);
@@ -120,14 +120,8 @@ describe('useResponsiveLayout - mobile geometry', () => {
 
     renderHook(() => useResponsiveLayout(wm, defs, { width: landscapeVw, height: landscapeVh }));
 
-    expect(wm.correctLayouts).toHaveBeenCalled();
-    const updates = (wm.correctLayouts as ReturnType<typeof vi.fn>).mock.calls.at(-1)![0];
-    expect(updates.a).toEqual({
-      x: EDGE_MARGIN,
-      y: EDGE_MARGIN,
-      width: landscapeVw - EDGE_MARGIN * 2,
-      height: landscapeVh - TASKBAR_HEIGHT - EDGE_MARGIN * 2,
-    });
+    expect(wm.relayoutToViewport).toHaveBeenCalledWith(landscapeVw, landscapeVh);
+    expect(wm.correctLayouts).not.toHaveBeenCalled();
   });
 });
 

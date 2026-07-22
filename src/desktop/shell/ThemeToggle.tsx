@@ -58,7 +58,7 @@ export default function ThemeToggle({ className }: { className?: string }) {
     >
       <button
         type="button"
-        className="theme-dropdown-trigger tooltip flex cursor-pointer items-center gap-1 rounded-sm p-1 text-secondary transition-colors duration-200 hover:text-primary"
+        className="theme-dropdown-trigger tooltip inline-flex h-6 cursor-pointer items-center gap-1 rounded-sm px-1 text-secondary transition-colors duration-200 hover:text-primary"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label="Cambiar tema"

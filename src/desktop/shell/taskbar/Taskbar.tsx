@@ -69,83 +69,85 @@ export default function Taskbar({
 
   return (
     <footer
-      className="desktop-taskbar fixed right-0 bottom-0 left-0 z-[100] flex min-h-[2.5rem] items-center justify-between gap-[0.75rem] border-t border-[color:var(--color-hairline)] bg-[rgb(255_255_255/0.65)] pr-[max(0.75rem,env(safe-area-inset-right,0px))] pb-[max(var(--taskbar-bottom-pad),env(safe-area-inset-bottom,0px))] pl-[max(0.75rem,env(safe-area-inset-left,0px))] font-[ui-monospace,monospace] text-[0.75rem] backdrop-blur-[12px] max-sm:gap-[0.375rem] max-sm:pr-[max(0.5rem,env(safe-area-inset-right,0px))] max-sm:pb-[max(var(--taskbar-bottom-pad),env(safe-area-inset-bottom,0px))] max-sm:pl-[max(0.5rem,env(safe-area-inset-left,0px))] dark:bg-[rgb(9_9_11/0.75)]"
+      className="desktop-taskbar fixed right-0 bottom-0 left-0 z-[100] flex flex-col border-t border-[color:var(--color-hairline)] bg-[rgb(255_255_255/0.65)] font-[ui-monospace,monospace] text-[0.75rem] backdrop-blur-[12px] dark:bg-[rgb(9_9_11/0.75)]"
       aria-label="Barra de tareas"
     >
-      <div className="flex min-w-0 flex-1 items-center gap-[0.75rem] max-sm:gap-[0.375rem]">
-        <button
-          ref={startRef}
-          type="button"
-          className={[
-            'flex shrink-0 cursor-pointer items-center gap-[0.375rem] border px-[0.45rem] py-[0.2rem] font-[inherit] text-[length:inherit] hover:border-[color:var(--color-hairline)] hover:bg-[rgb(255_255_255/0.08)] hover:text-primary hover:outline-none focus-visible:border-[color:var(--color-hairline)] focus-visible:bg-[rgb(255_255_255/0.08)] focus-visible:text-primary focus-visible:outline-none max-sm:px-[0.4rem] max-sm:py-[0.2rem] dark:hover:bg-[rgb(255_255_255/0.06)] dark:focus-visible:bg-[rgb(255_255_255/0.06)]',
-            startOpen
-              ? 'border-[color:var(--color-highlight-border)] bg-[var(--color-highlight-bg)] text-primary'
-              : 'border-transparent bg-transparent text-secondary',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          aria-haspopup="menu"
-          aria-expanded={startOpen}
-          title="Menú de inicio"
-          onClick={toggleStartMenu}
-        >
-          <span className="text-[0.6875rem] leading-none whitespace-nowrap">{SITE_TITLE}</span>
-        </button>
-
-        <div
-          className="flex min-w-0 flex-1 items-center gap-[0.375rem] overflow-x-auto max-sm:gap-[0.25rem]"
-          aria-label="Ventanas abiertas"
-        >
-          {openWindows.map((win) => {
-            const item = meta[win.id];
-            if (!item) return null;
-            const isWinFocused = focusedId === win.id && !win.minimized;
-            const className = [
-              'inline-flex max-w-[11rem] cursor-pointer items-center gap-[0.375rem] overflow-hidden border px-2 py-[0.2rem] font-[inherit] text-[0.6875rem] hover:border-[color:var(--color-highlight-border)] hover:text-primary max-sm:max-w-[2.25rem] max-sm:p-1',
-              isWinFocused
+      <div className="flex h-[2.5rem] items-center justify-between gap-[0.75rem] pr-[max(0.75rem,env(safe-area-inset-right,0px))] pl-[max(0.75rem,env(safe-area-inset-left,0px))] max-sm:gap-[0.375rem] max-sm:pr-[max(0.5rem,env(safe-area-inset-right,0px))] max-sm:pl-[max(0.5rem,env(safe-area-inset-left,0px))]">
+        <div className="flex min-w-0 flex-1 items-center gap-[0.75rem] max-sm:gap-[0.375rem]">
+          <button
+            ref={startRef}
+            type="button"
+            className={[
+              'flex h-6 shrink-0 cursor-pointer items-center gap-[0.375rem] border px-[0.45rem] font-[inherit] text-[length:inherit] hover:border-[color:var(--color-hairline)] hover:bg-[rgb(255_255_255/0.08)] hover:text-primary hover:outline-none focus-visible:border-[color:var(--color-hairline)] focus-visible:bg-[rgb(255_255_255/0.08)] focus-visible:text-primary focus-visible:outline-none max-sm:px-[0.4rem] dark:hover:bg-[rgb(255_255_255/0.06)] dark:focus-visible:bg-[rgb(255_255_255/0.06)]',
+              startOpen
                 ? 'border-[color:var(--color-highlight-border)] bg-[var(--color-highlight-bg)] text-primary'
-                : 'border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] text-secondary dark:bg-[rgb(24_24_27/0.75)]',
-              win.minimized && 'opacity-[0.72]',
+                : 'border-transparent bg-transparent text-secondary',
             ]
               .filter(Boolean)
-              .join(' ');
-            return (
-              <button
-                key={win.id}
-                type="button"
-                className={className}
-                data-taskbar-window={win.id}
-                data-focused={isWinFocused}
-                data-minimized={win.minimized}
-                title={item.tooltip ?? item.label}
-                onClick={() => onSelect(win.id)}
-                onContextMenu={(event) => openWindowMenu(event, win)}
-              >
-                <img
-                  src={item.iconSrc}
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="h-4 w-4 shrink-0 object-contain [image-rendering:pixelated]"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap max-sm:hidden">
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+              .join(' ')}
+            aria-haspopup="menu"
+            aria-expanded={startOpen}
+            title="Menú de inicio"
+            onClick={toggleStartMenu}
+          >
+            <span className="text-[0.6875rem] leading-none whitespace-nowrap">{SITE_TITLE}</span>
+          </button>
 
-      <div
-        className="flex shrink-0 items-center gap-[0.125rem] border-l border-l-[rgb(113_113_122/0.25)] pl-2 max-sm:pl-[0.375rem]"
-        aria-label="Bandeja del sistema"
-      >
-        <FullscreenToggle className="shrink-0" />
-        <ThemeToggle className="shrink-0" />
-        <TaskbarClock />
+          <div
+            className="flex min-w-0 flex-1 items-center gap-[0.375rem] overflow-x-auto max-sm:gap-[0.25rem]"
+            aria-label="Ventanas abiertas"
+          >
+            {openWindows.map((win) => {
+              const item = meta[win.id];
+              if (!item) return null;
+              const isWinFocused = focusedId === win.id && !win.minimized;
+              const className = [
+                'inline-flex h-6 max-w-[11rem] cursor-pointer items-center gap-[0.375rem] overflow-hidden border px-2 font-[inherit] text-[0.6875rem] hover:border-[color:var(--color-highlight-border)] hover:text-primary max-sm:max-w-[2.25rem] max-sm:px-1',
+                isWinFocused
+                  ? 'border-[color:var(--color-highlight-border)] bg-[var(--color-highlight-bg)] text-primary'
+                  : 'border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] text-secondary dark:bg-[rgb(24_24_27/0.75)]',
+                win.minimized && 'opacity-[0.72]',
+              ]
+                .filter(Boolean)
+                .join(' ');
+              return (
+                <button
+                  key={win.id}
+                  type="button"
+                  className={className}
+                  data-taskbar-window={win.id}
+                  data-focused={isWinFocused}
+                  data-minimized={win.minimized}
+                  title={item.tooltip ?? item.label}
+                  onClick={() => onSelect(win.id)}
+                  onContextMenu={(event) => openWindowMenu(event, win)}
+                >
+                  <img
+                    src={item.iconSrc}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="h-4 w-4 shrink-0 object-contain [image-rendering:pixelated]"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap max-sm:hidden">
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div
+          className="flex shrink-0 items-center gap-[0.125rem] border-l border-l-[rgb(113_113_122/0.25)] pl-2 max-sm:pl-[0.375rem]"
+          aria-label="Bandeja del sistema"
+        >
+          <FullscreenToggle className="shrink-0" />
+          <ThemeToggle className="shrink-0" />
+          <TaskbarClock />
+        </div>
       </div>
 
       <AnimatePresence>
@@ -164,6 +166,7 @@ export default function Taskbar({
       {menu && (
         <ContextMenu x={menu.x} y={menu.y} items={menu.items} onClose={() => setMenu(null)} />
       )}
+      <div className="h-[env(safe-area-inset-bottom,0px)] shrink-0" aria-hidden />
     </footer>
   );
 }

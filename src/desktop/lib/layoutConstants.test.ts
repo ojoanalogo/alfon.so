@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   isMobileViewport,
   isCompactLayoutViewport,
+  isLandscapePhoneViewport,
   minWidthForDef,
   MIN_WIDTH,
   MOBILE_BREAKPOINT_PX,
@@ -41,8 +42,8 @@ describe('isCompactLayoutViewport', () => {
     expect(isCompactLayoutViewport(MOBILE_BREAKPOINT_PX - 1, 800)).toBe(true);
   });
 
-  it('is true below the height threshold even when wide', () => {
-    expect(isCompactLayoutViewport(844, COMPACT_HEIGHT_PX - 1)).toBe(true);
+  it('is false below the height threshold when wide (phone landscape uses desktop layout)', () => {
+    expect(isCompactLayoutViewport(844, COMPACT_HEIGHT_PX - 1)).toBe(false);
   });
 
   it('is false on a typical desktop viewport', () => {
@@ -52,6 +53,20 @@ describe('isCompactLayoutViewport', () => {
   it('returns false during SSR when called without dimensions', () => {
     vi.stubGlobal('window', undefined);
     expect(isCompactLayoutViewport()).toBe(false);
+  });
+});
+
+describe('isLandscapePhoneViewport', () => {
+  it('is true when wide and short', () => {
+    expect(isLandscapePhoneViewport(844, COMPACT_HEIGHT_PX - 1)).toBe(true);
+  });
+
+  it('is false on portrait mobile', () => {
+    expect(isLandscapePhoneViewport(MOBILE_BREAKPOINT_PX - 1, 800)).toBe(false);
+  });
+
+  it('is false on a typical desktop viewport', () => {
+    expect(isLandscapePhoneViewport(1024, 768)).toBe(false);
   });
 });
 

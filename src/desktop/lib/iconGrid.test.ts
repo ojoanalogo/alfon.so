@@ -37,7 +37,8 @@ describe('iconGridForViewport', () => {
 });
 
 describe('compact layout threshold', () => {
-  it('treats phone landscape height as compact', () => {
+  it('treats phone landscape as wide (not full-bleed compact)', () => {
+    expect(844).toBeGreaterThanOrEqual(MOBILE_BREAKPOINT_PX);
     expect(390).toBeLessThan(COMPACT_HEIGHT_PX);
   });
 });
