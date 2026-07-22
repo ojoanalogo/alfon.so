@@ -12,11 +12,12 @@ export default function FullscreenToggle({ className }: { className?: string }) 
   }, []);
 
   const toggle = useCallback(() => {
+    // Fullscreen requests can be denied (browser policy) → swallow rejections.
     if (document.fullscreenElement) {
-      void document.exitFullscreen();
+      void document.exitFullscreen()?.catch(() => {});
       return;
     }
-    void document.documentElement.requestFullscreen();
+    void document.documentElement.requestFullscreen()?.catch(() => {});
   }, []);
 
   const label = isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa';

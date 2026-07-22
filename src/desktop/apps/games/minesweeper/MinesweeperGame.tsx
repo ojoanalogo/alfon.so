@@ -5,7 +5,6 @@ import {
   MINES,
   ROWS,
   countFlags,
-  createBoard,
   revealCell,
   toggleFlag,
   type Board,
@@ -152,7 +151,10 @@ export default function MinesweeperGame({ active }: MinesweeperGameProps) {
                   onContextMenu={(event) => {
                     event.preventDefault();
                     if (!active || lost || won) return;
-                    setBoard((current) => toggleFlag(current ?? createBoard(row, col), row, col));
+                    // Board is born on the first REVEAL (safe zone around that
+                    // cell). Flagging before that would forge the safe zone
+                    // around a flag and let the first real click hit a mine.
+                    setBoard((current) => (current ? toggleFlag(current, row, col) : current));
                   }}
                   aria-label={`celda ${row + 1},${col + 1}`}
                 >

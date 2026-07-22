@@ -31,4 +31,24 @@ describe('pong stepGame', () => {
     expect(next.ballX).toBe(BALL / 2);
     expect(next.ballVx).toBeGreaterThan(0);
   });
+
+  it('caps ballVx at the paddle so long rallies cannot tunnel through it', () => {
+    // Ball lands on the paddle's right edge (max positive kick) already near
+    // the speed cap: unbounded growth would eventually skip over the paddle.
+    // Positions account for the ball moving one step before collision checks.
+    const paddleX = initialState().paddleX;
+    const game = {
+      ...initialState(),
+      ballX: paddleX + 64 - 5.9, // post-step: right paddle edge (PADDLE_W = 64)
+      ballY: 222 - BALL / 2 - 2, // post-step: touching paddleTop (222)
+      ballVx: 5.9,
+      ballVy: 2, // moving down onto the paddle
+    };
+
+    const next = stepGame(game, 0);
+
+    expect(next.ballVy).toBeLessThan(0); // bounced
+    expect(next.ballVx).toBeLessThanOrEqual(6);
+    expect(next.score).toBe(1);
+  });
 });

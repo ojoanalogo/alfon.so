@@ -20,6 +20,9 @@ const TICK_MS = 16;
 
 const BRICK_COLORS = ['#f87171', '#fb923c', '#facc15', '#4ade80', '#38bdf8'];
 
+/** Cap horizontal speed: unbounded growth lets long rallies tunnel past the paddle. */
+const MAX_BALL_VX = 6;
+
 type GameState = {
   paddleX: number;
   ballX: number;
@@ -128,7 +131,10 @@ export function stepGame(prev: GameState, move: number): GameState {
   ) {
     ballVy = -Math.abs(ballVy);
     ballY = paddleTop - BALL / 2;
-    ballVx += (ballX - (paddleX + PADDLE_W / 2)) * 0.05;
+    ballVx = Math.max(
+      -MAX_BALL_VX,
+      Math.min(MAX_BALL_VX, ballVx + (ballX - (paddleX + PADDLE_W / 2)) * 0.05),
+    );
   }
 
   bricks = bricks.map((row) => [...row]);

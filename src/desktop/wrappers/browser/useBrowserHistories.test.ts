@@ -100,6 +100,16 @@ describe('useBrowserHistories', () => {
       expect(state.index).toBe(0);
     });
 
+    it('reloads (bumps reloadKey) when navigating to the current url again', () => {
+      const { result } = renderHook(() => useBrowserHistories());
+      act(() => result.current.navigate('a', 'same.com'));
+      const before = result.current.get('a');
+      act(() => result.current.navigate('a', 'same.com'));
+      const after = result.current.get('a');
+      expect(after.reloadKey).toBe(before.reloadKey + 1);
+      expect(after.history).toEqual(before.history);
+    });
+
     it('truncates forward history when navigating from a back-stack entry', () => {
       const { result } = renderHook(() => useBrowserHistories());
       act(() => result.current.navigate('a', 'one.com'));

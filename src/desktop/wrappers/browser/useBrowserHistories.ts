@@ -45,15 +45,17 @@ export function useBrowserHistories(): BrowserHistories {
       const current = prev[appId] ?? EMPTY_STATE;
       // Truncate forward history when navigating from a back-stack entry.
       const trimmed = current.history.slice(0, current.index + 1);
-      const nextHistory =
-        trimmed[trimmed.length - 1] === normalized ? trimmed : [...trimmed, normalized];
+      const isCurrentUrl = trimmed[trimmed.length - 1] === normalized;
+      const nextHistory = isCurrentUrl ? trimmed : [...trimmed, normalized];
       return {
         ...prev,
         [appId]: {
           url: normalized,
           history: nextHistory,
           index: nextHistory.length - 1,
-          reloadKey: current.reloadKey,
+          // Re-entering the current address reloads the page (real-browser
+          // behavior); the bumped key remounts the iframe.
+          reloadKey: isCurrentUrl ? current.reloadKey + 1 : current.reloadKey,
         },
       };
     });

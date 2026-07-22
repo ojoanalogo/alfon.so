@@ -94,4 +94,31 @@ describe('useAxisControls', () => {
     dispatchKeyUp('ArrowLeft');
     expect(moveRef.current).toBe(1);
   });
+
+  it('zeroes moveRef when a key is released with Shift held (uppercase keyup)', () => {
+    const moveRef = { current: 1 };
+    renderHook(() => useAxisControls(true, moveRef));
+
+    dispatchKeyUp('A');
+    expect(moveRef.current).toBe(0);
+  });
+
+  it('zeroes moveRef on OS-window blur (keyup lost while unfocused)', () => {
+    const moveRef = { current: 0 };
+    renderHook(() => useAxisControls(true, moveRef));
+
+    moveRef.current = 1;
+    window.dispatchEvent(new Event('blur'));
+    expect(moveRef.current).toBe(0);
+  });
+
+  it('removes the blur listener on unmount', () => {
+    const moveRef = { current: 0 };
+    const { unmount } = renderHook(() => useAxisControls(true, moveRef));
+
+    unmount();
+    moveRef.current = 1;
+    window.dispatchEvent(new Event('blur'));
+    expect(moveRef.current).toBe(1);
+  });
 });

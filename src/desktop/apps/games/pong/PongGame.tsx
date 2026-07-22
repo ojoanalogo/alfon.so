@@ -73,6 +73,9 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   }
 }
 
+/** Cap horizontal speed: unbounded growth lets long rallies tunnel past the paddle. */
+const MAX_BALL_VX = 6;
+
 export function stepGame(prev: GameState, move: number): GameState {
   if (prev.gameOver) return prev;
 
@@ -107,7 +110,10 @@ export function stepGame(prev: GameState, move: number): GameState {
     ballVy = -Math.abs(ballVy);
     ballY = paddleTop - BALL / 2;
     score += 1;
-    ballVx += (ballX - (paddleX + PADDLE_W / 2)) * 0.04;
+    ballVx = Math.max(
+      -MAX_BALL_VX,
+      Math.min(MAX_BALL_VX, ballVx + (ballX - (paddleX + PADDLE_W / 2)) * 0.04),
+    );
   }
 
   if (ballY > HEIGHT) {

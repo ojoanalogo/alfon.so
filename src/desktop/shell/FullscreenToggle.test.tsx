@@ -73,6 +73,13 @@ describe('FullscreenToggle', () => {
     expect(document.documentElement.requestFullscreen).not.toHaveBeenCalled();
   });
 
+  it('swallows a denied fullscreen request without throwing', () => {
+    document.documentElement.requestFullscreen = vi.fn().mockRejectedValue(new Error('denied'));
+    render(<FullscreenToggle />);
+    expect(() => fireEvent.click(getButton())).not.toThrow();
+    expect(document.documentElement.requestFullscreen).toHaveBeenCalledTimes(1);
+  });
+
   it('updates the icon when fullscreenchange fires', () => {
     const { container } = render(<FullscreenToggle />);
     expect(container.querySelector('svg.lucide-maximize-2')).toBeTruthy();

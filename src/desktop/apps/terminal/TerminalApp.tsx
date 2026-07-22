@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BlogPostSummary } from '../../types';
 import { runTerminalCommand, TERMINAL_MOTD, TERMINAL_PROMPT, type TerminalBlock } from './commands';
+import { useCommandHistory } from './useCommandHistory';
 
 interface TerminalAppProps {
   posts: BlogPostSummary[];
@@ -44,8 +45,7 @@ export default function TerminalApp({
 }: TerminalAppProps) {
   const [blocks, setBlocks] = useState<TerminalBlock[]>([]);
   const [draft, setDraft] = useState('');
-  const [history, setHistory] = useState<string[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
+  const { push: pushHistory, navigateUp, navigateDown } = useCommandHistory();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -78,8 +78,7 @@ export default function TerminalApp({
 
     const result = runTerminalCommand(trimmed, { posts });
 
-    setHistory((prev) => [...prev, trimmed]);
-    setHistoryIndex(-1);
+    pushHistory(trimmed);
     setDraft('');
 
     if (!result) return;
@@ -112,24 +111,15 @@ export default function TerminalApp({
 
     if (event.key === 'ArrowUp') {
       event.preventDefault();
-      if (history.length === 0) return;
-      const nextIndex = historyIndex < 0 ? history.length - 1 : Math.max(0, historyIndex - 1);
-      setHistoryIndex(nextIndex);
-      setDraft(history[nextIndex] ?? '');
+      const recalled = navigateUp();
+      if (recalled !== null) setDraft(recalled);
       return;
     }
 
     if (event.key === 'ArrowDown') {
       event.preventDefault();
-      if (historyIndex < 0) return;
-      const nextIndex = historyIndex + 1;
-      if (nextIndex >= history.length) {
-        setHistoryIndex(-1);
-        setDraft('');
-      } else {
-        setHistoryIndex(nextIndex);
-        setDraft(history[nextIndex] ?? '');
-      }
+      const recalled = navigateDown();
+      if (recalled !== null) setDraft(recalled);
     }
   }
 

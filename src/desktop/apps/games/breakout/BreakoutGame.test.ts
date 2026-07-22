@@ -47,4 +47,22 @@ describe('breakout stepGame', () => {
     expect(next.ballX).toBe(WIDTH - BALL / 2);
     expect(next.ballVx).toBeLessThan(0);
   });
+
+  it('caps ballVx at the paddle so long rallies cannot tunnel through it', () => {
+    // Positions account for the ball moving one step before collision checks.
+    const paddleX = initialState().paddleX;
+    const game = {
+      ...initialState(),
+      ballX: paddleX + 56 - 5.9, // post-step: right paddle edge (PADDLE_W = 56)
+      ballY: 262 - BALL / 2 - 2, // post-step: touching paddleTop (262)
+      ballVx: 5.9,
+      ballVy: 2, // moving down onto the paddle
+      bricks: initialState().bricks.map((row) => row.map(() => false)), // clear field
+    };
+
+    const next = stepGame(game, 0);
+
+    expect(next.ballVy).toBeLessThan(0); // bounced
+    expect(next.ballVx).toBeLessThanOrEqual(6);
+  });
 });

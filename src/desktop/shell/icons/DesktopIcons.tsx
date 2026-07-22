@@ -5,6 +5,7 @@ import { useResolvedIconLabelTone } from '../../lib/useResolvedIconLabelTone';
 import { type DesktopIconsState, type IconPosition } from '../../state/useDesktopIcons';
 import { iconGlyphDragTransform } from './iconDragTransform';
 import { useDesktopIconDrag } from './useDesktopIconDrag';
+import { useMarqueeSelection } from './useMarqueeSelection';
 import { STATE_CLASS } from '../../lib/stateClasses';
 
 interface DesktopIconsProps {
@@ -15,24 +16,7 @@ interface DesktopIconsProps {
   suppressTrashClickRef: RefObject<boolean>;
 }
 
-const DRAG_THRESHOLD = 4;
 const DOUBLE_CLICK_MS = 450;
-
-interface MarqueeDrag {
-  pointerId: number;
-  startX: number;
-  startY: number;
-  surfaceLeft: number;
-  surfaceTop: number;
-  moved: boolean;
-}
-
-interface MarqueeRect {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
 
 interface MenuState {
   x: number;
@@ -63,11 +47,9 @@ export default function DesktopIcons({
   } = state;
   const iconLabelTone = useResolvedIconLabelTone();
 
-  const [marquee, setMarquee] = useState<MarqueeRect | null>(null);
   const [menu, setMenu] = useState<MenuState | null>(null);
 
   const iconRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
-  const marqueeDrag = useRef<MarqueeDrag | null>(null);
   const lastTap = useRef<{ id: string; time: number }>({ id: '', time: 0 });
 
   const {
@@ -82,6 +64,13 @@ export default function DesktopIcons({
     deleteIcons,
     trashRef,
     suppressTrashClickRef,
+  });
+
+  const { marquee, surfaceHandlers } = useMarqueeSelection({
+    iconRefs,
+    setSelection,
+    clearSelection,
+    onDesktopClick,
   });
 
   function activate(icon: DesktopIcon) {
@@ -107,7 +96,9 @@ export default function DesktopIcons({
     const now = event.timeStamp;
     if (event.shiftKey || event.ctrlKey || event.metaKey) {
       toggleSelection(icon.id);
-      lastTap.current = { id: icon.id, time: now };
+      // A selection toggle is not a "tap": recording it would make a plain
+      // click within DOUBLE_CLICK_MS misread as a double-click and open the app.
+      lastTap.current = { id: '', time: 0 };
       return;
     }
     const isDouble = lastTap.current.id === icon.id && now - lastTap.current.time < DOUBLE_CLICK_MS;
@@ -142,61 +133,7 @@ export default function DesktopIcons({
     });
   }
 
-  // --- Desktop surface interactions (marquee + empty context menu) ---------
-
-  function handleSurfacePointerDown(event: React.PointerEvent) {
-    if (event.button !== 0) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    marqueeDrag.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      surfaceLeft: rect.left,
-      surfaceTop: rect.top,
-      moved: false,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-
-  function handleSurfacePointerMove(event: React.PointerEvent) {
-    const drag = marqueeDrag.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    const dx = event.clientX - drag.startX;
-    const dy = event.clientY - drag.startY;
-    if (!drag.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
-    drag.moved = true;
-
-    const left = Math.min(drag.startX, event.clientX);
-    const top = Math.min(drag.startY, event.clientY);
-    const right = Math.max(drag.startX, event.clientX);
-    const bottom = Math.max(drag.startY, event.clientY);
-
-    setMarquee({
-      left: left - drag.surfaceLeft,
-      top: top - drag.surfaceTop,
-      width: right - left,
-      height: bottom - top,
-    });
-
-    const hits: string[] = [];
-    iconRefs.current.forEach((node, id) => {
-      const r = node.getBoundingClientRect();
-      const intersects = !(r.right < left || r.left > right || r.bottom < top || r.top > bottom);
-      if (intersects) hits.push(id);
-    });
-    setSelection(hits);
-  }
-
-  function handleSurfacePointerUp(event: React.PointerEvent) {
-    const drag = marqueeDrag.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-    if (!drag.moved) {
-      clearSelection();
-      onDesktopClick?.();
-    }
-    marqueeDrag.current = null;
-    setMarquee(null);
-  }
+  // --- Desktop surface interactions (empty-area context menu) ---------------
 
   function handleSurfaceContextMenu(event: React.MouseEvent) {
     event.preventDefault();
@@ -224,10 +161,7 @@ export default function DesktopIcons({
     <>
       <div
         className="absolute inset-0 z-[1] touch-none"
-        onPointerDown={handleSurfacePointerDown}
-        onPointerMove={handleSurfacePointerMove}
-        onPointerUp={handleSurfacePointerUp}
-        onPointerCancel={handleSurfacePointerUp}
+        {...surfaceHandlers}
         onContextMenu={handleSurfaceContextMenu}
       />
 

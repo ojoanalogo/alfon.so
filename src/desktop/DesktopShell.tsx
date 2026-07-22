@@ -89,9 +89,11 @@ export default function DesktopShell({
     }
   }
 
+  // Depend on the stable `close`, not the manager object (fresh each render).
+  const { close: closeWindow } = wm;
   const handleCloseAllWindows = useCallback(() => {
-    defs.forEach((def) => wm.close(def.id));
-  }, [defs, wm]);
+    defs.forEach((def) => closeWindow(def.id));
+  }, [defs, closeWindow]);
 
   return (
     <NoteOpenBridgeProvider bridge={noteOpenBridge}>

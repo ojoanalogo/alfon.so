@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import type { IconPosition } from '../../state/useDesktopIcons';
 import { useDesktopIconDrag } from './useDesktopIconDrag';
+import { ICON_DRAG_RAMP_IN_MS } from './iconDragTransform';
 
 type DragDeps = Parameters<typeof useDesktopIconDrag>[0];
 
@@ -341,6 +342,105 @@ describe('useDesktopIconDrag', () => {
     // First read returns + resets the flag.
     expect(result.current.consumeSuppressedClick()).toBe(true);
     expect(result.current.consumeSuppressedClick()).toBe(false);
+  });
+
+  it('auto-clears the icon click suppression when no click consumed it', () => {
+    // Regression: a post-drag click landing on a common ancestor (not an icon)
+    // left the flag latched, silently eating the user's next genuine click.
+    vi.useFakeTimers();
+    try {
+      const deps = makeDeps();
+      const { result } = renderHook(() => useDesktopIconDrag(deps));
+
+      act(() => {
+        result.current.startDrag(makeReactPointerEvent({ clientX: 0, clientY: 0 }), 'a', {
+          a: { x: 10, y: 10 },
+        });
+      });
+      dispatchPointer('pointermove', { clientX: 30, clientY: 40 });
+      dispatchPointer('pointerup', { clientX: 30, clientY: 40 });
+
+      // The flag clears itself after the current task (the synthesized post-drag
+      // click has already dispatched by then).
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
+      expect(result.current.consumeSuppressedClick()).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('auto-clears the trash click suppression after a drop', () => {
+    vi.useFakeTimers();
+    try {
+      const deps = makeDeps();
+      const { result } = renderHook(() => useDesktopIconDrag(deps));
+
+      act(() => {
+        result.current.startDrag(makeReactPointerEvent({ clientX: 0, clientY: 0 }), 'a', {
+          a: { x: 10, y: 10 },
+        });
+      });
+      dispatchPointer('pointermove', { clientX: 530, clientY: 530 });
+      dispatchPointer('pointerup', { clientX: 530, clientY: 530 });
+
+      expect(deps.suppressTrashClickRef.current).toBe(true);
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
+      expect(deps.suppressTrashClickRef.current).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('stops scheduling frames once the ramp-in completes while the pointer is idle', () => {
+    // prefersReducedMotion() reads matchMedia, which jsdom does not provide.
+    window.matchMedia = ((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })) as unknown as typeof window.matchMedia;
+    let now = 1000;
+    vi.spyOn(performance, 'now').mockImplementation(() => now);
+    const rafCbs: FrameRequestCallback[] = [];
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      rafCbs.push(cb);
+      return rafCbs.length;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+
+    const deps = makeDeps();
+    const { result } = renderHook(() => useDesktopIconDrag(deps));
+
+    act(() => {
+      result.current.startDrag(makeReactPointerEvent({ clientX: 0, clientY: 0 }), 'a', {
+        a: { x: 10, y: 10 },
+      });
+    });
+    dispatchPointer('pointermove', { clientX: 30, clientY: 40 });
+
+    // Mid ramp-in: each frame republishes and schedules another.
+    now = 1100;
+    act(() => {
+      const cbs = rafCbs.splice(0);
+      for (const cb of cbs) cb(now);
+    });
+    expect(rafCbs.length).toBe(1);
+
+    // Past the ramp-in window the loop must stop — no 60fps idle publishing.
+    now = 1000 + ICON_DRAG_RAMP_IN_MS + 100;
+    act(() => {
+      const cbs = rafCbs.splice(0);
+      for (const cb of cbs) cb(now);
+    });
+    expect(rafCbs.length).toBe(0);
   });
 
   it('teardown on unmount removes the gesturing body classes and listeners', () => {

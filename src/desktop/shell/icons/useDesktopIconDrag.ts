@@ -145,7 +145,11 @@ export function useDesktopIconDrag({
 
       const ramp = rampIn(drag.motionStart, now);
       publishVisual(drag.tiltX, drag.tiltY, ramp, new Set(Object.keys(drag.origins)));
-      scheduleFrame();
+      // Keep animating only until the ramp-in finishes; after that a frame is
+      // scheduled by the next pointermove. Looping unconditionally republished
+      // identical visual state (new object/Set identities → re-render) at 60fps
+      // for as long as the button was held.
+      if (ramp < 1) scheduleFrame();
     }
 
     function scheduleFrame() {
@@ -220,6 +224,18 @@ export function useDesktopIconDrag({
       dragRef.current = null;
     }
 
+    // The synthesized click that follows a drag fires on the common ancestor of
+    // the press/release targets — usually NOT the icon/trash button — so the
+    // per-element consume may never run. Auto-clear the flag after this task
+    // (the synthesized click has already dispatched by then) instead of letting
+    // it latch and silently eat the user's next genuine click.
+    function suppressClickBriefly(flag: { current: boolean }) {
+      flag.current = true;
+      window.setTimeout(() => {
+        flag.current = false;
+      }, 0);
+    }
+
     function endDrag(event: PointerEvent) {
       const drag = dragRef.current;
       if (!drag || event.pointerId !== drag.pointerId) return;
@@ -231,12 +247,12 @@ export function useDesktopIconDrag({
       } = snapshotRef.current;
 
       if (drag.moved) {
-        suppressClickRef.current = true;
+        suppressClickBriefly(suppressClickRef);
 
         const droppedOnTrash = isPointerOverTrash(event.clientX, event.clientY, trash.current);
         if (droppedOnTrash) {
           remove(Object.keys(drag.origins));
-          suppressTrash.current = true;
+          suppressClickBriefly(suppressTrash);
           teardown();
           publishVisual(0, 0, 0, new Set());
           return;

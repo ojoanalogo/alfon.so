@@ -8,6 +8,9 @@ import { baseConfig } from './test/vitest.base';
 export default mergeConfig(
   baseConfig,
   defineConfig({
+    // Pre-bundle the JSX runtime so a cold run doesn't re-optimize mid-test
+    // (Vite reloads the suite when it discovers new deps, risking flakes).
+    optimizeDeps: { include: ['react/jsx-dev-runtime'] },
     test: {
       include: ['test/browser/**/*.browser.test.{ts,tsx}'],
       // NOTE: `setupFiles: ['./test/setup.ts']` is intentionally omitted — the jsdom

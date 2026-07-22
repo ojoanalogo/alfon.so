@@ -7,6 +7,7 @@ import { stubMatchMedia } from '@test/helpers';
 
 const BOOT_MIN_MS = 400;
 const BOOT_EXIT_MS = 120;
+const BOOT_MAX_MS = 5000;
 
 interface BootModuleGraph {
   BootOverlay: ComponentType;
@@ -169,6 +170,26 @@ describe('DesktopBootOverlay', () => {
     expect(overlay).toBeTruthy();
     expect(overlay.className).not.toContain('desktop-boot-overlay--exiting');
     expect(overlay.getAttribute('aria-busy')).toBe('true');
+  });
+
+  it('gives up waiting and exits after a hard cap when the wallpaper load hangs', async () => {
+    // A wallpaper whose load neither resolves nor errors must not trap the
+    // desktop behind the overlay forever.
+    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    const graph = await loadBootModuleGraph();
+    const { container } = renderBoot(graph, [makeWallpaperOption()]);
+
+    await act(async () => {
+      vi.advanceTimersByTime(BOOT_MAX_MS);
+    });
+    expect(container.querySelector('.desktop-boot-overlay')?.className).toContain(
+      'desktop-boot-overlay--exiting',
+    );
+
+    await act(async () => {
+      vi.advanceTimersByTime(BOOT_EXIT_MS);
+    });
+    expect(container.querySelector('.desktop-boot-overlay')).toBeNull();
   });
 
   it('exits immediately when content becomes ready after the minimum boot time', async () => {

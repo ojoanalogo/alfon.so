@@ -4,6 +4,9 @@ import { useWallpaper } from '../state/WallpaperContext';
 
 const BOOT_MIN_MS = 400;
 const BOOT_EXIT_MS = 120;
+// Hard cap: a wallpaper load that neither resolves nor errors (stalled
+// connection) must not leave the overlay covering the desktop forever.
+const BOOT_MAX_MS = 5000;
 
 type BootPhase = 'loading' | 'exiting' | 'done';
 
@@ -22,11 +25,16 @@ export default function DesktopBootOverlay() {
   }, []);
 
   useEffect(() => {
-    if (!bootContentReady || phase !== 'loading') return;
+    if (phase !== 'loading') return;
 
-    const remaining = Math.max(0, BOOT_MIN_MS - (Date.now() - startedAtRef.current));
-    const timer = window.setTimeout(() => setPhase('exiting'), remaining);
-    return () => window.clearTimeout(timer);
+    if (bootContentReady) {
+      const remaining = Math.max(0, BOOT_MIN_MS - (Date.now() - startedAtRef.current));
+      const timer = window.setTimeout(() => setPhase('exiting'), remaining);
+      return () => window.clearTimeout(timer);
+    }
+
+    const cap = window.setTimeout(() => setPhase('exiting'), BOOT_MAX_MS);
+    return () => window.clearTimeout(cap);
   }, [bootContentReady, phase]);
 
   useEffect(() => {

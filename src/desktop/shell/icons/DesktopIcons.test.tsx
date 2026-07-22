@@ -159,6 +159,20 @@ describe('DesktopIcons', () => {
     expect(onOpenWindow).toHaveBeenCalledWith('win-a');
   });
 
+  it('does not open the window when a plain click follows a modifier-click', () => {
+    // A modifier-click toggles selection; it must not count as the first "tap"
+    // of a double-click, or select-then-click would open the app.
+    const onOpenWindow = vi.fn();
+    const { container } = renderIcons({
+      icons: [makeIcon({ id: 'a', label: 'Alpha', windowId: 'win-a' })],
+      onOpenWindow,
+    });
+    const button = container.querySelector('button.desktop-icon') as HTMLButtonElement;
+    fireEvent.click(button, { metaKey: true });
+    fireEvent.click(button);
+    expect(onOpenWindow).not.toHaveBeenCalled();
+  });
+
   it('opens the window on Enter (keyboard activation)', () => {
     const onOpenWindow = vi.fn();
     const { container } = renderIcons({
