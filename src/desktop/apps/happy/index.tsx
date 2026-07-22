@@ -10,6 +10,7 @@ export default defineApp({
   iconKey: 'video',
   geometry: { defaultX: 280, defaultY: 84, defaultWidth: 600, initialZ: 16 },
   desktopIcon: false,
+  bodyClassName: 'card-body--padded',
   body: () => (
     <Suspense fallback={<AppLoading />}>
       <HappyContent />

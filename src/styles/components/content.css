@@ -16,27 +16,21 @@
     }
   }
 
-  /* --- Card body — padding is contextual (explorer/settings/sized reset) --- */
+  /* --- Card body — zero padding by default; apps opt in explicitly --- */
   .card-body {
     position: relative;
+    padding: 0;
+  }
+
+  .card-body--padded,
+  .card-body--explorer-grid {
     padding: 1rem;
   }
 
   @media (width >= 40rem) {
-    .card-body {
+    .card-body--padded,
+    .card-body--explorer-grid {
       padding: 1.5rem;
-    }
-  }
-
-  .card-body.card-body--explorer-list,
-  .card-body.card-body--settings {
-    padding: 0;
-  }
-
-  @media (width >= 40rem) {
-    .card-body.card-body--explorer-list,
-    .card-body.card-body--settings {
-      padding: 0;
     }
   }
 

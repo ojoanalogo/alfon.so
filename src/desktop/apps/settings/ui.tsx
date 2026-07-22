@@ -11,6 +11,13 @@ import type { ReactNode } from 'react';
 export const SETTINGS_GROUP =
   'overflow-hidden rounded-lg border border-[color:var(--color-hairline)] bg-[rgb(255_255_255/0.42)] dark:bg-[rgb(24_24_27/0.55)]';
 
+/** Vertical stack for subsections inside a settings section. */
+export const SETTINGS_STACK = 'flex flex-col gap-4';
+
+/** Subsection heading below the main section title. */
+export const SETTINGS_SUBHEADING =
+  'm-0 px-[0.125rem] text-[0.625rem] font-semibold tracking-[0.04em] text-muted uppercase';
+
 /** A label + optional hint on the left, a control on the right. */
 export function SettingsRow({
   label,
