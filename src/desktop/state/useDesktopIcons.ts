@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { DesktopIcon } from '@/config';
 import { clampBoxToWorkArea } from '../lib/geometry';
-import { BASE_ICON_X, BASE_ICON_Y, iconFootprint, iconGridForViewport } from '../lib/iconGrid';
+import { iconFootprint, iconPositionsForIcons } from '../lib/iconGrid';
 
 export interface IconPosition {
   x: number;
@@ -9,19 +9,13 @@ export interface IconPosition {
 }
 
 function defaultPositions(icons: DesktopIcon[]): Record<string, IconPosition> {
-  const { maxRows, rowPitch, colPitch } = iconGridForViewport();
-  const entries = icons.map((icon, index) => {
-    const col = Math.floor(index / maxRows);
-    const row = index % maxRows;
-    return [icon.id, { x: BASE_ICON_X + col * colPitch, y: BASE_ICON_Y + row * rowPitch }] as const;
-  });
-  return Object.fromEntries(entries);
+  return iconPositionsForIcons(icons);
 }
 
 /** Keep an icon within the visible desktop area (only runs in the browser). */
 function clampPosition(pos: IconPosition): IconPosition {
   if (typeof window === 'undefined') return pos;
-  const { width, height } = iconFootprint();
+  const { width, height } = iconFootprint(window.innerWidth);
   return clampBoxToWorkArea(pos.x, pos.y, width, height, window.innerWidth, window.innerHeight);
 }
 

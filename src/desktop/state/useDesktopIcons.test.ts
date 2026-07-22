@@ -22,7 +22,7 @@ function makeIcons(...ids: string[]): DesktopIcon[] {
 // jsdom defaults: innerWidth = 1024, innerHeight = 768.
 // Desktop (non-mobile) footprint: width 80, height 72.
 // maxX = 1024 - 80 - 8 = 936 ; maxY = 768 - 40 - 72 - 8 = 648.
-const DESKTOP_MAX_X = window.innerWidth - 80 - EDGE_MARGIN;
+const DESKTOP_MAX_X = window.innerWidth - 112 - EDGE_MARGIN;
 const DESKTOP_MAX_Y = window.innerHeight - TASKBAR_HEIGHT - 72 - EDGE_MARGIN;
 
 describe('useDesktopIcons - default positions', () => {
