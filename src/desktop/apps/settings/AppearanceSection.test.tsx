@@ -43,12 +43,15 @@ describe('AppearanceSection', () => {
     renderSection();
 
     expect(screen.getByRole('group', { name: 'Tema' })).toBeTruthy();
-    expect(screen.getByText('Color de relleno')).toBeTruthy();
-    expect(screen.getByText('Imágenes')).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Color de relleno' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Imágenes' })).toBeTruthy();
   });
 
   it('renders one swatch per desktop color, labelled by its label', () => {
     renderSection();
+
+    const colorSection = screen.getByRole('region', { name: 'Color de relleno' });
+    expect(colorSection.querySelectorAll('li')).toHaveLength(DESKTOP_COLORS.length);
 
     for (const color of DESKTOP_COLORS) {
       expect(screen.getByRole('button', { name: color.label })).toBeTruthy();
