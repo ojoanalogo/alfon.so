@@ -15,6 +15,7 @@ export default function DesktopWallpaper() {
           src={activeWallpaper.src}
           alt=""
           decoding="async"
+          data-desktop-wallpaper
         />
       )}
     </div>

@@ -9,6 +9,12 @@ import TaskbarClock from './TaskbarClock';
 import type { DesktopIcon } from '@/config';
 import type { WindowMeta, WindowState } from '../../types';
 
+const CHIP =
+  'inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md border-0 px-2 font-[inherit] text-[0.6875rem] transition-colors duration-150 hover:outline-none focus-visible:outline-none';
+const CHIP_IDLE =
+  'bg-transparent text-secondary hover:bg-stone-300/50 hover:text-primary focus-visible:bg-stone-300/50 focus-visible:text-primary dark:hover:bg-gray-500/15 dark:focus-visible:bg-gray-500/15';
+const CHIP_ACTIVE = 'bg-stone-300/70 text-primary dark:bg-gray-500/15';
+
 interface TaskbarProps {
   windows: Record<string, WindowState>;
   order: string[];
@@ -69,20 +75,15 @@ export default function Taskbar({
 
   return (
     <footer
-      className="desktop-taskbar fixed right-0 bottom-0 left-0 z-[100] flex flex-col border-t border-[color:var(--color-hairline)] bg-[rgb(255_255_255/0.65)] font-[ui-monospace,monospace] text-[0.75rem] backdrop-blur-[12px] dark:bg-[rgb(9_9_11/0.75)]"
+      className="desktop-taskbar fixed right-0 bottom-0 left-0 z-[100] flex flex-col border-t border-gray-300/50 bg-[color-mix(in_srgb,var(--color-surface)_78%,transparent)] font-mono text-xs shadow-[inset_0_1px_0_rgb(255_255_255/0.45)] backdrop-blur-lg dark:border-gray-600/40 dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]"
       aria-label="Barra de tareas"
     >
-      <div className="flex h-[2.5rem] items-center justify-between gap-[0.75rem] pr-[max(0.75rem,env(safe-area-inset-right,0px))] pl-[max(0.75rem,env(safe-area-inset-left,0px))] max-sm:gap-[0.375rem] max-sm:pr-[max(0.5rem,env(safe-area-inset-right,0px))] max-sm:pl-[max(0.5rem,env(safe-area-inset-left,0px))]">
-        <div className="flex min-w-0 flex-1 items-center gap-[0.75rem] max-sm:gap-[0.375rem]">
+      <div className="flex h-[2.5rem] items-center justify-between gap-3 pr-[max(0.75rem,env(safe-area-inset-right,0px))] pl-[max(0.75rem,env(safe-area-inset-left,0px))] max-sm:gap-1.5 max-sm:pr-[max(0.5rem,env(safe-area-inset-right,0px))] max-sm:pl-[max(0.5rem,env(safe-area-inset-left,0px))]">
+        <div className="flex min-w-0 flex-1 items-center gap-2 max-sm:gap-1.5">
           <button
             ref={startRef}
             type="button"
-            className={[
-              'flex h-6 shrink-0 cursor-pointer items-center gap-[0.375rem] border px-[0.45rem] font-[inherit] text-[length:inherit] hover:border-[color:var(--color-hairline)] hover:bg-[rgb(255_255_255/0.08)] hover:text-primary hover:outline-none focus-visible:border-[color:var(--color-hairline)] focus-visible:bg-[rgb(255_255_255/0.08)] focus-visible:text-primary focus-visible:outline-none max-sm:px-[0.4rem] dark:hover:bg-[rgb(255_255_255/0.06)] dark:focus-visible:bg-[rgb(255_255_255/0.06)]',
-              startOpen
-                ? 'border-[color:var(--color-highlight-border)] bg-[var(--color-highlight-bg)] text-primary'
-                : 'border-transparent bg-transparent text-secondary',
-            ]
+            className={[CHIP, 'px-2.5 max-sm:px-2', startOpen ? CHIP_ACTIVE : CHIP_IDLE]
               .filter(Boolean)
               .join(' ')}
             aria-haspopup="menu"
@@ -90,11 +91,11 @@ export default function Taskbar({
             title="Menú de inicio"
             onClick={toggleStartMenu}
           >
-            <span className="text-[0.6875rem] leading-none whitespace-nowrap">{SITE_TITLE}</span>
+            <span className="leading-none whitespace-nowrap">{SITE_TITLE}</span>
           </button>
 
           <div
-            className="flex min-w-0 flex-1 items-center gap-[0.375rem] overflow-x-auto max-sm:gap-[0.25rem]"
+            className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto max-sm:gap-0.5"
             aria-label="Ventanas abiertas"
           >
             {openWindows.map((win) => {
@@ -102,11 +103,10 @@ export default function Taskbar({
               if (!item) return null;
               const isWinFocused = focusedId === win.id && !win.minimized;
               const className = [
-                'inline-flex h-6 max-w-[11rem] cursor-pointer items-center gap-[0.375rem] overflow-hidden border px-2 font-[inherit] text-[0.6875rem] hover:border-[color:var(--color-highlight-border)] hover:text-primary max-sm:max-w-[2.25rem] max-sm:px-1',
-                isWinFocused
-                  ? 'border-[color:var(--color-highlight-border)] bg-[var(--color-highlight-bg)] text-primary'
-                  : 'border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] text-secondary dark:bg-[rgb(24_24_27/0.75)]',
-                win.minimized && 'opacity-[0.72]',
+                CHIP,
+                'max-w-[11rem] overflow-hidden max-sm:max-w-[2.25rem] max-sm:px-1',
+                isWinFocused ? CHIP_ACTIVE : CHIP_IDLE,
+                win.minimized && 'opacity-60',
               ]
                 .filter(Boolean)
                 .join(' ');
@@ -140,10 +140,7 @@ export default function Taskbar({
           </div>
         </div>
 
-        <div
-          className="flex shrink-0 items-center gap-[0.125rem] border-l border-l-[rgb(113_113_122/0.25)] pl-2 max-sm:pl-[0.375rem]"
-          aria-label="Bandeja del sistema"
-        >
+        <div className="flex shrink-0 items-center gap-0.5" aria-label="Bandeja del sistema">
           <FullscreenToggle className="shrink-0" />
           <ThemeToggle className="shrink-0" />
           <TaskbarClock />

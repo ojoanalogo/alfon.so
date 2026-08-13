@@ -1,8 +1,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { makeBlogPost } from '@test/factories';
+import type { GithubContributions } from '@/lib/githubContributions';
 import { TECH_STACK } from '../projects/data';
 import AboutContent from './AboutContent';
+
+const SAMPLE_CONTRIBUTIONS: GithubContributions = {
+  username: 'ojoanalogo',
+  profileUrl: 'https://github.com/ojoanalogo',
+  total: 4,
+  days: [{ date: '2026-01-04', count: 4, level: 2 }],
+};
 
 describe('AboutContent', () => {
   it('renders the heading with the name', () => {
@@ -85,5 +93,18 @@ describe('AboutContent - latest posts', () => {
     render(<AboutContent posts={posts} />);
     const link = screen.getByText('Second Post').closest('a');
     expect(link?.getAttribute('href')).toBe('/blog/b/');
+  });
+});
+
+describe('AboutContent - github contributions', () => {
+  it('hides the matrix when no contribution data is provided', () => {
+    render(<AboutContent />);
+    expect(screen.queryByText('github')).toBeNull();
+  });
+
+  it('renders the contribution matrix when days are present', () => {
+    render(<AboutContent contributions={SAMPLE_CONTRIBUTIONS} />);
+    expect(screen.getByRole('img', { name: '4 contribuciones el último año' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Ver perfil de GitHub ojoanalogo' })).toBeTruthy();
   });
 });

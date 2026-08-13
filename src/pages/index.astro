@@ -7,12 +7,17 @@ import Card from '../components/ui/Card.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { DESKTOP_ICON_URLS } from '@desktop/lib/desktopIcons';
 import { getPublishedPosts, prepareBlogPost } from '../lib/blog';
+import {
+  fetchGithubContributions,
+  githubUsernameFromSocialLinks,
+} from '../lib/githubContributions';
 import { sortMDByDate } from '../utils';
 import type { BlogPostSummary, WallpaperOption } from '@/desktop/types';
 
 const MAX_POSTS = 10;
 const entries = sortMDByDate(await getPublishedPosts()).slice(0, MAX_POSTS);
 const posts: BlogPostSummary[] = await Promise.all(entries.map((entry) => prepareBlogPost(entry)));
+const githubContributions = await fetchGithubContributions(githubUsernameFromSocialLinks());
 
 const wallpaperModules = import.meta.glob<{ default: ImageMetadata }>(
   '../assets/wallpapers/*.{jpg,jpeg,png,webp}',
@@ -48,7 +53,11 @@ const wallpapers: WallpaperOption[] = (
 <BaseLayout desktop navbarActiveItemID="home">
   <section class="sm:hidden" aria-label="Mi info">
     <Card>
-      <AboutContent client:media="(max-width: 39.999rem)" posts={posts} />
+      <AboutContent
+        client:media="(max-width: 39.999rem)"
+        posts={posts}
+        contributions={githubContributions}
+      />
     </Card>
   </section>
 
@@ -58,6 +67,7 @@ const wallpapers: WallpaperOption[] = (
       posts={posts}
       wallpapers={wallpapers}
       desktopIconUrls={DESKTOP_ICON_URLS}
+      githubContributions={githubContributions}
     />
   </div>
 </BaseLayout>

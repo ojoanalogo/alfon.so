@@ -96,7 +96,7 @@ describe('DesktopWallpaper', () => {
     localStorage.setItem('devfolio.wallpaper', 'missing');
     const { container } = renderWallpaper([makeWallpaperOption({ id: 'wp-1' })]);
 
-    expect(container.querySelector('img')).toBeNull();
+    expect(container.querySelector('[data-desktop-wallpaper]')).toBeNull();
     const background = container.firstElementChild as HTMLElement;
     expect(background.style.backgroundColor).toBe('var(--color-background)');
   });
@@ -109,6 +109,6 @@ describe('DesktopWallpaper', () => {
 
     const background = container.firstElementChild as HTMLElement;
     expect(background.style.backgroundColor).toBe('rgb(96, 165, 250)');
-    expect(container.querySelector('img')).toBeNull();
+    expect(container.querySelector('[data-desktop-wallpaper]')).toBeNull();
   });
 });

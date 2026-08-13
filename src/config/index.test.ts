@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { githubUsernameFromSocialLinks } from '@/lib/githubContributions';
 import { NAV_LINKS, SOCIAL_LINKS } from './index';
 
 // Data-integrity checks for the static link lists: they catch real editing
@@ -49,5 +50,9 @@ describe('config: SOCIAL_LINKS', () => {
     for (const link of SOCIAL_LINKS) {
       expect(isHttpsUrl(link.url)).toBe(true);
     }
+  });
+
+  it('exposes a github profile whose username can be parsed', () => {
+    expect(githubUsernameFromSocialLinks(SOCIAL_LINKS)).toBe('ojoanalogo');
   });
 });
