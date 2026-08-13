@@ -30,7 +30,7 @@ export default function FullscreenToggle({ className }: { className?: string }) 
       data-tooltip={label}
       onClick={toggle}
       className={[
-        'tooltip inline-flex h-6 w-6 cursor-pointer items-center justify-center text-secondary transition-colors duration-200 hover:text-primary',
+        'tooltip inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-secondary transition-colors duration-150 hover:bg-stone-300/50 hover:text-primary dark:hover:bg-gray-500/15',
         className,
       ]
         .filter(Boolean)

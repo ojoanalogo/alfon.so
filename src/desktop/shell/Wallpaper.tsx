@@ -1,9 +1,7 @@
 import { useWallpaper } from '../state/WallpaperContext';
-import DesktopGarden from './DesktopGarden';
 
 export default function DesktopWallpaper() {
-  const { activeWallpaper, status, desktopBackgroundColor, backgroundColorId } = useWallpaper();
-  const showGarden = !activeWallpaper && backgroundColorId === 'default';
+  const { activeWallpaper, status, desktopBackgroundColor } = useWallpaper();
 
   return (
     <div
@@ -20,7 +18,6 @@ export default function DesktopWallpaper() {
           data-desktop-wallpaper
         />
       )}
-      {showGarden && <DesktopGarden />}
     </div>
   );
 }

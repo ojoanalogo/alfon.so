@@ -39,12 +39,6 @@ describe('DesktopWallpaper', () => {
     expect(background.className).toContain('inset-0');
   });
 
-  it('plants the default-fill garden when no wallpaper is active', () => {
-    const { container } = renderWallpaper([]);
-    expect(container.querySelector('[data-desktop-garden]')).toBeTruthy();
-    expect(container.querySelectorAll('[data-garden-sprite]').length).toBeGreaterThan(0);
-  });
-
   it('applies the resolved desktop background color when no wallpaper is active', () => {
     // No wallpapers -> activeWallpaper is null -> "default" color resolves to the
     // theme background token.
@@ -95,7 +89,6 @@ describe('DesktopWallpaper', () => {
     // Decorative image: empty alt, async decoding.
     expect(img.getAttribute('alt')).toBe('');
     expect(img.getAttribute('decoding')).toBe('async');
-    expect(container.querySelector('[data-desktop-garden]')).toBeNull();
   });
 
   it('does not render an image when a wallpaper id is stored but unavailable', () => {
@@ -104,7 +97,6 @@ describe('DesktopWallpaper', () => {
     const { container } = renderWallpaper([makeWallpaperOption({ id: 'wp-1' })]);
 
     expect(container.querySelector('[data-desktop-wallpaper]')).toBeNull();
-    expect(container.querySelector('[data-desktop-garden]')).toBeTruthy();
     const background = container.firstElementChild as HTMLElement;
     expect(background.style.backgroundColor).toBe('var(--color-background)');
   });
@@ -118,6 +110,5 @@ describe('DesktopWallpaper', () => {
     const background = container.firstElementChild as HTMLElement;
     expect(background.style.backgroundColor).toBe('rgb(96, 165, 250)');
     expect(container.querySelector('[data-desktop-wallpaper]')).toBeNull();
-    expect(container.querySelector('[data-desktop-garden]')).toBeNull();
   });
 });
