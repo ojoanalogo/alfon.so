@@ -23,7 +23,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-background: #9a948a;
+  --color-background: #f7f7f4;
   --color-surface: #ebe6de;
   --color-primary: #18181b;
   --color-secondary: #3f3f46;
@@ -49,12 +49,14 @@
     --color-hairline-strong: rgb(113 113 122 / 0.45);
     /* Light control fill; components keep their own html.dark override. */
     --color-control-fill: rgb(255 255 255 / 0.55);
-    /* Both surface values, for the settings swatch that shows light+dark at once. */
     --color-surface-light: #ebe6de;
-    --color-surface-dark: #101013;
+    --color-surface-dark: #14120b;
+    /* Default desktop fill — split swatch shows both themes at once. */
+    --color-background-light: #f7f7f4;
+    --color-background-dark: #14120b;
 
     @variant dark {
-      --color-background: #101013;
+      --color-background: #14120b;
       --color-surface: #1b1b1e;
       --color-primary: #f4f4f5;
       --color-secondary: #a1a1aa;

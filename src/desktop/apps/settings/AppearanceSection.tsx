@@ -36,8 +36,8 @@ function ColorSwatch({
     >
       {colorId === 'default' ? (
         <span className={`grid grid-cols-2 ${SWATCH_INNER}`} aria-hidden="true">
-          <span className="bg-[var(--color-surface-light)]" />
-          <span className="bg-[var(--color-surface-dark)]" />
+          <span className="bg-[var(--color-background-light)]" />
+          <span className="bg-[var(--color-background-dark)]" />
         </span>
       ) : (
         <span

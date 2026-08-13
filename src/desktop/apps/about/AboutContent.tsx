@@ -13,8 +13,11 @@ import {
 } from '@phosphor-icons/react';
 import { Divider, ExternalLink, InfoRow, PostListItem, SocialMediaIcons } from '@desktop/ui/parts';
 import { SITE } from '@desktop/lib/siteContent';
+import type { GithubContributions } from '@/lib/githubContributions';
 import type { BlogPostSummary } from '../../types';
 import { TECH_STACK } from '../projects/data';
+import ContributionGraph from './ContributionGraph';
+import { useGithubContributions } from './contributionsContext';
 
 const ABOUT_LINK_CLASS = 'text-link hover:underline focus:outline-none';
 
@@ -37,11 +40,19 @@ interface AboutContentProps {
   posts?: BlogPostSummary[];
   /** Opens a post in the desktop; omit on the static (mobile) view to link out. */
   onOpenPost?: (slug: string) => void;
+  /** Build-time GitHub calendar; falls back to the desktop provider. */
+  contributions?: GithubContributions | null;
 }
 
-export default function AboutContent({ posts = [], onOpenPost }: AboutContentProps) {
+export default function AboutContent({
+  posts = [],
+  onOpenPost,
+  contributions: contributionsProp,
+}: AboutContentProps) {
   const latestPosts = posts.slice(0, MAX_ABOUT_POSTS);
   const person = SITE.person;
+  const contributionsFromContext = useGithubContributions();
+  const contributions = contributionsProp ?? contributionsFromContext;
 
   return (
     <div className="mx-auto max-w-2xl space-y-3 text-xs sm:space-y-2">
@@ -145,6 +156,13 @@ export default function AboutContent({ posts = [], onOpenPost }: AboutContentPro
           </div>
         </div>
       </div>
+
+      {contributions && contributions.days.length > 0 && (
+        <>
+          <Divider className="my-2" />
+          <ContributionGraph contributions={contributions} />
+        </>
+      )}
 
       {latestPosts.length > 0 && (
         <>
