@@ -12,8 +12,8 @@ import type { WindowMeta, WindowState } from '../../types';
 const CHIP =
   'inline-flex h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-md border-0 px-2 font-[inherit] text-[0.6875rem] transition-colors duration-150 hover:outline-none focus-visible:outline-none';
 const CHIP_IDLE =
-  'bg-transparent text-secondary hover:bg-[var(--color-highlight-bg)] hover:text-primary focus-visible:bg-[var(--color-highlight-bg)] focus-visible:text-primary';
-const CHIP_ACTIVE = 'bg-[var(--color-highlight-bg-strong)] text-primary';
+  'bg-transparent text-secondary hover:bg-stone-300/50 hover:text-primary focus-visible:bg-stone-300/50 focus-visible:text-primary dark:hover:bg-gray-500/15 dark:focus-visible:bg-gray-500/15';
+const CHIP_ACTIVE = 'bg-stone-300/70 text-primary dark:bg-gray-500/15';
 
 interface TaskbarProps {
   windows: Record<string, WindowState>;

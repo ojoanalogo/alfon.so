@@ -37,13 +37,13 @@
   :root,
   :host {
     --window-radius: 0.625rem;
-    /* GitHub contribution greens (#40c463 / #30a14e). */
-    --color-highlight-bg: rgb(64 196 99 / 0.18);
-    --color-highlight-bg-strong: rgb(64 196 99 / 0.3);
-    --color-highlight-border: rgb(48 161 78 / 0.62);
-    --desktop-highlight-bg: rgb(64 196 99 / 0.18);
-    --desktop-highlight-bg-strong: rgb(64 196 99 / 0.32);
-    --desktop-highlight-border: rgb(48 161 78 / 0.62);
+    --color-highlight-bg: rgb(113 113 122 / 0.2);
+    --color-highlight-bg-strong: rgb(82 82 91 / 0.3);
+    --color-highlight-border: rgb(82 82 91 / 0.62);
+    /* Desktop icon selection — accent blue, same in dark site theme. */
+    --desktop-highlight-bg: rgb(59 130 246 / 0.18);
+    --desktop-highlight-bg-strong: rgb(59 130 246 / 0.32);
+    --desktop-highlight-border: rgb(37 99 235 / 0.62);
     /* Theme-invariant zinc-500 hairlines (same in light and dark). */
     --color-hairline: rgb(113 113 122 / 0.35);
     --color-hairline-strong: rgb(113 113 122 / 0.45);
@@ -64,12 +64,9 @@
       --color-link: #71717a;
       --color-muted: #71717a;
       --color-titlebar-text: #d4d4d8;
-      --color-highlight-bg: rgb(57 211 83 / 0.14);
-      --color-highlight-bg-strong: rgb(57 211 83 / 0.24);
-      --color-highlight-border: rgb(38 166 65 / 0.55);
-      --desktop-highlight-bg: rgb(57 211 83 / 0.16);
-      --desktop-highlight-bg-strong: rgb(57 211 83 / 0.28);
-      --desktop-highlight-border: rgb(38 166 65 / 0.55);
+      --color-highlight-bg: rgb(161 161 170 / 0.14);
+      --color-highlight-bg-strong: rgb(161 161 170 / 0.24);
+      --color-highlight-border: rgb(161 161 170 / 0.5);
     }
   }
 }
