@@ -1,7 +1,6 @@
 export default function HappyContent() {
   return (
-    <div className="space-y-3">
-      <p className="text-xs text-muted">archivo recuperado... te dijeron que no lo abrieras.</p>
+    <div>
       <div
         className="relative w-full overflow-hidden rounded-md border border-gray-400/40"
         style={{ aspectRatio: '16 / 9' }}
