@@ -23,7 +23,7 @@ describe('appToWindowDef', () => {
   it('forces defaultX and defaultY to 0 even when geometry provides values', () => {
     const win = appToWindowDef(
       makeAppDefinition({
-        geometry: { defaultWidth: 800, defaultX: 123, defaultY: 456 },
+        geometry: { defaultWidth: 800 },
       }),
     );
     expect(win.defaultX).toBe(0);

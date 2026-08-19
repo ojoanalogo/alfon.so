@@ -47,7 +47,7 @@ describe('ThemeSegmentedControl', () => {
 
     fireEvent.click(screen.getByText('Oscuro'));
 
-    expect(localStorage.getItem('theme')).toBe('dark');
+    expect(localStorage.getItem('alfonso:theme')).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(screen.getByText('Oscuro').closest('button')?.getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByText('Sistema').closest('button')?.getAttribute('aria-pressed')).toBe(
@@ -61,7 +61,7 @@ describe('ThemeSegmentedControl', () => {
     fireEvent.click(screen.getByText('Oscuro'));
     fireEvent.click(screen.getByText('Claro'));
 
-    expect(localStorage.getItem('theme')).toBe('light');
+    expect(localStorage.getItem('alfonso:theme')).toBe('light');
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(screen.getByText('Claro').closest('button')?.getAttribute('aria-pressed')).toBe('true');
   });
@@ -70,10 +70,10 @@ describe('ThemeSegmentedControl', () => {
     renderControl();
 
     fireEvent.click(screen.getByText('Oscuro'));
-    expect(localStorage.getItem('theme')).toBe('dark');
+    expect(localStorage.getItem('alfonso:theme')).toBe('dark');
 
     fireEvent.click(screen.getByText('Sistema'));
-    expect(localStorage.getItem('theme')).toBeNull();
+    expect(localStorage.getItem('alfonso:theme')).toBeNull();
     expect(screen.getByText('Sistema').closest('button')?.getAttribute('aria-pressed')).toBe(
       'true',
     );

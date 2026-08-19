@@ -1,12 +1,11 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useNotes } from './useNotes';
+import { storageKey } from '@/lib/storage';
 import type { Note } from './types';
 
-const STORAGE_KEY = 'devfolio:notes';
-
 function readStorage(): Note[] {
-  const raw = localStorage.getItem(STORAGE_KEY);
+  const raw = localStorage.getItem(storageKey('notes'));
   return raw ? (JSON.parse(raw) as Note[]) : [];
 }
 
@@ -22,14 +21,14 @@ describe('useNotes', () => {
 
   it('does not write storage on mount before any edit', () => {
     renderHook(() => useNotes());
-    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem('alfonso:notes')).toBeNull();
   });
 
   it('hydrates initial notes from storage', () => {
     const seeded: Note[] = [
       { id: 'a', title: 'Seed', content: 'hello', updatedAt: '2026-01-01T00:00:00.000Z' },
     ];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+    localStorage.setItem('alfonso:notes', JSON.stringify(seeded));
 
     const { result } = renderHook(() => useNotes());
     expect(result.current.notes).toEqual(seeded);

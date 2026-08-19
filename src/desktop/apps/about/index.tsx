@@ -6,8 +6,6 @@ export default defineApp({
   title: 'about.html',
   iconKey: 'about',
   geometry: {
-    defaultX: 0,
-    defaultY: 0,
     defaultWidth: 576,
     minWidth: 520,
     initialZ: 11,

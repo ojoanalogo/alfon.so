@@ -51,7 +51,7 @@ describe('DesktopWallpaper', () => {
   it('does not render an image while the active wallpaper is still loading', () => {
     // localStorage points at a wallpaper, but the Image() never fires onload in
     // jsdom, so status stays "loading" and the <img> must not appear.
-    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    localStorage.setItem('alfonso:wallpaper', 'wp-1');
     const { container } = renderWallpaper([makeWallpaperOption()]);
 
     expect(container.querySelector('img')).toBeNull();
@@ -76,7 +76,7 @@ describe('DesktopWallpaper', () => {
     }
     vi.stubGlobal('Image', FakeImage as unknown as typeof Image);
 
-    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    localStorage.setItem('alfonso:wallpaper', 'wp-1');
     const { container } = renderWallpaper([wallpaper]);
 
     const img = await waitFor(() => {
@@ -93,7 +93,7 @@ describe('DesktopWallpaper', () => {
 
   it('does not render an image when a wallpaper id is stored but unavailable', () => {
     // Stored id is not in the provided wallpaper list -> resolves to no wallpaper.
-    localStorage.setItem('devfolio.wallpaper', 'missing');
+    localStorage.setItem('alfonso:wallpaper', 'missing');
     const { container } = renderWallpaper([makeWallpaperOption({ id: 'wp-1' })]);
 
     expect(container.querySelector('[data-desktop-wallpaper]')).toBeNull();
@@ -103,8 +103,8 @@ describe('DesktopWallpaper', () => {
 
   it('uses a concrete color value when a desktop color preference is stored', () => {
     // Selecting a color clears the wallpaper, so the background uses the literal hex.
-    localStorage.setItem('devfolio.wallpaper', '');
-    localStorage.setItem('devfolio.desktop-color', 'blue');
+    localStorage.setItem('alfonso:wallpaper', '');
+    localStorage.setItem('alfonso:desktop-color', 'blue');
     const { container } = renderWallpaper([makeWallpaperOption()]);
 
     const background = container.firstElementChild as HTMLElement;

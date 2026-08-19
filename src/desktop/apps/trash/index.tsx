@@ -40,6 +40,6 @@ export default explorerApp({
     }
   },
   footer: (ctx) => <TrashFooter trash={ctx.trash} />,
-  geometry: { defaultX: 320, defaultY: 140, defaultWidth: 420, initialZ: 17 },
+  geometry: { defaultWidth: 420, initialZ: 17 },
   desktopIcon: false,
 });

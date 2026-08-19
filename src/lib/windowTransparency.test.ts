@@ -21,7 +21,7 @@ describe('windowTransparency', () => {
     setWindowTransparencyEnabled(false);
 
     expect(getWindowTransparencyEnabled()).toBe(false);
-    expect(localStorage.getItem('devfolio.window-transparency')).toBe('false');
+    expect(localStorage.getItem('alfonso:window-transparency')).toBe('false');
     expect(document.documentElement.dataset.windowTransparency).toBe('false');
   });
 
@@ -30,7 +30,7 @@ describe('windowTransparency', () => {
     setWindowTransparencyEnabled(true);
 
     expect(getWindowTransparencyEnabled()).toBe(true);
-    expect(localStorage.getItem('devfolio.window-transparency')).toBeNull();
+    expect(localStorage.getItem('alfonso:window-transparency')).toBeNull();
     expect(document.documentElement.dataset.windowTransparency).toBeUndefined();
   });
 });

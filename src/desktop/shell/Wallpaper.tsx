@@ -1,7 +1,7 @@
 import { useWallpaper } from '../state/WallpaperContext';
 
 export default function DesktopWallpaper() {
-  const { activeWallpaper, status, desktopBackgroundColor } = useWallpaper();
+  const { activeWallpaper, activePattern, status, desktopBackgroundColor } = useWallpaper();
 
   return (
     <div
@@ -9,6 +9,17 @@ export default function DesktopWallpaper() {
       aria-hidden="true"
       style={{ backgroundColor: desktopBackgroundColor }}
     >
+      {activePattern && (
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: activePattern.backgroundImage,
+            backgroundSize: activePattern.backgroundSize,
+            opacity: activePattern.opacity,
+          }}
+          data-desktop-pattern
+        />
+      )}
       {activeWallpaper && status === 'ready' && (
         <img
           className="h-full w-full object-cover object-center"

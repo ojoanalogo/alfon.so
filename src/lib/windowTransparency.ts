@@ -1,15 +1,13 @@
-const STORAGE_KEY = 'devfolio.window-transparency';
+import { readStorageItem, removeStorageItem, writeStorageItem } from './storage';
+
+const STORAGE_NAME = 'window-transparency';
 const CHANGE_EVENT = 'devfolio-window-transparency-change';
 
 export const DEFAULT_WINDOW_TRANSPARENCY = true;
 
 export function getWindowTransparencyEnabled(): boolean {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'false') return false;
-  } catch {
-    /* private mode */
-  }
+  const stored = readStorageItem(STORAGE_NAME);
+  if (stored === 'false') return false;
   return DEFAULT_WINDOW_TRANSPARENCY;
 }
 
@@ -30,14 +28,10 @@ function dispatchWindowTransparencyChange() {
 }
 
 export function setWindowTransparencyEnabled(enabled: boolean) {
-  try {
-    if (enabled === DEFAULT_WINDOW_TRANSPARENCY) {
-      localStorage.removeItem(STORAGE_KEY);
-    } else {
-      localStorage.setItem(STORAGE_KEY, String(enabled));
-    }
-  } catch {
-    /* private mode */
+  if (enabled === DEFAULT_WINDOW_TRANSPARENCY) {
+    removeStorageItem(STORAGE_NAME);
+  } else {
+    writeStorageItem(STORAGE_NAME, String(enabled));
   }
 
   applyWindowTransparencyToDocument(enabled);

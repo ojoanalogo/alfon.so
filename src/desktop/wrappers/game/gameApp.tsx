@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { defineApp, type DefineAppInput } from '../defineApp';
-import type { WindowChromeProps } from '../types';
+import type { GameMeta, WindowChromeProps } from '../types';
 
 type GameAppInput<Id extends string> = Omit<DefineAppInput<Id>, 'body'> & {
+  gameMeta: GameMeta;
   body: (props: { active: boolean }) => ReactNode;
 };
 
@@ -12,9 +13,10 @@ function isGameActive(win?: WindowChromeProps): boolean {
 
 /** Game window helper — pauses input and loops when unfocused, minimized, or closed. */
 export function gameApp<Id extends string>(input: GameAppInput<Id>) {
-  const { body, ...meta } = input;
+  const { body, gameMeta, ...meta } = input;
   return defineApp({
     ...meta,
+    gameMeta,
     body: (_ctx, win) => body({ active: isGameActive(win) }),
   });
 }

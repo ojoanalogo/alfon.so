@@ -56,7 +56,7 @@ describe('ThemeToggle', () => {
   });
 
   it('shows the sun icon when fixed to light', () => {
-    localStorage.setItem('theme', 'light');
+    localStorage.setItem('alfonso:theme', 'light');
     renderToggle();
     const trigger = getTrigger();
     expect(trigger.querySelector('svg.lucide-sun')).toBeTruthy();
@@ -65,7 +65,7 @@ describe('ThemeToggle', () => {
   });
 
   it('shows the moon icon when fixed to dark', () => {
-    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('alfonso:theme', 'dark');
     renderToggle();
     const trigger = getTrigger();
     expect(trigger.querySelector('svg.lucide-moon')).toBeTruthy();
@@ -88,7 +88,7 @@ describe('ThemeToggle', () => {
     fireEvent.click(getTrigger());
     fireEvent.click(screen.getByRole('option', { name: 'Oscuro' }));
 
-    expect(localStorage.getItem('theme')).toBe('dark');
+    expect(localStorage.getItem('alfonso:theme')).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(getTrigger().getAttribute('aria-expanded')).toBe('false');
     expect(container.querySelector('.theme-dropdown-menu')?.classList.contains('hidden')).toBe(
@@ -97,27 +97,27 @@ describe('ThemeToggle', () => {
   });
 
   it('selecting Claro applies light theme', () => {
-    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('alfonso:theme', 'dark');
     renderToggle();
     fireEvent.click(getTrigger());
     fireEvent.click(screen.getByRole('option', { name: 'Claro' }));
 
-    expect(localStorage.getItem('theme')).toBe('light');
+    expect(localStorage.getItem('alfonso:theme')).toBe('light');
     expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 
   it('selecting Sistema clears the stored override', () => {
-    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('alfonso:theme', 'dark');
     renderToggle();
     fireEvent.click(getTrigger());
     fireEvent.click(screen.getByRole('option', { name: 'Sistema' }));
 
-    expect(localStorage.getItem('theme')).toBeNull();
+    expect(localStorage.getItem('alfonso:theme')).toBeNull();
     expect(document.documentElement.dataset.themePreference).toBe('system');
   });
 
   it('marks the active preference in the menu', () => {
-    localStorage.setItem('theme', 'light');
+    localStorage.setItem('alfonso:theme', 'light');
     renderToggle();
     fireEvent.click(getTrigger());
 

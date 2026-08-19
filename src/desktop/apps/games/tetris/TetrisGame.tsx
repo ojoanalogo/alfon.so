@@ -7,18 +7,27 @@ import { useGameLoop } from '../useGameLoop';
 import {
   CELL,
   COLS,
-  KEY_TO_DIRECTION,
-  OPPOSITE,
   ROWS,
-  TICK_MS,
+  hardDrop,
   initialState,
-  stepGame,
+  moveHorizontal,
+  rotate,
+  tickDown,
+  tickMsForLines,
+  cellAt,
   type GameState,
-} from './snakeLogic';
+} from './tetrisLogic';
 
-function tickMsForScore(score: number): number {
-  return Math.max(55, TICK_MS - Math.floor(score / 3) * 10);
-}
+const CELL_COLORS = [
+  '',
+  '#38bdf8',
+  '#facc15',
+  '#c084fc',
+  '#4ade80',
+  '#f87171',
+  '#60a5fa',
+  '#fb923c',
+];
 
 function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   const ctx = canvas.getContext('2d');
@@ -27,6 +36,15 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
 
   ctx.fillStyle = palette.canvas;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      const cell = cellAt(game, col, row);
+      if (!cell) continue;
+      ctx.fillStyle = CELL_COLORS[cell] ?? palette.accentAlt;
+      ctx.fillRect(col * CELL + 1, row * CELL + 1, CELL - 2, CELL - 2);
+    }
+  }
 
   ctx.strokeStyle = palette.grid;
   for (let x = 0; x <= COLS; x++) {
@@ -42,43 +60,27 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
     ctx.stroke();
   }
 
-  if (game.food) {
-    ctx.fillStyle = palette.danger;
-    ctx.fillRect(game.food.x * CELL + 2, game.food.y * CELL + 2, CELL - 4, CELL - 4);
-  }
-
-  game.snake.forEach((segment, index) => {
-    ctx.fillStyle = index === 0 ? palette.accent : '#16a34a';
-    ctx.fillRect(segment.x * CELL + 1, segment.y * CELL + 1, CELL - 2, CELL - 2);
-  });
-
-  if (game.gameOver || game.won) {
+  if (game.gameOver) {
     ctx.fillStyle = overlayRgba();
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = palette.text;
     ctx.font = 'bold 14px ui-monospace, monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(game.won ? '¡ganaste!' : 'game over', canvas.width / 2, canvas.height / 2 - 8);
+    ctx.fillText('game over', canvas.width / 2, canvas.height / 2 - 8);
     ctx.font = '11px ui-monospace, monospace';
     ctx.fillText(`puntuación: ${game.score}`, canvas.width / 2, canvas.height / 2 + 12);
     ctx.fillText('espacio para reiniciar', canvas.width / 2, canvas.height / 2 + 28);
   }
 }
 
-interface SnakeGameProps {
+interface TetrisGameProps {
   active: boolean;
 }
 
-export default function SnakeGame({ active }: SnakeGameProps) {
+export default function TetrisGame({ active }: TetrisGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [game, setGame] = useState(initialState);
-  const pendingRef = useRef(game.direction);
-  const lastMovedRef = useRef(game.direction);
-  const { best, reportScore } = useGameHighScore('snake');
-
-  useEffect(() => {
-    lastMovedRef.current = game.direction;
-  }, [game.direction]);
+  const { best, reportScore } = useGameHighScore('tetris');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -86,49 +88,56 @@ export default function SnakeGame({ active }: SnakeGameProps) {
   }, [game]);
 
   useEffect(() => {
-    if (game.gameOver || game.won) reportScore(game.score);
-  }, [game.gameOver, game.won, game.score, reportScore]);
+    if (game.gameOver) reportScore(game.score);
+  }, [game.gameOver, game.score, reportScore]);
 
-  const restart = useCallback(() => {
-    const next = initialState();
-    pendingRef.current = next.direction;
-    lastMovedRef.current = next.direction;
-    setGame(next);
-  }, []);
+  const restart = useCallback(() => setGame(initialState()), []);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === ' ' || event.key === 'Enter') {
-        if (game.gameOver || game.won) restart();
+        if (game.gameOver) restart();
+        else setGame((prev) => hardDrop(prev));
         return true;
       }
-
-      const next = KEY_TO_DIRECTION[event.key];
-      if (!next) return false;
-      if (game.gameOver || game.won) return true;
-      if (OPPOSITE[next] === lastMovedRef.current) return true;
-      pendingRef.current = next;
-      return true;
+      if (game.gameOver) return false;
+      if (event.key === 'ArrowLeft' || event.key === 'a') {
+        setGame((prev) => moveHorizontal(prev, -1));
+        return true;
+      }
+      if (event.key === 'ArrowRight' || event.key === 'd') {
+        setGame((prev) => moveHorizontal(prev, 1));
+        return true;
+      }
+      if (event.key === 'ArrowUp' || event.key === 'w') {
+        setGame((prev) => rotate(prev));
+        return true;
+      }
+      if (event.key === 'ArrowDown' || event.key === 's') {
+        setGame((prev) => tickDown(prev));
+        return true;
+      }
+      return false;
     },
-    [game.gameOver, game.won, restart],
+    [game.gameOver, restart],
   );
 
   useGameControls(active, handleKeyDown);
 
   const tick = useCallback(() => {
-    setGame((prev) => stepGame(prev, pendingRef.current));
+    setGame((prev) => tickDown(prev));
   }, []);
 
-  useGameLoop(active, tick, tickMsForScore(game.score));
+  useGameLoop(active, tick, tickMsForLines(game.lines));
 
   return (
     <GameShell
-      hint="flechas / wasd · espacio reinicia"
+      hint="← → mover · ↑ girar · ↓ bajar · espacio soltar"
       score={`puntos: ${game.score}`}
       bestScore={best}
-      overlay={<GameOverOverlay show={game.gameOver || game.won} onRestart={restart} />}
+      overlay={<GameOverOverlay show={game.gameOver} onRestart={restart} />}
     >
-      <canvas ref={canvasRef} width={COLS * CELL} height={ROWS * CELL} aria-label="Snake" />
+      <canvas ref={canvasRef} width={COLS * CELL} height={ROWS * CELL} aria-label="Tetris" />
     </GameShell>
   );
 }

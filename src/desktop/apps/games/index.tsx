@@ -1,14 +1,17 @@
 import { explorerApp } from '@desktop/wrappers';
-import { GAME_LAUNCHER_ITEMS } from './gameLauncher';
+import { GAME_IDS, gameLauncherItemsFromApps } from './gameLauncher';
 
 export default explorerApp({
   id: 'games',
   title: 'juegos/',
   iconKey: 'games',
   defaultMode: 'grid',
-  items: () => [...GAME_LAUNCHER_ITEMS],
+  items: (ctx) =>
+    gameLauncherItemsFromApps(
+      GAME_IDS.map((id) => ctx.findApp(id)).filter((app) => app !== undefined),
+    ),
   onActivate: (id, ctx) => ctx.onOpenApp(id),
-  geometry: { defaultX: 200, defaultY: 88, defaultWidth: 480, defaultHeight: 340, initialZ: 13 },
+  geometry: { defaultWidth: 480, defaultHeight: 340, initialZ: 13 },
   desktopIcon: { label: 'juegos', tooltip: 'Juegos' },
   taskbarTooltip: 'Juegos',
 });

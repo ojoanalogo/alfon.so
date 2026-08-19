@@ -8,7 +8,7 @@ export default defineApp({
   id: 'terminal',
   title: 'terminal — guest@alfon.so',
   iconKey: 'terminal',
-  geometry: { defaultX: 88, defaultY: 36, defaultWidth: 560, defaultHeight: 380, initialZ: 10 },
+  geometry: { defaultWidth: 560, defaultHeight: 380, initialZ: 10 },
   desktopIcon: { label: 'terminal', tooltip: 'Terminal' },
   taskbarTooltip: 'Terminal',
   bodyClassName: 'terminal-window__body',

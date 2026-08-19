@@ -8,10 +8,15 @@ export default gameApp({
   id: 'pong',
   title: 'pong',
   iconKey: 'games',
-  geometry: { defaultX: 240, defaultY: 100, defaultWidth: 360, defaultHeight: 380, initialZ: 15 },
+  geometry: { defaultWidth: 360, defaultHeight: 380, initialZ: 15 },
   desktopIcon: false,
   taskbarTooltip: 'Pong',
   bodyClassName: 'game-window__body',
+  gameMeta: {
+    launcherLabel: 'pong.exe',
+    graphic: '🏓',
+    hint: 'Pong — rebota la pelota con la paleta',
+  },
   body: ({ active }) => (
     <Suspense fallback={<AppLoading />}>
       <PongGame active={active} />

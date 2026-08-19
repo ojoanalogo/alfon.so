@@ -3,10 +3,11 @@
  *
  * Adding a new desktop app:
  * 1. Create the app module (`defineApp`, `explorerApp`, `browserApp`, or `gameApp`).
- * 2. Import it and append to `APPS` below.
+ * 2. Import it and append to `CORE_APPS` below (games go in `games/` and load lazily).
  * 3. If it has a desktop icon: add its id to `DESKTOP_ICON_ORDER` in `appIcons.ts`
  *    (dev throws if you forget).
- * 4. If it is a game in the folder: add launcher metadata to `games/gameLauncher.ts`.
+ * 4. If it is a game: add its id to `GAME_IDS` in `games/gameLauncher.ts` and a loader
+ *    in `games/loadGameApps.ts`.
  * 5. If terminal should `cat` it: add content in `lib/siteContent.ts` or `commands.ts`.
  */
 
@@ -25,19 +26,14 @@ import notesApp from './notes';
 import contactoApp from './contacto';
 import cvApp from './cv';
 import gamesApp from './games';
-import snakeApp from './games/snake';
-import pongApp from './games/pong';
-import breakoutApp from './games/breakout';
-import planeApp from './games/plane';
-import minesweeperApp from './games/minesweeper';
 
 // ---------------------------------------------------------------------------
-// APPS — the canonical registry. Order here is the fallback initialZ stack
-// (BASE_Z + index via appToWindowDef) when geometry.initialZ is omitted.
+// CORE_APPS — static registry (games load asynchronously via loadGameApps).
+// Order here is the fallback initialZ stack when geometry.initialZ is omitted.
 // Desktop icons and start menu order come from DESKTOP_ICON_ORDER in appIcons.ts.
 // ---------------------------------------------------------------------------
 
-export const APPS = [
+export const CORE_APPS = [
   terminalApp,
   aboutApp,
   projectsApp,
@@ -46,11 +42,6 @@ export const APPS = [
   contactoApp,
   cvApp,
   gamesApp,
-  snakeApp,
-  pongApp,
-  breakoutApp,
-  planeApp,
-  minesweeperApp,
   photosApp,
   startupApp,
   settingsApp,
@@ -59,12 +50,18 @@ export const APPS = [
   browserApp,
 ] as const satisfies readonly AppDefinition[];
 
-export type AppId = (typeof APPS)[number]['id'];
+/** @deprecated Use CORE_APPS — games merge in at runtime via useDesktopApps. */
+export const APPS = CORE_APPS;
+
+export type AppId = (typeof CORE_APPS)[number]['id'];
 
 /** Static registry lookup (tests and tooling). Runtime UI uses `AppContext.findApp`. */
 export function findApp(id: string): AppDefinition | undefined {
-  return APPS.find((app) => app.id === id);
+  return CORE_APPS.find((app) => app.id === id);
 }
+
+export { loadGameApps } from './games/loadGameApps';
+export { GAME_IDS } from './games/gameLauncher';
 
 // ---------------------------------------------------------------------------
 // Dynamic per-post apps

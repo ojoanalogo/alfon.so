@@ -7,50 +7,52 @@ import { useGameControls } from '../useGameControls';
 import { useGameLoop } from '../useGameLoop';
 import {
   HEIGHT,
-  PLANE_H,
-  PLANE_W,
+  SHIP_R,
   TICK_MS,
   WIDTH,
   initialState,
   stepGame,
   type GameState,
-} from './planeLogic';
+} from './asteroidsLogic';
 
 function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const palette = readGamePalette();
 
-  ctx.fillStyle = palette.accentAlt;
-  ctx.globalAlpha = 0.25;
-  ctx.fillRect(0, 0, WIDTH, HEIGHT);
-  ctx.globalAlpha = 1;
   ctx.fillStyle = palette.canvas;
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-  ctx.fillStyle = 'rgb(255 255 255 / 0.08)';
-  for (let i = 0; i < 6; i++) {
-    const y = ((game.tick * 0.6 + i * 70) % (HEIGHT + 40)) - 20;
-    ctx.fillRect(20 + i * 48, y, 24, 4);
-  }
+  ctx.strokeStyle = palette.grid;
+  ctx.strokeRect(0.5, 0.5, WIDTH - 1, HEIGHT - 1);
 
-  game.obstacles.forEach((obstacle) => {
-    ctx.fillStyle = palette.textMuted;
-    ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
-    ctx.fillStyle = palette.grid;
-    ctx.fillRect(obstacle.x + 4, obstacle.y + 4, obstacle.w - 8, obstacle.h - 8);
+  game.asteroids.forEach((asteroid) => {
+    ctx.strokeStyle = palette.textMuted;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(asteroid.x, asteroid.y, asteroid.r, 0, Math.PI * 2);
+    ctx.stroke();
   });
 
-  const planeY = HEIGHT - PLANE_H - 16;
+  ctx.fillStyle = palette.warning;
+  game.bullets.forEach((bullet) => {
+    ctx.beginPath();
+    ctx.arc(bullet.x, bullet.y, 2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.save();
+  ctx.translate(game.shipX, game.shipY);
+  ctx.rotate(game.angle);
   ctx.fillStyle = palette.accentAlt;
   ctx.beginPath();
-  ctx.moveTo(game.planeX + PLANE_W / 2, planeY);
-  ctx.lineTo(game.planeX, planeY + PLANE_H);
-  ctx.lineTo(game.planeX + PLANE_W, planeY + PLANE_H);
+  ctx.moveTo(SHIP_R + 2, 0);
+  ctx.lineTo(-SHIP_R, SHIP_R * 0.7);
+  ctx.lineTo(-SHIP_R * 0.4, 0);
+  ctx.lineTo(-SHIP_R, -SHIP_R * 0.7);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = '#0ea5e9';
-  ctx.fillRect(game.planeX + PLANE_W / 2 - 3, planeY + 6, 6, 8);
+  ctx.restore();
 
   ctx.fillStyle = palette.text;
   ctx.font = '11px ui-monospace, monospace';
@@ -69,16 +71,18 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   }
 }
 
-interface PlaneGameProps {
+interface AsteroidsGameProps {
   active: boolean;
 }
 
-export default function PlaneGame({ active }: PlaneGameProps) {
+export default function AsteroidsGame({ active }: AsteroidsGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [game, setGame] = useState(initialState);
-  const moveRef = useRef(0);
-  const { best, reportScore } = useGameHighScore('plane');
-  useAxisControls(active, moveRef);
+  const rotateRef = useRef(0);
+  const thrustRef = useRef(false);
+  const fireRef = useRef(false);
+  const { best, reportScore } = useGameHighScore('asteroids');
+  useAxisControls(active, rotateRef);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -90,7 +94,9 @@ export default function PlaneGame({ active }: PlaneGameProps) {
   }, [game.gameOver, game.score, reportScore]);
 
   const restart = useCallback(() => {
-    moveRef.current = 0;
+    rotateRef.current = 0;
+    thrustRef.current = false;
+    fireRef.current = false;
     setGame(initialState());
   }, []);
 
@@ -98,14 +104,20 @@ export default function PlaneGame({ active }: PlaneGameProps) {
     (event: KeyboardEvent) => {
       if (event.key === ' ' || event.key === 'Enter') {
         if (game.gameOver) restart();
+        else fireRef.current = true;
         return true;
       }
+      if (game.gameOver) return false;
       if (event.key === 'ArrowLeft' || event.key === 'a') {
-        moveRef.current = -5;
+        rotateRef.current = -1;
         return true;
       }
       if (event.key === 'ArrowRight' || event.key === 'd') {
-        moveRef.current = 5;
+        rotateRef.current = 1;
+        return true;
+      }
+      if (event.key === 'ArrowUp' || event.key === 'w') {
+        thrustRef.current = true;
         return true;
       }
       return false;
@@ -116,19 +128,27 @@ export default function PlaneGame({ active }: PlaneGameProps) {
   useGameControls(active, handleKeyDown);
 
   const tick = useCallback(() => {
-    setGame((prev) => stepGame(prev, moveRef.current));
+    setGame((prev) =>
+      stepGame(prev, {
+        rotate: rotateRef.current,
+        thrust: thrustRef.current,
+        fire: fireRef.current,
+      }),
+    );
+    thrustRef.current = false;
+    fireRef.current = false;
   }, []);
 
   useGameLoop(active, tick, TICK_MS);
 
   return (
     <GameShell
-      hint="← → / a d · esquiva obstáculos"
+      hint="← → girar · ↑ acelerar · espacio disparar"
       score={`puntos: ${game.score}`}
       bestScore={best}
       overlay={<GameOverOverlay show={game.gameOver} onRestart={restart} />}
     >
-      <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} aria-label="Plane" />
+      <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} aria-label="Asteroids" />
     </GameShell>
   );
 }

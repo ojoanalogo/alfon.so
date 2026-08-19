@@ -8,6 +8,7 @@ export {
   type AppContext,
   type AppDefinition,
   type DesktopIconConfig,
+  type GameMeta,
   type NoteViewMode,
   type SettingsSection,
   type TrashController,

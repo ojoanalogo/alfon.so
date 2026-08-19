@@ -15,7 +15,7 @@ import {
 } from './theme';
 
 const THEME_CHANGE = 'devfolio-theme-change';
-const STORAGE_KEY = 'theme';
+const STORAGE_KEY = 'alfonso:theme';
 
 /**
  * jsdom does not implement window.matchMedia. Install a controllable stub that

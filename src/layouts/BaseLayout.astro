@@ -24,8 +24,25 @@ const {
     <BaseHead title={title} description={description} image={image} article={article} />
     <script is:inline>
       (function () {
+        function readPref(name, legacy) {
+          try {
+            const prefixed = localStorage.getItem('alfonso:' + name);
+            if (prefixed !== null) return prefixed;
+            if (legacy) {
+              const old = localStorage.getItem(legacy);
+              if (old !== null) {
+                localStorage.setItem('alfonso:' + name, old);
+                localStorage.removeItem(legacy);
+                return old;
+              }
+            }
+          } catch {
+            /* private mode */
+          }
+          return null;
+        }
         try {
-          const theme = localStorage.getItem('theme');
+          const theme = readPref('theme', 'theme');
           const preference = theme === 'light' || theme === 'dark' ? theme : 'system';
           document.documentElement.dataset.themePreference = preference;
           if (
@@ -38,7 +55,7 @@ const {
           document.documentElement.dataset.themePreference = 'system';
         }
         try {
-          if (localStorage.getItem('devfolio.window-transparency') === 'false') {
+          if (readPref('window-transparency', 'alfonso:window-transparency') === 'false') {
             document.documentElement.dataset.windowTransparency = 'false';
           }
         } catch {

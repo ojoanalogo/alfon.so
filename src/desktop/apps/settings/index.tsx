@@ -24,8 +24,6 @@ export default defineApp({
   title: 'ajustes',
   iconKey: 'settings',
   geometry: {
-    defaultX: 240,
-    defaultY: 72,
     defaultWidth: 580,
     defaultHeight: 420,
     initialZ: 18,

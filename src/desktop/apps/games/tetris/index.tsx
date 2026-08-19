@@ -2,24 +2,24 @@ import { lazy, Suspense } from 'react';
 import { gameApp } from '@desktop/wrappers';
 import AppLoading from '../../AppLoading';
 
-const PlaneGame = lazy(() => import('./PlaneGame'));
+const TetrisGame = lazy(() => import('./TetrisGame'));
 
 export default gameApp({
-  id: 'plane',
-  title: 'plane',
+  id: 'tetris',
+  title: 'tetris',
   iconKey: 'games',
   geometry: { defaultWidth: 360, defaultHeight: 480, initialZ: 15 },
   desktopIcon: false,
-  taskbarTooltip: 'Plane',
+  taskbarTooltip: 'Tetris',
   bodyClassName: 'game-window__body',
   gameMeta: {
-    launcherLabel: 'plane.exe',
-    graphic: '✈️',
-    hint: 'Plane — esquiva obstáculos con ← → / A D',
+    launcherLabel: 'tetris.exe',
+    graphic: '🧩',
+    hint: 'Tetris — flechas o WASD, espacio para soltar',
   },
   body: ({ active }) => (
     <Suspense fallback={<AppLoading />}>
-      <PlaneGame active={active} />
+      <TetrisGame active={active} />
     </Suspense>
   ),
 });

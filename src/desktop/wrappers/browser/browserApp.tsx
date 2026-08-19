@@ -19,8 +19,6 @@ export interface BrowserAppInput<Id extends string> {
 }
 
 const DEFAULT_BROWSER_GEOMETRY: AppGeometry = {
-  defaultX: 180,
-  defaultY: 80,
   defaultWidth: 800,
   defaultHeight: 520,
   minWidth: 480,

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import GameShell, { GameOverOverlay } from '../GameShell';
+import { readGamePalette, overlayRgba } from '../gamePalette';
+import { useGameHighScore } from '../useGameHighScore';
 import { useAxisControls } from '../useAxisControls';
 import { useGameControls } from '../useGameControls';
 import { useGameLoop } from '../useGameLoop';
@@ -60,8 +62,9 @@ function remainingBricks(bricks: boolean[][]) {
 function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  const palette = readGamePalette();
 
-  ctx.fillStyle = '#18181b';
+  ctx.fillStyle = palette.canvas;
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
   game.bricks.forEach((row, rowIndex) => {
@@ -74,10 +77,10 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
     });
   });
 
-  ctx.fillStyle = '#38bdf8';
+  ctx.fillStyle = palette.accentAlt;
   ctx.fillRect(game.paddleX, HEIGHT - PADDLE_H - 10, PADDLE_W, PADDLE_H);
 
-  ctx.fillStyle = '#fafafa';
+  ctx.fillStyle = palette.text;
   ctx.beginPath();
   ctx.arc(game.ballX, game.ballY, BALL / 2, 0, Math.PI * 2);
   ctx.fill();
@@ -86,9 +89,9 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   ctx.fillText(`puntos: ${game.score}`, 8, 16);
 
   if (game.won || game.gameOver) {
-    ctx.fillStyle = 'rgb(0 0 0 / 0.55)';
+    ctx.fillStyle = overlayRgba();
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.fillStyle = '#fafafa';
+    ctx.fillStyle = palette.text;
     ctx.font = 'bold 14px ui-monospace, monospace';
     ctx.textAlign = 'center';
     ctx.fillText(game.won ? '¡ganaste!' : 'game over', WIDTH / 2, HEIGHT / 2 - 8);
@@ -177,12 +180,17 @@ export default function BreakoutGame({ active }: BreakoutGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [game, setGame] = useState(initialState);
   const moveRef = useRef(0);
+  const { best, reportScore } = useGameHighScore('breakout');
   useAxisControls(active, moveRef);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) drawFrame(canvas, game);
   }, [game]);
+
+  useEffect(() => {
+    if (game.gameOver || game.won) reportScore(game.score);
+  }, [game.gameOver, game.won, game.score, reportScore]);
 
   const restart = useCallback(() => {
     moveRef.current = 0;
@@ -220,6 +228,7 @@ export default function BreakoutGame({ active }: BreakoutGameProps) {
     <GameShell
       hint="← → / a d · rompe los bloques"
       score={`puntos: ${game.score}`}
+      bestScore={best}
       overlay={<GameOverOverlay show={game.gameOver || game.won} onRestart={restart} />}
     >
       <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} aria-label="Breakout" />

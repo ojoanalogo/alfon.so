@@ -2,24 +2,24 @@ import { lazy, Suspense } from 'react';
 import { gameApp } from '@desktop/wrappers';
 import AppLoading from '../../AppLoading';
 
-const SnakeGame = lazy(() => import('./SnakeGame'));
+const AsteroidsGame = lazy(() => import('./AsteroidsGame'));
 
 export default gameApp({
-  id: 'snake',
-  title: 'snake',
+  id: 'asteroids',
+  title: 'asteroids',
   iconKey: 'games',
   geometry: { defaultWidth: 360, defaultHeight: 420, initialZ: 15 },
   desktopIcon: false,
-  taskbarTooltip: 'Snake',
+  taskbarTooltip: 'Asteroids',
   bodyClassName: 'game-window__body',
   gameMeta: {
-    launcherLabel: 'snake.exe',
-    graphic: '🐍',
-    hint: 'Snake — flechas o WASD',
+    launcherLabel: 'asteroids.exe',
+    graphic: '☄️',
+    hint: 'Asteroids — ← → girar, ↑ acelerar, espacio disparar',
   },
   body: ({ active }) => (
     <Suspense fallback={<AppLoading />}>
-      <SnakeGame active={active} />
+      <AsteroidsGame active={active} />
     </Suspense>
   ),
 });

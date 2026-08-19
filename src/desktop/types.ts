@@ -22,10 +22,6 @@ export interface WindowState extends WindowGeometry {
  * (e.g. `maxWidth`) propagates to both without a hand-maintained mapping.
  */
 export interface AppGeometry {
-  /** Legacy; placement is computed near viewport center at runtime. */
-  defaultX?: number;
-  /** Legacy; placement is computed near viewport center at runtime. */
-  defaultY?: number;
   defaultWidth: number;
   /** Initial height in px; omit for content-driven height. */
   defaultHeight?: number;
@@ -78,4 +74,13 @@ export interface WallpaperOption {
   label: string;
   src: string;
   thumbSrc: string;
+}
+
+export interface DesktopPatternOption {
+  id: string;
+  label: string;
+  backgroundImage: string;
+  backgroundSize: string;
+  /** Pattern layer opacity over the fill color (0–1). */
+  opacity: number;
 }

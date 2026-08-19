@@ -7,11 +7,13 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { readStorageItem, writeStorageItem } from '@/lib/storage';
 import {
   DESKTOP_COLORS,
   resolveDesktopColorValue,
   type DesktopColorOption,
 } from '../lib/desktopColors';
+import { DESKTOP_PATTERNS, resolvePatternId } from '../lib/desktopPatterns';
 import { useTheme } from './ThemeContext';
 import {
   iconLabelToneFromLuminance,
@@ -19,25 +21,30 @@ import {
   sampleWallpaperLuminance,
   type IconLabelTone,
 } from '../lib/iconLabelTone';
-import type { WallpaperOption } from '../types';
+import type { DesktopPatternOption, WallpaperOption } from '../types';
 import { resolveWallpaperId } from '@/config/wallpapers';
 
-const WALLPAPER_STORAGE_KEY = 'devfolio.wallpaper';
-const COLOR_STORAGE_KEY = 'devfolio.desktop-color';
+const WALLPAPER_STORAGE = 'wallpaper';
+const COLOR_STORAGE = 'desktop-color';
+const PATTERN_STORAGE = 'desktop-pattern';
 
 export type WallpaperStatus = 'loading' | 'ready' | 'error';
 
 interface WallpaperContextValue {
   wallpapers: WallpaperOption[];
   desktopColors: DesktopColorOption[];
+  desktopPatterns: DesktopPatternOption[];
   wallpaperId: string | null;
+  patternId: string | null;
   backgroundColorId: string;
   activeWallpaper: WallpaperOption | null;
+  activePattern: DesktopPatternOption | null;
   desktopBackgroundColor: string;
   status: WallpaperStatus;
   iconLabelTone: IconLabelTone;
   bootContentReady: boolean;
   setWallpaper: (id: string | null) => void;
+  setPattern: (id: string | null) => void;
   setBackgroundColor: (id: string) => void;
 }
 
@@ -46,55 +53,68 @@ const WallpaperContext = createContext<WallpaperContextValue | null>(null);
 type WallpaperPreference = 'unset' | 'color' | string;
 
 function readWallpaperPreference(): WallpaperPreference {
-  try {
-    const stored = localStorage.getItem(WALLPAPER_STORAGE_KEY);
-    if (stored === null) return 'unset';
-    if (stored === '') return 'color';
-    return stored;
-  } catch {
-    return 'unset';
-  }
+  const stored = readStorageItem(WALLPAPER_STORAGE);
+  if (stored === null) return 'unset';
+  if (stored === '') return 'color';
+  return stored;
 }
 
 function readStoredBackgroundColorId(): string | null {
-  try {
-    return localStorage.getItem(COLOR_STORAGE_KEY);
-  } catch {
-    return null;
-  }
+  return readStorageItem(COLOR_STORAGE);
+}
+
+function readStoredPatternId(): string | null {
+  return readStorageItem(PATTERN_STORAGE);
 }
 
 function persistWallpaperId(id: string | null) {
-  try {
-    if (id) {
-      localStorage.setItem(WALLPAPER_STORAGE_KEY, id);
-    } else {
-      localStorage.setItem(WALLPAPER_STORAGE_KEY, '');
-    }
-  } catch {
-    /* ignore quota / privacy mode */
+  if (id) {
+    writeStorageItem(WALLPAPER_STORAGE, id);
+  } else {
+    writeStorageItem(WALLPAPER_STORAGE, '');
   }
 }
 
 function persistBackgroundColorId(id: string) {
-  try {
-    localStorage.setItem(COLOR_STORAGE_KEY, id);
-  } catch {
-    /* ignore quota / privacy mode */
+  writeStorageItem(COLOR_STORAGE, id);
+}
+
+function persistPatternId(id: string | null) {
+  if (id) {
+    writeStorageItem(PATTERN_STORAGE, id);
+  } else {
+    writeStorageItem(PATTERN_STORAGE, '');
   }
 }
 
 function resolveStoredPreferences(wallpapers: WallpaperOption[]) {
-  const availableIds = new Set(wallpapers.map((wallpaper) => wallpaper.id));
+  const availableWallpaperIds = new Set(wallpapers.map((wallpaper) => wallpaper.id));
+  const availablePatternIds = new Set(DESKTOP_PATTERNS.map((pattern) => pattern.id));
   const wallpaperPreference = readWallpaperPreference();
 
   let nextWallpaperId: string | null;
   if (wallpaperPreference === 'unset' || wallpaperPreference === 'color') {
     nextWallpaperId = null;
   } else {
-    nextWallpaperId = resolveWallpaperId(wallpaperPreference, availableIds);
+    nextWallpaperId = resolveWallpaperId(wallpaperPreference, availableWallpaperIds);
     if (nextWallpaperId !== wallpaperPreference) {
       persistWallpaperId(nextWallpaperId);
+    }
+  }
+
+  const storedPattern = readStoredPatternId();
+  let nextPatternId = resolvePatternId(
+    storedPattern === '' ? null : storedPattern,
+    availablePatternIds,
+  );
+  if (storedPattern && storedPattern !== '' && nextPatternId === null) {
+    persistPatternId(null);
+  }
+
+  if (nextWallpaperId) {
+    nextPatternId = null;
+    if (storedPattern && storedPattern !== '') {
+      persistPatternId(null);
     }
   }
 
@@ -107,7 +127,11 @@ function resolveStoredPreferences(wallpapers: WallpaperOption[]) {
     persistBackgroundColorId('default');
   }
 
-  return { wallpaperId: nextWallpaperId, backgroundColorId: nextColorId };
+  return {
+    wallpaperId: nextWallpaperId,
+    patternId: nextPatternId,
+    backgroundColorId: nextColorId,
+  };
 }
 
 export function WallpaperProvider({
@@ -117,14 +141,17 @@ export function WallpaperProvider({
   wallpapers: WallpaperOption[];
   children: ReactNode;
 }) {
-  // Resolve stored wallpaper + color once. The resolver also normalizes storage
-  // as a side effect, so running it per-initializer would do that work twice.
   const [initialPreferences] = useState(() =>
     typeof window === 'undefined'
-      ? { wallpaperId: null as string | null, backgroundColorId: 'default' }
+      ? {
+          wallpaperId: null as string | null,
+          patternId: null as string | null,
+          backgroundColorId: 'default',
+        }
       : resolveStoredPreferences(wallpapers),
   );
   const [wallpaperId, setWallpaperId] = useState<string | null>(initialPreferences.wallpaperId);
+  const [patternId, setPatternId] = useState<string | null>(initialPreferences.patternId);
   const [backgroundColorId, setBackgroundColorId] = useState(initialPreferences.backgroundColorId);
   const [loadedWallpaper, setLoadedWallpaper] = useState<{
     id: string;
@@ -139,6 +166,11 @@ export function WallpaperProvider({
     if (!wallpaperId) return null;
     return wallpapers.find((wallpaper) => wallpaper.id === wallpaperId) ?? null;
   }, [wallpaperId, wallpapers]);
+
+  const activePattern = useMemo(() => {
+    if (!patternId || wallpaperId) return null;
+    return DESKTOP_PATTERNS.find((pattern) => pattern.id === patternId) ?? null;
+  }, [patternId, wallpaperId]);
 
   const desktopBackgroundColor = useMemo(
     () => resolveDesktopColorValue(backgroundColorId),
@@ -201,7 +233,7 @@ export function WallpaperProvider({
     return () => {
       cancelled = true;
     };
-  }, [activeWallpaper, desktopBackgroundColor, hydrated, status, theme]);
+  }, [activeWallpaper, desktopBackgroundColor, hydrated, status, theme, activePattern]);
 
   const setWallpaper = useCallback(
     (id: string | null) => {
@@ -209,12 +241,27 @@ export function WallpaperProvider({
       setWallpaperId(id);
       persistWallpaperId(id);
       persistBackgroundColorId(backgroundColorId);
+      if (id) {
+        setPatternId(null);
+        persistPatternId(null);
+      }
       if (!id) {
         setLoadedWallpaper(null);
       }
     },
     [wallpapers, backgroundColorId],
   );
+
+  const setPattern = useCallback((id: string | null) => {
+    if (id !== null && !DESKTOP_PATTERNS.some((pattern) => pattern.id === id)) return;
+    setPatternId(id);
+    persistPatternId(id);
+    if (id) {
+      setWallpaperId(null);
+      persistWallpaperId(null);
+      setLoadedWallpaper(null);
+    }
+  }, []);
 
   const setBackgroundColor = useCallback((id: string) => {
     if (!DESKTOP_COLORS.some((color) => color.id === id)) return;
@@ -231,26 +278,33 @@ export function WallpaperProvider({
     () => ({
       wallpapers,
       desktopColors: DESKTOP_COLORS,
+      desktopPatterns: DESKTOP_PATTERNS,
       wallpaperId,
+      patternId,
       backgroundColorId,
       activeWallpaper,
+      activePattern,
       desktopBackgroundColor,
       status,
       iconLabelTone,
       bootContentReady,
       setWallpaper,
+      setPattern,
       setBackgroundColor,
     }),
     [
       wallpapers,
       wallpaperId,
+      patternId,
       backgroundColorId,
       activeWallpaper,
+      activePattern,
       desktopBackgroundColor,
       status,
       iconLabelTone,
       bootContentReady,
       setWallpaper,
+      setPattern,
       setBackgroundColor,
     ],
   );

@@ -4,7 +4,7 @@ import { NoteOpenBridgeProvider, createNoteOpenBridge } from '../../state/useApp
 import NotesApp from './NotesApp';
 import type { Note } from './types';
 
-const STORAGE_KEY = 'devfolio:notes';
+const STORAGE_KEY = 'alfonso:notes';
 
 function renderNotesApp(bridge = createNoteOpenBridge()) {
   return render(
