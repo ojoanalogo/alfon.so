@@ -15,8 +15,6 @@ import type { WindowDef, WindowGeometry } from '@desktop/types';
 const DEFS: WindowDef[] = [
   {
     id: 'about',
-    defaultX: 0,
-    defaultY: 0,
     defaultWidth: 560,
     minWidth: 520,
     initialZ: 11,
@@ -25,8 +23,6 @@ const DEFS: WindowDef[] = [
   },
   {
     id: 'term',
-    defaultX: 0,
-    defaultY: 0,
     defaultWidth: 600,
     initialZ: 12,
     defaultOpen: true,

@@ -105,10 +105,9 @@ describe('useDesktopApps', () => {
     const def = result.current.defs.find((d) => d.id === 'terminal');
 
     expect(def).toBeTruthy();
-    expect(def!.defaultX).toBe(0);
-    expect(def!.defaultY).toBe(0);
     expect(typeof def!.initialZ).toBe('number');
     expect('title' in def!).toBe(false);
+    expect('defaultX' in def!).toBe(false);
   });
 
   it('memoizes apps and defs across rerenders with the same posts array', async () => {

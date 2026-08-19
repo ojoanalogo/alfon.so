@@ -9,8 +9,6 @@ export function appToWindowDef(app: AppDefinition, index = 0): WindowDef {
   return {
     id: app.id,
     ...geometry,
-    defaultX: 0,
-    defaultY: 0,
     initialZ: geometry.initialZ ?? BASE_Z + index,
   };
 }

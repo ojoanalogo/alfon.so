@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, type RefObject } from 'react';
-import { centerInWorkArea, maxWindowHeight } from '../lib/geometry';
+import { centerInWorkArea, maxWindowHeight, clampBoxToWorkArea } from '../lib/geometry';
 import { STATE_CLASS } from '../lib/stateClasses';
 
 interface WindowCenterLayoutOptions {
@@ -79,9 +79,22 @@ export function useWindowCenterLayout({
         layoutHeight,
       );
       const nextX = Math.round(center.x);
-      const nextY = Math.round(center.y);
+      let nextY = Math.round(center.y);
       const roundedWidth = Math.round(rect.width);
       const nextHeight = needsCap ? Math.round(maxH) : undefined;
+      const layoutBoxHeight = nextHeight ?? layoutHeight;
+
+      if (nextHeight != null) {
+        const clamped = clampBoxToWorkArea(
+          nextX,
+          nextY,
+          roundedWidth,
+          layoutBoxHeight,
+          window.innerWidth,
+          window.innerHeight,
+        );
+        nextY = Math.round(clamped.y);
+      }
 
       const last = lastSentRef.current;
       if (

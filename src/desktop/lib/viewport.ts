@@ -1,6 +1,6 @@
 import type { WindowDef, WindowGeometry } from '../types';
 import { positionNearCenter } from './windowPlacement';
-import { centerInWorkArea } from './geometry';
+import { centerInWorkArea, maxWindowHeight } from './geometry';
 import {
   minWidthForDef,
   isMobileViewport,
@@ -92,14 +92,21 @@ export function resolveWindowGeometry(
     : undefined;
 
   if (def.center) {
-    const rawHeight = measuredHeight ?? def.defaultHeight ?? MIN_HEIGHT;
+    const capHeight = def.defaultOpen ? maxWindowHeight(viewportHeight) : MIN_HEIGHT;
+    const rawHeight = measuredHeight ?? def.defaultHeight ?? capHeight;
     const height =
       heightCap != null && def.defaultHeight != null ? Math.min(rawHeight, heightCap) : rawHeight;
-    const { x, y } = centerInWorkArea(viewportWidth, viewportHeight, width, height);
+    const layoutHeight =
+      def.defaultHeight != null
+        ? height
+        : def.defaultOpen
+          ? Math.min(rawHeight, maxWindowHeight(viewportHeight))
+          : height;
+    const { x, y } = centerInWorkArea(viewportWidth, viewportHeight, width, layoutHeight);
     const resolvedHeight =
       def.defaultHeight != null && heightCap != null
         ? Math.min(def.defaultHeight, heightCap)
-        : (def.defaultHeight ?? null);
+        : (def.defaultHeight ?? (def.defaultOpen ? maxWindowHeight(viewportHeight) : null));
     return { x, y, width, height: resolvedHeight };
   }
 

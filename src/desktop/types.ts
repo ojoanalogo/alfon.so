@@ -42,8 +42,6 @@ export interface AppGeometry {
  */
 export interface WindowDef extends AppGeometry {
   id: string;
-  defaultX: number;
-  defaultY: number;
   initialZ: number;
 }
 

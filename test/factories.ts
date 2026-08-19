@@ -17,8 +17,6 @@ export function makeWallpaperOption(overrides: Partial<WallpaperOption> = {}): W
 export function makeWindowDef(overrides: Partial<WindowDef> = {}): WindowDef {
   return {
     id: 'test',
-    defaultX: 0,
-    defaultY: 0,
     defaultWidth: 600,
     initialZ: 10,
     ...overrides,

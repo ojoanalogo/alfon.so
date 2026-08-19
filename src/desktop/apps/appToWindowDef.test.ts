@@ -20,22 +20,6 @@ describe('appToWindowDef', () => {
     expect(win.id).toBe('finder');
   });
 
-  it('forces defaultX and defaultY to 0 even when geometry provides values', () => {
-    const win = appToWindowDef(
-      makeAppDefinition({
-        geometry: { defaultWidth: 800 },
-      }),
-    );
-    expect(win.defaultX).toBe(0);
-    expect(win.defaultY).toBe(0);
-  });
-
-  it('defaults defaultX/defaultY to 0 when geometry omits them', () => {
-    const win = appToWindowDef(makeAppDefinition({ geometry: { defaultWidth: 400 } }));
-    expect(win.defaultX).toBe(0);
-    expect(win.defaultY).toBe(0);
-  });
-
   it('derives initialZ from BASE_Z (10) + index when geometry omits initialZ', () => {
     expect(appToWindowDef(makeAppDefinition()).initialZ).toBe(10);
     expect(appToWindowDef(makeAppDefinition(), 0).initialZ).toBe(10);
@@ -91,11 +75,11 @@ describe('appToWindowDef', () => {
     const win = appToWindowDef(makeAppDefinition());
     expect(win).toMatchObject({
       id: 'finder',
-      defaultX: 0,
-      defaultY: 0,
       defaultWidth: 600,
       initialZ: 10,
     });
     expect('title' in win).toBe(false);
+    expect('defaultX' in win).toBe(false);
+    expect('defaultY' in win).toBe(false);
   });
 });

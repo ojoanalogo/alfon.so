@@ -147,6 +147,14 @@ describe('resolveWindowGeometry', () => {
     expect(geo.height).toBeNull();
   });
 
+  it('caps a defaultOpen centered window to the work area height', () => {
+    const def = makeWindowDef({ center: true, defaultOpen: true, defaultWidth: 576 });
+    const geo = resolveWindowGeometry(def, 1200, 800);
+    const maxH = 800 - TASKBAR_HEIGHT - EDGE_MARGIN * 2;
+    expect(geo.height).toBe(maxH);
+    expect(geo.y).toBe(Math.max(EDGE_MARGIN, (800 - TASKBAR_HEIGHT - maxH) / 2));
+  });
+
   it('positions a non-centered content-sized window near center with null height', () => {
     const geo = resolveWindowGeometry(makeWindowDef({ defaultWidth: 600 }), 1200, 800);
     expect(geo.height).toBeNull();
