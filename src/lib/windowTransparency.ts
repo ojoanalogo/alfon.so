@@ -1,6 +1,6 @@
 import { readStorageItem, removeStorageItem, STORAGE_KEYS, writeStorageItem } from './storage';
 
-export const WINDOW_TRANSPARENCY_CHANGE = 'alfonso-window-transparency-change';
+export const WINDOW_TRANSPARENCY_CHANGE = 'window-transparency-change';
 
 export const DEFAULT_WINDOW_TRANSPARENCY = true;
 

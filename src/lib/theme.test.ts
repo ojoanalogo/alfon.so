@@ -171,7 +171,7 @@ describe('applyThemePreference', () => {
     expect(document.documentElement.dataset.themePreference).toBe('system');
   });
 
-  it('dispatches an alfonso-theme-change event with current preference and theme', () => {
+  it('dispatches a theme-change event with current preference and theme', () => {
     const handler = vi.fn();
     window.addEventListener(THEME_CHANGE, handler);
     applyThemePreference('dark');

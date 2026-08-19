@@ -116,7 +116,7 @@ describe('ThemeProvider + useTheme', () => {
     expect(localStorage.getItem(STORAGE.theme)).toBe('light');
   });
 
-  it('re-syncs every consumer when an alfonso-theme-change event fires', () => {
+  it('re-syncs every consumer when a theme-change event fires', () => {
     localStorage.setItem(STORAGE.theme, 'light');
 
     function Consumer({ id }: { id: string }) {
