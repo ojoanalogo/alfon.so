@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { readStorageItem, writeStorageItem } from '@/lib/storage';
+import { readStorageItem, writeStorageItem, STORAGE_KEYS } from '@/lib/storage';
 import {
   DESKTOP_COLORS,
   resolveDesktopColorValue,
@@ -23,10 +23,6 @@ import {
 } from '../lib/iconLabelTone';
 import type { DesktopPatternOption, WallpaperOption } from '../types';
 import { resolveWallpaperId } from '@/config/wallpapers';
-
-const WALLPAPER_STORAGE = 'wallpaper';
-const COLOR_STORAGE = 'desktop-color';
-const PATTERN_STORAGE = 'desktop-pattern';
 
 export type WallpaperStatus = 'loading' | 'ready' | 'error';
 
@@ -53,37 +49,37 @@ const WallpaperContext = createContext<WallpaperContextValue | null>(null);
 type WallpaperPreference = 'unset' | 'color' | string;
 
 function readWallpaperPreference(): WallpaperPreference {
-  const stored = readStorageItem(WALLPAPER_STORAGE);
+  const stored = readStorageItem(STORAGE_KEYS.wallpaper);
   if (stored === null) return 'unset';
   if (stored === '') return 'color';
   return stored;
 }
 
 function readStoredBackgroundColorId(): string | null {
-  return readStorageItem(COLOR_STORAGE);
+  return readStorageItem(STORAGE_KEYS.desktopColor);
 }
 
 function readStoredPatternId(): string | null {
-  return readStorageItem(PATTERN_STORAGE);
+  return readStorageItem(STORAGE_KEYS.desktopPattern);
 }
 
 function persistWallpaperId(id: string | null) {
   if (id) {
-    writeStorageItem(WALLPAPER_STORAGE, id);
+    writeStorageItem(STORAGE_KEYS.wallpaper, id);
   } else {
-    writeStorageItem(WALLPAPER_STORAGE, '');
+    writeStorageItem(STORAGE_KEYS.wallpaper, '');
   }
 }
 
 function persistBackgroundColorId(id: string) {
-  writeStorageItem(COLOR_STORAGE, id);
+  writeStorageItem(STORAGE_KEYS.desktopColor, id);
 }
 
 function persistPatternId(id: string | null) {
   if (id) {
-    writeStorageItem(PATTERN_STORAGE, id);
+    writeStorageItem(STORAGE_KEYS.desktopPattern, id);
   } else {
-    writeStorageItem(PATTERN_STORAGE, '');
+    writeStorageItem(STORAGE_KEYS.desktopPattern, '');
   }
 }
 

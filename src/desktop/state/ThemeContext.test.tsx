@@ -1,4 +1,5 @@
 import { renderHook, act, render } from '@testing-library/react';
+import { STORAGE } from '@/lib/storage';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeProvider, useTheme } from './ThemeContext';
 import { stubMatchMedia } from '@test/helpers';
@@ -28,7 +29,7 @@ describe('ThemeProvider + useTheme', () => {
   });
 
   it('defaults to the stored light preference', () => {
-    localStorage.setItem('alfonso:theme', 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
     const { result } = renderHook(() => useTheme(), { wrapper });
     expect(result.current.preference).toBe('light');
     expect(result.current.theme).toBe('light');
@@ -36,7 +37,7 @@ describe('ThemeProvider + useTheme', () => {
   });
 
   it('reflects a stored dark preference', () => {
-    localStorage.setItem('alfonso:theme', 'dark');
+    localStorage.setItem(STORAGE.theme, 'dark');
     const { result } = renderHook(() => useTheme(), { wrapper });
     expect(result.current.preference).toBe('dark');
     expect(result.current.theme).toBe('dark');
@@ -60,7 +61,7 @@ describe('ThemeProvider + useTheme', () => {
   });
 
   it('toggleTheme flips light → dark and persists the override', () => {
-    localStorage.setItem('alfonso:theme', 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
     const { result } = renderHook(() => useTheme(), { wrapper });
     expect(result.current.theme).toBe('light');
 
@@ -71,12 +72,12 @@ describe('ThemeProvider + useTheme', () => {
     expect(result.current.theme).toBe('dark');
     expect(result.current.preference).toBe('dark');
     expect(result.current.isDark).toBe(true);
-    expect(localStorage.getItem('alfonso:theme')).toBe('dark');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
   it('toggleTheme flips dark → light', () => {
-    localStorage.setItem('alfonso:theme', 'dark');
+    localStorage.setItem(STORAGE.theme, 'dark');
     const { result } = renderHook(() => useTheme(), { wrapper });
 
     act(() => {
@@ -85,12 +86,12 @@ describe('ThemeProvider + useTheme', () => {
 
     expect(result.current.theme).toBe('light');
     expect(result.current.preference).toBe('light');
-    expect(localStorage.getItem('alfonso:theme')).toBe('light');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('light');
     expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 
   it('setTheme("system") clears the stored override', () => {
-    localStorage.setItem('alfonso:theme', 'dark');
+    localStorage.setItem(STORAGE.theme, 'dark');
     const { result } = renderHook(() => useTheme(), { wrapper });
     expect(result.current.preference).toBe('dark');
 
@@ -99,7 +100,7 @@ describe('ThemeProvider + useTheme', () => {
     });
 
     expect(result.current.preference).toBe('system');
-    expect(localStorage.getItem('alfonso:theme')).toBeNull();
+    expect(localStorage.getItem(STORAGE.theme)).toBeNull();
   });
 
   it('setTheme("light") writes the explicit preference', () => {
@@ -111,11 +112,11 @@ describe('ThemeProvider + useTheme', () => {
 
     expect(result.current.preference).toBe('light');
     expect(result.current.theme).toBe('light');
-    expect(localStorage.getItem('alfonso:theme')).toBe('light');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('light');
   });
 
   it('re-syncs every consumer when a devfolio-theme-change event fires', () => {
-    localStorage.setItem('alfonso:theme', 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
 
     function Consumer({ id }: { id: string }) {
       const { theme } = useTheme();
@@ -135,7 +136,7 @@ describe('ThemeProvider + useTheme', () => {
     // Simulate an out-of-React theme change (e.g. the Astro header toggle):
     // flip storage, then broadcast the sync event the provider listens for.
     act(() => {
-      localStorage.setItem('alfonso:theme', 'dark');
+      localStorage.setItem(STORAGE.theme, 'dark');
       window.dispatchEvent(new Event('devfolio-theme-change'));
     });
 

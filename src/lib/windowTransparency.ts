@@ -1,12 +1,11 @@
-import { readStorageItem, removeStorageItem, writeStorageItem } from './storage';
+import { readStorageItem, removeStorageItem, STORAGE_KEYS, writeStorageItem } from './storage';
 
-const STORAGE_NAME = 'window-transparency';
 const CHANGE_EVENT = 'devfolio-window-transparency-change';
 
 export const DEFAULT_WINDOW_TRANSPARENCY = true;
 
 export function getWindowTransparencyEnabled(): boolean {
-  const stored = readStorageItem(STORAGE_NAME);
+  const stored = readStorageItem(STORAGE_KEYS.windowTransparency);
   if (stored === 'false') return false;
   return DEFAULT_WINDOW_TRANSPARENCY;
 }
@@ -29,9 +28,9 @@ function dispatchWindowTransparencyChange() {
 
 export function setWindowTransparencyEnabled(enabled: boolean) {
   if (enabled === DEFAULT_WINDOW_TRANSPARENCY) {
-    removeStorageItem(STORAGE_NAME);
+    removeStorageItem(STORAGE_KEYS.windowTransparency);
   } else {
-    writeStorageItem(STORAGE_NAME, String(enabled));
+    writeStorageItem(STORAGE_KEYS.windowTransparency, String(enabled));
   }
 
   applyWindowTransparencyToDocument(enabled);

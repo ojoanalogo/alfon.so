@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { STORAGE } from '../src/lib/storage';
 import { gotoDesktop, openApp } from './helpers';
 
 const isDark = (page: import('@playwright/test').Page) =>
@@ -16,7 +17,7 @@ test.describe('theme persistence', () => {
     await page.getByRole('option', { name: before ? 'Claro' : 'Oscuro' }).click();
     const toggled = await isDark(page);
     expect(toggled).not.toBe(before);
-    expect(await page.evaluate(() => localStorage.getItem('theme'))).toBeTruthy();
+    expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE.theme)).toBeTruthy();
 
     // Reload: the inline <head> bootstrap must apply the stored theme during HTML
     // parse — before the React island hydrates — so there is no flash.

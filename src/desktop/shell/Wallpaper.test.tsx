@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { STORAGE } from '@/lib/storage';
 import { render, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import DesktopWallpaper from './Wallpaper';
@@ -51,7 +52,7 @@ describe('DesktopWallpaper', () => {
   it('does not render an image while the active wallpaper is still loading', () => {
     // localStorage points at a wallpaper, but the Image() never fires onload in
     // jsdom, so status stays "loading" and the <img> must not appear.
-    localStorage.setItem('alfonso:wallpaper', 'wp-1');
+    localStorage.setItem(STORAGE.wallpaper, 'wp-1');
     const { container } = renderWallpaper([makeWallpaperOption()]);
 
     expect(container.querySelector('img')).toBeNull();
@@ -76,7 +77,7 @@ describe('DesktopWallpaper', () => {
     }
     vi.stubGlobal('Image', FakeImage as unknown as typeof Image);
 
-    localStorage.setItem('alfonso:wallpaper', 'wp-1');
+    localStorage.setItem(STORAGE.wallpaper, 'wp-1');
     const { container } = renderWallpaper([wallpaper]);
 
     const img = await waitFor(() => {
@@ -93,7 +94,7 @@ describe('DesktopWallpaper', () => {
 
   it('does not render an image when a wallpaper id is stored but unavailable', () => {
     // Stored id is not in the provided wallpaper list -> resolves to no wallpaper.
-    localStorage.setItem('alfonso:wallpaper', 'missing');
+    localStorage.setItem(STORAGE.wallpaper, 'missing');
     const { container } = renderWallpaper([makeWallpaperOption({ id: 'wp-1' })]);
 
     expect(container.querySelector('[data-desktop-wallpaper]')).toBeNull();
@@ -103,8 +104,8 @@ describe('DesktopWallpaper', () => {
 
   it('uses a concrete color value when a desktop color preference is stored', () => {
     // Selecting a color clears the wallpaper, so the background uses the literal hex.
-    localStorage.setItem('alfonso:wallpaper', '');
-    localStorage.setItem('alfonso:desktop-color', 'blue');
+    localStorage.setItem(STORAGE.wallpaper, '');
+    localStorage.setItem(STORAGE.desktopColor, 'blue');
     const { container } = renderWallpaper([makeWallpaperOption()]);
 
     const background = container.firstElementChild as HTMLElement;

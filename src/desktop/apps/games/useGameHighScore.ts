@@ -1,19 +1,15 @@
 import { useCallback, useState } from 'react';
-import { readStorageItem, writeStorageItem } from '@/lib/storage';
-
-function storageName(gameId: string): string {
-  return `game-highscore:${gameId}`;
-}
+import { gameHighScoreName, readStorageItem, writeStorageItem } from '@/lib/storage';
 
 export function readGameHighScore(gameId: string): number {
-  const raw = readStorageItem(storageName(gameId));
+  const raw = readStorageItem(gameHighScoreName(gameId));
   if (!raw) return 0;
   const value = Number.parseInt(raw, 10);
   return Number.isFinite(value) && value >= 0 ? value : 0;
 }
 
 export function writeGameHighScore(gameId: string, score: number): void {
-  writeStorageItem(storageName(gameId), String(score));
+  writeStorageItem(gameHighScoreName(gameId), String(score));
 }
 
 export function useGameHighScore(gameId: string) {

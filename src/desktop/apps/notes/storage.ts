@@ -1,12 +1,10 @@
-import { readStorageItem, writeStorageItem } from '@/lib/storage';
+import { readStorageItem, STORAGE_KEYS, writeStorageItem } from '@/lib/storage';
 import type { Note } from './types';
-
-const STORAGE_NAME = 'notes';
 
 export function loadNotes(): Note[] {
   if (typeof window === 'undefined') return [];
   try {
-    const raw = readStorageItem(STORAGE_NAME);
+    const raw = readStorageItem(STORAGE_KEYS.notes);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
@@ -18,7 +16,7 @@ export function loadNotes(): Note[] {
 
 export function saveNotes(notes: Note[]): void {
   try {
-    writeStorageItem(STORAGE_NAME, JSON.stringify(notes));
+    writeStorageItem(STORAGE_KEYS.notes, JSON.stringify(notes));
   } catch {
     /* private mode / quota */
   }

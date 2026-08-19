@@ -1,9 +1,8 @@
 export type ThemeMode = 'light' | 'dark';
 export type ThemePreference = ThemeMode | 'system';
 
-import { readStorageItem, removeStorageItem, writeStorageItem } from './storage';
+import { readStorageItem, removeStorageItem, STORAGE_KEYS, writeStorageItem } from './storage';
 
-const STORAGE_NAME = 'theme';
 const THEME_CHANGE = 'devfolio-theme-change';
 
 /** Absent or invalid localStorage → follow OS light/dark. */
@@ -11,7 +10,7 @@ export const DEFAULT_THEME_PREFERENCE: ThemePreference = 'system';
 
 export function getThemePreference(): ThemePreference {
   try {
-    const stored = readStorageItem(STORAGE_NAME);
+    const stored = readStorageItem(STORAGE_KEYS.theme);
     if (stored === 'light' || stored === 'dark') return stored;
   } catch {
     /* private mode */
@@ -48,9 +47,9 @@ function dispatchThemeChange() {
 export function applyThemePreference(preference: ThemePreference) {
   try {
     if (preference === 'system') {
-      removeStorageItem(STORAGE_NAME);
+      removeStorageItem(STORAGE_KEYS.theme);
     } else {
-      writeStorageItem(STORAGE_NAME, preference);
+      writeStorageItem(STORAGE_KEYS.theme, preference);
     }
   } catch {
     /* private mode */
