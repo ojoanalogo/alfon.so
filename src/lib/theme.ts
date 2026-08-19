@@ -3,7 +3,7 @@ export type ThemePreference = ThemeMode | 'system';
 
 import { readStorageItem, removeStorageItem, STORAGE_KEYS, writeStorageItem } from './storage';
 
-const THEME_CHANGE = 'devfolio-theme-change';
+export const THEME_CHANGE = 'alfonso-theme-change';
 
 /** Absent or invalid localStorage → follow OS light/dark. */
 export const DEFAULT_THEME_PREFERENCE: ThemePreference = 'system';

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { clamp, clampBoxToWorkArea, centerInWorkArea } from './geometry';
+import { clamp, clampBoxToWorkArea, centerInWorkArea, maxWindowHeight } from './geometry';
 import { EDGE_MARGIN, TASKBAR_HEIGHT } from './layoutConstants';
 
 describe('clamp', () => {
@@ -61,5 +61,11 @@ describe('centerInWorkArea', () => {
 
   it('left-aligns a box wider than the viewport instead of going negative', () => {
     expect(centerInWorkArea(300, 800, 600, 400).x).toBe(EDGE_MARGIN);
+  });
+});
+
+describe('maxWindowHeight', () => {
+  it('reserves the taskbar and edge margins', () => {
+    expect(maxWindowHeight(800)).toBe(800 - TASKBAR_HEIGHT - EDGE_MARGIN * 2);
   });
 });

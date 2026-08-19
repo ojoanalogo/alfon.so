@@ -1,4 +1,9 @@
-import { EDGE_MARGIN, readSafeAreaInsets, taskbarReservedHeight } from './layoutConstants';
+import {
+  EDGE_MARGIN,
+  MIN_HEIGHT,
+  readSafeAreaInsets,
+  taskbarReservedHeight,
+} from './layoutConstants';
 
 /** Clamp `value` into the inclusive range `[min, max]`. */
 export function clamp(value: number, min: number, max: number): number {
@@ -51,4 +56,11 @@ export function centerInWorkArea(
     x: Math.max(EDGE_MARGIN + safe.left, safe.left + (workW - boxW) / 2),
     y: Math.max(EDGE_MARGIN + safe.top, safe.top + (workH - boxH) / 2),
   };
+}
+
+/** Max window box height that fits in the work area with edge margins. */
+export function maxWindowHeight(viewportHeight: number): number {
+  const safe = readSafeAreaInsets();
+  const workH = viewportHeight - safe.top - taskbarReservedHeight(safe.bottom);
+  return Math.max(MIN_HEIGHT, workH - EDGE_MARGIN * 2);
 }

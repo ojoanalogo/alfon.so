@@ -10,12 +10,11 @@ import {
   getThemePreference,
   setupThemeDropdowns,
   syncThemeFromPreference,
+  THEME_CHANGE,
   toggleThemePreference,
   updateThemeDropdowns,
 } from './theme';
 import { STORAGE } from './storage';
-
-const THEME_CHANGE = 'devfolio-theme-change';
 
 /**
  * jsdom does not implement window.matchMedia. Install a controllable stub that
@@ -172,7 +171,7 @@ describe('applyThemePreference', () => {
     expect(document.documentElement.dataset.themePreference).toBe('system');
   });
 
-  it('dispatches a devfolio-theme-change event with current preference and theme', () => {
+  it('dispatches an alfonso-theme-change event with current preference and theme', () => {
     const handler = vi.fn();
     window.addEventListener(THEME_CHANGE, handler);
     applyThemePreference('dark');

@@ -1,6 +1,6 @@
 import { readStorageItem, removeStorageItem, STORAGE_KEYS, writeStorageItem } from './storage';
 
-const CHANGE_EVENT = 'devfolio-window-transparency-change';
+export const WINDOW_TRANSPARENCY_CHANGE = 'alfonso-window-transparency-change';
 
 export const DEFAULT_WINDOW_TRANSPARENCY = true;
 
@@ -20,7 +20,7 @@ export function applyWindowTransparencyToDocument(enabled: boolean) {
 
 function dispatchWindowTransparencyChange() {
   window.dispatchEvent(
-    new CustomEvent(CHANGE_EVENT, {
+    new CustomEvent(WINDOW_TRANSPARENCY_CHANGE, {
       detail: { enabled: getWindowTransparencyEnabled() },
     }),
   );
@@ -46,6 +46,6 @@ export function attachWindowTransparencyListener(onChange: () => void) {
   if (typeof window === 'undefined') return () => {};
 
   const handler = () => onChange();
-  window.addEventListener(CHANGE_EVENT, handler);
-  return () => window.removeEventListener(CHANGE_EVENT, handler);
+  window.addEventListener(WINDOW_TRANSPARENCY_CHANGE, handler);
+  return () => window.removeEventListener(WINDOW_TRANSPARENCY_CHANGE, handler);
 }

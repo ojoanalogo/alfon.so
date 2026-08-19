@@ -1,5 +1,6 @@
 import { renderHook, act, render } from '@testing-library/react';
 import { STORAGE } from '@/lib/storage';
+import { THEME_CHANGE } from '@/lib/theme';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeProvider, useTheme } from './ThemeContext';
 import { stubMatchMedia } from '@test/helpers';
@@ -115,7 +116,7 @@ describe('ThemeProvider + useTheme', () => {
     expect(localStorage.getItem(STORAGE.theme)).toBe('light');
   });
 
-  it('re-syncs every consumer when a devfolio-theme-change event fires', () => {
+  it('re-syncs every consumer when an alfonso-theme-change event fires', () => {
     localStorage.setItem(STORAGE.theme, 'light');
 
     function Consumer({ id }: { id: string }) {
@@ -137,7 +138,7 @@ describe('ThemeProvider + useTheme', () => {
     // flip storage, then broadcast the sync event the provider listens for.
     act(() => {
       localStorage.setItem(STORAGE.theme, 'dark');
-      window.dispatchEvent(new Event('devfolio-theme-change'));
+      window.dispatchEvent(new Event(THEME_CHANGE));
     });
 
     expect(getByTestId('a').textContent).toBe('dark');
