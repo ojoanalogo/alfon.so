@@ -14,5 +14,6 @@ export default defineApp({
   },
   desktopIcon: { label: 'acerca', tooltip: 'Mi info' },
   taskbarTooltip: 'about.html',
+  windowClassName: 'desktop-window--fit-content',
   body: (ctx) => <AboutContent posts={ctx.posts} onOpenPost={ctx.onOpenPost} />,
 });

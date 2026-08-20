@@ -40,15 +40,13 @@ interface Args {
   enabled?: boolean;
   userSized?: boolean;
   width?: number;
-  onGeometryChange?: Mock<
-    (geometry: { x?: number; y?: number; width?: number; height?: number | null }) => void
-  >;
+  onGeometryChange?: Mock<(geometry: { x?: number; y?: number; width?: number }) => void>;
 }
 
 function renderCenter(args: Args = {}) {
   const onGeometryChange =
     args.onGeometryChange ??
-    vi.fn<(geometry: { x?: number; y?: number; width?: number; height?: number | null }) => void>();
+    vi.fn<(geometry: { x?: number; y?: number; width?: number }) => void>();
   const ref = createRef<HTMLElement>();
   (ref as { current: HTMLElement | null }).current =
     args.el === undefined ? elWithRect(600, 400) : args.el;
@@ -80,16 +78,6 @@ describe('useWindowCenterLayout - centered corrector', () => {
     const geo = onGeometryChange.mock.calls[0][0];
     expect(geo.x).toBe(EDGE_MARGIN);
     expect(geo.y).toBe(EDGE_MARGIN);
-    expect(geo.height).toBe(VH - TASKBAR_HEIGHT - EDGE_MARGIN * 2);
-  });
-
-  it('caps tall content-sized windows to the work area and reports a fixed height', () => {
-    const tall = VH - TASKBAR_HEIGHT + 200;
-    const maxH = VH - TASKBAR_HEIGHT - EDGE_MARGIN * 2;
-    const { onGeometryChange } = renderCenter({ el: elWithRect(600, tall) });
-    const geo = onGeometryChange.mock.calls[0][0];
-    expect(geo.height).toBe(maxH);
-    expect(geo.y).toBe(Math.round(Math.max(EDGE_MARGIN, (VH - TASKBAR_HEIGHT - maxH) / 2)));
   });
 
   it('does not re-report when the rAF passes resolve to the same box', async () => {

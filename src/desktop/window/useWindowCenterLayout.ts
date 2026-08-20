@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, type RefObject } from 'react';
-import { centerInWorkArea, maxWindowHeight, clampBoxToWorkArea } from '../lib/geometry';
+import { centerInWorkArea } from '../lib/geometry';
 import { STATE_CLASS } from '../lib/stateClasses';
 
 interface WindowCenterLayoutOptions {
@@ -11,12 +11,7 @@ interface WindowCenterLayoutOptions {
   /** Once the user has moved/resized the window, stop centering it. */
   userSized?: boolean;
   /** Auto-layout reporter (routes to the manager's correctLayout). */
-  onGeometryChange: (geometry: {
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number | null;
-  }) => void;
+  onGeometryChange: (geometry: { x?: number; y?: number; width?: number }) => void;
 }
 
 /**
@@ -26,9 +21,6 @@ interface WindowCenterLayoutOptions {
  * the window renders from `state.x/y` like every other window. Once the user
  * moves/resizes it (`userSized`), this goes silent; on reopen the manager clears
  * `userSized` and the effect resumes.
- *
- * When content exceeds the work area, the measured height is capped so the
- * window stays above the taskbar and scrolls inside its card body.
  */
 export function useWindowCenterLayout({
   rootRef,
@@ -41,12 +33,7 @@ export function useWindowCenterLayout({
   onGeometryChangeRef.current = onGeometryChange;
   // The settle triggers (rAF passes, fonts.ready, ResizeObserver) often resolve
   // to the same box; only report real changes.
-  const lastSentRef = useRef<{
-    x: number;
-    y: number;
-    width: number;
-    height: number | null | undefined;
-  } | null>(null);
+  const lastSentRef = useRef<{ x: number; y: number; width: number } | null>(null);
 
   useLayoutEffect(() => {
     if (!enabled || userSized || typeof window === 'undefined') return;
@@ -68,49 +55,20 @@ export function useWindowCenterLayout({
       const rect = node.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
 
-      const maxH = maxWindowHeight(window.innerHeight);
-      const layoutHeight = Math.min(rect.height, maxH);
-      const needsCap = rect.height > maxH;
-
       const center = centerInWorkArea(
         window.innerWidth,
         window.innerHeight,
         rect.width,
-        layoutHeight,
+        rect.height,
       );
       const nextX = Math.round(center.x);
-      let nextY = Math.round(center.y);
+      const nextY = Math.round(center.y);
       const roundedWidth = Math.round(rect.width);
-      const nextHeight = needsCap ? Math.round(maxH) : undefined;
-      const layoutBoxHeight = nextHeight ?? layoutHeight;
-
-      if (nextHeight != null) {
-        const clamped = clampBoxToWorkArea(
-          nextX,
-          nextY,
-          roundedWidth,
-          layoutBoxHeight,
-          window.innerWidth,
-          window.innerHeight,
-        );
-        nextY = Math.round(clamped.y);
-      }
 
       const last = lastSentRef.current;
-      if (
-        !last ||
-        last.x !== nextX ||
-        last.y !== nextY ||
-        last.width !== roundedWidth ||
-        last.height !== nextHeight
-      ) {
-        lastSentRef.current = { x: nextX, y: nextY, width: roundedWidth, height: nextHeight };
-        onGeometryChangeRef.current({
-          x: nextX,
-          y: nextY,
-          width: roundedWidth,
-          ...(nextHeight != null ? { height: nextHeight } : {}),
-        });
+      if (!last || last.x !== nextX || last.y !== nextY || last.width !== roundedWidth) {
+        lastSentRef.current = { x: nextX, y: nextY, width: roundedWidth };
+        onGeometryChangeRef.current({ x: nextX, y: nextY, width: roundedWidth });
       }
     }
 
