@@ -6,7 +6,7 @@ export default browserApp({
   iconKey: 'photos',
   initialUrl: 'https://ojoanalogo.com',
   hideTitle: true,
-  geometry: { defaultX: 200, defaultY: 96, defaultWidth: 880, initialZ: 31 },
+  geometry: { defaultWidth: 880, initialZ: 31 },
   desktopIcon: { label: 'fotos', tooltip: 'Mi vida en fotos' },
   taskbarTooltip: 'Mi vida en fotos',
 });

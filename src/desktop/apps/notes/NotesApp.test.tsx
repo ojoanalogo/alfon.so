@@ -1,10 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { NoteOpenBridgeProvider, createNoteOpenBridge } from '../../state/useAppContext';
+import { STORAGE } from '@/lib/storage';
 import NotesApp from './NotesApp';
 import type { Note } from './types';
-
-const STORAGE_KEY = 'devfolio:notes';
 
 function renderNotesApp(bridge = createNoteOpenBridge()) {
   return render(
@@ -15,7 +14,7 @@ function renderNotesApp(bridge = createNoteOpenBridge()) {
 }
 
 function seed(notes: Note[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  localStorage.setItem(STORAGE.notes, JSON.stringify(notes));
 }
 
 function makeNote(overrides: Partial<Note> = {}): Note {
@@ -82,7 +81,7 @@ describe('NotesApp', () => {
     // sidebar list reflects the new title
     expect(screen.getByText('Fresh idea')).toBeTruthy();
     // persisted to storage
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as Note[];
+    const stored = JSON.parse(localStorage.getItem(STORAGE.notes) ?? '[]') as Note[];
     expect(stored).toHaveLength(1);
     expect(stored[0].title).toBe('Fresh idea');
   });
@@ -142,7 +141,7 @@ describe('NotesApp', () => {
       screen.getByText('Selecciona una nota o crea una nueva para empezar a escribir markdown.'),
     ).toBeTruthy();
     // persisted empty
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')).toEqual([]);
+    expect(JSON.parse(localStorage.getItem(STORAGE.notes) ?? '[]')).toEqual([]);
   });
 
   it('opens a pending note from the bridge in edit mode', () => {

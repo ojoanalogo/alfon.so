@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import GameShell, { GameOverOverlay } from '../GameShell';
+import { useGameLoop } from '../useGameLoop';
 import {
   COLS,
   MINES,
@@ -76,12 +77,17 @@ export default function MinesweeperGame({ active }: MinesweeperGameProps) {
   const [board, setBoard] = useState<Board | null>(null);
   const [lost, setLost] = useState(false);
   const [won, setWon] = useState(false);
+  const [seconds, setSeconds] = useState(0);
 
   const restart = useCallback(() => {
     setBoard(null);
     setLost(false);
     setWon(false);
+    setSeconds(0);
   }, []);
+
+  const playing = Boolean(board) && !lost && !won;
+  useGameLoop(active && playing, () => setSeconds((value) => value + 1), 1000);
 
   function handleReveal(row: number, col: number) {
     if (!active || lost || won) return;
@@ -93,11 +99,11 @@ export default function MinesweeperGame({ active }: MinesweeperGameProps) {
 
   const flags = board ? countFlags(board) : 0;
   const minesLeft = Math.max(MINES - flags, 0);
-  const playing = Boolean(board) && !lost && !won;
 
   return (
     <GameShell
       hint="clic izquierdo revelar · clic derecho bandera"
+      score={playing || lost || won ? `${seconds}s` : undefined}
       overlay={<GameOverOverlay show={lost || won} onRestart={restart} />}
     >
       <div className="minesweeper flex h-full flex-col items-center justify-center gap-3 p-3">

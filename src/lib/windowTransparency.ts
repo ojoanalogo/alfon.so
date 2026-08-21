@@ -1,15 +1,12 @@
-const STORAGE_KEY = 'devfolio.window-transparency';
-const CHANGE_EVENT = 'devfolio-window-transparency-change';
+import { readStorageItem, removeStorageItem, STORAGE_KEYS, writeStorageItem } from './storage';
+
+export const WINDOW_TRANSPARENCY_CHANGE = 'window-transparency-change';
 
 export const DEFAULT_WINDOW_TRANSPARENCY = true;
 
 export function getWindowTransparencyEnabled(): boolean {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'false') return false;
-  } catch {
-    /* private mode */
-  }
+  const stored = readStorageItem(STORAGE_KEYS.windowTransparency);
+  if (stored === 'false') return false;
   return DEFAULT_WINDOW_TRANSPARENCY;
 }
 
@@ -23,21 +20,17 @@ export function applyWindowTransparencyToDocument(enabled: boolean) {
 
 function dispatchWindowTransparencyChange() {
   window.dispatchEvent(
-    new CustomEvent(CHANGE_EVENT, {
+    new CustomEvent(WINDOW_TRANSPARENCY_CHANGE, {
       detail: { enabled: getWindowTransparencyEnabled() },
     }),
   );
 }
 
 export function setWindowTransparencyEnabled(enabled: boolean) {
-  try {
-    if (enabled === DEFAULT_WINDOW_TRANSPARENCY) {
-      localStorage.removeItem(STORAGE_KEY);
-    } else {
-      localStorage.setItem(STORAGE_KEY, String(enabled));
-    }
-  } catch {
-    /* private mode */
+  if (enabled === DEFAULT_WINDOW_TRANSPARENCY) {
+    removeStorageItem(STORAGE_KEYS.windowTransparency);
+  } else {
+    writeStorageItem(STORAGE_KEYS.windowTransparency, String(enabled));
   }
 
   applyWindowTransparencyToDocument(enabled);
@@ -53,6 +46,6 @@ export function attachWindowTransparencyListener(onChange: () => void) {
   if (typeof window === 'undefined') return () => {};
 
   const handler = () => onChange();
-  window.addEventListener(CHANGE_EVENT, handler);
-  return () => window.removeEventListener(CHANGE_EVENT, handler);
+  window.addEventListener(WINDOW_TRANSPARENCY_CHANGE, handler);
+  return () => window.removeEventListener(WINDOW_TRANSPARENCY_CHANGE, handler);
 }

@@ -6,12 +6,16 @@ import { gameApp } from './gameApp';
 import type { AppGeometry } from '../../types';
 
 const GEOMETRY: AppGeometry = {
-  defaultX: 0,
-  defaultY: 0,
   defaultWidth: 600,
   defaultHeight: 400,
   minWidth: 400,
   initialZ: 10,
+};
+
+const GAME_META = {
+  launcherLabel: 'snake.exe',
+  graphic: '🐍',
+  hint: 'Snake — flechas o WASD',
 };
 
 function makeGame(body: (props: { active: boolean }) => ReactNode) {
@@ -19,6 +23,7 @@ function makeGame(body: (props: { active: boolean }) => ReactNode) {
     id: 'snake',
     title: 'snake',
     geometry: GEOMETRY,
+    gameMeta: GAME_META,
     body,
   });
 }
@@ -38,6 +43,7 @@ describe('gameApp', () => {
     expect(app.id).toBe('snake');
     expect(app.title).toBe('snake');
     expect(app.geometry).toBe(GEOMETRY);
+    expect(app.gameMeta).toEqual(GAME_META);
     expect(typeof app.render).toBe('function');
   });
 
@@ -51,9 +57,7 @@ describe('gameApp', () => {
 
     const { container } = render(app.render(makeAppContext(), activeWin()));
 
-    // The body is mounted...
     expect(container.querySelector('canvas')).toBeTruthy();
-    // ...and wrapped by the standard desktop window chrome (title shown).
     expect(container.textContent).toContain('Snake');
   });
 

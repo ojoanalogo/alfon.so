@@ -8,10 +8,15 @@ export default gameApp({
   id: 'plane',
   title: 'plane',
   iconKey: 'games',
-  geometry: { defaultX: 260, defaultY: 88, defaultWidth: 360, defaultHeight: 480, initialZ: 15 },
+  geometry: { defaultWidth: 360, defaultHeight: 480, initialZ: 15 },
   desktopIcon: false,
   taskbarTooltip: 'Plane',
   bodyClassName: 'game-window__body',
+  gameMeta: {
+    launcherLabel: 'plane.exe',
+    graphic: '✈️',
+    hint: 'Plane — esquiva obstáculos con ← → / A D',
+  },
   body: ({ active }) => (
     <Suspense fallback={<AppLoading />}>
       <PlaneGame active={active} />

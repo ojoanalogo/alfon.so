@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { STORAGE } from '@/lib/storage';
 import { render, act } from '@testing-library/react';
 import type { ComponentType, ReactNode } from 'react';
 import type { WallpaperOption } from '../types';
@@ -62,7 +63,7 @@ describe('DesktopBootOverlay', () => {
 
   it('renders the loading overlay while booting', async () => {
     // A stored wallpaper that never finishes loading keeps bootContentReady false.
-    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    localStorage.setItem(STORAGE.wallpaper, 'wp-1');
     const graph = await loadBootModuleGraph();
     const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
@@ -73,7 +74,7 @@ describe('DesktopBootOverlay', () => {
   });
 
   it('exposes loading accessibility state while booting', async () => {
-    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    localStorage.setItem(STORAGE.wallpaper, 'wp-1');
     const graph = await loadBootModuleGraph();
     const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
@@ -88,7 +89,7 @@ describe('DesktopBootOverlay', () => {
   });
 
   it('does not add the exiting class while still loading', async () => {
-    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    localStorage.setItem(STORAGE.wallpaper, 'wp-1');
     const graph = await loadBootModuleGraph();
     const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
@@ -158,7 +159,7 @@ describe('DesktopBootOverlay', () => {
 
   it('stays on the loading screen until content becomes ready', async () => {
     // Stored wallpaper that never loads -> overlay should remain past BOOT_MIN_MS.
-    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    localStorage.setItem(STORAGE.wallpaper, 'wp-1');
     const graph = await loadBootModuleGraph();
     const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
@@ -175,7 +176,7 @@ describe('DesktopBootOverlay', () => {
   it('gives up waiting and exits after a hard cap when the wallpaper load hangs', async () => {
     // A wallpaper whose load neither resolves nor errors must not trap the
     // desktop behind the overlay forever.
-    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    localStorage.setItem(STORAGE.wallpaper, 'wp-1');
     const graph = await loadBootModuleGraph();
     const { container } = renderBoot(graph, [makeWallpaperOption()]);
 
@@ -194,7 +195,7 @@ describe('DesktopBootOverlay', () => {
 
   it('exits immediately when content becomes ready after the minimum boot time', async () => {
     // Stored wallpaper keeps bootContentReady false until the image loads.
-    localStorage.setItem('devfolio.wallpaper', 'wp-1');
+    localStorage.setItem(STORAGE.wallpaper, 'wp-1');
     const instances: Array<{ onload: (() => void) | null }> = [];
     class FakeImage {
       onload: (() => void) | null = null;

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import GameShell, { GameOverOverlay } from '../GameShell';
+import { readGamePalette, overlayRgba } from '../gamePalette';
+import { useGameHighScore } from '../useGameHighScore';
 import { useGameControls } from '../useGameControls';
 import { useGameLoop } from '../useGameLoop';
 import {
@@ -14,14 +16,19 @@ import {
   type GameState,
 } from './snakeLogic';
 
+function tickMsForScore(score: number): number {
+  return Math.max(55, TICK_MS - Math.floor(score / 3) * 10);
+}
+
 function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  const palette = readGamePalette();
 
-  ctx.fillStyle = '#18181b';
+  ctx.fillStyle = palette.canvas;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.strokeStyle = '#27272a';
+  ctx.strokeStyle = palette.grid;
   for (let x = 0; x <= COLS; x++) {
     ctx.beginPath();
     ctx.moveTo(x * CELL, 0);
@@ -36,19 +43,19 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   }
 
   if (game.food) {
-    ctx.fillStyle = '#ef4444';
+    ctx.fillStyle = palette.danger;
     ctx.fillRect(game.food.x * CELL + 2, game.food.y * CELL + 2, CELL - 4, CELL - 4);
   }
 
   game.snake.forEach((segment, index) => {
-    ctx.fillStyle = index === 0 ? '#22c55e' : '#16a34a';
+    ctx.fillStyle = index === 0 ? palette.accent : '#16a34a';
     ctx.fillRect(segment.x * CELL + 1, segment.y * CELL + 1, CELL - 2, CELL - 2);
   });
 
   if (game.gameOver || game.won) {
-    ctx.fillStyle = 'rgb(0 0 0 / 0.55)';
+    ctx.fillStyle = overlayRgba();
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#fafafa';
+    ctx.fillStyle = palette.text;
     ctx.font = 'bold 14px ui-monospace, monospace';
     ctx.textAlign = 'center';
     ctx.fillText(game.won ? '¡ganaste!' : 'game over', canvas.width / 2, canvas.height / 2 - 8);
@@ -65,11 +72,9 @@ interface SnakeGameProps {
 export default function SnakeGame({ active }: SnakeGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [game, setGame] = useState(initialState);
-  // `game.direction` is the last applied move; `pendingRef` queues the input the
-  // next tick will apply. `lastMovedRef` lets the key handler reject reversals
-  // against the last move without re-binding the listener every tick.
   const pendingRef = useRef(game.direction);
   const lastMovedRef = useRef(game.direction);
+  const { best, reportScore } = useGameHighScore('snake');
 
   useEffect(() => {
     lastMovedRef.current = game.direction;
@@ -79,6 +84,10 @@ export default function SnakeGame({ active }: SnakeGameProps) {
     const canvas = canvasRef.current;
     if (canvas) drawFrame(canvas, game);
   }, [game]);
+
+  useEffect(() => {
+    if (game.gameOver || game.won) reportScore(game.score);
+  }, [game.gameOver, game.won, game.score, reportScore]);
 
   const restart = useCallback(() => {
     const next = initialState();
@@ -97,7 +106,6 @@ export default function SnakeGame({ active }: SnakeGameProps) {
       const next = KEY_TO_DIRECTION[event.key];
       if (!next) return false;
       if (game.gameOver || game.won) return true;
-      // Reject only a direct reversal of the last move; stepGame guards the rest.
       if (OPPOSITE[next] === lastMovedRef.current) return true;
       pendingRef.current = next;
       return true;
@@ -111,12 +119,13 @@ export default function SnakeGame({ active }: SnakeGameProps) {
     setGame((prev) => stepGame(prev, pendingRef.current));
   }, []);
 
-  useGameLoop(active, tick, TICK_MS);
+  useGameLoop(active, tick, tickMsForScore(game.score));
 
   return (
     <GameShell
       hint="flechas / wasd · espacio reinicia"
       score={`puntos: ${game.score}`}
+      bestScore={best}
       overlay={<GameOverOverlay show={game.gameOver || game.won} onRestart={restart} />}
     >
       <canvas ref={canvasRef} width={COLS * CELL} height={ROWS * CELL} aria-label="Snake" />

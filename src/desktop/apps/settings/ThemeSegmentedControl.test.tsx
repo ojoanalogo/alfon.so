@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { STORAGE } from '@/lib/storage';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeProvider } from '@desktop/state/ThemeContext';
 import { stubMatchMedia } from '@test/helpers';
@@ -47,7 +48,7 @@ describe('ThemeSegmentedControl', () => {
 
     fireEvent.click(screen.getByText('Oscuro'));
 
-    expect(localStorage.getItem('theme')).toBe('dark');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(screen.getByText('Oscuro').closest('button')?.getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByText('Sistema').closest('button')?.getAttribute('aria-pressed')).toBe(
@@ -61,7 +62,7 @@ describe('ThemeSegmentedControl', () => {
     fireEvent.click(screen.getByText('Oscuro'));
     fireEvent.click(screen.getByText('Claro'));
 
-    expect(localStorage.getItem('theme')).toBe('light');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('light');
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(screen.getByText('Claro').closest('button')?.getAttribute('aria-pressed')).toBe('true');
   });
@@ -70,10 +71,10 @@ describe('ThemeSegmentedControl', () => {
     renderControl();
 
     fireEvent.click(screen.getByText('Oscuro'));
-    expect(localStorage.getItem('theme')).toBe('dark');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
 
     fireEvent.click(screen.getByText('Sistema'));
-    expect(localStorage.getItem('theme')).toBeNull();
+    expect(localStorage.getItem(STORAGE.theme)).toBeNull();
     expect(screen.getByText('Sistema').closest('button')?.getAttribute('aria-pressed')).toBe(
       'true',
     );

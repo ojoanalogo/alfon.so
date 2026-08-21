@@ -13,6 +13,7 @@ import {
   getEffectiveTheme,
   getThemePreference,
   syncThemeFromPreference,
+  THEME_CHANGE,
   toggleThemePreference,
   type ThemeMode,
   type ThemePreference,
@@ -50,10 +51,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     ensureThemeRuntime();
     syncThemeFromPreference();
     syncFromDocument();
-    window.addEventListener('devfolio-theme-change', syncFromDocument);
+    window.addEventListener(THEME_CHANGE, syncFromDocument);
 
     return () => {
-      window.removeEventListener('devfolio-theme-change', syncFromDocument);
+      window.removeEventListener(THEME_CHANGE, syncFromDocument);
     };
   }, []);
 

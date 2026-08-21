@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { STORAGE } from '@/lib/storage';
 import { loadNotes, saveNotes } from './storage';
 import type { Note } from './types';
-
-const STORAGE_KEY = 'devfolio:notes';
 
 function makeNote(overrides: Partial<Note> = {}): Note {
   return {
@@ -25,7 +24,7 @@ describe('notes/storage', () => {
     });
 
     it('returns an empty array when the stored value is an empty string', () => {
-      localStorage.setItem(STORAGE_KEY, '');
+      localStorage.setItem(STORAGE.notes, '');
       expect(loadNotes()).toEqual([]);
     });
   });
@@ -45,7 +44,7 @@ describe('notes/storage', () => {
       saveNotes([]);
       // Empty stringified array '[]' is truthy, so it is parsed back.
       expect(loadNotes()).toEqual([]);
-      expect(localStorage.getItem(STORAGE_KEY)).toBe('[]');
+      expect(localStorage.getItem(STORAGE.notes)).toBe('[]');
     });
 
     it('overwrites previously saved notes', () => {
@@ -59,23 +58,23 @@ describe('notes/storage', () => {
     it('writes the value under the expected storage key', () => {
       const notes = [makeNote({ id: 'x' })];
       saveNotes(notes);
-      expect(JSON.parse(localStorage.getItem(STORAGE_KEY) as string)).toEqual(notes);
+      expect(JSON.parse(localStorage.getItem(STORAGE.notes) as string)).toEqual(notes);
     });
   });
 
   describe('malformed / invalid stored data resilience', () => {
     it('returns [] when stored JSON is malformed', () => {
-      localStorage.setItem(STORAGE_KEY, '{not valid json');
+      localStorage.setItem(STORAGE.notes, '{not valid json');
       expect(loadNotes()).toEqual([]);
     });
 
     it('returns [] when stored JSON is not an array (object)', () => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ id: 'a' }));
+      localStorage.setItem(STORAGE.notes, JSON.stringify({ id: 'a' }));
       expect(loadNotes()).toEqual([]);
     });
 
     it('returns [] when stored JSON is a primitive', () => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify('just a string'));
+      localStorage.setItem(STORAGE.notes, JSON.stringify('just a string'));
       expect(loadNotes()).toEqual([]);
     });
 
@@ -90,20 +89,20 @@ describe('notes/storage', () => {
         { id: 1, title: 't', content: 'c', updatedAt: 'u' }, // wrong id type
         { id: 'y', title: 't', content: 'c' }, // missing updatedAt
       ];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(mixed));
+      localStorage.setItem(STORAGE.notes, JSON.stringify(mixed));
       const loaded = loadNotes();
       expect(loaded).toEqual([valid]);
     });
 
     it('drops a note missing a required string field', () => {
       const arr = [{ id: 'a', title: 'a', content: 'c', updatedAt: 123 }];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+      localStorage.setItem(STORAGE.notes, JSON.stringify(arr));
       expect(loadNotes()).toEqual([]);
     });
 
     it('keeps notes with empty-string fields (still valid strings)', () => {
       const note = makeNote({ id: '', title: '', content: '', updatedAt: '' });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([note]));
+      localStorage.setItem(STORAGE.notes, JSON.stringify([note]));
       expect(loadNotes()).toEqual([note]);
     });
   });

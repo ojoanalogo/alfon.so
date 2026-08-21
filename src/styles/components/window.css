@@ -91,6 +91,26 @@
     overflow: hidden;
   }
 
+  /* Content-sized windows: grow with content, cap at work area, scroll inside. */
+  .desktop-window.desktop-window--fit-content {
+    max-height: calc(
+      100dvh - 2.5rem - 16px - env(safe-area-inset-top, 0px) -
+        max(var(--taskbar-bottom-pad, 0px), var(--safe-area-bottom, 0px))
+    );
+  }
+
+  .desktop-window.desktop-window--fit-content > .desktop-window__card {
+    display: flex;
+    max-height: inherit;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .desktop-window.desktop-window--fit-content > .desktop-window__card > .card-body {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
   .desktop-window--expanded {
     max-width: none !important;
   }

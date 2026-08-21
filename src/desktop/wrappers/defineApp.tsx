@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import Window from '../window';
 import type { IconKey } from '@desktop/lib/desktopIcons';
 import type { AppGeometry } from '../types';
+import type { GameMeta } from './types';
 import {
   resolveAppTitle,
   type AppContext,
@@ -22,6 +23,7 @@ export interface DefineAppInput<Id extends string> {
   windowClassName?: string;
   bodyClassName?: string;
   initialBrowserUrl?: string | null;
+  gameMeta?: GameMeta;
   /** Window body. The optional `win` arg is the live window-manager wiring. */
   body: (ctx: AppContext, win?: WindowChromeProps) => ReactNode;
   /** Optional titlebar chrome (e.g. the browser URL bar). */

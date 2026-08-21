@@ -6,6 +6,6 @@ export default browserApp({
   title: 'web browser',
   iconKey: 'startup',
   initialUrl: null,
-  geometry: { defaultX: 180, defaultY: 80, defaultWidth: 800, initialZ: 30 },
+  geometry: { defaultWidth: 800, initialZ: 30 },
   taskbarTooltip: 'Navegador web',
 });

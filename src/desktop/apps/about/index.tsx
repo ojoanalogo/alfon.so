@@ -6,8 +6,6 @@ export default defineApp({
   title: 'about.html',
   iconKey: 'about',
   geometry: {
-    defaultX: 0,
-    defaultY: 0,
     defaultWidth: 576,
     minWidth: 520,
     initialZ: 11,
@@ -16,5 +14,6 @@ export default defineApp({
   },
   desktopIcon: { label: 'acerca', tooltip: 'Mi info' },
   taskbarTooltip: 'about.html',
+  windowClassName: 'desktop-window--fit-content',
   body: (ctx) => <AboutContent posts={ctx.posts} onOpenPost={ctx.onOpenPost} />,
 });

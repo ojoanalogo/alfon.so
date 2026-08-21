@@ -66,6 +66,13 @@ export interface SettingsSection {
   render: () => ReactNode;
 }
 
+/** Metadata for games listed in the juegos/ folder launcher. */
+export interface GameMeta {
+  launcherLabel: string;
+  graphic: string;
+  hint: string;
+}
+
 /** Resolved app definition. Build with defineApp() or a specialization factory. */
 export interface AppDefinition<Id extends string = string> {
   id: Id;
@@ -78,6 +85,7 @@ export interface AppDefinition<Id extends string = string> {
   availableWhen?: (ctx: Pick<AppContext, 'posts'>) => boolean;
   windowClassName?: string;
   bodyClassName?: string;
+  gameMeta?: GameMeta;
   /**
    * When set, the browser history for this app is seeded with this URL on
    * first open. Only meaningful for browser-kind apps; ignored by others.

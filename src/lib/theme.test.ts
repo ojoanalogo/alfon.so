@@ -10,12 +10,11 @@ import {
   getThemePreference,
   setupThemeDropdowns,
   syncThemeFromPreference,
+  THEME_CHANGE,
   toggleThemePreference,
   updateThemeDropdowns,
 } from './theme';
-
-const THEME_CHANGE = 'devfolio-theme-change';
-const STORAGE_KEY = 'theme';
+import { STORAGE } from './storage';
 
 /**
  * jsdom does not implement window.matchMedia. Install a controllable stub that
@@ -80,17 +79,17 @@ describe('getThemePreference', () => {
   });
 
   it('returns the stored light preference', () => {
-    localStorage.setItem(STORAGE_KEY, 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
     expect(getThemePreference()).toBe('light');
   });
 
   it('returns the stored dark preference', () => {
-    localStorage.setItem(STORAGE_KEY, 'dark');
+    localStorage.setItem(STORAGE.theme, 'dark');
     expect(getThemePreference()).toBe('dark');
   });
 
   it('falls back to system for an invalid stored value', () => {
-    localStorage.setItem(STORAGE_KEY, 'neon');
+    localStorage.setItem(STORAGE.theme, 'neon');
     expect(getThemePreference()).toBe('system');
   });
 
@@ -106,13 +105,13 @@ describe('getThemePreference', () => {
 describe('getEffectiveTheme', () => {
   it('returns the explicit light preference regardless of OS', () => {
     stubMatchMedia(true);
-    localStorage.setItem(STORAGE_KEY, 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
     expect(getEffectiveTheme()).toBe('light');
   });
 
   it('returns the explicit dark preference regardless of OS', () => {
     stubMatchMedia(false);
-    localStorage.setItem(STORAGE_KEY, 'dark');
+    localStorage.setItem(STORAGE.theme, 'dark');
     expect(getEffectiveTheme()).toBe('dark');
   });
 
@@ -142,17 +141,17 @@ describe('applyThemeToDocument', () => {
 
 describe('applyThemePreference', () => {
   it('removes storage and follows OS when set to system', () => {
-    localStorage.setItem(STORAGE_KEY, 'dark');
+    localStorage.setItem(STORAGE.theme, 'dark');
     stubMatchMedia(false);
     applyThemePreference('system');
-    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE.theme)).toBeNull();
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(document.documentElement.dataset.themePreference).toBe('system');
   });
 
   it('persists dark and applies the dark class', () => {
     applyThemePreference('dark');
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('dark');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(document.documentElement.dataset.themePreference).toBe('dark');
   });
@@ -160,7 +159,7 @@ describe('applyThemePreference', () => {
   it('persists light and removes the dark class', () => {
     document.documentElement.classList.add('dark');
     applyThemePreference('light');
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('light');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('light');
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(document.documentElement.dataset.themePreference).toBe('light');
   });
@@ -172,7 +171,7 @@ describe('applyThemePreference', () => {
     expect(document.documentElement.dataset.themePreference).toBe('system');
   });
 
-  it('dispatches a devfolio-theme-change event with current preference and theme', () => {
+  it('dispatches a theme-change event with current preference and theme', () => {
     const handler = vi.fn();
     window.addEventListener(THEME_CHANGE, handler);
     applyThemePreference('dark');
@@ -205,30 +204,30 @@ describe('applyThemePreference', () => {
 
 describe('toggleThemePreference', () => {
   it('toggles from effective dark to light', () => {
-    localStorage.setItem(STORAGE_KEY, 'dark');
+    localStorage.setItem(STORAGE.theme, 'dark');
     toggleThemePreference();
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('light');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('light');
     expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 
   it('toggles from effective light to dark', () => {
-    localStorage.setItem(STORAGE_KEY, 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
     toggleThemePreference();
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('dark');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
   it('from system+OS-dark toggles to an explicit light preference', () => {
     stubMatchMedia(true);
     toggleThemePreference();
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('light');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('light');
     expect(getThemePreference()).toBe('light');
   });
 
   it('from system+OS-light toggles to an explicit dark preference', () => {
     stubMatchMedia(false);
     toggleThemePreference();
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('dark');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
     expect(getThemePreference()).toBe('dark');
   });
 });
@@ -239,7 +238,7 @@ describe('syncThemeFromPreference', () => {
     syncThemeFromPreference();
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(document.documentElement.dataset.themePreference).toBe('system');
-    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(STORAGE.theme)).toBeNull();
   });
 
   it('dispatches a theme-change event', () => {
@@ -275,7 +274,7 @@ describe('attachSystemThemeListener', () => {
 
   it('ignores OS changes when the preference is an explicit override', () => {
     const sys = stubMatchMedia(false);
-    localStorage.setItem(STORAGE_KEY, 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
     const onChange = vi.fn();
     attachSystemThemeListener(onChange);
 
@@ -378,25 +377,25 @@ describe('setupThemeDropdowns', () => {
 
   it('binds option clicks that set preference and marks the dropdown bound', () => {
     const { root } = buildDropdown();
-    localStorage.setItem(STORAGE_KEY, 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
     setupThemeDropdowns();
     expect(root.getAttribute('data-theme-bound')).toBe('true');
 
     const darkOption = root.querySelector<HTMLButtonElement>('[data-theme-value="dark"]')!;
     darkOption.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('dark');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
   it('does not double-bind an already-bound dropdown', () => {
     const { root } = buildDropdown();
     root.setAttribute('data-theme-bound', 'true');
-    localStorage.setItem(STORAGE_KEY, 'light');
+    localStorage.setItem(STORAGE.theme, 'light');
     setupThemeDropdowns();
 
     const darkOption = root.querySelector<HTMLButtonElement>('[data-theme-value="dark"]')!;
     darkOption.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('light');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('light');
   });
 });
 

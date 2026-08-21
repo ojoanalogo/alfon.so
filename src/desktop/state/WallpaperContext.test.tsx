@@ -1,4 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
+import { STORAGE } from '@/lib/storage';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { WallpaperProvider, useWallpaper } from './WallpaperContext';
 import { ThemeProvider } from './ThemeContext';
@@ -45,42 +46,45 @@ describe('WallpaperProvider + useWallpaper', () => {
     expect(result.current.desktopColors).toBe(DESKTOP_COLORS);
   });
 
-  it('defaults to plain background color when no preference is stored', () => {
+  it('defaults to plain background color and grano pattern when no preference is stored', () => {
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
     expect(result.current.wallpaperId).toBeNull();
     expect(result.current.activeWallpaper).toBeNull();
+    expect(result.current.patternId).toBe('noise');
+    expect(result.current.activePattern?.id).toBe('noise');
     expect(result.current.backgroundColorId).toBe('default');
     expect(result.current.status).toBe('ready');
     expect(result.current.bootContentReady).toBe(true);
+    expect(localStorage.getItem(STORAGE.desktopPattern)).toBe('noise');
   });
 
   it('reads a stored wallpaper id', () => {
-    localStorage.setItem('devfolio.wallpaper', '03');
+    localStorage.setItem(STORAGE.wallpaper, '03');
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
     expect(result.current.wallpaperId).toBe('03');
     expect(result.current.activeWallpaper?.id).toBe('03');
   });
 
   it('clears an unknown stored wallpaper preference to plain background', () => {
-    localStorage.setItem('devfolio.wallpaper', '06');
+    localStorage.setItem(STORAGE.wallpaper, '06');
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
     expect(result.current.wallpaperId).toBeNull();
     expect(result.current.activeWallpaper).toBeNull();
     expect(result.current.backgroundColorId).toBe('default');
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
   });
 
   it('reads a stored valid background color', () => {
-    localStorage.setItem('devfolio.desktop-color', 'blue');
+    localStorage.setItem(STORAGE.desktopColor, 'blue');
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
     expect(result.current.backgroundColorId).toBe('blue');
   });
 
   it('normalizes an invalid stored background color to "default"', () => {
-    localStorage.setItem('devfolio.desktop-color', 'chartreuse');
+    localStorage.setItem(STORAGE.desktopColor, 'chartreuse');
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
     expect(result.current.backgroundColorId).toBe('default');
-    expect(localStorage.getItem('devfolio.desktop-color')).toBe('default');
+    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('default');
   });
 
   it('setWallpaper updates id and persists it', () => {
@@ -92,8 +96,8 @@ describe('WallpaperProvider + useWallpaper', () => {
 
     expect(result.current.wallpaperId).toBe('01');
     expect(result.current.activeWallpaper?.id).toBe('01');
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('01');
-    expect(localStorage.getItem('devfolio.desktop-color')).toBe('default');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('01');
+    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('default');
   });
 
   it('persists the current fill color when selecting a wallpaper', () => {
@@ -106,21 +110,21 @@ describe('WallpaperProvider + useWallpaper', () => {
       result.current.setWallpaper('03');
     });
 
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('03');
-    expect(localStorage.getItem('devfolio.desktop-color')).toBe('mint');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('03');
+    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('mint');
     expect(result.current.backgroundColorId).toBe('mint');
   });
 
   it('restores a stored fill color alongside an active wallpaper preference', () => {
-    localStorage.setItem('devfolio.desktop-color', 'mint');
-    localStorage.setItem('devfolio.wallpaper', '03');
+    localStorage.setItem(STORAGE.desktopColor, 'mint');
+    localStorage.setItem(STORAGE.wallpaper, '03');
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
 
     expect(result.current.wallpaperId).toBe('03');
     expect(result.current.backgroundColorId).toBe('mint');
   });
 
-  it('setWallpaper(null) clears the wallpaper and persists empty string', () => {
+  it('setWallpaper(null) clears the wallpaper and restores the default pattern', () => {
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
 
     act(() => {
@@ -132,7 +136,9 @@ describe('WallpaperProvider + useWallpaper', () => {
 
     expect(result.current.wallpaperId).toBeNull();
     expect(result.current.activeWallpaper).toBeNull();
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
+    expect(result.current.patternId).toBe('noise');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
+    expect(localStorage.getItem(STORAGE.desktopPattern)).toBe('noise');
   });
 
   it('setWallpaper ignores an id not present in wallpapers', () => {
@@ -156,10 +162,10 @@ describe('WallpaperProvider + useWallpaper', () => {
     });
 
     expect(result.current.backgroundColorId).toBe('purple');
-    expect(localStorage.getItem('devfolio.desktop-color')).toBe('purple');
+    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('purple');
     expect(result.current.wallpaperId).toBeNull();
     expect(result.current.activeWallpaper).toBeNull();
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
   });
 
   it('setBackgroundColor ignores an invalid color id', () => {
@@ -183,6 +189,52 @@ describe('WallpaperProvider + useWallpaper', () => {
     });
 
     expect(result.current.desktopBackgroundColor).toBe('#2dd4bf');
+  });
+
+  it('setPattern clears wallpaper and persists pattern id', () => {
+    const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
+
+    act(() => {
+      result.current.setWallpaper('03');
+    });
+    act(() => {
+      result.current.setPattern('dots');
+    });
+
+    expect(result.current.patternId).toBe('dots');
+    expect(result.current.wallpaperId).toBeNull();
+    expect(localStorage.getItem(STORAGE.desktopPattern)).toBe('dots');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
+  });
+
+  it('setWallpaper clears an active pattern', () => {
+    const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
+
+    act(() => {
+      result.current.setPattern('grid');
+    });
+    act(() => {
+      result.current.setWallpaper('01');
+    });
+
+    expect(result.current.wallpaperId).toBe('01');
+    expect(result.current.patternId).toBeNull();
+    expect(localStorage.getItem(STORAGE.desktopPattern)).toBe('');
+  });
+
+  it('setBackgroundColor keeps an active pattern', () => {
+    const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
+
+    act(() => {
+      result.current.setPattern('dots');
+    });
+    act(() => {
+      result.current.setBackgroundColor('mint');
+    });
+
+    expect(result.current.patternId).toBe('dots');
+    expect(result.current.backgroundColorId).toBe('mint');
+    expect(result.current.wallpaperId).toBeNull();
   });
 
   it('reports error status when the active wallpaper image fails to load', () => {

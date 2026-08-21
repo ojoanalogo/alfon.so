@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import GameShell, { GameOverOverlay } from '../GameShell';
+import { readGamePalette, overlayRgba } from '../gamePalette';
+import { useGameHighScore } from '../useGameHighScore';
 import { useAxisControls } from '../useAxisControls';
 import { useGameControls } from '../useGameControls';
 import { useGameLoop } from '../useGameLoop';
@@ -17,8 +19,13 @@ import {
 function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  const palette = readGamePalette();
 
-  ctx.fillStyle = '#0c4a6e';
+  ctx.fillStyle = palette.accentAlt;
+  ctx.globalAlpha = 0.25;
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = palette.canvas;
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
   ctx.fillStyle = 'rgb(255 255 255 / 0.08)';
@@ -28,14 +35,14 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   }
 
   game.obstacles.forEach((obstacle) => {
-    ctx.fillStyle = '#71717a';
+    ctx.fillStyle = palette.textMuted;
     ctx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
-    ctx.fillStyle = '#a1a1aa';
+    ctx.fillStyle = palette.grid;
     ctx.fillRect(obstacle.x + 4, obstacle.y + 4, obstacle.w - 8, obstacle.h - 8);
   });
 
   const planeY = HEIGHT - PLANE_H - 16;
-  ctx.fillStyle = '#38bdf8';
+  ctx.fillStyle = palette.accentAlt;
   ctx.beginPath();
   ctx.moveTo(game.planeX + PLANE_W / 2, planeY);
   ctx.lineTo(game.planeX, planeY + PLANE_H);
@@ -45,14 +52,14 @@ function drawFrame(canvas: HTMLCanvasElement, game: GameState) {
   ctx.fillStyle = '#0ea5e9';
   ctx.fillRect(game.planeX + PLANE_W / 2 - 3, planeY + 6, 6, 8);
 
-  ctx.fillStyle = '#fafafa';
+  ctx.fillStyle = palette.text;
   ctx.font = '11px ui-monospace, monospace';
   ctx.fillText(`puntos: ${game.score}`, 8, 16);
 
   if (game.gameOver) {
-    ctx.fillStyle = 'rgb(0 0 0 / 0.55)';
+    ctx.fillStyle = overlayRgba();
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.fillStyle = '#fafafa';
+    ctx.fillStyle = palette.text;
     ctx.font = 'bold 14px ui-monospace, monospace';
     ctx.textAlign = 'center';
     ctx.fillText('game over', WIDTH / 2, HEIGHT / 2 - 8);
@@ -70,12 +77,17 @@ export default function PlaneGame({ active }: PlaneGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [game, setGame] = useState(initialState);
   const moveRef = useRef(0);
+  const { best, reportScore } = useGameHighScore('plane');
   useAxisControls(active, moveRef);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) drawFrame(canvas, game);
   }, [game]);
+
+  useEffect(() => {
+    if (game.gameOver) reportScore(game.score);
+  }, [game.gameOver, game.score, reportScore]);
 
   const restart = useCallback(() => {
     moveRef.current = 0;
@@ -113,6 +125,7 @@ export default function PlaneGame({ active }: PlaneGameProps) {
     <GameShell
       hint="← → / a d · esquiva obstáculos"
       score={`puntos: ${game.score}`}
+      bestScore={best}
       overlay={<GameOverOverlay show={game.gameOver} onRestart={restart} />}
     >
       <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} aria-label="Plane" />

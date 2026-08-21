@@ -19,7 +19,7 @@ export default explorerApp({
     const project = PROJECTS.find((entry) => entry.title === id);
     if (project?.link) ctx.onOpenLink(project.link);
   },
-  geometry: { defaultX: 128, defaultY: 64, defaultWidth: 576, initialZ: 12 },
+  geometry: { defaultWidth: 576, initialZ: 12 },
   desktopIcon: { label: 'proyectos', tooltip: 'Mis proyectos' },
   taskbarTooltip: 'Proyectos',
 });

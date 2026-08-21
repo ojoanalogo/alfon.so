@@ -6,8 +6,6 @@ import type { AppContext } from './types';
 import type { AppGeometry } from '../types';
 
 const GEOMETRY: AppGeometry = {
-  defaultX: 0,
-  defaultY: 0,
   defaultWidth: 600,
   defaultHeight: 400,
   minWidth: 400,

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { STORAGE } from '@/lib/storage';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeProvider } from '@desktop/state/ThemeContext';
 import { WallpaperProvider } from '@desktop/state/WallpaperContext';
@@ -87,7 +88,7 @@ describe('AppearanceSection', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Imagen 03' }));
 
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('03');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('03');
     expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
       'true',
     );
@@ -101,8 +102,8 @@ describe('AppearanceSection', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Azul' }));
 
-    expect(localStorage.getItem('devfolio.desktop-color')).toBe('blue');
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
+    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('blue');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
     expect(screen.getByRole('button', { name: 'Azul' }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
       'false',
@@ -115,8 +116,8 @@ describe('AppearanceSection', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Azul' }));
     fireEvent.click(screen.getByRole('button', { name: 'Imagen 01' }));
 
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('01');
-    expect(localStorage.getItem('devfolio.desktop-color')).toBe('blue');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('01');
+    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('blue');
     expect(screen.getByRole('button', { name: 'Imagen 01' }).getAttribute('aria-pressed')).toBe(
       'true',
     );
@@ -124,14 +125,14 @@ describe('AppearanceSection', () => {
   });
 
   it('restores a stored fill color when returning from a wallpaper', () => {
-    localStorage.setItem('devfolio.desktop-color', 'mint');
-    localStorage.setItem('devfolio.wallpaper', '03');
+    localStorage.setItem(STORAGE.desktopColor, 'mint');
+    localStorage.setItem(STORAGE.wallpaper, '03');
     renderSection();
 
     fireEvent.click(screen.getByRole('button', { name: 'Menta' }));
 
-    expect(localStorage.getItem('devfolio.desktop-color')).toBe('mint');
-    expect(localStorage.getItem('devfolio.wallpaper')).toBe('');
+    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('mint');
+    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
     expect(screen.getByRole('button', { name: 'Menta' }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
       'false',
@@ -143,7 +144,7 @@ describe('AppearanceSection', () => {
 
     fireEvent.click(screen.getByText('Oscuro'));
     expect(document.documentElement.classList.contains('dark')).toBe(true);
-    expect(localStorage.getItem('theme')).toBe('dark');
+    expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
   });
 
   it('renders the window transparency toggle enabled by default', () => {
@@ -159,7 +160,7 @@ describe('AppearanceSection', () => {
 
     fireEvent.click(screen.getByRole('switch', { name: 'Transparencia sin foco' }));
 
-    expect(localStorage.getItem('devfolio.window-transparency')).toBe('false');
+    expect(localStorage.getItem(STORAGE.windowTransparency)).toBe('false');
     expect(document.documentElement.dataset.windowTransparency).toBe('false');
     expect(
       screen.getByRole('switch', { name: 'Transparencia sin foco' }).getAttribute('aria-checked'),

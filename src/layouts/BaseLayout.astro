@@ -1,5 +1,6 @@
 ---
 import BaseHead from '../components/site/BaseHead.astro';
+import DocumentPreferencesBoot from '../components/site/DocumentPreferencesBoot.astro';
 import Header from '../components/site/Header.astro';
 import NoiseBackground from '../components/site/NoiseBackground.astro';
 
@@ -22,30 +23,7 @@ const {
 >
   <head>
     <BaseHead title={title} description={description} image={image} article={article} />
-    <script is:inline>
-      (function () {
-        try {
-          const theme = localStorage.getItem('theme');
-          const preference = theme === 'light' || theme === 'dark' ? theme : 'system';
-          document.documentElement.dataset.themePreference = preference;
-          if (
-            theme === 'dark' ||
-            (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-          ) {
-            document.documentElement.classList.add('dark');
-          }
-        } catch {
-          document.documentElement.dataset.themePreference = 'system';
-        }
-        try {
-          if (localStorage.getItem('devfolio.window-transparency') === 'false') {
-            document.documentElement.dataset.windowTransparency = 'false';
-          }
-        } catch {
-          /* private mode */
-        }
-      })();
-    </script>
+    <DocumentPreferencesBoot />
   </head>
   <body
     class:list={[

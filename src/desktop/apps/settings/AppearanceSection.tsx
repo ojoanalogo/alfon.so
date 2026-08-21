@@ -50,18 +50,74 @@ function ColorSwatch({
   );
 }
 
-/** Theme + desktop fill color + wallpaper picker — composed by the Settings app. */
+function PatternSwatch({
+  pattern,
+  fillColor,
+  selected,
+  onSelect,
+}: {
+  pattern: {
+    id: string;
+    label: string;
+    backgroundImage: string;
+    backgroundSize: string;
+    opacity: number;
+  };
+  fillColor: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={[
+        'block aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-[0.375rem] border-2 p-0',
+        selected
+          ? 'border-[color:var(--color-highlight-border)] shadow-[0_0_0_1px_var(--color-highlight-border)]'
+          : 'border-transparent hover:border-[color:var(--color-hairline-strong)]',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      aria-pressed={selected}
+      aria-label={pattern.label}
+      title={pattern.label}
+      onClick={onSelect}
+      style={{ backgroundColor: fillColor }}
+    >
+      <span
+        className="block h-full w-full"
+        aria-hidden="true"
+        style={{
+          backgroundImage: pattern.backgroundImage,
+          backgroundSize: pattern.backgroundSize,
+          opacity: pattern.opacity,
+        }}
+      />
+    </button>
+  );
+}
+
+/** Theme + desktop fill color + pattern + wallpaper picker — composed by the Settings app. */
 export default function AppearanceSection() {
   const {
     wallpapers,
+    desktopPatterns,
     wallpaperId,
+    patternId,
     backgroundColorId,
     setWallpaper,
+    setPattern,
     setBackgroundColor,
     desktopColors,
+    desktopBackgroundColor,
   } = useWallpaper();
   const { enabled: windowTransparencyEnabled, setEnabled: setWindowTransparencyEnabled } =
     useWindowTransparency();
+
+  const patternPreviewFill =
+    desktopBackgroundColor === 'var(--color-background)'
+      ? 'var(--color-background-light)'
+      : desktopBackgroundColor;
 
   return (
     <div className="flex flex-col gap-4">
@@ -112,6 +168,36 @@ export default function AppearanceSection() {
         </div>
       </section>
 
+      <section className="flex flex-col gap-[0.375rem]" aria-labelledby="settings-patterns-heading">
+        <h4
+          id="settings-patterns-heading"
+          className="m-0 px-[0.125rem] text-[0.625rem] font-semibold tracking-[0.04em] text-muted uppercase"
+        >
+          Patrones
+        </h4>
+        <div className={`${SETTINGS_GROUP} p-[0.375rem]`}>
+          {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
+          <ul
+            className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-2 p-0"
+            role="list"
+          >
+            {desktopPatterns.map((pattern) => {
+              const selected = pattern.id === patternId;
+              return (
+                <li key={pattern.id}>
+                  <PatternSwatch
+                    pattern={pattern}
+                    fillColor={patternPreviewFill}
+                    selected={selected}
+                    onSelect={() => setPattern(selected ? null : pattern.id)}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
       <section
         className="flex flex-col gap-[0.375rem]"
         aria-labelledby="settings-wallpapers-heading"
@@ -128,8 +214,6 @@ export default function AppearanceSection() {
           </p>
         ) : (
           <div className={`${SETTINGS_GROUP} p-[0.375rem]`}>
-            {/* role="list" is intentional: WebKit drops list semantics when
-              list-style is removed, so VoiceOver needs it to announce a list. */}
             {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
             <ul
               className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-2 p-0"

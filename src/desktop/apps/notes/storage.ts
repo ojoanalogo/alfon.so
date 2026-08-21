@@ -1,11 +1,10 @@
+import { readStorageItem, STORAGE_KEYS, writeStorageItem } from '@/lib/storage';
 import type { Note } from './types';
-
-const STORAGE_KEY = 'devfolio:notes';
 
 export function loadNotes(): Note[] {
   if (typeof window === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = readStorageItem(STORAGE_KEYS.notes);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
@@ -17,7 +16,7 @@ export function loadNotes(): Note[] {
 
 export function saveNotes(notes: Note[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    writeStorageItem(STORAGE_KEYS.notes, JSON.stringify(notes));
   } catch {
     /* private mode / quota */
   }
