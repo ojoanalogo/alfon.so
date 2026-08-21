@@ -2,11 +2,22 @@ import type { DesktopPatternOption } from '../types';
 
 const PATTERN_STROKE = '#71717a';
 
+export const DEFAULT_DESKTOP_PATTERN_ID = 'noise';
+
 function svgPattern(svg: string): string {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
 export const DESKTOP_PATTERNS: DesktopPatternOption[] = [
+  {
+    id: 'noise',
+    label: 'Grano',
+    backgroundImage: svgPattern(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/></filter><rect width="100%" height="100%" filter="url(#n)" opacity="0.35"/></svg>`,
+    ),
+    backgroundSize: '128px 128px',
+    opacity: 0.35,
+  },
   {
     id: 'dots',
     label: 'Puntos',
@@ -51,15 +62,6 @@ export const DESKTOP_PATTERNS: DesktopPatternOption[] = [
     ),
     backgroundSize: '28px 24px',
     opacity: 0.42,
-  },
-  {
-    id: 'noise',
-    label: 'Grano',
-    backgroundImage: svgPattern(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/></filter><rect width="100%" height="100%" filter="url(#n)" opacity="0.35"/></svg>`,
-    ),
-    backgroundSize: '128px 128px',
-    opacity: 0.35,
   },
 ];
 

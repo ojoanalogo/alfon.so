@@ -13,7 +13,11 @@ import {
   resolveDesktopColorValue,
   type DesktopColorOption,
 } from '../lib/desktopColors';
-import { DESKTOP_PATTERNS, resolvePatternId } from '../lib/desktopPatterns';
+import {
+  DESKTOP_PATTERNS,
+  DEFAULT_DESKTOP_PATTERN_ID,
+  resolvePatternId,
+} from '../lib/desktopPatterns';
 import { useTheme } from './ThemeContext';
 import {
   iconLabelToneFromLuminance,
@@ -111,6 +115,11 @@ function resolveStoredPreferences(wallpapers: WallpaperOption[]) {
     nextPatternId = null;
     if (storedPattern && storedPattern !== '') {
       persistPatternId(null);
+    }
+  } else if (!nextPatternId) {
+    nextPatternId = DEFAULT_DESKTOP_PATTERN_ID;
+    if (storedPattern === null || storedPattern === '') {
+      persistPatternId(DEFAULT_DESKTOP_PATTERN_ID);
     }
   }
 
@@ -243,16 +252,19 @@ export function WallpaperProvider({
       }
       if (!id) {
         setLoadedWallpaper(null);
+        setPatternId(DEFAULT_DESKTOP_PATTERN_ID);
+        persistPatternId(DEFAULT_DESKTOP_PATTERN_ID);
       }
     },
     [wallpapers, backgroundColorId],
   );
 
   const setPattern = useCallback((id: string | null) => {
-    if (id !== null && !DESKTOP_PATTERNS.some((pattern) => pattern.id === id)) return;
-    setPatternId(id);
-    persistPatternId(id);
-    if (id) {
+    const nextId = id ?? DEFAULT_DESKTOP_PATTERN_ID;
+    if (!DESKTOP_PATTERNS.some((pattern) => pattern.id === nextId)) return;
+    setPatternId(nextId);
+    persistPatternId(nextId);
+    if (nextId) {
       setWallpaperId(null);
       persistWallpaperId(null);
       setLoadedWallpaper(null);
