@@ -46,16 +46,16 @@ describe('WallpaperProvider + useWallpaper', () => {
     expect(result.current.desktopColors).toBe(DESKTOP_COLORS);
   });
 
-  it('defaults to plain background color and grano pattern when no preference is stored', () => {
+  it('defaults to plain background color and cuadrícula pattern when no preference is stored', () => {
     const { result } = renderHook(() => useWallpaper(), { wrapper: makeWrapper() });
     expect(result.current.wallpaperId).toBeNull();
     expect(result.current.activeWallpaper).toBeNull();
-    expect(result.current.patternId).toBe('noise');
-    expect(result.current.activePattern?.id).toBe('noise');
+    expect(result.current.patternId).toBe('grid');
+    expect(result.current.activePattern?.id).toBe('grid');
     expect(result.current.backgroundColorId).toBe('default');
     expect(result.current.status).toBe('ready');
     expect(result.current.bootContentReady).toBe(true);
-    expect(localStorage.getItem(STORAGE.desktopPattern)).toBe('noise');
+    expect(localStorage.getItem(STORAGE.desktopPattern)).toBe('grid');
   });
 
   it('reads a stored wallpaper id', () => {
@@ -136,9 +136,9 @@ describe('WallpaperProvider + useWallpaper', () => {
 
     expect(result.current.wallpaperId).toBeNull();
     expect(result.current.activeWallpaper).toBeNull();
-    expect(result.current.patternId).toBe('noise');
+    expect(result.current.patternId).toBe('grid');
     expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
-    expect(localStorage.getItem(STORAGE.desktopPattern)).toBe('noise');
+    expect(localStorage.getItem(STORAGE.desktopPattern)).toBe('grid');
   });
 
   it('setWallpaper ignores an id not present in wallpapers', () => {

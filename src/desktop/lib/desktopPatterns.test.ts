@@ -2,10 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_DESKTOP_PATTERN_ID, DESKTOP_PATTERNS } from './desktopPatterns';
 
 describe('DESKTOP_PATTERNS', () => {
-  it('lists grano/noise first and as the default id', () => {
-    expect(DEFAULT_DESKTOP_PATTERN_ID).toBe('noise');
-    expect(DESKTOP_PATTERNS[0]?.id).toBe('noise');
-    expect(DESKTOP_PATTERNS[0]?.label).toBe('Grano');
+  it('lists cuadrícula/grid first and as the default id', () => {
+    expect(DEFAULT_DESKTOP_PATTERN_ID).toBe('grid');
+    expect(DESKTOP_PATTERNS[0]?.id).toBe('grid');
+    expect(DESKTOP_PATTERNS[0]?.label).toBe('Cuadrícula');
+  });
+
+  it('uses a 12px grid tile for smaller squares', () => {
+    const grid = DESKTOP_PATTERNS.find((entry) => entry.id === 'grid');
+    expect(grid?.backgroundSize).toBe('12px 12px');
+    expect(grid?.backgroundImage).toContain('width%3D%2212%22');
+    expect(grid?.backgroundImage).toContain('M12%200H0V12');
   });
 
   it('encodes SVG data URIs once (no double-encoded hash)', () => {
@@ -20,6 +27,12 @@ describe('DESKTOP_PATTERNS', () => {
     }
   });
 
+  it('uses diagonal crosshatch lines for trama (not an orthogonal mini-grid)', () => {
+    const crosshatch = DESKTOP_PATTERNS.find((entry) => entry.id === 'crosshatch');
+    expect(crosshatch?.backgroundImage).toContain('l4-4');
+    expect(crosshatch?.backgroundImage).toContain('l4%204');
+  });
+
   it('keeps noise filter references single-encoded', () => {
     const noise = DESKTOP_PATTERNS.find((entry) => entry.id === 'noise');
     expect(noise?.backgroundImage).toContain('url(%23n)');
@@ -28,11 +41,11 @@ describe('DESKTOP_PATTERNS', () => {
 
   it('includes every pattern id', () => {
     expect(DESKTOP_PATTERNS.map((pattern) => pattern.id)).toEqual([
+      'grid',
+      'crosshatch',
       'noise',
       'dots',
-      'grid',
       'diagonal',
-      'crosshatch',
       'hex',
     ]);
   });

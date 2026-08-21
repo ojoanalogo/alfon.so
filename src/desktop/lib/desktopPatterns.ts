@@ -2,13 +2,31 @@ import type { DesktopPatternOption } from '../types';
 
 const PATTERN_STROKE = '#71717a';
 
-export const DEFAULT_DESKTOP_PATTERN_ID = 'noise';
+export const DEFAULT_DESKTOP_PATTERN_ID = 'grid';
 
 function svgPattern(svg: string): string {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
 export const DESKTOP_PATTERNS: DesktopPatternOption[] = [
+  {
+    id: 'grid',
+    label: 'Cuadrícula',
+    backgroundImage: svgPattern(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path d="M12 0H0V12" fill="none" stroke="${PATTERN_STROKE}" stroke-opacity="0.35" stroke-width="0.75"/></svg>`,
+    ),
+    backgroundSize: '12px 12px',
+    opacity: 0.5,
+  },
+  {
+    id: 'crosshatch',
+    label: 'Trama',
+    backgroundImage: svgPattern(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M-2 2l4-4M2 10l8-8M10 14l4-4" fill="none" stroke="${PATTERN_STROKE}" stroke-opacity="0.28" stroke-width="0.75"/><path d="M-2 10l4 4M2 2l8 8M10 -2l4 4" fill="none" stroke="${PATTERN_STROKE}" stroke-opacity="0.28" stroke-width="0.75"/></svg>`,
+    ),
+    backgroundSize: '12px 12px',
+    opacity: 0.42,
+  },
   {
     id: 'noise',
     label: 'Grano',
@@ -28,15 +46,6 @@ export const DESKTOP_PATTERNS: DesktopPatternOption[] = [
     opacity: 0.55,
   },
   {
-    id: 'grid',
-    label: 'Cuadrícula',
-    backgroundImage: svgPattern(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M24 0H0V24" fill="none" stroke="${PATTERN_STROKE}" stroke-opacity="0.35" stroke-width="1"/></svg>`,
-    ),
-    backgroundSize: '24px 24px',
-    opacity: 0.5,
-  },
-  {
     id: 'diagonal',
     label: 'Rayas',
     backgroundImage: svgPattern(
@@ -44,15 +53,6 @@ export const DESKTOP_PATTERNS: DesktopPatternOption[] = [
     ),
     backgroundSize: '8px 8px',
     opacity: 0.45,
-  },
-  {
-    id: 'crosshatch',
-    label: 'Trama',
-    backgroundImage: svgPattern(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M0 8h16M8 0v16" fill="none" stroke="${PATTERN_STROKE}" stroke-opacity="0.22" stroke-width="0.75"/></svg>`,
-    ),
-    backgroundSize: '16px 16px',
-    opacity: 0.4,
   },
   {
     id: 'hex',
