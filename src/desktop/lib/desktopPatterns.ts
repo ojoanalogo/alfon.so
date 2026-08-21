@@ -13,9 +13,9 @@ export const DESKTOP_PATTERNS: DesktopPatternOption[] = [
     id: 'grid',
     label: 'Cuadrícula',
     backgroundImage: svgPattern(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path d="M12 0H0V12" fill="none" stroke="${PATTERN_STROKE}" stroke-opacity="0.35" stroke-width="0.75"/></svg>`,
+      `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M16 0H0V16" fill="none" stroke="${PATTERN_STROKE}" stroke-opacity="0.35" stroke-width="0.75"/></svg>`,
     ),
-    backgroundSize: '12px 12px',
+    backgroundSize: '16px 16px',
     opacity: 0.5,
   },
   {

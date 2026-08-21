@@ -8,11 +8,11 @@ describe('DESKTOP_PATTERNS', () => {
     expect(DESKTOP_PATTERNS[0]?.label).toBe('Cuadrícula');
   });
 
-  it('uses a 12px grid tile for smaller squares', () => {
+  it('uses a 16px grid tile for medium-sized squares', () => {
     const grid = DESKTOP_PATTERNS.find((entry) => entry.id === 'grid');
-    expect(grid?.backgroundSize).toBe('12px 12px');
-    expect(grid?.backgroundImage).toContain('width%3D%2212%22');
-    expect(grid?.backgroundImage).toContain('M12%200H0V12');
+    expect(grid?.backgroundSize).toBe('16px 16px');
+    expect(grid?.backgroundImage).toContain('width%3D%2216%22');
+    expect(grid?.backgroundImage).toContain('M16%200H0V16');
   });
 
   it('encodes SVG data URIs once (no double-encoded hash)', () => {

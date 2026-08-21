@@ -114,10 +114,7 @@ export default function AppearanceSection() {
   const { enabled: windowTransparencyEnabled, setEnabled: setWindowTransparencyEnabled } =
     useWindowTransparency();
 
-  const patternPreviewFill =
-    desktopBackgroundColor === 'var(--color-background)'
-      ? 'var(--color-background-light)'
-      : desktopBackgroundColor;
+  const patternPreviewFill = desktopBackgroundColor;
 
   return (
     <div className="flex flex-col gap-4">

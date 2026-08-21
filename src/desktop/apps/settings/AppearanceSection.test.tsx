@@ -147,6 +147,16 @@ describe('AppearanceSection', () => {
     expect(localStorage.getItem(STORAGE.theme)).toBe('dark');
   });
 
+  it('pattern previews use the active theme background when color is automatic', () => {
+    renderSection();
+
+    const cuadricula = screen.getByRole('button', { name: 'Cuadrícula' });
+    expect(cuadricula.style.backgroundColor).toBe('var(--color-background)');
+
+    fireEvent.click(screen.getByText('Oscuro'));
+    expect(cuadricula.style.backgroundColor).toBe('var(--color-background)');
+  });
+
   it('renders the window transparency toggle enabled by default', () => {
     renderSection();
 
