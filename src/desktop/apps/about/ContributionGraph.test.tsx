@@ -77,11 +77,9 @@ describe('ContributionGraph', () => {
         })}
       />,
     );
-    expect(container.querySelector('[data-date="2026-01-06"]')?.className).toContain(
-      'contribution-cell--strong',
-    );
-    expect(container.querySelector('[data-date="2026-01-05"]')?.className).not.toContain(
-      'contribution-cell--strong',
-    );
+    const strong = container.querySelector('[data-date="2026-01-06"]');
+    const quiet = container.querySelector('[data-date="2026-01-05"]');
+    expect(strong?.classList.contains('contribution-cell--strong')).toBe(true);
+    expect(quiet?.classList.contains('contribution-cell--strong')).toBe(false);
   });
 });

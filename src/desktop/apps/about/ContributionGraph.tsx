@@ -81,7 +81,7 @@ function ContributionCell({
   return (
     <span
       data-date={day.date}
-      className={`block size-2 rounded-[2px] ${LEVEL_CLASS[day.level]}${strong ? 'contribution-cell--strong' : ''}`}
+      className={`block size-2 rounded-[2px] ${LEVEL_CLASS[day.level]} ${strong ? 'contribution-cell--strong' : ''}`}
       style={strong ? { animationDelay: `${glowDelayMs(day.date)}ms` } : undefined}
       onMouseEnter={(event) => onHighlight(day, event.currentTarget)}
       onMouseLeave={() => onHighlight(null, null)}
