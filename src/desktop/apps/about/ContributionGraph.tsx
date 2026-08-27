@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { GithubLogoIcon } from '@phosphor-icons/react';
-import { postDateFormatter } from '@/config/postFormatting';
 import {
   contributionStreaks,
+  formatContributionDate,
   monthLabelsForWeeks,
   weeksFromDays,
   type ContributionDay,
@@ -25,7 +25,7 @@ const VISIBLE_DAY_ROWS = new Set([1, 3, 5]);
 const numberFormatter = new Intl.NumberFormat('es-MX');
 
 function cellTitle(day: ContributionDay): string {
-  const when = postDateFormatter.format(new Date(`${day.date}T00:00:00Z`));
+  const when = formatContributionDate(day.date);
   if (day.count === 0) return `Sin contribuciones el ${when}`;
   if (day.count === 1) return `1 contribución el ${when}`;
   return `${day.count} contribuciones el ${when}`;
@@ -115,13 +115,14 @@ export default function ContributionGraph({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="flex items-center gap-1.5 text-muted">
+        <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 text-muted">
           <GithubLogoIcon
             size={14}
             weight="regular"
             className="shrink-0 text-zinc-700 dark:text-zinc-400"
           />
           github
+          <span title={formatLongestStreak(streaks.longest)}>· {streakLabel}</span>
         </span>
         <ExternalLink
           href={contributions.profileUrl}
@@ -170,10 +171,7 @@ export default function ContributionGraph({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[0.65rem] text-muted">
-        <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <span>{totalLabel}</span>
-          <span title={formatLongestStreak(streaks.longest)}>{streakLabel}</span>
-        </span>
+        <span>{totalLabel}</span>
         <span className="flex items-center gap-1" aria-hidden>
           menos
           {([0, 1, 2, 3, 4] as ContributionLevel[]).map((level) => (

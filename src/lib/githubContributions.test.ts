@@ -5,6 +5,7 @@ import {
   githubUsernameFromSocialLinks,
   githubUsernameFromUrl,
   contributionStreaks,
+  formatContributionDate,
   monthLabelsForWeeks,
   parseContributionApiPayload,
   parseGithubContributionsHtml,
@@ -149,6 +150,14 @@ describe('contributionStreaks', () => {
         day('2026-01-05', 2),
       ]),
     ).toEqual({ current: 1, longest: 3 });
+  });
+});
+
+describe('formatContributionDate', () => {
+  it('uses Spanish short month names and the UTC calendar day', () => {
+    expect(formatContributionDate('2026-01-05')).toBe('5 ene 2026');
+    expect(formatContributionDate('2026-08-25')).toBe('25 ago 2026');
+    expect(formatContributionDate('2025-12-01')).toBe('1 dic 2025');
   });
 });
 
