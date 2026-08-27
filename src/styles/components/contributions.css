@@ -1,0 +1,28 @@
+@layer components {
+  /* Strong contribution days — a slow, low-contrast green breath. */
+  .contribution-cell--strong {
+    --contribution-glow: rgb(48 161 78 / 0.38);
+    animation: contribution-glow 4.2s ease-in-out infinite;
+  }
+
+  html.dark .contribution-cell--strong {
+    --contribution-glow: rgb(57 211 83 / 0.48);
+  }
+
+  @keyframes contribution-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 1.5px var(--contribution-glow);
+    }
+    50% {
+      box-shadow: 0 0 5px 1px var(--contribution-glow);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contribution-cell--strong {
+      animation: none;
+      box-shadow: 0 0 2px var(--contribution-glow);
+    }
+  }
+}

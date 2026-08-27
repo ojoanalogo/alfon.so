@@ -64,4 +64,24 @@ describe('ContributionGraph', () => {
     );
     expect(screen.getByTitle('Récord: 2 días').textContent).toBe('· racha de 1 día');
   });
+
+  it('glows only the strongest contribution days', () => {
+    const { container } = render(
+      <ContributionGraph
+        contributions={contributions({
+          days: [
+            { date: '2026-01-04', count: 0, level: 0 },
+            { date: '2026-01-05', count: 3, level: 2 },
+            { date: '2026-01-06', count: 12, level: 4 },
+          ],
+        })}
+      />,
+    );
+    expect(container.querySelector('[data-date="2026-01-06"]')?.className).toContain(
+      'contribution-cell--strong',
+    );
+    expect(container.querySelector('[data-date="2026-01-05"]')?.className).not.toContain(
+      'contribution-cell--strong',
+    );
+  });
 });

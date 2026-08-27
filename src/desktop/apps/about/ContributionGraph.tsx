@@ -63,6 +63,10 @@ function ContributionTooltip({ text, x, y }: { text: string; x: number; y: numbe
   );
 }
 
+function glowDelayMs(iso: string): number {
+  return (Number(iso.slice(8, 10)) * 173 + Number(iso.slice(5, 7)) * 41) % 3600;
+}
+
 function ContributionCell({
   day,
   onHighlight,
@@ -73,10 +77,12 @@ function ContributionCell({
   if (!day) {
     return <span className="block size-2 rounded-[2px] bg-transparent" aria-hidden />;
   }
+  const strong = day.level === 4;
   return (
     <span
       data-date={day.date}
-      className={`block size-2 rounded-[2px] ${LEVEL_CLASS[day.level]}`}
+      className={`block size-2 rounded-[2px] ${LEVEL_CLASS[day.level]}${strong ? 'contribution-cell--strong' : ''}`}
+      style={strong ? { animationDelay: `${glowDelayMs(day.date)}ms` } : undefined}
       onMouseEnter={(event) => onHighlight(day, event.currentTarget)}
       onMouseLeave={() => onHighlight(null, null)}
     />
@@ -133,7 +139,7 @@ export default function ContributionGraph({
         </ExternalLink>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto py-1">
         <div className="inline-flex min-w-full flex-col gap-1" role="img" aria-label={totalLabel}>
           <div className="flex gap-px pl-3">
             {weeks.map((week, index) => (

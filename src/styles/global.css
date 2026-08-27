@@ -12,6 +12,7 @@
  * order is fixed by Tailwind and `var()` tokens resolve regardless of position.
  */
 @import './components/tooltip.css';
+@import './components/contributions.css';
 @import './components/content.css';
 @import './components/window.css';
 @import './components/boot.css';
