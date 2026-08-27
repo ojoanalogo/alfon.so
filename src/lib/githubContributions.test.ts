@@ -4,6 +4,7 @@ import {
   githubProfileUrl,
   githubUsernameFromSocialLinks,
   githubUsernameFromUrl,
+  contributionStreaks,
   monthLabelsForWeeks,
   parseContributionApiPayload,
   parseGithubContributionsHtml,
@@ -113,6 +114,41 @@ describe('weeksFromDays', () => {
 
   it('returns no weeks for an empty series', () => {
     expect(weeksFromDays([])).toEqual([]);
+  });
+});
+
+describe('contributionStreaks', () => {
+  it('returns zeros for an empty series', () => {
+    expect(contributionStreaks([])).toEqual({ current: 0, longest: 0 });
+  });
+
+  it('counts consecutive days at the end as the current streak', () => {
+    expect(
+      contributionStreaks([
+        day('2026-01-01', 1),
+        day('2026-01-02', 0),
+        day('2026-01-03', 2),
+        day('2026-01-04', 4),
+      ]),
+    ).toEqual({ current: 2, longest: 2 });
+  });
+
+  it('ignores a quiet last day so a streak can still be current', () => {
+    expect(
+      contributionStreaks([day('2026-01-01', 1), day('2026-01-02', 3), day('2026-01-03', 0)]),
+    ).toEqual({ current: 2, longest: 2 });
+  });
+
+  it('tracks a longer historical streak separately from the current one', () => {
+    expect(
+      contributionStreaks([
+        day('2026-01-01', 1),
+        day('2026-01-02', 1),
+        day('2026-01-03', 1),
+        day('2026-01-04', 0),
+        day('2026-01-05', 2),
+      ]),
+    ).toEqual({ current: 1, longest: 3 });
   });
 });
 

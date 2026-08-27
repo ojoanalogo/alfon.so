@@ -190,6 +190,37 @@ const MONTH_LABELS = [
   'dic',
 ];
 
+/** Consecutive days with at least one contribution. `current` may skip a quiet last day. */
+export function contributionStreaks(days: ContributionDay[]): {
+  current: number;
+  longest: number;
+} {
+  if (days.length === 0) return { current: 0, longest: 0 };
+
+  const sorted = [...days].sort((left, right) => left.date.localeCompare(right.date));
+
+  let longest = 0;
+  let run = 0;
+  for (const day of sorted) {
+    if (day.count > 0) {
+      run += 1;
+      if (run > longest) longest = run;
+    } else {
+      run = 0;
+    }
+  }
+
+  let index = sorted.length - 1;
+  if (sorted[index].count === 0) index -= 1;
+  let current = 0;
+  while (index >= 0 && sorted[index].count > 0) {
+    current += 1;
+    index -= 1;
+  }
+
+  return { current, longest };
+}
+
 export function monthLabelsForWeeks(
   weeks: Array<Array<ContributionDay | null>>,
 ): Array<{ index: number; label: string }> {
