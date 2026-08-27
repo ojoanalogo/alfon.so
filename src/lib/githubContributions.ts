@@ -190,6 +190,12 @@ const MONTH_LABELS = [
   'dic',
 ];
 
+/** Calendar date in Spanish with a short month, matching the graph axis. */
+export function formatContributionDate(iso: string): string {
+  const date = new Date(`${iso}T00:00:00Z`);
+  return `${date.getUTCDate()} ${MONTH_LABELS[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
 /** Consecutive days with at least one contribution. `current` may skip a quiet last day. */
 export function contributionStreaks(days: ContributionDay[]): {
   current: number;
