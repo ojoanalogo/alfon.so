@@ -139,7 +139,7 @@ export default function ContributionGraph({
         </ExternalLink>
       </div>
 
-      <div className="overflow-x-auto py-1">
+      <div className="overflow-x-auto py-1.5">
         <div className="inline-flex min-w-full flex-col gap-1" role="img" aria-label={totalLabel}>
           <div className="flex gap-px pl-3">
             {weeks.map((week, index) => (
