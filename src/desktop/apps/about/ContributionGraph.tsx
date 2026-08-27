@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { FireIcon, GithubLogoIcon } from '@phosphor-icons/react';
+import { GithubLogoIcon } from '@phosphor-icons/react';
 import { postDateFormatter } from '@/config/postFormatting';
 import {
   contributionStreaks,
@@ -172,10 +172,7 @@ export default function ContributionGraph({
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[0.65rem] text-muted">
         <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span>{totalLabel}</span>
-          <span className="flex items-center gap-0.5" title={formatLongestStreak(streaks.longest)}>
-            <FireIcon size={11} weight="fill" className="shrink-0" aria-hidden />
-            {streakLabel}
-          </span>
+          <span title={formatLongestStreak(streaks.longest)}>{streakLabel}</span>
         </span>
         <span className="flex items-center gap-1" aria-hidden>
           menos
