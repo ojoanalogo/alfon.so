@@ -20,12 +20,12 @@ describe('AboutContent', () => {
     expect(heading.textContent).toContain('alfonso reyes');
   });
 
-  it('renders the external work/hobby/community links with correct hrefs', () => {
+  it('renders the external work, hobby, community, and project links with correct hrefs', () => {
     render(<AboutContent />);
     const expected: Record<string, string> = {
       'monopolio.com.mx': 'https://monopolio.com.mx',
       'ojoanalogo.com': 'https://ojoanalogo.com',
-      'cursor.com/ambassadors': 'https://cursor.com/ambassadors',
+      'cursor ambassador': 'https://cursor.com/ambassadors',
       sofia: 'https://sofinanzas.mx',
     };
     for (const [text, href] of Object.entries(expected)) {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { EDGE_MARGIN } from '@desktop/lib/layoutConstants';
+import { DESKTOP_OVERLAY_SHADOW, DESKTOP_OVERLAY_SURFACE } from '@/styles/tokens';
 
 export interface ContextMenuItem {
   label: string;
@@ -92,7 +93,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
   return (
     <div
       ref={menuRef}
-      className="fixed z-[1000] min-w-[9rem] border border-[color:var(--color-hairline-strong)] bg-[rgb(255_255_255/0.96)] p-1 font-[ui-monospace,monospace] text-[0.6875rem] text-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.8),2px_3px_0_rgb(0_0_0/0.12)] backdrop-blur-[8px] dark:bg-[rgb(24_24_27/0.96)] dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.06),2px_3px_0_rgb(0_0_0/0.35)]"
+      className={`fixed z-[1000] min-w-[9rem] p-1 ${DESKTOP_OVERLAY_SURFACE} ${DESKTOP_OVERLAY_SHADOW}`}
       role="menu"
       tabIndex={-1}
       aria-label="Menú contextual"

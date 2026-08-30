@@ -9,11 +9,11 @@ export const BORDER_DEFAULT = 'border-gray-400/50 dark:border-gray-400/30';
 export const BORDER_SUBTLE = 'border-gray-300/50 dark:border-gray-700/50';
 export const BORDER_STRONG = 'border-gray-300 dark:border-gray-600';
 
-/** The glassy card surface used by Card.astro and the desktop Window chrome. */
+/** Shared surface used by static cards and desktop windows. */
 export const CARD_BASE = [
-  'rounded-lg border bg-white/70 font-mono text-sm backdrop-blur-lg',
+  'rounded-lg border bg-surface font-mono text-sm backdrop-blur-lg',
   'transition-all duration-300 hover:shadow-sm',
-  'dark:bg-black/10 dark:hover:shadow-md dark:hover:shadow-black/20',
+  'dark:hover:shadow-md dark:hover:shadow-black/20',
   BORDER_DEFAULT,
 ].join(' ');
 
@@ -22,6 +22,13 @@ export const CARD_PADDED = `${CARD_BASE} p-4 sm:p-6`;
 
 /** Card variant with no padding — the desktop Window paints its own body. */
 export const CARD_FLAT = `${CARD_BASE} p-0 overflow-hidden`;
+
+/** Shared shell for desktop popovers and menus. */
+export const DESKTOP_OVERLAY_SURFACE =
+  'border border-[color:var(--color-hairline-strong)] bg-[var(--color-overlay)] font-[ui-monospace,monospace] text-[0.6875rem] text-primary backdrop-blur-[8px]';
+
+export const DESKTOP_OVERLAY_SHADOW =
+  'shadow-[inset_0_1px_0_var(--color-overlay-highlight),2px_3px_0_var(--color-overlay-shadow)]';
 
 const ACTION_BTN_BASE =
   'cursor-pointer border border-[rgb(113_113_122/0.4)] bg-[rgb(255_255_255/0.4)] px-2 py-1 font-[inherit] text-[0.65rem] hover:text-primary dark:bg-[rgb(0_0_0/0.2)]';

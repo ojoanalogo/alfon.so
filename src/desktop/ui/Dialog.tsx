@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
 import { clampBoxToWorkArea } from '../lib/geometry';
+import { DESKTOP_OVERLAY_SURFACE } from '@/styles/tokens';
 
 const DIALOG_BTN =
-  'cursor-pointer border px-[0.625rem] py-1 font-[inherit] text-[0.6875rem] hover:border-[color:var(--color-highlight-border)] hover:text-primary dark:bg-[rgb(0_0_0/0.25)]';
+  'cursor-pointer border px-[0.625rem] py-1 font-[inherit] text-[0.6875rem] hover:border-[color:var(--color-highlight-border)] hover:text-primary';
 
 export interface DialogPosition {
   x: number;
@@ -157,7 +158,7 @@ export default function Dialog({
   return createPortal(
     <div
       ref={dialogRef}
-      className={`${positionClass} z-[300] w-[min(22rem,calc(100vw-1rem))] border border-[color:var(--color-hairline-strong)] bg-[rgb(255_255_255/0.96)] font-[ui-monospace,monospace] text-[0.75rem] text-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.8),3px_4px_0_rgb(0_0_0/0.15)] backdrop-blur-[8px] dark:bg-[rgb(24_24_27/0.96)]`}
+      className={`${positionClass} z-[300] w-[min(22rem,calc(100vw-1rem))] ${DESKTOP_OVERLAY_SURFACE} text-[0.75rem] shadow-[inset_0_1px_0_var(--color-overlay-highlight),3px_4px_0_rgb(0_0_0/0.15)]`}
       style={pos ? { left: `${pos.x}px`, top: `${pos.y}px` } : undefined}
       role="dialog"
       aria-modal="false"

@@ -2,7 +2,7 @@ import type { DesktopPatternOption } from '../types';
 
 const PATTERN_STROKE = '#71717a';
 
-export const DEFAULT_DESKTOP_PATTERN_ID = 'grid';
+export const DEFAULT_DESKTOP_PATTERN_ID = 'crosshatch';
 
 function svgPattern(svg: string): string {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
@@ -53,15 +53,6 @@ export const DESKTOP_PATTERNS: DesktopPatternOption[] = [
     ),
     backgroundSize: '8px 8px',
     opacity: 0.45,
-  },
-  {
-    id: 'hex',
-    label: 'Hexágonos',
-    backgroundImage: svgPattern(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="24"><path d="M14 0l12 7v10l-12 7L2 17V7z" fill="none" stroke="${PATTERN_STROKE}" stroke-opacity="0.28" stroke-width="1"/></svg>`,
-    ),
-    backgroundSize: '28px 24px',
-    opacity: 0.42,
   },
 ];
 

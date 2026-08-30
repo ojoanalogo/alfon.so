@@ -71,120 +71,122 @@ export default function AboutContent({
 
       <Divider className="mb-2" />
 
-      <InfoRow label="ubicación" icon={<AboutIcon icon={MapPinIcon} />}>
-        {person.country} 🇲🇽
-      </InfoRow>
+      <section className="flex flex-col gap-2" aria-label="Perfil">
+        <InfoRow label="ubicación" icon={<AboutIcon icon={MapPinIcon} />}>
+          {person.country} 🇲🇽
+        </InfoRow>
 
-      <InfoRow label="trabajo" icon={<AboutIcon icon={BriefcaseIcon} />}>
-        {person.role} @{' '}
-        <ExternalLink
-          href={SITE.work.url}
-          label={`Visitar sitio web ${SITE.work.host}`}
-          className={ABOUT_LINK_CLASS}
-        >
-          {SITE.work.host}
-        </ExternalLink>
-      </InfoRow>
+        <InfoRow label="trabajo" icon={<AboutIcon icon={BriefcaseIcon} />}>
+          {person.role} @{' '}
+          <ExternalLink
+            href={SITE.work.url}
+            label={`Visitar sitio web ${SITE.work.host}`}
+            className={ABOUT_LINK_CLASS}
+          >
+            {SITE.work.host}
+          </ExternalLink>
+        </InfoRow>
 
-      <InfoRow label="hobby" icon={<AboutIcon icon={CameraIcon} />}>
-        fotografía @{' '}
-        <ExternalLink
-          href={SITE.hobby.url}
-          label={`Visitar portafolio de fotografía ${SITE.hobby.host}`}
-          className={ABOUT_LINK_CLASS}
-        >
-          {SITE.hobby.host}
-        </ExternalLink>
-      </InfoRow>
+        <InfoRow label="hobby" icon={<AboutIcon icon={CameraIcon} />}>
+          fotografía @{' '}
+          <ExternalLink
+            href={SITE.hobby.url}
+            label={`Visitar portafolio de fotografía ${SITE.hobby.host}`}
+            className={ABOUT_LINK_CLASS}
+          >
+            {SITE.hobby.host}
+          </ExternalLink>
+        </InfoRow>
 
-      <InfoRow label="comunidad" icon={<AboutIcon icon={UsersThreeIcon} />}>
-        {SITE.community.label} @{' '}
-        <ExternalLink
-          href={SITE.community.url}
-          label="Cursor Ambassador Program"
-          className={ABOUT_LINK_CLASS}
-        >
-          {SITE.community.path}
-        </ExternalLink>
-      </InfoRow>
+        <InfoRow label="comunidad" icon={<AboutIcon icon={UsersThreeIcon} />}>
+          <ExternalLink
+            href={SITE.community.url}
+            label="Cursor Ambassador Program"
+            className={ABOUT_LINK_CLASS}
+          >
+            {SITE.community.label}
+          </ExternalLink>
+        </InfoRow>
+      </section>
 
-      <InfoRow label="proyecto actual" icon={<AboutIcon icon={RocketLaunchIcon} />}>
-        <ExternalLink
-          href={SITE.currentProject.url}
-          label="Visitar SofIA - Asistente de finanzas con IA"
-          className={ABOUT_LINK_CLASS}
-        >
-          {SITE.currentProject.name}
-        </ExternalLink>{' '}
-        - {SITE.currentProject.description}
-      </InfoRow>
+      <section className="flex flex-col gap-2" aria-label="Ahora">
+        <InfoRow label="proyecto actual" icon={<AboutIcon icon={RocketLaunchIcon} />}>
+          <ExternalLink
+            href={SITE.currentProject.url}
+            label="Visitar SofIA - Asistente de finanzas con IA"
+            className={ABOUT_LINK_CLASS}
+          >
+            {SITE.currentProject.name}
+          </ExternalLink>{' '}
+          - {SITE.currentProject.description}
+        </InfoRow>
 
-      <InfoRow label="intereses" icon={<AboutIcon icon={SparkleIcon} />}>
-        {SITE.interests}
-      </InfoRow>
+        <InfoRow label="intereses" icon={<AboutIcon icon={SparkleIcon} />}>
+          {SITE.interests}
+        </InfoRow>
+      </section>
 
-      <InfoRow label="contacto" icon={<AboutIcon icon={EnvelopeSimpleIcon} />}>
-        <a
-          className={ABOUT_LINK_CLASS}
-          href={`mailto:${person.email}`}
-          aria-label={`Enviar email a ${person.email}`}
-        >
-          {person.email}
-        </a>
-      </InfoRow>
+      <section className="flex flex-col gap-2" aria-label="En línea">
+        <InfoRow label="contacto" icon={<AboutIcon icon={EnvelopeSimpleIcon} />}>
+          <a
+            className={ABOUT_LINK_CLASS}
+            href={`mailto:${person.email}`}
+            aria-label={`Enviar email a ${person.email}`}
+          >
+            {person.email}
+          </a>
+        </InfoRow>
 
-      <InfoRow label="social" icon={<AboutIcon icon={ShareNetworkIcon} />}>
-        <SocialMediaIcons />
-      </InfoRow>
+        <InfoRow label="social" icon={<AboutIcon icon={ShareNetworkIcon} />}>
+          <SocialMediaIcons />
+        </InfoRow>
 
-      <div className="pt-2">
         <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-0">
           <span className="flex shrink-0 items-center gap-1.5 text-muted sm:w-36">
             <AboutIcon icon={CodeIcon} />
             <span>tech stack</span>
           </span>
-          <div className="flex flex-wrap gap-2" role="list" aria-label="Tech stack">
+          <div className="flex flex-wrap gap-1.5" role="list" aria-label="Tech stack">
             {Object.keys(TECH_STACK).map((lang) => (
               <span
                 key={lang}
-                className="text-secondary transition-colors hover:text-primary"
+                className="rounded border border-[color:var(--color-hairline)] px-1.5 py-px leading-tight text-secondary transition-colors hover:border-[color:var(--color-highlight-border)] hover:text-primary"
                 title={TECH_STACK[lang]}
+                role="listitem"
               >
                 {lang}
               </span>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {contributions && contributions.days.length > 0 && (
-        <>
+      {(contributions?.days.length || latestPosts.length > 0) && (
+        <section className="flex flex-col gap-2" aria-label="Actividad">
           <Divider className="my-2" />
-          <ContributionGraph contributions={contributions} />
-        </>
-      )}
-
-      {latestPosts.length > 0 && (
-        <>
-          <Divider className="my-2" />
-          <div className="flex flex-col gap-1.5">
-            <span className="flex items-center gap-1.5 text-muted">
-              <AboutIcon icon={NewspaperIcon} />
-              últimos posts
-            </span>
-            <ul className="m-0 flex list-none flex-col gap-1 p-0" aria-label="Últimos posts">
-              {latestPosts.map((post) => (
-                <PostListItem
-                  key={post.slug}
-                  title={post.title}
-                  slug={post.slug}
-                  publishDate={post.publishDate}
-                  onOpen={onOpenPost ? () => onOpenPost(post.slug) : undefined}
-                />
-              ))}
-            </ul>
-          </div>
-        </>
+          {contributions && contributions.days.length > 0 && (
+            <ContributionGraph contributions={contributions} />
+          )}
+          {latestPosts.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <span className="flex items-center gap-1.5 text-muted">
+                <AboutIcon icon={NewspaperIcon} />
+                últimos posts
+              </span>
+              <ul className="m-0 flex list-none flex-col gap-1 p-0" aria-label="Últimos posts">
+                {latestPosts.map((post) => (
+                  <PostListItem
+                    key={post.slug}
+                    title={post.title}
+                    slug={post.slug}
+                    publishDate={post.publishDate}
+                    onOpen={onOpenPost ? () => onOpenPost(post.slug) : undefined}
+                  />
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
       )}
     </div>
   );

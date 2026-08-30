@@ -49,14 +49,18 @@
     --color-hairline-strong: rgb(113 113 122 / 0.45);
     /* Light control fill; components keep their own html.dark override. */
     --color-control-fill: rgb(255 255 255 / 0.55);
+    --color-control-fill-strong: rgb(255 255 255 / 0.55);
+    --color-overlay: rgb(255 255 255 / 0.96);
+    --color-overlay-highlight: rgb(255 255 255 / 0.8);
+    --color-overlay-shadow: rgb(0 0 0 / 0.12);
     --color-surface-light: #f7f7f4;
     --color-surface-dark: #14120b;
     /* Default desktop fill — split swatch shows both themes at once. */
     --color-background-light: #ebe6de;
-    --color-background-dark: #1b1b1e;
+    --color-background-dark: #12110a;
 
     @variant dark {
-      --color-background: #1b1b1e;
+      --color-background: #12110a;
       --color-surface: #14120b;
       --color-primary: #f4f4f5;
       --color-secondary: #a1a1aa;
@@ -64,6 +68,11 @@
       --color-link: #71717a;
       --color-muted: #71717a;
       --color-titlebar-text: #d4d4d8;
+      --color-control-fill: rgb(24 24 27 / 0.65);
+      --color-control-fill-strong: rgb(9 9 11 / 0.65);
+      --color-overlay: rgb(24 24 27 / 0.96);
+      --color-overlay-highlight: rgb(255 255 255 / 0.06);
+      --color-overlay-shadow: rgb(0 0 0 / 0.35);
       --color-highlight-bg: rgb(161 161 170 / 0.14);
       --color-highlight-bg-strong: rgb(161 161 170 / 0.24);
       --color-highlight-border: rgb(161 161 170 / 0.5);

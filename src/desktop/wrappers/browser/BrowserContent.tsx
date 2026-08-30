@@ -56,7 +56,7 @@ export default function BrowserContent({ appId, browsers }: BrowserContentProps)
       key={`${url}-${reloadKey}`}
       title={`web browser — ${url}`}
       src={url}
-      className="block h-full min-h-0 w-full flex-1 border-0 bg-white dark:bg-[#18181b]"
+      className="block h-full min-h-0 w-full flex-1 border-0 bg-surface"
       sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
       referrerPolicy="no-referrer-when-downgrade"
       loading="lazy"

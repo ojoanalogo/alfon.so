@@ -35,7 +35,7 @@ export default function ContactContent() {
         aria-label="Correo"
       >
         <span
-          className="flex size-8 shrink-0 items-center justify-center border border-[color:var(--color-hairline)] bg-[var(--color-control-fill)] dark:bg-[rgb(9_9_11/0.65)]"
+          className="flex size-8 shrink-0 items-center justify-center border border-[color:var(--color-hairline)] bg-[var(--color-control-fill-strong)]"
           aria-hidden
         >
           <EnvelopeSimpleIcon size={16} className="text-zinc-700 dark:text-zinc-400" />

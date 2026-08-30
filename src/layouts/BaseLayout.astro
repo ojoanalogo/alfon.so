@@ -19,7 +19,7 @@ const {
 <!doctype html>
 <html
   lang="es"
-  class="bg-background text-secondary selection:bg-[#40c463]/40 selection:text-primary dark:selection:bg-[#39d353]/35"
+  class="bg-background text-secondary selection:bg-[#40c463]/40 selection:text-primary dark:selection:bg-[#86efac]/55"
 >
   <head>
     <BaseHead title={title} description={description} image={image} article={article} />
@@ -32,15 +32,7 @@ const {
       desktop && 'sm:h-dvh sm:overflow-hidden',
     ]}
   >
-    {
-      desktop ? (
-        <div class="sm:hidden">
-          <NoiseBackground />
-        </div>
-      ) : (
-        <NoiseBackground />
-      )
-    }
+    {!desktop && <NoiseBackground />}
     <div class="relative z-10">
       {
         desktop ? (
