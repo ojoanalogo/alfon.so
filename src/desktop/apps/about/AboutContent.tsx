@@ -18,7 +18,11 @@ import type { BlogPostSummary } from '../../types';
 import { TECH_STACK } from '../projects/data';
 import ContributionGraph from './ContributionGraph';
 import { useGithubContributions } from './contributionsContext';
-import { TECH_STACK_ICONS } from './techStackIcons';
+import {
+  TECH_STACK_ICONS,
+  TECH_STACK_ICON_COLORS,
+  TECH_STACK_ICON_INVERT_DARK,
+} from './techStackIcons';
 
 const ABOUT_LINK_CLASS = 'text-link hover:underline focus:outline-none';
 
@@ -147,18 +151,27 @@ export default function AboutContent({
             <AboutIcon icon={CodeIcon} />
             <span>tech stack</span>
           </span>
-          <div className="flex flex-wrap gap-1.5" role="list" aria-label="Tech stack">
+          <div
+            className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5"
+            role="list"
+            aria-label="Tech stack"
+          >
             {Object.keys(TECH_STACK).map((lang) => (
               <span
                 key={lang}
-                className="inline-flex items-center gap-1 rounded border border-[color:var(--color-hairline)] px-1.5 py-px leading-tight text-secondary transition-colors hover:border-[color:var(--color-highlight-border)] hover:text-primary"
+                className="inline-flex items-center gap-1 leading-tight text-secondary"
                 title={TECH_STACK[lang]}
                 role="listitem"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  className="h-3 w-3 fill-current"
+                  className={
+                    TECH_STACK_ICON_INVERT_DARK.has(lang)
+                      ? 'h-3.5 w-3.5 shrink-0 dark:invert'
+                      : 'h-3.5 w-3.5 shrink-0'
+                  }
+                  style={{ fill: TECH_STACK_ICON_COLORS[lang] }}
                   aria-hidden
                 >
                   <path d={TECH_STACK_ICONS[lang]} />

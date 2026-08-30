@@ -14,6 +14,10 @@ describe('SITE', () => {
     expect(SITE.person.displayName).toBe('alfonso reyes');
     expect(SITE.work.url).toMatch(/^https?:\/\//);
   });
+
+  it('does not use an emoji in the sofia project description', () => {
+    expect(SITE.currentProject.description).not.toMatch(/💸/);
+  });
 });
 
 describe('terminalAboutCommandLines', () => {

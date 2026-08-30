@@ -7,15 +7,23 @@ describe('PROJECTS', () => {
     expect(PROJECTS.length).toBeGreaterThan(0);
   });
 
-  it('every entry has the required string fields title, description, icon', () => {
+  it('every entry has the required string fields title, description, and optional icon', () => {
     for (const p of PROJECTS) {
       expect(typeof p.title).toBe('string');
       expect(p.title.trim().length).toBeGreaterThan(0);
       expect(typeof p.description).toBe('string');
       expect(p.description.trim().length).toBeGreaterThan(0);
-      expect(typeof p.icon).toBe('string');
-      expect(p.icon.length).toBeGreaterThan(0);
+      if (p.icon !== undefined) {
+        expect(typeof p.icon).toBe('string');
+        expect(p.icon.length).toBeGreaterThan(0);
+      }
     }
+  });
+
+  it('does not use an emoji icon for sofia', () => {
+    const sofia = PROJECTS.find((p) => p.title === 'sofia');
+    expect(sofia).toBeDefined();
+    expect(sofia?.icon).toBeUndefined();
   });
 
   it('every entry has a string link field (may be empty for unreleased projects)', () => {

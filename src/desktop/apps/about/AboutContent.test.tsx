@@ -51,7 +51,10 @@ describe('AboutContent', () => {
     for (const lang of langs) {
       const span = screen.getByText(lang);
       expect(span.getAttribute('title')).toBe(TECH_STACK[lang]);
-      expect(span.querySelector('svg path')?.getAttribute('d')).toBe(TECH_STACK_ICONS[lang]);
+      expect(span.className).not.toMatch(/\bborder\b/);
+      const svg = span.querySelector('svg');
+      expect(svg?.querySelector('path')?.getAttribute('d')).toBe(TECH_STACK_ICONS[lang]);
+      expect((svg as SVGElement | null)?.style.fill).toMatch(/^rgb\(/);
     }
   });
 
