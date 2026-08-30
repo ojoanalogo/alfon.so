@@ -18,6 +18,7 @@ import type { BlogPostSummary } from '../../types';
 import { TECH_STACK } from '../projects/data';
 import ContributionGraph from './ContributionGraph';
 import { useGithubContributions } from './contributionsContext';
+import { TECH_STACK_ICONS } from './techStackIcons';
 
 const ABOUT_LINK_CLASS = 'text-link hover:underline focus:outline-none';
 
@@ -150,10 +151,18 @@ export default function AboutContent({
             {Object.keys(TECH_STACK).map((lang) => (
               <span
                 key={lang}
-                className="rounded border border-[color:var(--color-hairline)] px-1.5 py-px leading-tight text-secondary transition-colors hover:border-[color:var(--color-highlight-border)] hover:text-primary"
+                className="inline-flex items-center gap-1 rounded border border-[color:var(--color-hairline)] px-1.5 py-px leading-tight text-secondary transition-colors hover:border-[color:var(--color-highlight-border)] hover:text-primary"
                 title={TECH_STACK[lang]}
                 role="listitem"
               >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="h-3 w-3 fill-current"
+                  aria-hidden
+                >
+                  <path d={TECH_STACK_ICONS[lang]} />
+                </svg>
                 {lang}
               </span>
             ))}

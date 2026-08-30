@@ -4,6 +4,7 @@ import { makeBlogPost } from '@test/factories';
 import type { GithubContributions } from '@/lib/githubContributions';
 import { TECH_STACK } from '../projects/data';
 import AboutContent from './AboutContent';
+import { TECH_STACK_ICONS } from './techStackIcons';
 
 const SAMPLE_CONTRIBUTIONS: GithubContributions = {
   username: 'ojoanalogo',
@@ -50,6 +51,7 @@ describe('AboutContent', () => {
     for (const lang of langs) {
       const span = screen.getByText(lang);
       expect(span.getAttribute('title')).toBe(TECH_STACK[lang]);
+      expect(span.querySelector('svg path')?.getAttribute('d')).toBe(TECH_STACK_ICONS[lang]);
     }
   });
 

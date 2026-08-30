@@ -57,4 +57,12 @@ describe('TECH_STACK', () => {
       expect(value.trim().length).toBeGreaterThan(0);
     }
   });
+
+  it('lists TypeScript, PostgreSQL, and Codex without JavaScript or generic SQL', () => {
+    expect(TECH_STACK.ts).toBe('TypeScript');
+    expect(TECH_STACK.psql).toBe('PostgreSQL');
+    expect(TECH_STACK.codex).toBe('OpenAI Codex');
+    expect(TECH_STACK).not.toHaveProperty('js');
+    expect(TECH_STACK).not.toHaveProperty('sql');
+  });
 });

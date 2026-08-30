@@ -46,13 +46,13 @@ export const PROJECTS: ProjectEntry[] = [
 ];
 
 export const TECH_STACK: Record<string, string> = {
-  js: 'JavaScript',
   ts: 'TypeScript',
   'node.js': 'Node',
   astro: 'This site is built on astro',
   python: 'Python',
-  sql: 'SQL',
+  psql: 'PostgreSQL',
   'claude-code': 'Best tool ever',
+  codex: 'OpenAI Codex',
   'next.js': 'Next.js',
   aws: 'AWS',
   gcp: 'GCP',
