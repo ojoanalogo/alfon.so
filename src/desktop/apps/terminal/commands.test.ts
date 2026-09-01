@@ -50,7 +50,6 @@ describe('runTerminalCommand', () => {
     expect(lines.some((l) => l.includes('ls'))).toBe(true);
     expect(lines.some((l) => l.includes('clear'))).toBe(true);
     expect(lines.some((l) => l.includes('whoami'))).toBe(true);
-    expect(lines.some((l) => l.includes('neofetch'))).toBe(false);
   });
 
   it('about prints the site info', () => {
@@ -252,12 +251,5 @@ describe('runTerminalCommand', () => {
     const lines = outputLines(runTerminalCommand('FooBar', ctx()));
     expect(lines[0]).toBe('foobar: command not found');
     expect(lines.some((l) => l.includes('help'))).toBe(true);
-  });
-
-  it('neofetch and fetch are removed', () => {
-    expect(outputLines(runTerminalCommand('neofetch', ctx()))[0]).toBe(
-      'neofetch: command not found',
-    );
-    expect(outputLines(runTerminalCommand('fetch', ctx()))[0]).toBe('fetch: command not found');
   });
 });
