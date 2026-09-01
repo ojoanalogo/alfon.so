@@ -43,18 +43,3 @@ export const PROJECTS: ProjectEntry[] = [
     link: '',
   },
 ];
-
-export const TECH_STACK: Record<string, string> = {
-  ts: 'TypeScript',
-  'node.js': 'Node',
-  astro: 'This site is built on astro',
-  python: 'Python',
-  psql: 'PostgreSQL',
-  'claude-code': 'Best tool ever',
-  codex: 'OpenAI Codex',
-  'next.js': 'Next.js',
-  aws: 'AWS',
-  gcp: 'GCP',
-  docker: 'Docker',
-  tf: 'Terraform',
-};

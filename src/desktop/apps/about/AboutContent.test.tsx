@@ -2,9 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { makeBlogPost } from '@test/factories';
 import type { GithubContributions } from '@/lib/githubContributions';
-import { TECH_STACK } from '../projects/data';
 import AboutContent from './AboutContent';
-import { TECH_STACK_ICONS } from './techStackIcons';
 
 const SAMPLE_CONTRIBUTIONS: GithubContributions = {
   username: 'ojoanalogo',
@@ -42,20 +40,10 @@ describe('AboutContent', () => {
     expect(mail?.getAttribute('href')).toBe('mailto:hola@alfon.so');
   });
 
-  it('renders every tech-stack entry as a labelled list', () => {
-    const { container } = render(<AboutContent />);
-    const list = container.querySelector('[aria-label="Tech stack"]');
-    expect(list).not.toBeNull();
-    const langs = Object.keys(TECH_STACK);
-    expect(langs.length).toBeGreaterThan(0);
-    for (const lang of langs) {
-      const span = screen.getByText(lang);
-      expect(span.getAttribute('title')).toBe(TECH_STACK[lang]);
-      expect(span.className).not.toMatch(/\bborder\b/);
-      const svg = span.querySelector('svg');
-      expect(svg?.querySelector('path')?.getAttribute('d')).toBe(TECH_STACK_ICONS[lang]);
-      expect((svg as SVGElement | null)?.style.fill).toMatch(/^rgb\(/);
-    }
+  it('does not render a tech stack', () => {
+    render(<AboutContent />);
+    expect(screen.queryByLabelText('Tech stack')).toBeNull();
+    expect(screen.queryByText('tech stack')).toBeNull();
   });
 
   it('renders the social media icons', () => {

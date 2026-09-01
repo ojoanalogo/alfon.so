@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PROJECTS, TECH_STACK, type ProjectEntry } from './data';
+import { PROJECTS, type ProjectEntry } from './data';
 
 describe('PROJECTS', () => {
   it('is a non-empty array', () => {
@@ -52,25 +52,5 @@ describe('PROJECTS', () => {
         expect(allowed.has(key as keyof ProjectEntry)).toBe(true);
       }
     }
-  });
-});
-
-describe('TECH_STACK', () => {
-  it('is a non-empty record of string keys to string values', () => {
-    const entries = Object.entries(TECH_STACK);
-    expect(entries.length).toBeGreaterThan(0);
-    for (const [key, value] of entries) {
-      expect(key.trim().length).toBeGreaterThan(0);
-      expect(typeof value).toBe('string');
-      expect(value.trim().length).toBeGreaterThan(0);
-    }
-  });
-
-  it('lists TypeScript, PostgreSQL, and Codex without JavaScript or generic SQL', () => {
-    expect(TECH_STACK.ts).toBe('TypeScript');
-    expect(TECH_STACK.psql).toBe('PostgreSQL');
-    expect(TECH_STACK.codex).toBe('OpenAI Codex');
-    expect(TECH_STACK).not.toHaveProperty('js');
-    expect(TECH_STACK).not.toHaveProperty('sql');
   });
 });
