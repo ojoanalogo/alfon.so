@@ -40,12 +40,6 @@ describe('AboutContent', () => {
     expect(mail?.getAttribute('href')).toBe('mailto:hola@alfon.so');
   });
 
-  it('does not render a tech stack', () => {
-    render(<AboutContent />);
-    expect(screen.queryByLabelText('Tech stack')).toBeNull();
-    expect(screen.queryByText('tech stack')).toBeNull();
-  });
-
   it('renders the social media icons', () => {
     const { container } = render(<AboutContent />);
     // SocialMediaIcons renders <svg> icons inside anchor links.

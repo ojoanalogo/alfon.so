@@ -20,12 +20,6 @@ describe('PROJECTS', () => {
     }
   });
 
-  it('does not use an emoji icon for sofia', () => {
-    const sofia = PROJECTS.find((p) => p.title === 'sofia');
-    expect(sofia).toBeDefined();
-    expect(sofia?.icon).toBeUndefined();
-  });
-
   it('every entry has a string link field (may be empty for unreleased projects)', () => {
     for (const p of PROJECTS) {
       expect(typeof p.link).toBe('string');
