@@ -1,7 +1,6 @@
 import {
   BriefcaseIcon,
   CameraIcon,
-  CodeIcon,
   EnvelopeSimpleIcon,
   MapPinIcon,
   NewspaperIcon,
@@ -15,7 +14,6 @@ import { Divider, ExternalLink, InfoRow, PostListItem, SocialMediaIcons } from '
 import { SITE } from '@desktop/lib/siteContent';
 import type { GithubContributions } from '@/lib/githubContributions';
 import type { BlogPostSummary } from '../../types';
-import { TECH_STACK } from '../projects/data';
 import ContributionGraph from './ContributionGraph';
 import { useGithubContributions } from './contributionsContext';
 
@@ -140,25 +138,6 @@ export default function AboutContent({
         <InfoRow label="social" icon={<AboutIcon icon={ShareNetworkIcon} />}>
           <SocialMediaIcons />
         </InfoRow>
-
-        <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-0">
-          <span className="flex shrink-0 items-center gap-1.5 text-muted sm:w-36">
-            <AboutIcon icon={CodeIcon} />
-            <span>tech stack</span>
-          </span>
-          <div className="flex flex-wrap gap-1.5" role="list" aria-label="Tech stack">
-            {Object.keys(TECH_STACK).map((lang) => (
-              <span
-                key={lang}
-                className="rounded border border-[color:var(--color-hairline)] px-1.5 py-px leading-tight text-secondary transition-colors hover:border-[color:var(--color-highlight-border)] hover:text-primary"
-                title={TECH_STACK[lang]}
-                role="listitem"
-              >
-                {lang}
-              </span>
-            ))}
-          </div>
-        </div>
       </section>
 
       {(contributions?.days.length || latestPosts.length > 0) && (

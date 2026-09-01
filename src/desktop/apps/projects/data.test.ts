@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PROJECTS, TECH_STACK, type ProjectEntry } from './data';
+import { PROJECTS, type ProjectEntry } from './data';
 
 describe('PROJECTS', () => {
   it('is a non-empty array', () => {
@@ -7,15 +7,23 @@ describe('PROJECTS', () => {
     expect(PROJECTS.length).toBeGreaterThan(0);
   });
 
-  it('every entry has the required string fields title, description, icon', () => {
+  it('every entry has the required string fields title, description, and optional icon', () => {
     for (const p of PROJECTS) {
       expect(typeof p.title).toBe('string');
       expect(p.title.trim().length).toBeGreaterThan(0);
       expect(typeof p.description).toBe('string');
       expect(p.description.trim().length).toBeGreaterThan(0);
-      expect(typeof p.icon).toBe('string');
-      expect(p.icon.length).toBeGreaterThan(0);
+      if (p.icon !== undefined) {
+        expect(typeof p.icon).toBe('string');
+        expect(p.icon.length).toBeGreaterThan(0);
+      }
     }
+  });
+
+  it('does not use an emoji icon for sofia', () => {
+    const sofia = PROJECTS.find((p) => p.title === 'sofia');
+    expect(sofia).toBeDefined();
+    expect(sofia?.icon).toBeUndefined();
   });
 
   it('every entry has a string link field (may be empty for unreleased projects)', () => {
@@ -43,18 +51,6 @@ describe('PROJECTS', () => {
       for (const key of Object.keys(p)) {
         expect(allowed.has(key as keyof ProjectEntry)).toBe(true);
       }
-    }
-  });
-});
-
-describe('TECH_STACK', () => {
-  it('is a non-empty record of string keys to string values', () => {
-    const entries = Object.entries(TECH_STACK);
-    expect(entries.length).toBeGreaterThan(0);
-    for (const [key, value] of entries) {
-      expect(key.trim().length).toBeGreaterThan(0);
-      expect(typeof value).toBe('string');
-      expect(value.trim().length).toBeGreaterThan(0);
     }
   });
 });

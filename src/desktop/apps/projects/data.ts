@@ -2,7 +2,7 @@ export interface ProjectEntry {
   title: string;
   description: string;
   link: string;
-  icon: string;
+  icon?: string;
 }
 
 export const PROJECTS: ProjectEntry[] = [
@@ -10,7 +10,6 @@ export const PROJECTS: ProjectEntry[] = [
     title: 'sofia',
     description: 'registra tus gastos con un solo mensaje de WhatsApp.',
     link: 'https://sofinanzas.mx',
-    icon: '💸',
   },
   {
     title: 'terminus',
@@ -44,18 +43,3 @@ export const PROJECTS: ProjectEntry[] = [
     link: '',
   },
 ];
-
-export const TECH_STACK: Record<string, string> = {
-  js: 'JavaScript',
-  ts: 'TypeScript',
-  'node.js': 'Node',
-  astro: 'This site is built on astro',
-  python: 'Python',
-  sql: 'SQL',
-  'claude-code': 'Best tool ever',
-  'next.js': 'Next.js',
-  aws: 'AWS',
-  gcp: 'GCP',
-  docker: 'Docker',
-  tf: 'Terraform',
-};

@@ -32,7 +32,7 @@ export const SITE = {
     name: 'sofia',
     host: 'sofinanzas.mx',
     url: 'https://sofinanzas.mx',
-    description: 'asistente de finanzas personales para todos 💸',
+    description: 'asistente de finanzas personales para todos',
   },
   welcome: {
     terminal: 'bienvenido a mi pequeño rincón en internet.',
@@ -58,7 +58,7 @@ export function terminalAboutCommandLines(): string[] {
     `${SITE.person.photographer} @ ${SITE.hobby.host}`,
     `${SITE.community.label} · ${SITE.person.country} ${SITE.person.countryEmoji}`,
     '',
-    `proyecto actual: ${SITE.currentProject.name} (${SITE.currentProject.host}) 💸`,
+    `proyecto actual: ${SITE.currentProject.name} (${SITE.currentProject.host})`,
     `email: ${SITE.person.email}`,
   ];
 }
