@@ -24,7 +24,7 @@ export const SITE = {
     url: 'https://ojoanalogo.com',
   },
   community: {
-    label: 'ambassador',
+    label: 'spacex ai ambassador',
     path: 'x.ai',
     url: 'https://x.ai',
   },
@@ -56,7 +56,7 @@ export function terminalAboutCommandLines(): string[] {
     `${SITE.name} — ${SITE.tagline}`,
     `${SITE.person.role} @ ${SITE.work.host}`,
     `${SITE.person.photographer} @ ${SITE.hobby.host}`,
-    `spacex ai ${SITE.community.label} · ${SITE.person.country} ${SITE.person.countryEmoji}`,
+    `${SITE.community.label} · ${SITE.person.country} ${SITE.person.countryEmoji}`,
     '',
     `proyecto actual: ${SITE.currentProject.name} (${SITE.currentProject.host})`,
     `email: ${SITE.person.email}`,

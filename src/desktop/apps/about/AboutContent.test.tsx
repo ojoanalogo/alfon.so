@@ -24,7 +24,7 @@ describe('AboutContent', () => {
     const expected: Record<string, string> = {
       'monopolio.com.mx': 'https://monopolio.com.mx',
       'ojoanalogo.com': 'https://ojoanalogo.com',
-      ambassador: 'https://x.ai',
+      'spacex ai ambassador': 'https://x.ai',
       sofia: 'https://sofinanzas.mx',
     };
     for (const [text, href] of Object.entries(expected)) {
@@ -32,8 +32,6 @@ describe('AboutContent', () => {
       expect(link).not.toBeNull();
       expect(link?.getAttribute('href')).toBe(href);
     }
-    const community = screen.getByText('ambassador').closest('a');
-    expect(community?.querySelector('svg')).not.toBeNull();
   });
 
   it('renders a mailto contact link', () => {
