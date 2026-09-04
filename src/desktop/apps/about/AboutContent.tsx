@@ -15,6 +15,7 @@ import { SITE } from '@desktop/lib/siteContent';
 import type { GithubContributions } from '@/lib/githubContributions';
 import type { BlogPostSummary } from '../../types';
 import ContributionGraph from './ContributionGraph';
+import SpaceXAILogo from './SpaceXAILogo';
 import { useGithubContributions } from './contributionsContext';
 
 const ABOUT_LINK_CLASS = 'text-link hover:underline focus:outline-none';
@@ -99,9 +100,10 @@ export default function AboutContent({
         <InfoRow label="comunidad" icon={<AboutIcon icon={UsersThreeIcon} />}>
           <ExternalLink
             href={SITE.community.url}
-            label="Cursor Ambassador Program"
-            className={ABOUT_LINK_CLASS}
+            label="SpaceXAI Ambassador Program"
+            className={`${ABOUT_LINK_CLASS} inline-flex items-center gap-1.5`}
           >
+            <SpaceXAILogo className="h-3 w-auto shrink-0" />
             {SITE.community.label}
           </ExternalLink>
         </InfoRow>

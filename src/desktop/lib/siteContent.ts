@@ -24,9 +24,9 @@ export const SITE = {
     url: 'https://ojoanalogo.com',
   },
   community: {
-    label: 'cursor ambassador',
-    path: 'cursor.com/ambassadors',
-    url: 'https://cursor.com/ambassadors',
+    label: 'spacex ai ambassador',
+    path: 'x.ai',
+    url: 'https://x.ai',
   },
   currentProject: {
     name: 'sofia',
