@@ -1,8 +1,7 @@
 {
   "name": "alfon.so",
   "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
+    "dockerfile": "Dockerfile"
   },
   "install": "pnpm install --frozen-lockfile",
   "terminals": [
