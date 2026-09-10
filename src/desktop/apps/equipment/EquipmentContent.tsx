@@ -47,13 +47,16 @@ export default function EquipmentContent() {
         {EQUIPMENT.map((item) => (
           <li
             key={item.id}
-            className="flex gap-2.5 rounded-lg bg-stone-300/70 p-3 dark:bg-gray-500/10"
+            className="flex items-start gap-2.5 rounded-lg bg-stone-300/70 p-3 dark:bg-gray-500/10"
           >
             <EquipmentGlyph itemId={item.id} />
             <div className="flex min-w-0 flex-col gap-0.5">
               <p className="font-medium text-primary">{item.name}</p>
-              <p className="text-muted">{item.category}</p>
-              <p className="leading-relaxed text-secondary">{item.blurb}</p>
+              <p className="leading-relaxed text-secondary">
+                <span className="text-muted">{item.category}</span>
+                {' · '}
+                {item.blurb}
+              </p>
             </div>
           </li>
         ))}

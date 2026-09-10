@@ -12,7 +12,7 @@ describe('EquipmentContent', () => {
 
     for (const item of EQUIPMENT) {
       expect(screen.getByText(item.name)).toBeTruthy();
-      expect(screen.getByText(item.blurb)).toBeTruthy();
+      expect(screen.getByText(item.blurb, { exact: false })).toBeTruthy();
     }
   });
 
