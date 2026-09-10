@@ -3,6 +3,7 @@ import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
 import DesktopClientGate from '@/desktop/DesktopClientGate';
 import AboutContent from '@/desktop/apps/about/AboutContent';
+import EquipmentContent from '@/desktop/apps/equipment/EquipmentContent';
 import Card from '../components/ui/Card.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { DESKTOP_ICON_URLS } from '@desktop/lib/desktopIcons';
@@ -58,6 +59,12 @@ const wallpapers: WallpaperOption[] = (
         posts={posts}
         contributions={githubContributions}
       />
+    </Card>
+  </section>
+
+  <section class="mt-4 sm:hidden" aria-label="Equipo">
+    <Card>
+      <EquipmentContent />
     </Card>
   </section>
 

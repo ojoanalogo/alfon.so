@@ -46,7 +46,7 @@ describe('APPS registry', () => {
 
   it('includes the core apps by id', () => {
     const ids = new Set<string>(APPS.map((app) => app.id));
-    for (const id of ['terminal', 'about', 'projects', 'blog', 'browser', 'trash']) {
+    for (const id of ['terminal', 'about', 'projects', 'equipment', 'blog', 'browser', 'trash']) {
       expect(ids.has(id)).toBe(true);
     }
   });

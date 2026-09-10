@@ -26,6 +26,7 @@ describe('DESKTOP_ICON_URLS', () => {
     expect(DESKTOP_ICON_URLS).toHaveProperty('trash');
     expect(DESKTOP_ICON_URLS).toHaveProperty('terminal');
     expect(DESKTOP_ICON_URLS).toHaveProperty('contacto');
+    expect(DESKTOP_ICON_URLS).toHaveProperty('equipment');
   });
 });
 

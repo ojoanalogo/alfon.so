@@ -11,6 +11,7 @@ import { findNoteByFileName, noteFileNames } from '../notes/paths';
 import { loadNotes } from '../notes/storage';
 import { APPS, type AppId } from '../registry';
 import { PROJECTS } from '../projects/data';
+import { terminalCatEquipmentLines } from '../equipment/data';
 import { TRASH_JUNK } from '@desktop/lib/trashJunk';
 
 export const TERMINAL_PROMPT = 'guest@alfon.so:~$';
@@ -29,6 +30,7 @@ const CAT_BY_APP_ID: Partial<Record<AppId, string[]>> = {
   ),
   contacto: ['correo: hola@alfon.so', '(abre el icono contacto en el escritorio)'],
   cv: ['mi_cv_final_FINAL_v7.doc — currículum', '(abre el icono currículum en el escritorio)'],
+  equipment: terminalCatEquipmentLines(),
   settings: ['ajustes del escritorio — tema, fondo, etc.', '(abre ajustes desde el escritorio)'],
   games: [
     'juegos/ — snake, pong, breakout, plane, minesweeper',

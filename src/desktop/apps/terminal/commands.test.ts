@@ -195,6 +195,14 @@ describe('runTerminalCommand', () => {
     }
   });
 
+  it('cat equipo lists the current kit', () => {
+    const lines = outputLines(runTerminalCommand('cat equipo', ctx()));
+    expect(lines[0]).toContain('equipo');
+    expect(lines.some((l) => l.includes('MacBook Pro M5'))).toBe(true);
+    expect(lines.some((l) => l.includes('Keychron K8'))).toBe(true);
+    expect(lines.some((l) => l.includes('Chrome Kadet'))).toBe(true);
+  });
+
   it('cat contacto, currículum, ajustes, juegos, notas, and terminal', () => {
     expect(
       outputLines(runTerminalCommand('cat contacto', ctx())).some((l) =>
