@@ -26,11 +26,21 @@ describe('EQUIPMENT', () => {
   });
 
   it('does not carry any unexpected keys on entries', () => {
-    const allowed = new Set<keyof EquipmentItem>(['id', 'name', 'category', 'blurb']);
+    const allowed = new Set<keyof EquipmentItem>(['id', 'name', 'category', 'blurb', 'layout']);
     for (const item of EQUIPMENT) {
       for (const key of Object.keys(item)) {
         expect(allowed.has(key as keyof EquipmentItem)).toBe(true);
       }
+    }
+  });
+
+  it('every entry has a table layout with position fields', () => {
+    for (const item of EQUIPMENT) {
+      expect(item.layout.left).toMatch(/%$/);
+      expect(item.layout.top).toMatch(/%$/);
+      expect(item.layout.width).toMatch(/%$/);
+      expect(item.layout.rotate).toMatch(/deg$/);
+      expect(typeof item.layout.z).toBe('number');
     }
   });
 

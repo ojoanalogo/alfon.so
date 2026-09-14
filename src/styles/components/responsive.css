@@ -38,7 +38,8 @@
     }
 
     .card-body.card-body--explorer-list,
-    .card-body.card-body--settings {
+    .card-body.card-body--settings,
+    .card-body.card-body--equipment {
       padding: 0;
     }
 

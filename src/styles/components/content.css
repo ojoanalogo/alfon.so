@@ -29,19 +29,35 @@
   }
 
   .card-body.card-body--explorer-list,
-  .card-body.card-body--settings {
+  .card-body.card-body--settings,
+  .card-body.card-body--equipment {
     padding: 0;
   }
 
   @media (width >= 40rem) {
     .card-body.card-body--explorer-list,
-    .card-body.card-body--settings {
+    .card-body.card-body--settings,
+    .card-body.card-body--equipment {
       padding: 0;
     }
   }
 
   .card-body--settings {
     overflow: hidden;
+  }
+
+  .card-body--equipment {
+    overflow: hidden;
+  }
+
+  .equipment-table {
+    min-height: 16rem;
+    aspect-ratio: 16 / 10;
+  }
+
+  .card-body--equipment .equipment-table {
+    height: 100%;
+    aspect-ratio: auto;
   }
 
   /* --- Explorer list contextual layout ------------------------------------ */

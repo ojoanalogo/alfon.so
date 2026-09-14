@@ -11,8 +11,12 @@ describe('EquipmentContent', () => {
     expect(screen.getByRole('list', { name: /equipo actual/i })).toBeTruthy();
 
     for (const item of EQUIPMENT) {
+      expect(
+        screen.getByRole('button', {
+          name: (accessibleName) => accessibleName.includes(item.name),
+        }),
+      ).toBeTruthy();
       expect(screen.getByText(item.name)).toBeTruthy();
-      expect(screen.getByText(item.blurb, { exact: false })).toBeTruthy();
     }
   });
 

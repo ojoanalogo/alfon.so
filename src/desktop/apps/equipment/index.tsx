@@ -8,10 +8,10 @@ export default defineApp({
   id: 'equipment',
   title: 'equipo',
   iconKey: 'equipment',
-  geometry: { defaultWidth: 560, minWidth: 440, initialZ: 12 },
+  geometry: { defaultWidth: 760, defaultHeight: 500, minWidth: 520, initialZ: 12 },
   desktopIcon: { label: 'equipo', tooltip: 'Mi equipo' },
   taskbarTooltip: 'Equipo',
-  windowClassName: 'desktop-window--fit-content',
+  bodyClassName: 'card-body--equipment',
   body: () => (
     <Suspense fallback={<AppLoading />}>
       <EquipmentContent />
