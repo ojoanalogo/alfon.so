@@ -1,0 +1,10 @@
+{
+  "name": "alfon.so",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "corepack pnpm dev --host"
+    }
+  ]
+}
