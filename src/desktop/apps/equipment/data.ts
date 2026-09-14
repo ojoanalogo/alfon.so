@@ -48,7 +48,7 @@ export const EQUIPMENT: EquipmentItem[] = [
     name: 'iPhone 16e',
     category: 'teléfono',
     blurb: 'el bolsillo',
-    layout: { left: '71%', top: '38%', width: '8%', rotate: '11deg', z: 5 },
+    layout: { left: '69%', top: '40%', width: '10%', rotate: '12deg', z: 5 },
   },
   {
     id: 'keychron',
