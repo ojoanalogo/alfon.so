@@ -1,21 +1,17 @@
 import macbook from '../../../assets/equipment/macbook-top.png?url';
 import xm4 from '../../../assets/equipment/sony-xm4-top.png?url';
-import beats from '../../../assets/equipment/beats-fit-pro-top.png?url';
 import ipadMini from '../../../assets/equipment/ipad-mini-top.png?url';
 import iphone from '../../../assets/equipment/iphone-16e-top.png?url';
 import keychron from '../../../assets/equipment/keychron-k8-top.png?url';
-import kadet from '../../../assets/equipment/chrome-kadet-top.png?url';
 import wood from '../../../assets/equipment/wood-table.jpg?url';
 import { EQUIPMENT, EQUIPMENT_INTRO } from './data';
 
 const EQUIPMENT_IMAGES: Record<(typeof EQUIPMENT)[number]['id'], string> = {
   macbook,
   xm4,
-  beats,
   'ipad-mini': ipadMini,
   iphone,
   keychron,
-  kadet,
 };
 
 export default function EquipmentContent() {

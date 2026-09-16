@@ -49,11 +49,9 @@ describe('EQUIPMENT', () => {
     expect(names).toEqual([
       'MacBook Pro M5',
       'Sony WH-1000XM4',
-      'Beats Fit Pro',
       'iPad mini (7ª gen)',
       'iPhone 16e',
       'Keychron K8',
-      'Chrome Kadet',
     ]);
   });
 });
