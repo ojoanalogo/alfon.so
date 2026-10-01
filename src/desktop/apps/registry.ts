@@ -25,7 +25,6 @@ import browserApp from './browser';
 import notesApp from './notes';
 import contactoApp from './contacto';
 import cvApp from './cv';
-import equipmentApp from './equipment';
 import gamesApp from './games';
 
 // ---------------------------------------------------------------------------
@@ -42,7 +41,6 @@ export const CORE_APPS = [
   notesApp,
   contactoApp,
   cvApp,
-  equipmentApp,
   gamesApp,
   photosApp,
   startupApp,
