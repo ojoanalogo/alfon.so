@@ -221,4 +221,17 @@ describe('fetchGithubContributions', () => {
     expect(result.days).toEqual([]);
     expect(result.username).toBe('ojoanalogo');
   });
+
+  it('skips the GitHub HTML scrape when htmlFallback is false', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ contributions: [] }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await fetchGithubContributions('ojoanalogo', { htmlFallback: false });
+    expect(result.days).toEqual([]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(fetchMock.mock.calls[0][0])).toContain('github-contributions-api.jogruber.de');
+  });
 });

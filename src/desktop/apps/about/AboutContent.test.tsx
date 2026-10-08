@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { makeBlogPost } from '@test/factories';
 import type { GithubContributions } from '@/lib/githubContributions';
 import AboutContent from './AboutContent';
@@ -10,6 +10,21 @@ const SAMPLE_CONTRIBUTIONS: GithubContributions = {
   total: 4,
   days: [{ date: '2026-01-04', count: 4, level: 2 }],
 };
+
+beforeEach(() => {
+  // AboutContent live-refreshes contributions on mount; keep unit tests offline.
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ contributions: [] }),
+    }),
+  );
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe('AboutContent', () => {
   it('renders the heading with the name', () => {
@@ -93,5 +108,25 @@ describe('AboutContent - github contributions', () => {
     render(<AboutContent contributions={SAMPLE_CONTRIBUTIONS} />);
     expect(screen.getByRole('img', { name: '4 contribuciones el último año' })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Ver perfil de GitHub ojoanalogo' })).toBeTruthy();
+  });
+
+  it('replaces the build-time matrix after a live refresh', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          total: { lastYear: 12 },
+          contributions: [{ date: '2026-01-05', count: 12, level: 4 }],
+        }),
+      }),
+    );
+
+    render(<AboutContent contributions={SAMPLE_CONTRIBUTIONS} />);
+    expect(screen.getByRole('img', { name: '4 contribuciones el último año' })).toBeTruthy();
+
+    await waitFor(() => {
+      expect(screen.getByRole('img', { name: '12 contribuciones el último año' })).toBeTruthy();
+    });
   });
 });
