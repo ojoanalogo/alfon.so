@@ -16,7 +16,6 @@ import type { GithubContributions } from '@/lib/githubContributions';
 import type { BlogPostSummary } from '../../types';
 import ContributionGraph from './ContributionGraph';
 import { useGithubContributions } from './contributionsContext';
-import { useLiveGithubContributions } from './useLiveGithubContributions';
 
 const ABOUT_LINK_CLASS = 'text-link hover:underline focus:outline-none';
 
@@ -39,7 +38,7 @@ interface AboutContentProps {
   posts?: BlogPostSummary[];
   /** Opens a post in the desktop; omit on the static (mobile) view to link out. */
   onOpenPost?: (slug: string) => void;
-  /** Build-time GitHub calendar; falls back to the desktop provider, then live-refreshes. */
+  /** Build-time GitHub calendar; falls back to the desktop provider. */
   contributions?: GithubContributions | null;
 }
 
@@ -51,7 +50,7 @@ export default function AboutContent({
   const latestPosts = posts.slice(0, MAX_ABOUT_POSTS);
   const person = SITE.person;
   const contributionsFromContext = useGithubContributions();
-  const contributions = useLiveGithubContributions(contributionsProp ?? contributionsFromContext);
+  const contributions = contributionsProp ?? contributionsFromContext;
 
   return (
     <div className="mx-auto max-w-2xl space-y-3 text-xs sm:space-y-2">

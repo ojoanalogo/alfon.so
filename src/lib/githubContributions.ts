@@ -113,20 +113,10 @@ async function fetchText(url: string): Promise<string | null> {
   return response.text();
 }
 
-export interface FetchGithubContributionsOptions {
-  /**
-   * Scrape github.com/users/.../contributions when the JSON API is empty.
-   * Keep on for Node builds; turn off in the browser (GitHub HTML is CORS-blocked).
-   */
-  htmlFallback?: boolean;
-}
-
 /** Last-year contribution calendar. Failures return an empty series so builds stay green. */
 export async function fetchGithubContributions(
   username: string | null,
-  options: FetchGithubContributionsOptions = {},
 ): Promise<GithubContributions> {
-  const { htmlFallback = true } = options;
   if (!username) return emptyContributions('');
 
   const encoded = encodeURIComponent(username);
@@ -147,21 +137,19 @@ export async function fetchGithubContributions(
     /* try the public GitHub calendar next */
   }
 
-  if (htmlFallback) {
-    try {
-      const html = await fetchText(`https://github.com/users/${encoded}/contributions`);
-      const days = html ? parseGithubContributionsHtml(html) : [];
-      if (days.length > 0) {
-        return {
-          username,
-          profileUrl: githubProfileUrl(username),
-          total: days.reduce((sum, day) => sum + day.count, 0),
-          days,
-        };
-      }
-    } catch {
-      /* empty fallback below */
+  try {
+    const html = await fetchText(`https://github.com/users/${encoded}/contributions`);
+    const days = html ? parseGithubContributionsHtml(html) : [];
+    if (days.length > 0) {
+      return {
+        username,
+        profileUrl: githubProfileUrl(username),
+        total: days.reduce((sum, day) => sum + day.count, 0),
+        days,
+      };
     }
+  } catch {
+    /* empty fallback below */
   }
 
   return emptyContributions(username);
