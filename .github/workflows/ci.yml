@@ -6,13 +6,16 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # Rebuild Pages daily so the SSR contribution snapshot is not weeks stale.
+  schedule:
+    - cron: '0 12 * * *'
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'pages' || format('checks-{0}', github.ref) }}
-  cancel-in-progress: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+  group: ${{ (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && 'pages' || format('checks-{0}', github.ref) }}
+  cancel-in-progress: ${{ !(github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') || github.ref != 'refs/heads/main' }}
 
 jobs:
   dependency-review:
@@ -67,7 +70,10 @@ jobs:
 
   pages-build:
     name: Build for Pages
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: [quality, browser-tests]
     runs-on: ubuntu-latest
     permissions:
@@ -99,7 +105,10 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: pages-build
     runs-on: ubuntu-latest
     permissions:
