@@ -11,7 +11,6 @@ import video from '../../assets/icons/video.png?url';
 import trash from '../../assets/icons/trash.png?url';
 import contacto from '../../assets/icons/mail2.png?url';
 import cv from '../../assets/icons/paper.png?url';
-import equipment from '../../assets/icons/folder.png?url';
 import type { DesktopIconDefinition, DesktopIcon } from '@/config';
 
 export const DESKTOP_ICON_URLS = {
@@ -28,7 +27,6 @@ export const DESKTOP_ICON_URLS = {
   video,
   contacto,
   cv,
-  equipment,
 } as const;
 
 export type IconKey = keyof typeof DESKTOP_ICON_URLS;
