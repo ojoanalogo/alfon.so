@@ -11,8 +11,15 @@ const test = fileURLToPath(new URL('.', import.meta.url));
 const stub = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 export const baseConfig = defineConfig({
-  // Use React's automatic JSX runtime so .tsx tests don't need React in scope.
-  esbuild: { jsx: 'automatic', jsxImportSource: 'react' },
+  // Vite 8 transforms with Oxc and ignores `esbuild` when `oxc` is set. Astro's
+  // tsconfig keeps `jsx: preserve`, which leaves JSX in the module graph and
+  // breaks Vitest's import analysis. Compile JSX here instead.
+  oxc: {
+    jsx: {
+      runtime: 'automatic',
+      importSource: 'react',
+    },
+  },
   resolve: {
     alias: [
       // Stub Astro's virtual modules (no Astro pipeline under Vitest). Tests

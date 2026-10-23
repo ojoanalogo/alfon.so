@@ -38,6 +38,23 @@ afterEach(() => {
 });
 
 describe('useWindowManager - initial state', () => {
+  it('adds window state for defs that arrive after mount', () => {
+    const { result, rerender } = renderHook(
+      ({ list }: { list: WindowDef[] }) => useWindowManager(list, VW, VH),
+      { initialProps: { list: defs() } },
+    );
+    act(() => result.current.open('a'));
+
+    rerender({ list: defs([{ id: 'snake', defaultWidth: 360, defaultHeight: 420 }]) });
+
+    expect(result.current.windows.snake).toBeTruthy();
+    expect(result.current.windows.snake.open).toBe(false);
+    expect(result.current.windows.a.open).toBe(true);
+
+    act(() => result.current.open('snake'));
+    expect(result.current.windows.snake.open).toBe(true);
+  });
+
   it('builds a WindowState entry per def, keyed by id', () => {
     const { result } = renderManager();
     expect(Object.keys(result.current.windows).sort()).toEqual(['a', 'b']);

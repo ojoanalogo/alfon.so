@@ -13,9 +13,18 @@ allowBuilds:
   sharp: true
 
 overrides:
-  sharp: 0.35.3
-  'undici@>=7.0.0 <7.29.0': 7.29.0
-  'fast-uri@>=3.0.0 <3.1.5': 3.1.5
-  'js-yaml@>=4.0.0 <4.3.1': 4.3.1
+  sharp: 0.35.5
+  'undici@>=7.0.0 <7.30.1': 7.30.1
+  'fast-uri@>=3.0.0 <3.1.9': 3.1.9
+  'js-yaml@>=4.0.0 <4.3.2': 4.3.2
   'nanoid@<3.3.18': 3.3.18
   'browserslist@<=4.28.6': 4.28.8
+  'brace-expansion@<1.1.21': 1.1.21
+  'brace-expansion@>=4.0.0 <5.0.12': 5.0.12
+  'postcss@<8.5.23': 8.5.23
+  'postcss-selector-parser@<7.1.6': 7.1.6
+  'smol-toml@<1.8.1': 1.8.1
+  'source-map-js@<1.2.2': 1.2.2
+  'svgo@<4.1.0': 4.1.0
+  'devalue@<5.9.4': 5.9.4
+  'http-cache-semantics@<4.2.1': 4.2.1

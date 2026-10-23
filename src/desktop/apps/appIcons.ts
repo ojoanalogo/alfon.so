@@ -12,7 +12,6 @@ const DESKTOP_ICON_ORDER: AppId[] = [
   'photos',
   'startup',
   'projects',
-  'equipment',
   'contacto',
   'settings',
   'games',

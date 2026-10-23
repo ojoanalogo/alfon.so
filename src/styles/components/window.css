@@ -85,8 +85,7 @@
     overflow-y: auto;
   }
 
-  .desktop-window.is-sized > .desktop-window__card > .card-body--settings,
-  .desktop-window.is-sized > .desktop-window__card > .card-body--equipment {
+  .desktop-window.is-sized > .desktop-window__card > .card-body--settings {
     display: flex;
     flex-direction: column;
     overflow: hidden;
