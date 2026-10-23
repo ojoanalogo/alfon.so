@@ -195,12 +195,9 @@ describe('runTerminalCommand', () => {
     }
   });
 
-  it('cat equipo lists the current kit', () => {
+  it('cat equipo is not a desktop file', () => {
     const lines = outputLines(runTerminalCommand('cat equipo', ctx()));
-    expect(lines[0]).toContain('equipo');
-    expect(lines.some((l) => l.includes('MacBook Pro M5'))).toBe(true);
-    expect(lines.some((l) => l.includes('Keychron K8'))).toBe(true);
-    expect(lines.some((l) => l.includes('Sony WH-1000XM4'))).toBe(true);
+    expect(lines.some((l) => l.includes('no such file'))).toBe(true);
   });
 
   it('cat contacto, currículum, ajustes, juegos, notas, and terminal', () => {

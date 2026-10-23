@@ -147,6 +147,20 @@ export function useWindowManager(
     setWindows((prev) => mergeWindowUiState(createInitialState(defs, vw, vh), prev, centeredIds));
   }, [defs, centeredIds]);
 
+  // Game apps (and other defs) can arrive after the first viewport sync. Add
+  // only the new ids so an already-open window keeps its geometry.
+  useLayoutEffect(() => {
+    const vw =
+      typeof window !== 'undefined' && window.innerWidth > 0 ? window.innerWidth : viewportWidth;
+    const vh =
+      typeof window !== 'undefined' && window.innerHeight > 0 ? window.innerHeight : viewportHeight;
+    setWindows((prev) => {
+      const missing = defs.filter((def) => !prev[def.id]);
+      if (missing.length === 0) return prev;
+      return { ...prev, ...createInitialState(missing, vw, vh) };
+    });
+  }, [defs, viewportWidth, viewportHeight]);
+
   // Refs let bringToFront read the latest focus/z without re-creating the
   // callback (it's wired into every window's pointer-down).
   const focusedIdRef = useRef(focusedId);
