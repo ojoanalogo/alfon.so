@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   desktopColor: 'desktop-color',
   desktopPattern: 'desktop-pattern',
   windowTransparency: 'window-transparency',
+  iconPack: 'icon-pack',
   notes: 'notes',
 } as const;
 
@@ -23,6 +24,7 @@ export const STORAGE = {
   desktopColor: storageKey(STORAGE_KEYS.desktopColor),
   desktopPattern: storageKey(STORAGE_KEYS.desktopPattern),
   windowTransparency: storageKey(STORAGE_KEYS.windowTransparency),
+  iconPack: storageKey(STORAGE_KEYS.iconPack),
   notes: storageKey(STORAGE_KEYS.notes),
 } as const;
 

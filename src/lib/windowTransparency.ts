@@ -2,43 +2,58 @@ import { readStorageItem, removeStorageItem, STORAGE_KEYS, writeStorageItem } fr
 
 export const WINDOW_TRANSPARENCY_CHANGE = 'window-transparency-change';
 
-export const DEFAULT_WINDOW_TRANSPARENCY = true;
+/** Frosted-card amount: 0 is solid, 100 is fully glassy. */
+export const DEFAULT_WINDOW_TRANSPARENCY = 24;
+export const MIN_WINDOW_TRANSPARENCY = 0;
+export const MAX_WINDOW_TRANSPARENCY = 100;
 
-export function getWindowTransparencyEnabled(): boolean {
-  const stored = readStorageItem(STORAGE_KEYS.windowTransparency);
-  if (stored === 'false') return false;
-  return DEFAULT_WINDOW_TRANSPARENCY;
+export function clampWindowTransparency(value: number): number {
+  if (!Number.isFinite(value)) return DEFAULT_WINDOW_TRANSPARENCY;
+  return Math.min(MAX_WINDOW_TRANSPARENCY, Math.max(MIN_WINDOW_TRANSPARENCY, Math.round(value)));
 }
 
-export function applyWindowTransparencyToDocument(enabled: boolean) {
-  if (enabled) {
-    delete document.documentElement.dataset.windowTransparency;
+/** Reads the stored level. Legacy `false` is solid; legacy `true` and empty use the default. */
+export function getWindowTransparency(): number {
+  const stored = readStorageItem(STORAGE_KEYS.windowTransparency);
+  if (stored === 'false') return MIN_WINDOW_TRANSPARENCY;
+  if (stored == null || stored === 'true') return DEFAULT_WINDOW_TRANSPARENCY;
+  return clampWindowTransparency(Number(stored));
+}
+
+export function applyWindowTransparencyToDocument(
+  level: number,
+  root: HTMLElement = document.documentElement,
+) {
+  const next = clampWindowTransparency(level);
+  if (next === DEFAULT_WINDOW_TRANSPARENCY) {
+    root.style.removeProperty('--window-transparency');
   } else {
-    document.documentElement.dataset.windowTransparency = 'false';
+    root.style.setProperty('--window-transparency', String(next));
   }
 }
 
 function dispatchWindowTransparencyChange() {
   window.dispatchEvent(
     new CustomEvent(WINDOW_TRANSPARENCY_CHANGE, {
-      detail: { enabled: getWindowTransparencyEnabled() },
+      detail: { level: getWindowTransparency() },
     }),
   );
 }
 
-export function setWindowTransparencyEnabled(enabled: boolean) {
-  if (enabled === DEFAULT_WINDOW_TRANSPARENCY) {
+export function setWindowTransparency(level: number) {
+  const next = clampWindowTransparency(level);
+  if (next === DEFAULT_WINDOW_TRANSPARENCY) {
     removeStorageItem(STORAGE_KEYS.windowTransparency);
   } else {
-    writeStorageItem(STORAGE_KEYS.windowTransparency, String(enabled));
+    writeStorageItem(STORAGE_KEYS.windowTransparency, String(next));
   }
 
-  applyWindowTransparencyToDocument(enabled);
+  applyWindowTransparencyToDocument(next);
   dispatchWindowTransparencyChange();
 }
 
 export function syncWindowTransparencyFromStorage() {
-  applyWindowTransparencyToDocument(getWindowTransparencyEnabled());
+  applyWindowTransparencyToDocument(getWindowTransparency());
   dispatchWindowTransparencyChange();
 }
 

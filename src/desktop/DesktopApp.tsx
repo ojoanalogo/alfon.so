@@ -5,6 +5,7 @@ import { useDesktopApps } from './state/useDesktopApps';
 import { WindowManagerProvider } from './state/WindowManagerContext';
 import { WallpaperProvider } from './state/WallpaperContext';
 import { ThemeProvider } from './state/ThemeContext';
+import { IconPackProvider } from './state/IconPackContext';
 import { WindowTransparencyProvider } from './state/WindowTransparencyContext';
 import { GithubContributionsProvider } from './apps/about/contributionsContext';
 import DesktopShell from './DesktopShell';
@@ -33,17 +34,13 @@ export default function DesktopApp({
     >
       <ThemeProvider>
         <WindowTransparencyProvider>
-          <WallpaperProvider wallpapers={wallpapers}>
-            <GithubContributionsProvider value={githubContributions}>
-              <DesktopShell
-                apps={apps}
-                defs={defs}
-                posts={posts}
-                desktopIconUrls={desktopIconUrls}
-                viewport={viewport}
-              />
-            </GithubContributionsProvider>
-          </WallpaperProvider>
+          <IconPackProvider classicUrls={desktopIconUrls}>
+            <WallpaperProvider wallpapers={wallpapers}>
+              <GithubContributionsProvider value={githubContributions}>
+                <DesktopShell apps={apps} defs={defs} posts={posts} viewport={viewport} />
+              </GithubContributionsProvider>
+            </WallpaperProvider>
+          </IconPackProvider>
         </WindowTransparencyProvider>
       </ThemeProvider>
     </WindowManagerProvider>

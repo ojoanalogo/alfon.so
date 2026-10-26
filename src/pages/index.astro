@@ -34,10 +34,16 @@ const wallpapers: WallpaperOption[] = (
       const fileName = path.split('/').pop() ?? path;
       const id = fileName.replace(/\.[^.]+$/, '');
       const srcAsset = mod.default;
-      // Decorative full-screen backgrounds — quality 70 webp roughly halves the
-      // file size (full-res was ~1 MB) with no perceptible difference behind the UI.
-      const full = await getImage({ src: srcAsset, width: 1920, format: 'webp', quality: 70 });
-      const thumb = await getImage({ src: srcAsset, width: 280, format: 'webp', quality: 70 });
+      // Cap at 2560 so a retina desktop stays sharp, and never enlarge a
+      // smaller original (that only makes it look soft).
+      const targetWidth = Math.min(srcAsset.width, 2560);
+      const full = await getImage({
+        src: srcAsset,
+        width: targetWidth,
+        format: 'webp',
+        quality: 82,
+      });
+      const thumb = await getImage({ src: srcAsset, width: 480, format: 'webp', quality: 75 });
 
       return {
         id,

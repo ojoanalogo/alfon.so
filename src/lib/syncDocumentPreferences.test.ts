@@ -6,7 +6,7 @@ beforeEach(() => {
   localStorage.clear();
   document.documentElement.classList.remove('dark');
   delete document.documentElement.dataset.themePreference;
-  delete document.documentElement.dataset.windowTransparency;
+  document.documentElement.style.removeProperty('--window-transparency');
 });
 
 describe('syncDocumentPreferencesFromStorage', () => {
@@ -29,9 +29,15 @@ describe('syncDocumentPreferencesFromStorage', () => {
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
-  it('marks window transparency disabled from storage', () => {
+  it('applies a stored window transparency level', () => {
+    localStorage.setItem(STORAGE.windowTransparency, '60');
+    syncDocumentPreferencesFromStorage();
+    expect(document.documentElement.style.getPropertyValue('--window-transparency')).toBe('60');
+  });
+
+  it('treats the legacy off switch as a solid window', () => {
     localStorage.setItem(STORAGE.windowTransparency, 'false');
     syncDocumentPreferencesFromStorage();
-    expect(document.documentElement.dataset.windowTransparency).toBe('false');
+    expect(document.documentElement.style.getPropertyValue('--window-transparency')).toBe('0');
   });
 });

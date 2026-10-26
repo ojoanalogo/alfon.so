@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useRef } from 'react';
-import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';
 import { resolveDesktopShellIcons } from './apps/appIcons';
+import { useIconPack } from './state/IconPackContext';
 import { TRASH_APP_ID } from './lib/appIds';
 import { useBrowserHistories } from './wrappers/browser/useBrowserHistories';
 import { useWindowManagerContext } from './state/WindowManagerContext';
@@ -24,17 +24,11 @@ interface DesktopShellProps {
   apps: AppDefinition[];
   defs: WindowDef[];
   posts: BlogPostSummary[];
-  desktopIconUrls: DesktopIconUrls;
   viewport: { width: number; height: number };
 }
 
-export default function DesktopShell({
-  apps,
-  defs,
-  posts,
-  desktopIconUrls,
-  viewport,
-}: DesktopShellProps) {
+export default function DesktopShell({ apps, defs, posts, viewport }: DesktopShellProps) {
+  const { urls: desktopIconUrls } = useIconPack();
   const wm = useWindowManagerContext();
   const { unfocus } = wm;
   const browsers = useBrowserHistories();

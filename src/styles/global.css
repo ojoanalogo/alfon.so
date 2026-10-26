@@ -38,13 +38,15 @@
   :root,
   :host {
     --window-radius: 0.625rem;
+    /* 0 = solid windows, 100 = fully glassy. 24 matches the original frosted card. */
+    --window-transparency: 24;
     --color-highlight-bg: rgb(113 113 122 / 0.2);
     --color-highlight-bg-strong: rgb(82 82 91 / 0.3);
     --color-highlight-border: rgb(82 82 91 / 0.62);
-    /* Desktop icon selection — GitHub contribution greens. */
-    --desktop-highlight-bg: rgb(64 196 99 / 0.18);
-    --desktop-highlight-bg-strong: rgb(64 196 99 / 0.32);
-    --desktop-highlight-border: rgb(48 161 78 / 0.62);
+    /* Desktop icon selection — warm cream, close to the light desktop fill. */
+    --desktop-highlight-bg: rgb(255 250 242 / 0.45);
+    --desktop-highlight-bg-strong: rgb(255 250 242 / 0.72);
+    --desktop-highlight-border: rgb(168 156 138 / 0.7);
     /* Theme-invariant zinc-500 hairlines (same in light and dark). */
     --color-hairline: rgb(113 113 122 / 0.35);
     --color-hairline-strong: rgb(113 113 122 / 0.45);
@@ -77,9 +79,9 @@
       --color-highlight-bg: rgb(161 161 170 / 0.14);
       --color-highlight-bg-strong: rgb(161 161 170 / 0.24);
       --color-highlight-border: rgb(161 161 170 / 0.5);
-      --desktop-highlight-bg: rgb(57 211 83 / 0.16);
-      --desktop-highlight-bg-strong: rgb(57 211 83 / 0.28);
-      --desktop-highlight-border: rgb(38 166 65 / 0.55);
+      --desktop-highlight-bg: rgb(235 226 206 / 0.18);
+      --desktop-highlight-bg-strong: rgb(235 226 206 / 0.32);
+      --desktop-highlight-border: rgb(236 226 204 / 0.62);
     }
   }
 }

@@ -1,8 +1,10 @@
 import ThemeSegmentedControl from './ThemeSegmentedControl';
+import { iconPackPreviewUrls } from '@desktop/lib/iconPacks';
+import { useIconPack } from '@desktop/state/IconPackContext';
 import { useWallpaper } from '@desktop/state/WallpaperContext';
 import { useWindowTransparency } from '@desktop/state/WindowTransparencyContext';
 import { STATE_CLASS } from '@desktop/lib/stateClasses';
-import { SETTINGS_GROUP, SettingsRow, SettingsToggle } from './ui';
+import { SETTINGS_GROUP, SettingsRow } from './ui';
 
 const SWATCH_INNER =
   'h-full w-full overflow-hidden rounded-[inherit] border border-[rgb(0_0_0/0.12)] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)]';
@@ -111,8 +113,8 @@ export default function AppearanceSection() {
     desktopColors,
     desktopBackgroundColor,
   } = useWallpaper();
-  const { enabled: windowTransparencyEnabled, setEnabled: setWindowTransparencyEnabled } =
-    useWindowTransparency();
+  const { level: windowTransparency, setLevel: setWindowTransparency } = useWindowTransparency();
+  const { packId, packs, setPackId } = useIconPack();
 
   const patternPreviewFill = desktopBackgroundColor;
 
@@ -126,16 +128,82 @@ export default function AppearanceSection() {
           <ThemeSegmentedControl />
         </SettingsRow>
         <SettingsRow
-          label="Transparencia sin foco"
-          hint="Las ventanas en segundo plano se vuelven semitransparentes"
+          label="Transparencia"
+          hint="Cuánto se transparentan las ventanas. La enfocada se queda un poco más sólida"
         >
-          <SettingsToggle
-            checked={windowTransparencyEnabled}
-            onChange={setWindowTransparencyEnabled}
-            ariaLabel="Transparencia sin foco"
-          />
+          <div className="flex shrink-0 items-center gap-2">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={windowTransparency}
+              aria-label="Transparencia de ventanas"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={windowTransparency}
+              className="h-1 w-24 cursor-pointer accent-zinc-800 dark:accent-zinc-200"
+              onChange={(event) => setWindowTransparency(Number(event.target.value))}
+            />
+            <span className="w-8 text-right text-[0.625rem] text-muted tabular-nums">
+              {windowTransparency}%
+            </span>
+          </div>
         </SettingsRow>
       </div>
+
+      <section className="flex flex-col gap-[0.375rem]" aria-labelledby="settings-icons-heading">
+        <h4
+          id="settings-icons-heading"
+          className="m-0 px-[0.125rem] text-[0.625rem] font-semibold tracking-[0.04em] text-muted uppercase"
+        >
+          Iconos
+        </h4>
+        <div className={`${SETTINGS_GROUP} p-[0.375rem]`}>
+          {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
+          <ul
+            className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-2 p-0"
+            role="list"
+          >
+            {packs.map((pack) => {
+              const selected = pack.id === packId;
+              return (
+                <li key={pack.id}>
+                  <button
+                    type="button"
+                    className={[
+                      'flex w-full cursor-pointer flex-col items-center gap-1 rounded-[0.375rem] border-2 px-1 py-2',
+                      selected
+                        ? 'border-[color:var(--color-highlight-border)] shadow-[0_0_0_1px_var(--color-highlight-border)]'
+                        : 'border-transparent hover:border-[color:var(--color-hairline-strong)]',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-pressed={selected}
+                    aria-label={pack.label}
+                    title={pack.label}
+                    onClick={() => setPackId(pack.id)}
+                  >
+                    <span className="flex h-7 items-center justify-center gap-1" aria-hidden="true">
+                      {iconPackPreviewUrls(pack).map((src) => (
+                        <img
+                          key={src}
+                          src={src}
+                          alt=""
+                          width={24}
+                          height={24}
+                          className="h-6 w-6 object-contain [image-rendering:pixelated]"
+                        />
+                      ))}
+                    </span>
+                    <span className="text-[0.5625rem] text-secondary">{pack.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
 
       <section
         className="flex flex-col gap-[0.375rem]"

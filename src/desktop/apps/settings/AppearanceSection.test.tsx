@@ -3,7 +3,9 @@ import { STORAGE } from '@/lib/storage';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThemeProvider } from '@desktop/state/ThemeContext';
 import { WallpaperProvider } from '@desktop/state/WallpaperContext';
+import { IconPackProvider } from '@desktop/state/IconPackContext';
 import { WindowTransparencyProvider } from '@desktop/state/WindowTransparencyContext';
+import { DESKTOP_ICON_URLS } from '@desktop/lib/desktopIcons';
 import { DESKTOP_COLORS } from '@desktop/lib/desktopColors';
 import type { WallpaperOption } from '@desktop/types';
 import { stubMatchMedia } from '@test/helpers';
@@ -19,9 +21,11 @@ function renderSection(wallpapers: WallpaperOption[] = WALLPAPERS) {
   return render(
     <ThemeProvider>
       <WindowTransparencyProvider>
-        <WallpaperProvider wallpapers={wallpapers}>
-          <AppearanceSection />
-        </WallpaperProvider>
+        <IconPackProvider classicUrls={DESKTOP_ICON_URLS}>
+          <WallpaperProvider wallpapers={wallpapers}>
+            <AppearanceSection />
+          </WallpaperProvider>
+        </IconPackProvider>
       </WindowTransparencyProvider>
     </ThemeProvider>,
   );
@@ -30,7 +34,7 @@ function renderSection(wallpapers: WallpaperOption[] = WALLPAPERS) {
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.className = '';
-  delete document.documentElement.dataset.windowTransparency;
+  document.documentElement.style.removeProperty('--window-transparency');
   stubMatchMedia();
 });
 
@@ -157,24 +161,40 @@ describe('AppearanceSection', () => {
     expect(cuadricula.style.backgroundColor).toBe('var(--color-background)');
   });
 
-  it('renders the window transparency toggle enabled by default', () => {
+  it('renders window transparency at the default level', () => {
     renderSection();
 
     expect(
-      screen.getByRole('switch', { name: 'Transparencia sin foco' }).getAttribute('aria-checked'),
-    ).toBe('true');
+      screen.getByRole('slider', { name: 'Transparencia de ventanas' }).getAttribute('value'),
+    ).toBe('24');
   });
 
-  it('disabling window transparency persists the preference on the document', () => {
+  it('persists a new window transparency level on the document', () => {
     renderSection();
 
-    fireEvent.click(screen.getByRole('switch', { name: 'Transparencia sin foco' }));
+    fireEvent.change(screen.getByRole('slider', { name: 'Transparencia de ventanas' }), {
+      target: { value: '60' },
+    });
 
-    expect(localStorage.getItem(STORAGE.windowTransparency)).toBe('false');
-    expect(document.documentElement.dataset.windowTransparency).toBe('false');
+    expect(localStorage.getItem(STORAGE.windowTransparency)).toBe('60');
+    expect(document.documentElement.style.getPropertyValue('--window-transparency')).toBe('60');
     expect(
-      screen.getByRole('switch', { name: 'Transparencia sin foco' }).getAttribute('aria-checked'),
-    ).toBe('false');
+      screen.getByRole('slider', { name: 'Transparencia de ventanas' }).getAttribute('value'),
+    ).toBe('60');
+  });
+
+  it('renders an icon pack option for each theme and selects it', () => {
+    renderSection();
+
+    for (const label of ['Clásico', 'Carbón', 'Crema', 'Océano', 'Coral', 'Bosque', 'Violeta']) {
+      expect(screen.getByRole('button', { name: label })).toBeTruthy();
+    }
+
+    fireEvent.click(screen.getByRole('button', { name: 'Océano' }));
+    expect(localStorage.getItem(STORAGE.iconPack)).toBe('ocean');
+    expect(screen.getByRole('button', { name: 'Océano' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
   });
 
   it('shows the empty-state message and no wallpaper list when there are no wallpapers', () => {

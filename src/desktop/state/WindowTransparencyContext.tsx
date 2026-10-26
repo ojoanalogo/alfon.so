@@ -9,39 +9,39 @@ import {
 } from 'react';
 import {
   attachWindowTransparencyListener,
-  getWindowTransparencyEnabled,
-  setWindowTransparencyEnabled,
+  getWindowTransparency,
+  setWindowTransparency,
   syncWindowTransparencyFromStorage,
 } from '@/lib/windowTransparency';
 
 interface WindowTransparencyContextValue {
-  enabled: boolean;
-  setEnabled: (enabled: boolean) => void;
+  level: number;
+  setLevel: (level: number) => void;
 }
 
 const WindowTransparencyContext = createContext<WindowTransparencyContextValue | null>(null);
 
 export function WindowTransparencyProvider({ children }: { children: ReactNode }) {
-  const [enabled, setEnabledState] = useState(getWindowTransparencyEnabled);
+  const [level, setLevelState] = useState(getWindowTransparency);
 
   useEffect(() => {
     syncWindowTransparencyFromStorage();
     return attachWindowTransparencyListener(() => {
-      setEnabledState(getWindowTransparencyEnabled());
+      setLevelState(getWindowTransparency());
     });
   }, []);
 
-  const setEnabled = useCallback((next: boolean) => {
-    setWindowTransparencyEnabled(next);
-    setEnabledState(getWindowTransparencyEnabled());
+  const setLevel = useCallback((next: number) => {
+    setWindowTransparency(next);
+    setLevelState(getWindowTransparency());
   }, []);
 
   const value = useMemo(
     () => ({
-      enabled,
-      setEnabled,
+      level,
+      setLevel,
     }),
-    [enabled, setEnabled],
+    [level, setLevel],
   );
 
   return (
