@@ -24,22 +24,27 @@ export const SITE = {
     url: 'https://ojoanalogo.com',
   },
   community: {
+    name: 'tech atlas',
+    host: 'atlas-sinaloa.tech',
+    url: 'https://atlas-sinaloa.tech',
+  },
+  ambassador: {
     label: 'spacex ai ambassador',
     path: 'x.ai',
     url: 'https://x.ai',
   },
-  currentProject: {
-    name: 'sofia',
-    host: 'sofinanzas.mx',
-    url: 'https://sofinanzas.mx',
-    description: 'asistente de finanzas personales para todos',
-  },
+  projects: [
+    { host: 'sofinanzas.mx', url: 'https://sofinanzas.mx' },
+    { host: 'jippy.app', url: 'https://jippy.app' },
+    { host: 'molecula.digital', url: 'https://molecula.digital' },
+    { host: 'drims.dev', url: 'https://drims.dev' },
+  ],
   welcome: {
     terminal: 'bienvenido a mi pequeño rincón en internet.',
     aboutCard:
-      'bienvenido a mi pequeño rincón en internet, aquí encontrarás mis pensamientos (pocos), mis proyectos y mi blog.',
+      'construyo productos digitales, impulso la comunidad tech de sinaloa y tomo fotos cuando el trabajo me deja. aquí encontrarás mis proyectos, mi blog y uno que otro pensamiento.',
   },
-  interests: 'programación · startups · ciencia ficción · películas · fotografía',
+  interests: 'programación · startups · comunidad · ciencia ficción · películas · fotografía',
   photos: {
     url: 'https://ojoanalogo.com',
   },
@@ -56,9 +61,10 @@ export function terminalAboutCommandLines(): string[] {
     `${SITE.name} — ${SITE.tagline}`,
     `${SITE.person.role} @ ${SITE.work.host}`,
     `${SITE.person.photographer} @ ${SITE.hobby.host}`,
-    `${SITE.community.label} · ${SITE.person.country} ${SITE.person.countryEmoji}`,
+    `comunidad: ${SITE.community.name} (${SITE.community.host})`,
+    `${SITE.ambassador.label} · ${SITE.person.country} ${SITE.person.countryEmoji}`,
     '',
-    `proyecto actual: ${SITE.currentProject.name} (${SITE.currentProject.host})`,
+    `proyectos: ${SITE.projects.map((p) => p.host).join(' · ')}`,
     `email: ${SITE.person.email}`,
   ];
 }

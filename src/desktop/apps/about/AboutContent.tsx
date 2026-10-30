@@ -3,6 +3,7 @@ import {
   CameraIcon,
   EnvelopeSimpleIcon,
   MapPinIcon,
+  MegaphoneIcon,
   NewspaperIcon,
   RocketLaunchIcon,
   ShareNetworkIcon,
@@ -99,24 +100,45 @@ export default function AboutContent({
         <InfoRow label="comunidad" icon={<AboutIcon icon={UsersThreeIcon} />}>
           <ExternalLink
             href={SITE.community.url}
+            label={`Visitar ${SITE.community.name} - ${SITE.community.host}`}
+            className={ABOUT_LINK_CLASS}
+          >
+            {SITE.community.name}
+          </ExternalLink>
+        </InfoRow>
+
+        <InfoRow label="embajador" icon={<AboutIcon icon={MegaphoneIcon} />}>
+          <ExternalLink
+            href={SITE.ambassador.url}
             label="SpaceXAI Ambassador Program"
             className={ABOUT_LINK_CLASS}
           >
-            {SITE.community.label}
+            {SITE.ambassador.label}
           </ExternalLink>
         </InfoRow>
       </section>
 
       <section className="flex flex-col gap-2" aria-label="Ahora">
-        <InfoRow label="proyecto actual" icon={<AboutIcon icon={RocketLaunchIcon} />}>
-          <ExternalLink
-            href={SITE.currentProject.url}
-            label="Visitar SofIA - Asistente de finanzas con IA"
-            className={ABOUT_LINK_CLASS}
-          >
-            {SITE.currentProject.name}
-          </ExternalLink>{' '}
-          - {SITE.currentProject.description}
+        <InfoRow label="proyectos" icon={<AboutIcon icon={RocketLaunchIcon} />}>
+          {SITE.projects.map((project, i) => (
+            <span key={project.host}>
+              {i > 0 && ' · '}
+              <img
+                src={`/favicons/${project.host}.svg`}
+                alt=""
+                width={12}
+                height={12}
+                className="mr-1 inline-block align-[-2px]"
+              />
+              <ExternalLink
+                href={project.url}
+                label={`Visitar ${project.host}`}
+                className={ABOUT_LINK_CLASS}
+              >
+                {project.host}
+              </ExternalLink>
+            </span>
+          ))}
         </InfoRow>
 
         <InfoRow label="intereses" icon={<AboutIcon icon={SparkleIcon} />}>

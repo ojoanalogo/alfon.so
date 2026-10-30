@@ -24,8 +24,12 @@ describe('AboutContent', () => {
     const expected: Record<string, string> = {
       'monopolio.com.mx': 'https://monopolio.com.mx',
       'ojoanalogo.com': 'https://ojoanalogo.com',
+      'tech atlas': 'https://atlas-sinaloa.tech',
       'spacex ai ambassador': 'https://x.ai',
-      sofia: 'https://sofinanzas.mx',
+      'sofinanzas.mx': 'https://sofinanzas.mx',
+      'jippy.app': 'https://jippy.app',
+      'molecula.digital': 'https://molecula.digital',
+      'drims.dev': 'https://drims.dev',
     };
     for (const [text, href] of Object.entries(expected)) {
       const link = screen.getByText(text).closest('a');
