@@ -36,6 +36,12 @@ describe('AboutContent', () => {
       expect(link).not.toBeNull();
       expect(link?.getAttribute('href')).toBe(href);
     }
+
+    const ambassadorLogo = screen
+      .getByText('spacex ai ambassador')
+      .closest('a')
+      ?.parentElement?.querySelector('img');
+    expect(ambassadorLogo?.getAttribute('src')).toBe('/favicons/x.ai.svg');
   });
 
   it('renders a mailto contact link', () => {
