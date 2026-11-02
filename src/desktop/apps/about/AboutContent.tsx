@@ -108,6 +108,13 @@ export default function AboutContent({
         </InfoRow>
 
         <InfoRow label="embajador" icon={<AboutIcon icon={MegaphoneIcon} />}>
+          <img
+            src={`/favicons/${SITE.ambassador.path}.svg`}
+            alt=""
+            width={12}
+            height={12}
+            className="mr-1 inline-block object-contain align-[-2px] dark:invert"
+          />
           <ExternalLink
             href={SITE.ambassador.url}
             label="SpaceXAI Ambassador Program"
