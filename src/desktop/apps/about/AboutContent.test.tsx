@@ -19,6 +19,11 @@ describe('AboutContent', () => {
     expect(heading.textContent).toContain('alfonso reyes');
   });
 
+  it('shows the location in the subtitle', () => {
+    render(<AboutContent />);
+    expect(screen.getByText(/ingeniero backend · fotógrafo · méxico/)).toBeTruthy();
+  });
+
   it('renders the external work, hobby, community, and project links with correct hrefs', () => {
     render(<AboutContent />);
     const expected: Record<string, string> = {

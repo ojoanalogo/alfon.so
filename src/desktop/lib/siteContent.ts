@@ -44,7 +44,6 @@ export const SITE = {
     aboutCard:
       'construyo productos digitales, impulso la comunidad tech de sinaloa y tomo fotos cuando el trabajo me deja. aquí encontrarás mis proyectos, mi blog y uno que otro pensamiento.',
   },
-  interests: 'programación · startups · comunidad · ciencia ficción · películas · fotografía',
   photos: {
     url: 'https://ojoanalogo.com',
   },

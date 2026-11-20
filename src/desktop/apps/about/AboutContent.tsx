@@ -2,12 +2,9 @@ import {
   BriefcaseIcon,
   CameraIcon,
   EnvelopeSimpleIcon,
-  MapPinIcon,
-  MegaphoneIcon,
   NewspaperIcon,
   RocketLaunchIcon,
   ShareNetworkIcon,
-  SparkleIcon,
   UsersThreeIcon,
   type Icon,
 } from '@phosphor-icons/react';
@@ -60,7 +57,7 @@ export default function AboutContent({
           👋 ¡hola! soy <span className="font-semibold text-primary">{person.displayName}</span>
         </h1>
         <p className="text-xs text-muted">
-          {person.role} · {person.photographer}
+          {person.role} · {person.photographer} · {person.country} 🇲🇽
         </p>
       </div>
 
@@ -68,13 +65,7 @@ export default function AboutContent({
         <p className="leading-relaxed text-primary">{SITE.welcome.aboutCard}</p>
       </div>
 
-      <Divider className="mb-2" />
-
       <section className="flex flex-col gap-2" aria-label="Perfil">
-        <InfoRow label="ubicación" icon={<AboutIcon icon={MapPinIcon} />}>
-          {person.country} 🇲🇽
-        </InfoRow>
-
         <InfoRow label="trabajo" icon={<AboutIcon icon={BriefcaseIcon} />}>
           {person.role} @{' '}
           <ExternalLink
@@ -105,9 +96,7 @@ export default function AboutContent({
           >
             {SITE.community.name}
           </ExternalLink>
-        </InfoRow>
-
-        <InfoRow label="embajador" icon={<AboutIcon icon={MegaphoneIcon} />}>
+          {' · '}
           <img
             src={`/favicons/${SITE.ambassador.path}.svg`}
             alt=""
@@ -123,20 +112,11 @@ export default function AboutContent({
             {SITE.ambassador.label}
           </ExternalLink>
         </InfoRow>
-      </section>
 
-      <section className="flex flex-col gap-2" aria-label="Ahora">
         <InfoRow label="proyectos" icon={<AboutIcon icon={RocketLaunchIcon} />}>
           {SITE.projects.map((project, i) => (
             <span key={project.host}>
               {i > 0 && ' · '}
-              <img
-                src={`/favicons/${project.host}.svg`}
-                alt=""
-                width={12}
-                height={12}
-                className="mr-1 inline-block align-[-2px]"
-              />
               <ExternalLink
                 href={project.url}
                 label={`Visitar ${project.host}`}
@@ -148,12 +128,6 @@ export default function AboutContent({
           ))}
         </InfoRow>
 
-        <InfoRow label="intereses" icon={<AboutIcon icon={SparkleIcon} />}>
-          {SITE.interests}
-        </InfoRow>
-      </section>
-
-      <section className="flex flex-col gap-2" aria-label="En línea">
         <InfoRow label="contacto" icon={<AboutIcon icon={EnvelopeSimpleIcon} />}>
           <a
             className={ABOUT_LINK_CLASS}
