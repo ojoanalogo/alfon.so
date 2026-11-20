@@ -105,6 +105,56 @@ export const WALLPAPER_ARTWORKS: WallpaperArtwork[] = [
     artist: 'Turner',
     year: '1839',
   },
+  // Johannes Vermeer - View of Delft - 92 - Mauritshuis.jpg
+  { id: 'vermeer-vista-de-delft', title: 'Vista de Delft', artist: 'Vermeer', year: '1660–61' },
+  // Caspar David Friedrich - Mondaufgang am Meer - Google Art Project.jpg
+  {
+    id: 'friedrich-salida-de-la-luna-sobre-el-mar',
+    title: 'Salida de la luna sobre el mar',
+    artist: 'Friedrich',
+    year: '1822',
+  },
+  // Great Wave off Kanagawa2.jpg
+  {
+    id: 'hokusai-la-gran-ola-de-kanagawa',
+    title: 'La gran ola de Kanagawa',
+    artist: 'Hokusai',
+    year: 'c. 1831',
+  },
+  // Hovhannes Aivazovsky - The Ninth Wave - Google Art Project.jpg
+  { id: 'aivazovsky-la-novena-ola', title: 'La novena ola', artist: 'Aivazovsky', year: '1850' },
+  // Albert Bierstadt - Among the Sierra Nevada, California - Google Art Project.jpg
+  {
+    id: 'bierstadt-entre-la-sierra-nevada',
+    title: 'Entre la Sierra Nevada, California',
+    artist: 'Bierstadt',
+    year: '1868',
+  },
+  // The Flood at Port-Marly - 1876 - Alfred Sisley.jpg
+  {
+    id: 'sisley-la-inundacion-en-port-marly',
+    title: 'La inundación en Port-Marly',
+    artist: 'Sisley',
+    year: '1876',
+  },
+  // Berthe Morisot - Jour d'été, 1879.jpg
+  { id: 'morisot-dia-de-verano', title: 'Día de verano', artist: 'Morisot', year: '1879' },
+  // Cezanne - Mont Sainte-Victoire, Courtauld.jpg
+  {
+    id: 'cezanne-la-montana-sainte-victoire',
+    title: 'La montaña Sainte-Victoire',
+    artist: 'Cézanne',
+    year: '1887',
+  },
+  // Paul Gauguin - Tahitian Landscape - Google Art Project.jpg
+  { id: 'gauguin-paisaje-tahitiano', title: 'Paisaje tahitiano', artist: 'Gauguin', year: '1891' },
+  // Henri Rousseau - Surprise!.jpg
+  {
+    id: 'rousseau-sorprendido',
+    title: 'Tigre en una tormenta tropical',
+    artist: 'Rousseau',
+    year: '1891',
+  },
 ];
 
 export function resolveWallpaperId(storedId: string, availableIds: Set<string>): string | null {
