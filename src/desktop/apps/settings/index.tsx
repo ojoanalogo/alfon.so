@@ -3,7 +3,7 @@ import { defineApp, type SettingsSection } from '@desktop/wrappers';
 import SettingsBody from './SettingsBody';
 import AppLoading from '../AppLoading';
 
-// Split the appearance UI (color swatches, patterns, theme control) out of
+// Split the appearance UI (color swatches, wallpaper grid, theme control) out of
 // the initial island bundle; it loads when the settings window first opens.
 const AppearanceSection = lazy(() => import('./AppearanceSection'));
 

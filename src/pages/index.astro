@@ -1,4 +1,6 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
 import DesktopClientGate from '@/desktop/DesktopClientGate';
 import AboutContent from '@/desktop/apps/about/AboutContent';
 import Card from '../components/ui/Card.astro';
@@ -10,12 +12,43 @@ import {
   githubUsernameFromSocialLinks,
 } from '../lib/githubContributions';
 import { sortMDByDate } from '../utils';
-import type { BlogPostSummary } from '@/desktop/types';
+import { WALLPAPER_ARTWORKS } from '@/config/wallpapers';
+import type { BlogPostSummary, WallpaperOption } from '@/desktop/types';
 
 const MAX_POSTS = 10;
 const entries = sortMDByDate(await getPublishedPosts()).slice(0, MAX_POSTS);
 const posts: BlogPostSummary[] = await Promise.all(entries.map((entry) => prepareBlogPost(entry)));
 const githubContributions = await fetchGithubContributions(githubUsernameFromSocialLinks());
+
+const wallpaperModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/wallpapers/*.jpg',
+  { eager: true },
+);
+
+const wallpapers: WallpaperOption[] = await Promise.all(
+  WALLPAPER_ARTWORKS.map(async (artwork) => {
+    const mod = wallpaperModules[`../assets/wallpapers/${artwork.id}.jpg`];
+    if (!mod) throw new Error(`Missing wallpaper image: src/assets/wallpapers/${artwork.id}.jpg`);
+    const srcAsset = mod.default;
+    // Cap at 2560 so a retina desktop stays sharp, and never enlarge a
+    // smaller original (that only makes it look soft).
+    const targetWidth = Math.min(srcAsset.width, 2560);
+    const full = await getImage({
+      src: srcAsset,
+      width: targetWidth,
+      format: 'webp',
+      quality: 82,
+    });
+    const thumb = await getImage({ src: srcAsset, width: 480, format: 'webp', quality: 75 });
+
+    return {
+      id: artwork.id,
+      label: `${artwork.title} — ${artwork.artist}, ${artwork.year}`,
+      src: full.src,
+      thumbSrc: thumb.src,
+    };
+  }),
+);
 ---
 
 <BaseLayout desktop navbarActiveItemID="home">
@@ -33,6 +66,7 @@ const githubContributions = await fetchGithubContributions(githubUsernameFromSoc
     <DesktopClientGate
       client:media="(min-width: 40rem)"
       posts={posts}
+      wallpapers={wallpapers}
       desktopIconUrls={DESKTOP_ICON_URLS}
       githubContributions={githubContributions}
     />
