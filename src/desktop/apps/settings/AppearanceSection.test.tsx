@@ -7,22 +7,15 @@ import { IconPackProvider } from '@desktop/state/IconPackContext';
 import { WindowTransparencyProvider } from '@desktop/state/WindowTransparencyContext';
 import { DESKTOP_ICON_URLS } from '@desktop/lib/desktopIcons';
 import { DESKTOP_COLORS } from '@desktop/lib/desktopColors';
-import type { WallpaperOption } from '@desktop/types';
 import { stubMatchMedia } from '@test/helpers';
 import AppearanceSection from './AppearanceSection';
 
-const WALLPAPERS: WallpaperOption[] = [
-  { id: '01', label: 'Imagen 01', src: '/wp/01.jpg', thumbSrc: '/wp/01-thumb.jpg' },
-  { id: '03', label: 'Imagen 03', src: '/wp/03.jpg', thumbSrc: '/wp/03-thumb.jpg' },
-  { id: '05', label: 'Imagen 05', src: '/wp/05.jpg', thumbSrc: '/wp/05-thumb.jpg' },
-];
-
-function renderSection(wallpapers: WallpaperOption[] = WALLPAPERS) {
+function renderSection() {
   return render(
     <ThemeProvider>
       <WindowTransparencyProvider>
         <IconPackProvider classicUrls={DESKTOP_ICON_URLS}>
-          <WallpaperProvider wallpapers={wallpapers}>
+          <WallpaperProvider wallpapers={[]}>
             <AppearanceSection />
           </WallpaperProvider>
         </IconPackProvider>
@@ -44,12 +37,13 @@ afterEach(() => {
 });
 
 describe('AppearanceSection', () => {
-  it('renders the theme control plus the fill-color and wallpaper sections', () => {
+  it('renders the theme control plus the fill-color and patterns sections', () => {
     renderSection();
 
     expect(screen.getByRole('group', { name: 'Tema' })).toBeTruthy();
     expect(screen.getByRole('region', { name: 'Color de relleno' })).toBeTruthy();
-    expect(screen.getByRole('region', { name: 'Imágenes' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Patrones' })).toBeTruthy();
+    expect(screen.queryByRole('region', { name: 'Imágenes' })).toBeNull();
   });
 
   it('renders one swatch per desktop color, labelled by its label', () => {
@@ -63,45 +57,15 @@ describe('AppearanceSection', () => {
     }
   });
 
-  it('renders one wallpaper button per wallpaper with its thumbnail', () => {
-    const { container } = renderSection();
-
-    for (const wallpaper of WALLPAPERS) {
-      expect(screen.getByRole('button', { name: wallpaper.label })).toBeTruthy();
-    }
-
-    const thumbs = Array.from(container.querySelectorAll('img')).map((img) =>
-      img.getAttribute('src'),
-    );
-    expect(thumbs).toContain('/wp/03-thumb.jpg');
-  });
-
   it('marks the default fill color as pressed when no preference is stored', () => {
     renderSection();
 
     expect(screen.getByRole('button', { name: 'Automático' }).getAttribute('aria-pressed')).toBe(
       'true',
     );
-    expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
-      'false',
-    );
   });
 
-  it('clicking a wallpaper selects it and persists the id', () => {
-    renderSection();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Imagen 03' }));
-
-    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('03');
-    expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
-      'true',
-    );
-    expect(screen.getByRole('button', { name: 'Imagen 05' }).getAttribute('aria-pressed')).toBe(
-      'false',
-    );
-  });
-
-  it('clicking a fill color clears the wallpaper and marks the swatch selected', () => {
+  it('clicking a fill color marks the swatch selected', () => {
     renderSection();
 
     fireEvent.click(screen.getByRole('button', { name: 'Azul' }));
@@ -109,38 +73,6 @@ describe('AppearanceSection', () => {
     expect(localStorage.getItem(STORAGE.desktopColor)).toBe('blue');
     expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
     expect(screen.getByRole('button', { name: 'Azul' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
-      'false',
-    );
-  });
-
-  it('selecting a color then a wallpaper moves selection back to the wallpaper', () => {
-    renderSection();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Azul' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Imagen 01' }));
-
-    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('01');
-    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('blue');
-    expect(screen.getByRole('button', { name: 'Imagen 01' }).getAttribute('aria-pressed')).toBe(
-      'true',
-    );
-    expect(screen.getByRole('button', { name: 'Azul' }).getAttribute('aria-pressed')).toBe('false');
-  });
-
-  it('restores a stored fill color when returning from a wallpaper', () => {
-    localStorage.setItem(STORAGE.desktopColor, 'mint');
-    localStorage.setItem(STORAGE.wallpaper, '03');
-    renderSection();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Menta' }));
-
-    expect(localStorage.getItem(STORAGE.desktopColor)).toBe('mint');
-    expect(localStorage.getItem(STORAGE.wallpaper)).toBe('');
-    expect(screen.getByRole('button', { name: 'Menta' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: 'Imagen 03' }).getAttribute('aria-pressed')).toBe(
-      'false',
-    );
   });
 
   it('the theme control toggles the document theme via setTheme', () => {
@@ -195,13 +127,5 @@ describe('AppearanceSection', () => {
     expect(screen.getByRole('button', { name: 'Océano' }).getAttribute('aria-pressed')).toBe(
       'true',
     );
-  });
-
-  it('shows the empty-state message and no wallpaper list when there are no wallpapers', () => {
-    renderSection([]);
-
-    expect(screen.getByText(/No hay fondos/)).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Imagen 03' })).toBeNull();
-    expect(screen.getByRole('button', { name: 'Azul' })).toBeTruthy();
   });
 });

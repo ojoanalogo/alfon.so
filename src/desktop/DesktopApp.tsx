@@ -9,18 +9,16 @@ import { IconPackProvider } from './state/IconPackContext';
 import { WindowTransparencyProvider } from './state/WindowTransparencyContext';
 import { GithubContributionsProvider } from './apps/about/contributionsContext';
 import DesktopShell from './DesktopShell';
-import type { BlogPostSummary, WallpaperOption } from './types';
+import type { BlogPostSummary } from './types';
 
 interface DesktopAppProps {
   posts: BlogPostSummary[];
-  wallpapers: WallpaperOption[];
   desktopIconUrls: DesktopIconUrls;
   githubContributions?: GithubContributions | null;
 }
 
 export default function DesktopApp({
   posts,
-  wallpapers,
   desktopIconUrls,
   githubContributions = null,
 }: DesktopAppProps) {
@@ -35,7 +33,7 @@ export default function DesktopApp({
       <ThemeProvider>
         <WindowTransparencyProvider>
           <IconPackProvider classicUrls={desktopIconUrls}>
-            <WallpaperProvider wallpapers={wallpapers}>
+            <WallpaperProvider wallpapers={[]}>
               <GithubContributionsProvider value={githubContributions}>
                 <DesktopShell apps={apps} defs={defs} posts={posts} viewport={viewport} />
               </GithubContributionsProvider>

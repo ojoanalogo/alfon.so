@@ -30,19 +30,18 @@ pnpm dev        # local dev server at http://localhost:4321
 
 ## Commands
 
-| Command                    | What it does                                      |
-| :------------------------- | :------------------------------------------------ |
-| `pnpm dev`                 | Start the dev server (`localhost:4321`)           |
-| `pnpm build`               | Production build to `./dist/`                     |
-| `pnpm preview`             | Preview the production build locally              |
-| `pnpm test`                | Run the Vitest suite                              |
-| `pnpm test:watch`          | Vitest in watch mode                              |
-| `pnpm lint`                | ESLint over source, tests, scripts, and configs   |
-| `pnpm check`               | `astro check` (TypeScript diagnostics)            |
-| `pnpm format`              | Prettier-format the repo                          |
-| `pnpm format:check`        | Verify Prettier formatting (CI)                   |
-| `pnpm commit`              | Interactive Conventional Commit via Commitizen    |
-| `pnpm wallpapers:optimize` | Re-optimize the source wallpapers in `src/assets` |
+| Command             | What it does                                    |
+| :------------------ | :---------------------------------------------- |
+| `pnpm dev`          | Start the dev server (`localhost:4321`)         |
+| `pnpm build`        | Production build to `./dist/`                   |
+| `pnpm preview`      | Preview the production build locally            |
+| `pnpm test`         | Run the Vitest suite                            |
+| `pnpm test:watch`   | Vitest in watch mode                            |
+| `pnpm lint`         | ESLint over source, tests, scripts, and configs |
+| `pnpm check`        | `astro check` (TypeScript diagnostics)          |
+| `pnpm format`       | Prettier-format the repo                        |
+| `pnpm format:check` | Verify Prettier formatting (CI)                 |
+| `pnpm commit`       | Interactive Conventional Commit via Commitizen  |
 
 CI runs `lint`, `format:check`, `check`, `test`, and `build` on every push.
 

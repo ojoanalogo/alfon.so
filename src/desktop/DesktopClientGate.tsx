@@ -2,11 +2,10 @@ import { Component } from 'react';
 import type { DesktopIconUrls } from '@desktop/lib/desktopIcons';
 import type { GithubContributions } from '@/lib/githubContributions';
 import DesktopApp from './DesktopApp';
-import type { BlogPostSummary, WallpaperOption } from './types';
+import type { BlogPostSummary } from './types';
 
 interface DesktopClientGateProps {
   posts: BlogPostSummary[];
-  wallpapers: WallpaperOption[];
   desktopIconUrls: DesktopIconUrls;
   githubContributions?: GithubContributions | null;
 }

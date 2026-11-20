@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_DESKTOP_PATTERN_ID, DESKTOP_PATTERNS } from './desktopPatterns';
 
 describe('DESKTOP_PATTERNS', () => {
-  it('lists cuadrícula/grid first and uses trama as the default id', () => {
-    expect(DEFAULT_DESKTOP_PATTERN_ID).toBe('crosshatch');
+  it('lists cuadrícula/grid first and uses it as the default id', () => {
+    expect(DEFAULT_DESKTOP_PATTERN_ID).toBe('grid');
     expect(DESKTOP_PATTERNS[0]?.id).toBe('grid');
     expect(DESKTOP_PATTERNS[0]?.label).toBe('Cuadrícula');
   });

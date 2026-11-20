@@ -2,7 +2,7 @@ import type { DesktopPatternOption } from '../types';
 
 const PATTERN_STROKE = '#71717a';
 
-export const DEFAULT_DESKTOP_PATTERN_ID = 'crosshatch';
+export const DEFAULT_DESKTOP_PATTERN_ID = 'grid';
 
 function svgPattern(svg: string): string {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
