@@ -39,7 +39,8 @@ const wallpapers: WallpaperOption[] = await Promise.all(
       format: 'webp',
       quality: 82,
     });
-    const thumb = await getImage({ src: srcAsset, width: 480, format: 'webp', quality: 75 });
+    // Picker tiles render ~110px wide, so 240px covers 2x screens.
+    const thumb = await getImage({ src: srcAsset, width: 240, format: 'webp', quality: 75 });
 
     return {
       id: artwork.id,
