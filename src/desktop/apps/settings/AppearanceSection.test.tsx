@@ -205,3 +205,50 @@ describe('AppearanceSection', () => {
     expect(screen.getByRole('button', { name: 'Azul' })).toBeTruthy();
   });
 });
+
+describe('AppearanceSection - era filter', () => {
+  const ERA_WALLPAPERS: WallpaperOption[] = [
+    { id: 'ren', label: 'Ren', src: '/wp/ren.jpg', thumbSrc: '/t/ren.jpg', era: 'Renacimiento' },
+    { id: 'bar', label: 'Bar', src: '/wp/bar.jpg', thumbSrc: '/t/bar.jpg', era: 'Barroco' },
+    { id: 'imp', label: 'Imp', src: '/wp/imp.jpg', thumbSrc: '/t/imp.jpg', era: 'Impresionismo' },
+  ];
+
+  it('shows one chip per era plus "Todas", oldest era first', () => {
+    renderSection(ERA_WALLPAPERS);
+    const chips = screen.getByRole('group', { name: 'Filtrar por época' });
+    expect(Array.from(chips.querySelectorAll('button')).map((b) => b.textContent)).toEqual([
+      'Todas',
+      'Renacimiento',
+      'Barroco',
+      'Impresionismo',
+    ]);
+  });
+
+  it('starts on the first era when no wallpaper is active', () => {
+    renderSection(ERA_WALLPAPERS);
+    expect(screen.getByRole('button', { name: 'Ren' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Bar' })).toBeNull();
+  });
+
+  it('starts on the era of the active wallpaper', () => {
+    localStorage.setItem(STORAGE.wallpaper, 'imp');
+    renderSection(ERA_WALLPAPERS);
+    expect(screen.getByRole('button', { name: 'Impresionismo' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
+    expect(screen.getByRole('button', { name: 'Imp' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Ren' })).toBeNull();
+  });
+
+  it('switches eras and shows everything under "Todas"', () => {
+    renderSection(ERA_WALLPAPERS);
+    fireEvent.click(screen.getByRole('button', { name: 'Barroco' }));
+    expect(screen.getByRole('button', { name: 'Bar' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Ren' })).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Todas' }));
+    for (const label of ['Ren', 'Bar', 'Imp']) {
+      expect(screen.getByRole('button', { name: label })).toBeTruthy();
+    }
+  });
+});

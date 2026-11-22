@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { WALLPAPER_ERAS } from '@/config/wallpapers';
 import ThemeSegmentedControl from './ThemeSegmentedControl';
 import { iconPackPreviewUrls } from '@desktop/lib/iconPacks';
 import { useIconPack } from '@desktop/state/IconPackContext';
@@ -117,6 +119,15 @@ export default function AppearanceSection() {
   const { packId, packs, setPackId } = useIconPack();
 
   const patternPreviewFill = desktopBackgroundColor;
+
+  // Era chips, oldest first; only eras that have wallpapers. `null` = all.
+  const eras = WALLPAPER_ERAS.filter((era) => wallpapers.some((w) => w.era === era));
+  const [selectedEra, setSelectedEra] = useState<string | null>(
+    () => wallpapers.find((w) => w.id === wallpaperId)?.era ?? eras[0] ?? null,
+  );
+  const visibleWallpapers = selectedEra
+    ? wallpapers.filter((w) => w.era === selectedEra)
+    : wallpapers;
 
   return (
     <div className="flex flex-col gap-4">
@@ -278,13 +289,36 @@ export default function AppearanceSection() {
             No hay fondos en <code>assets/wallpapers</code>.
           </p>
         ) : (
-          <div className={`${SETTINGS_GROUP} p-[0.375rem]`}>
+          <div className={`${SETTINGS_GROUP} flex flex-col gap-2 p-[0.375rem]`}>
+            {eras.length > 0 && (
+              <div className="flex flex-wrap gap-1" role="group" aria-label="Filtrar por época">
+                {[null, ...eras].map((era) => {
+                  const selected = era === selectedEra;
+                  return (
+                    <button
+                      key={era ?? 'all'}
+                      type="button"
+                      className={[
+                        'cursor-pointer rounded-full border px-2 py-[0.1875rem] text-[0.625rem]',
+                        selected
+                          ? 'border-[color:var(--color-highlight-border)] bg-[color:var(--color-highlight-border)] text-[color:var(--color-background)]'
+                          : 'border-[color:var(--color-hairline-strong)] text-secondary hover:text-primary',
+                      ].join(' ')}
+                      aria-pressed={selected}
+                      onClick={() => setSelectedEra(era)}
+                    >
+                      {era ?? 'Todas'}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             {/* eslint-disable-next-line jsx-a11y/no-redundant-roles */}
             <ul
               className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-2 p-0"
               role="list"
             >
-              {wallpapers.map((wallpaper) => {
+              {visibleWallpapers.map((wallpaper) => {
                 const selected = wallpaper.id === wallpaperId;
                 return (
                   <li key={wallpaper.id}>

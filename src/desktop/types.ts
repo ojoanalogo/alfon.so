@@ -72,6 +72,8 @@ export interface WallpaperOption {
   label: string;
   src: string;
   thumbSrc: string;
+  /** Art period, used to filter the picker (see WALLPAPER_ERAS). */
+  era?: string;
 }
 
 export interface DesktopPatternOption {

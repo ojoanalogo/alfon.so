@@ -47,6 +47,7 @@ const wallpapers: WallpaperOption[] = await Promise.all(
       label: `${artwork.title} — ${artwork.artist}, ${artwork.year}`,
       src: full.src,
       thumbSrc: thumb.src,
+      era: artwork.era,
     };
   }),
 );
